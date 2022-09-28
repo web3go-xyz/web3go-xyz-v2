@@ -12,7 +12,7 @@ const routes = [{
         title: 'ACE'
     },
     component: () =>
-        import("@/views/dashboard/Dashboard.vue")
+        import("@/views/HelloWorld/index.vue")
 }, {
     path: '/BotList',
     name: 'BotList',

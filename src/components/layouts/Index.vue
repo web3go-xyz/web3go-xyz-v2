@@ -26,8 +26,6 @@ export default {
 </script>
 <style lang="less" scoped>
 .container-content {
-  height: calc(100vh - 80px);
-  overflow: auto;
   .content {
     display: flex;
     min-height: calc(100vh - 332px);

@@ -66,18 +66,46 @@
         </svg>
       </div>
       <el-button type="primary">Create</el-button>
-      <el-button plain>Sign In</el-button>
+      <el-button plain @click="goSignIn">Sign In</el-button>
     </div>
+    <SignInOrUp ref="signInOrUp" @goForgetPsd="goForgetPsd"></SignInOrUp>
+    <ForgetPsd ref="forgetPsd"></ForgetPsd>
   </div>
 </template>
-<script lang="ts" setup>
+
+<script>
 import { toggleDark } from "~/composables";
+import SignInOrUp from "./SignInOrUp.vue";
+import ForgetPsd from "./ForgetPsd.vue";
+export default {
+  components: {
+    SignInOrUp,
+    ForgetPsd,
+  },
+  data() {
+    return {
+      toggleDark,
+    };
+  },
+  methods: {
+    goForgetPsd() {
+      this.$refs.forgetPsd.init();
+    },
+    goSignIn() {
+      this.$refs.signInOrUp.init(true);
+    },
+  },
+};
 </script>
+
 <style lang="less" scoped>
 &.dark .head-wrap {
   background: #232324;
 }
 .head-wrap {
+  position: sticky;
+  z-index: 2;
+  top: 0;
   padding: 0 80px;
   display: flex;
   justify-content: space-between;

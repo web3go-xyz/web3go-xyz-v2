@@ -24,6 +24,122 @@ code {
   color: var(--ep-color-primary);
 }
 
+html body {
+  --ep-border-radius-base: 12px;
+  --77Color: #777E90;
+  --F8Color: #F8F8F8;
+}
+
+.ep-dialog {
+  border-radius: 16px;
+
+  .ep-dialog__header {
+    padding: 40px;
+    padding-bottom: 10px;
+
+    .ep-dialog__title {
+      color: var(--F8Color);
+      font-weight: 600;
+      font-size: 32px;
+      line-height: 40px;
+    }
+
+    .ep-dialog__headerbtn {
+      top: 25px;
+      right: 25px;
+
+      .ep-dialog__close {
+        font-size: 22px;
+      }
+    }
+  }
+
+  .ep-dialog__body {
+    padding: 0 40px;
+  }
+
+  .ep-dialog__footer {
+    padding: 20px 40px;
+  }
+}
+
+.ep-form {
+  .ep-form-item {
+    margin-bottom: 24px;
+  }
+
+  .ep-form-item__label {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--F8Color);
+  }
+
+  .ep-form-item__error {
+    display: flex;
+    align-items: center;
+  }
+
+  .ep-form-item__error::before {
+    margin-right: 2px;
+    content: '';
+    width: 12px;
+    height: 12px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url(@/assets/layout/waring.png);
+    display: inline-block;
+  }
+}
+
+.ep-form-item.is-required:not(.is-no-asterisk).asterisk-right>.ep-form-item__label:after,
+.ep-form-item.is-required:not(.is-no-asterisk).asterisk-right>.ep-form-item__label-wrap>.ep-form-item__label:after {
+  content: ".";
+  color: var(--ep-color-danger);
+  display: inline-block;
+  transform: translateY(-13px) scale(3);
+  margin-left: 4px;
+}
+
+.ep-input {
+  height: 48px;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+  color: var(--77Color);
+
+  .ep-input__wrapper {
+    padding: 0 12px;
+
+  }
+}
+
 html.dark {
   background: rgb(23, 23, 26);
+
+  .ep-dialog {
+    background: #232324;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(38, 38, 38, 0.2);
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background: #ededed;
+}
+
+.hover-item {
+  cursor: pointer;
+
+  &:hover {
+    opacity: .8;
+  }
 }
