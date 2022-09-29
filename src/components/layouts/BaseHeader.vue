@@ -68,13 +68,18 @@
       <el-button type="primary">Create</el-button>
       <el-button plain @click="goSignIn">Sign In</el-button>
     </div>
-    <SignInOrUp ref="signInOrUp" @goForgetPsd="goForgetPsd"></SignInOrUp>
+    <SignInOrUp
+      ref="signInOrUp"
+      @goForgetPsd="goForgetPsd"
+      @connectMetaMask="connectMetaMask"
+    ></SignInOrUp>
     <ForgetPsd
       ref="forgetPsd"
       @goSignIn="goSignIn"
       @goResetPsd="goResetPsd"
     ></ForgetPsd>
     <ResetPsd ref="resetPsd"></ResetPsd>
+    <ConnectWallet ref="connectWallet"></ConnectWallet>
   </div>
 </template>
 
@@ -83,11 +88,13 @@ import { toggleDark } from "~/composables";
 import SignInOrUp from "./SignInOrUp.vue";
 import ForgetPsd from "./ForgetPsd.vue";
 import ResetPsd from "./ResetPsd.vue";
+import ConnectWallet from "./ConnectWallet.vue";
 export default {
   components: {
     SignInOrUp,
     ForgetPsd,
     ResetPsd,
+    ConnectWallet,
   },
   data() {
     return {
@@ -95,6 +102,10 @@ export default {
     };
   },
   methods: {
+    connectMetaMask() {
+      debugger
+      this.$refs.connectWallet.connectMetaMask();
+    },
     goForgetPsd() {
       this.$refs.forgetPsd.init();
     },

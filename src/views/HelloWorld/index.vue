@@ -6,7 +6,6 @@ defineProps<{ msg: string }>();
 
 const count = ref(0);
 const input = ref("element-plus");
-
 const curDate = ref("");
 
 const toast = () => {

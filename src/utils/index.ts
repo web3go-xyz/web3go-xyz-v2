@@ -23,9 +23,8 @@ export function multiPlyDecimals(
   return amount_decimals;
 }
 
-export function shorterAddress(address: string, lengthThresold: number = 20, partNumber: number = 7): string {
+export function shorterAddress(address: string, lengthThresold: number = 20, subLength: number = 5): string {
   if (address && address.length > lengthThresold) {
-    let subLength = address.length / 7;
     return (
       address.substring(0, subLength) +
       "..." +

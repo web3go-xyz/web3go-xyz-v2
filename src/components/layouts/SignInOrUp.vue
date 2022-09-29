@@ -59,7 +59,7 @@
         <div class="split"></div>
       </div>
       <div class="wallet-wrap">
-        <div class="item hover-item">
+        <div class="item hover-item" @click="connectMetaMask">
           <img src="@/assets/layout/metamaskicon.png" alt="" />
         </div>
         <div class="item hover-item">
@@ -107,6 +107,10 @@ export default {
     };
   },
   methods: {
+    connectMetaMask() {
+      this.visible = false;
+      this.$emit("connectMetaMask");
+    },
     goForgetPsd() {
       this.visible = false;
       this.$emit("goForgetPsd");
