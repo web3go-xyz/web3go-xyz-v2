@@ -114,11 +114,31 @@ html body {
   }
 }
 
+.ep-message {
+  border-radius: 8px;
+  height: 56px;
+  .ep-message__content {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+  }
+}
+
 html.dark {
   background: rgb(23, 23, 26);
 
   .ep-dialog {
     background: #232324;
+  }
+
+  .ep-message {
+    background: #373739;
+    border: 1px solid #525461;
+    border-radius: 8px;
+
+    .ep-message__content {
+      color: #C9CDD4;
+    }
   }
 }
 

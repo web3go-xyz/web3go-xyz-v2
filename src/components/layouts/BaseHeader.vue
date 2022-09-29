@@ -69,7 +69,12 @@
       <el-button plain @click="goSignIn">Sign In</el-button>
     </div>
     <SignInOrUp ref="signInOrUp" @goForgetPsd="goForgetPsd"></SignInOrUp>
-    <ForgetPsd ref="forgetPsd"></ForgetPsd>
+    <ForgetPsd
+      ref="forgetPsd"
+      @goSignIn="goSignIn"
+      @goResetPsd="goResetPsd"
+    ></ForgetPsd>
+    <ResetPsd ref="resetPsd"></ResetPsd>
   </div>
 </template>
 
@@ -77,10 +82,12 @@
 import { toggleDark } from "~/composables";
 import SignInOrUp from "./SignInOrUp.vue";
 import ForgetPsd from "./ForgetPsd.vue";
+import ResetPsd from "./ResetPsd.vue";
 export default {
   components: {
     SignInOrUp,
     ForgetPsd,
+    ResetPsd,
   },
   data() {
     return {
@@ -93,6 +100,9 @@ export default {
     },
     goSignIn() {
       this.$refs.signInOrUp.init(true);
+    },
+    goResetPsd() {
+      this.$refs.resetPsd.init();
     },
   },
 };

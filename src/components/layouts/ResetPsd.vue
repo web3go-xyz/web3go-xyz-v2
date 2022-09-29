@@ -1,10 +1,6 @@
 <template>
-  <el-dialog v-model="visible" title="Forgot Password" width="520px">
+  <el-dialog v-model="visible" title="Reset Password" width="520px">
     <div class="dialot-content">
-      <div class="subtitle">
-        No problem. Just let us know the email you use for Web3go account and
-        we'll email you a security code and you can input at next step.
-      </div>
       <el-form
         ref="form"
         label-position="top"
@@ -13,32 +9,20 @@
         :rules="rules"
         class="form"
       >
-        <el-form-item class="email-row" label="Email address" prop="email">
-          <el-input v-model="form.email" placeholder="helloworld@gmail.com" />
-          <div v-if="alreadySend" class="btn disabled">Send Email</div>
-          <div v-else class="btn hover-item" @click="sendEmail">Send Email</div>
-        </el-form-item>
-        <el-form-item label="Security code" prop="code">
+        <el-form-item label="Enter your new password" prop="password">
           <el-input
             type="password"
-            v-model="form.code"
-            placeholder="please enter your security code..."
+            v-model="form.password"
+            placeholder="Please enter your new password"
           />
         </el-form-item>
       </el-form>
       <div class="btn-wrap">
-        <el-button class="btn" type="primary" @click="sure"
-          >Next Step</el-button
-        >
+        <el-button class="btn" type="primary" @click="sure">Save</el-button>
       </div>
       <div class="link-wrap">
-        <div class="left">
-          <span class="hover-item" @click="goSignIn"
-            >Back to previous page
-          </span>
-        </div>
-        <div class="hover-item link" @click="resend">
-          Resend password reset email
+        <div class="left"> 
+          <span class="hover-item" @click="goHome">Back to home page </span>
         </div>
       </div>
     </div>
@@ -53,21 +37,13 @@ export default {
       visible: false,
       isSignIn: true,
       form: {
-        email: "",
-        code: "",
+        password: "",
       },
       rules: {
-        email: [
+        password: [
           {
             required: true,
-            message: "Email address cannot be empty",
-            trigger: "blur",
-          },
-        ],
-        code: [
-          {
-            required: true,
-            message: "Security code cannot be empty",
+            message: "new password cannot be empty",
             trigger: "blur",
           },
         ],
@@ -75,26 +51,11 @@ export default {
     };
   },
   methods: {
-    resendEmail() {},
-    sendEmail() {
-      this.alreadySend = true;
-      this.$message.success(
-        "Email has been sent. Please check the security code in the email."
-      );
-      // this.$message({
-      //   message: "Warning, this is a warning message.",
-      //   type: "success",
-      //   duration: 0,
-      // });
-    },
-    goSignIn() {
-      this.visible = false;
-      this.$emit("goSignIn");
-    },
+    goHome() {},
+
     clearForm() {
       this.form = {
-        email: "",
-        code: "",
+        passowrd: "",
       };
       this.$nextTick(() => {
         this.$refs.form.clearValidate();
@@ -107,7 +68,6 @@ export default {
     },
     sure() {
       this.visible = false;
-      this.$emit("goResetPsd");
     },
   },
 };
@@ -118,14 +78,7 @@ export default {
 }
 .dialot-content {
   padding-bottom: 40px;
-  .subtitle {
-    word-break: initial;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 22px;
-    color: var(--77Color);
-    margin-bottom: 32px;
-  }
+  padding-top: 20px;
   .email-row {
     ::v-deep(.ep-form-item__content) {
       display: flex;
@@ -148,7 +101,7 @@ export default {
   .link-wrap {
     margin-top: 24px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     font-weight: 400;
     font-size: 14px;

@@ -22,11 +22,12 @@ declare module '@vue/runtime-core' {
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElTag: typeof import('element-plus/es')['ElTag']
     ForgetPsd: typeof import('./components/layouts/ForgetPsd.vue')['default']
+    'ForgetPsd copy': typeof import('./components/layouts/ForgetPsd copy.vue')['default']
     Index: typeof import('./components/layouts/Index.vue')['default']
+    ResetPsd: typeof import('./components/layouts/ResetPsd.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SignInOrUp: typeof import('./components/layouts/SignInOrUp.vue')['default']
-    'SignInOrUp copy': typeof import('./components/layouts/SignInOrUp copy.vue')['default']
   }
 }
 

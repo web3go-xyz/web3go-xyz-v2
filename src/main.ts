@@ -4,7 +4,7 @@ import * as utils from '@/utils';
 import { isDark } from '@/composables/dark';
 import store from './store/index';
 import router from './router/index';
- 
+import { ElMessage } from 'element-plus'
 // import "~/styles/element/index.scss";
 
 // import ElementPlus from "element-plus";
@@ -20,6 +20,7 @@ import "~/styles/index.scss";
 import "element-plus/theme-chalk/src/message.scss"
 
 const app = createApp(App);
+app.config.globalProperties.$message = ElMessage;
 app.config.globalProperties.isDark = isDark;
 app.config.globalProperties.$utils = utils;
 

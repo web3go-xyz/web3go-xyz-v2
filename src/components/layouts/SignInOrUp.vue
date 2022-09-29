@@ -38,7 +38,7 @@
             >Create an Account</span
           >
         </div>
-        <div class="right hover-item" @click="$emit('goForgetPsd')">
+        <div class="right hover-item" @click="goForgetPsd()">
           Forget password?
         </div>
       </div>
@@ -82,6 +82,13 @@ export default {
         passowrd: "",
       },
       rules: {
+        nickname: [
+          {
+            required: true,
+            message: "Nickname cannot be empty",
+            trigger: "blur",
+          },
+        ],
         email: [
           {
             required: true,
@@ -100,6 +107,10 @@ export default {
     };
   },
   methods: {
+    goForgetPsd() {
+      this.visible = false;
+      this.$emit("goForgetPsd");
+    },
     clearForm() {
       this.form = {
         nickname: "",
