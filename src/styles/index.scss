@@ -206,3 +206,24 @@ html.dark {
     opacity: .8;
   }
 }
+
+.common-bread {
+  display: flex;
+  align-items: center;
+
+  .item {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+
+    &.active {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 22px;
+    }
+  }
+
+  .split {
+    margin: 0 8px;
+  }
+}

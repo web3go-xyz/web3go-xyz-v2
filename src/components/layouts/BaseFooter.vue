@@ -337,7 +337,7 @@ export default {
   height: 252px;
   box-sizing: border-box;
   position: relative;
-  background: #e0e5f2;
+  background: #F2F3F5;
 
   .website-info {
     display: flex;
@@ -398,14 +398,14 @@ export default {
         .title {
           font-weight: 700;
           font-size: 16px;
-          color: #21272a;
+          color: #1D2129;
           margin-bottom: 16px;
         }
         .link {
           cursor: pointer;
           font-weight: 400;
           font-size: 16px;
-          color: #4d5358;
+          color: #6B7785;
           margin-bottom: 16px;
           &:hover {
             opacity: 0.8;

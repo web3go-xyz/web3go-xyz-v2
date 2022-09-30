@@ -2,7 +2,7 @@
   <BaseHeader />
   <div class="container-content">
     <div class="content">
-      <BaseSide />
+      <!-- <BaseSide /> -->
       <router-view></router-view>
     </div>
     <BaseFooter />
