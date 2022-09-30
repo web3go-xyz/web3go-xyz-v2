@@ -70,7 +70,7 @@ const toast = () => {
 </template>
 
 <style>
-.ep-button {
+.el-button {
   margin: 4px;
 }
 </style>

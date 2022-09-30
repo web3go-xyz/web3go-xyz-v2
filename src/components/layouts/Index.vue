@@ -10,7 +10,15 @@
 </template>
 
 <script>
+import BaseHeader from "./BaseHeader.vue";
+import BaseSide from "./BaseSide.vue";
+import BaseFooter from "./BaseFooter.vue";
 export default {
+  components: {
+    BaseHeader,
+    BaseSide,
+    BaseFooter,
+  },
   data() {
     return {};
   },

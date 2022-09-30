@@ -7,13 +7,14 @@ import router from './router/index';
 import { ElMessage } from 'element-plus'
 // import "~/styles/element/index.scss";
 
-// import ElementPlus from "element-plus";
+import ElementPlus from "element-plus";
 // import all element css, uncommented next line
-// import "element-plus/dist/index.css";
+import "element-plus/dist/index.css";
 
 // or use cdn, uncomment cdn link in `index.html`
 
 import "~/styles/index.scss";
+import 'element-plus/theme-chalk/dark/css-vars.css'
 // import 'uno.css'
 
 // If you want to use ElMessage, import it.
@@ -24,7 +25,7 @@ app.config.globalProperties.$message = ElMessage;
 app.config.globalProperties.isDark = isDark;
 app.config.globalProperties.$utils = utils;
 
-// app.use(ElementPlus);
+app.use(ElementPlus);
 app.use(store);
 app.use(router);
 app.mount("#app");

@@ -1,9 +1,23 @@
 // import dark theme
-@use "element-plus/theme-chalk/src/dark/css-vars.scss" as *;
+// @use "element-plus/theme-chalk/src/dark/css-vars.scss"as *;
 
-// :root {
-//   --ep-color-primary: red;
-// }
+:root {
+  --el-color-primary: #615CF6;
+  --el-color-success: #00B462;
+  --el-color-warning: #FFC225;
+  --el-color-danger: #F34D4D;
+  --el-color-error: #F34D4D;
+  --el-color-info: #C8CDDA;
+}
+
+html.dark body {
+  --el-color-primary: #615CF6;
+  --el-color-success: #00B462;
+  --el-color-warning: #FFC225;
+  --el-color-danger: #F34D4D;
+  --el-color-error: #F34D4D;
+  --el-color-info: #C8CDDA;
+}
 
 body {
   font-family: "Inter", "PingFang SC",
@@ -14,72 +28,72 @@ body {
 }
 
 a {
-  color: var(--ep-color-primary);
+  color: var(--el-color-primary);
 }
 
 code {
   border-radius: 2px;
   padding: 2px 4px;
-  background-color: var(--ep-color-primary-light-9);
-  color: var(--ep-color-primary);
+  background-color: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
 }
 
 html body {
-  --ep-border-radius-base: 12px;
+  --el-border-radius-base: 12px;
   --77Color: #777E90;
   --F8Color: #F8F8F8;
 }
 
-.ep-dialog {
+.el-dialog {
   border-radius: 16px;
 
-  .ep-dialog__header {
+  .el-dialog__header {
     padding: 40px;
     padding-bottom: 10px;
 
-    .ep-dialog__title {
+    .el-dialog__title {
       color: var(--F8Color);
       font-weight: 600;
       font-size: 32px;
       line-height: 40px;
     }
 
-    .ep-dialog__headerbtn {
+    .el-dialog__headerbtn {
       top: 25px;
       right: 25px;
 
-      .ep-dialog__close {
+      .el-dialog__close {
         font-size: 22px;
       }
     }
   }
 
-  .ep-dialog__body {
+  .el-dialog__body {
     padding: 0 40px;
   }
 
-  .ep-dialog__footer {
+  .el-dialog__footer {
     padding: 20px 40px;
   }
 }
 
-.ep-form {
-  .ep-form-item {
+.el-form {
+  .el-form-item {
     margin-bottom: 24px;
   }
 
-  .ep-form-item__label {
+  .el-form-item__label {
     font-weight: 400;
     font-size: 14px;
     color: var(--F8Color);
   }
 
-  .ep-form-item__error {
+  .el-form-item__error {
     display: flex;
     align-items: center;
   }
 
-  .ep-form-item__error::before {
+  .el-form-item__error::before {
     margin-right: 2px;
     content: '';
     width: 12px;
@@ -92,32 +106,33 @@ html body {
   }
 }
 
-.ep-form-item.is-required:not(.is-no-asterisk).asterisk-right>.ep-form-item__label:after,
-.ep-form-item.is-required:not(.is-no-asterisk).asterisk-right>.ep-form-item__label-wrap>.ep-form-item__label:after {
+.el-form-item.is-required:not(.is-no-asterisk).asterisk-right>.el-form-item__label:after,
+.el-form-item.is-required:not(.is-no-asterisk).asterisk-right>.el-form-item__label-wrap>.el-form-item__label:after {
   content: ".";
-  color: var(--ep-color-danger);
+  color: var(--el-color-danger);
   display: inline-block;
   transform: translateY(-13px) scale(3);
   margin-left: 4px;
 }
 
-.ep-input {
+.el-input {
   height: 48px;
   font-size: 14px;
   line-height: 22px;
   font-weight: 400;
   color: var(--77Color);
 
-  .ep-input__wrapper {
+  .el-input__wrapper {
     padding: 0 12px;
 
   }
 }
 
-.ep-message {
+.el-message {
   border-radius: 8px;
   height: 56px;
-  .ep-message__content {
+
+  .el-message__content {
     font-weight: 400;
     font-size: 14px;
     line-height: 22px;
@@ -127,16 +142,16 @@ html body {
 html.dark {
   background: rgb(23, 23, 26);
 
-  .ep-dialog {
+  .el-dialog {
     background: #232324;
   }
 
-  .ep-message {
+  .el-message {
     background: #373739;
     border: 1px solid #525461;
     border-radius: 8px;
 
-    .ep-message__content {
+    .el-message__content {
       color: #C9CDD4;
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <el-config-provider namespace="ep">
+  <el-config-provider>
     <Layout></Layout>
   </el-config-provider>
 </template>
@@ -13,6 +13,6 @@ export default {
 </script>
 <style>
 #app {
-  color: var(--ep-text-color-primary);
+  color: var(--el-text-color-primary);
 }
 </style>

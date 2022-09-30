@@ -103,7 +103,6 @@ export default {
   },
   methods: {
     connectMetaMask() {
-      debugger
       this.$refs.connectWallet.connectMetaMask();
     },
     goForgetPsd() {

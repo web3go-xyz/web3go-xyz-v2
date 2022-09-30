@@ -80,9 +80,9 @@ export default {
   padding-bottom: 40px;
   padding-top: 20px;
   .email-row {
-    ::v-deep(.ep-form-item__content) {
+    ::v-deep(.el-form-item__content) {
       display: flex;
-      .ep-input {
+      .el-input {
         flex: 1;
       }
       .btn {
@@ -91,7 +91,7 @@ export default {
         line-height: 22px;
         flex: none;
         margin-left: 12px;
-        color: var(--ep-color-primary);
+        color: var(--el-color-primary);
         &.disabled {
           color: var(--77Color);
         }
@@ -113,7 +113,7 @@ export default {
       color: var(--77Color);
     }
     .link {
-      color: var(--ep-color-primary);
+      color: var(--el-color-primary);
     }
   }
   .btn-wrap {

@@ -160,7 +160,7 @@ export default {
     .left {
       color: var(--77Color);
       .link {
-        color: var(--ep-color-primary);
+        color: var(--el-color-primary);
       }
     }
     .right {
