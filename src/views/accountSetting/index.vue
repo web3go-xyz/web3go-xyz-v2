@@ -33,7 +33,11 @@
           <div class="name">Arthur</div>
           <div class="id">Web3Go ID : 234156567</div>
           <el-form-item class="nickname-row" label="Nickname" prop="nickname">
-            <el-input v-model="form.nickname" placeholder="Arthur" />
+            <el-input
+              style="width: 504px"
+              v-model="form.nickname"
+              placeholder="Arthur"
+            />
             <img class="hover-item" src="@/assets/account/edit.png" alt="" />
           </el-form-item>
 
@@ -42,7 +46,28 @@
             <div class="value">
               <img src="@/assets/account/Avatar.png" alt="" />
               <el-button plain @click="changeAvatar">Change</el-button>
-              <span>JPG or PNG. Max size is 1MB</span>
+              <span class="tip">JPG or PNG. Max size is 1MB</span>
+            </div>
+          </div>
+          <div class="split"></div>
+          <div class="form-item">
+            <div class="label">Email</div>
+            <el-button class="add-email" type="primary">
+              <img src="@/assets/account/add.png" alt="" />
+              <span> Link Email </span>
+            </el-button>
+            <!-- <div class="email-list">
+
+            </div> -->
+          </div>
+          <div class="split"></div>
+          <div class="form-item">
+            <div class="label">Wallet</div>
+
+            <div class="wallet-list">
+              <div class="item">
+                <img src="" alt="">
+              </div>
             </div>
           </div>
         </el-form>
@@ -141,9 +166,12 @@ export default {
         }
       }
       .form {
-        width: 540px;
+        // width: 540px;
         padding-left: 155px;
         padding-top: 14px;
+        ::v-deep(.el-form-item__content) {
+          width: 540px;
+        }
         .name {
           font-weight: 600;
           font-size: 24px;
@@ -166,6 +194,48 @@ export default {
               margin-left: 12px;
             }
           }
+        }
+        .form-item {
+          .label {
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 22px;
+            margin-bottom: 12px;
+          }
+          .value {
+            display: flex;
+            align-items: center;
+            img {
+              width: 48px;
+              height: 48px;
+              border-radius: 50%;
+              margin-right: 20px;
+            }
+            ::v-deep(.el-button) {
+              width: 100px;
+              height: 44px;
+              margin-right: 8px;
+            }
+            .tip {
+              font-weight: 400;
+              font-size: 12px;
+              line-height: 20px;
+            }
+          }
+          .add-email {
+            width: 119px;
+            height: 48px;
+            img {
+              width: 16px;
+              margin-right: 4px;
+            }
+          }
+        }
+        .split {
+          width: 100%;
+          height: 1px;
+          background: #272e3b;
+          margin: 24px 0;
         }
       }
     }
