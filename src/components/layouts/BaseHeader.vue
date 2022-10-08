@@ -10,20 +10,7 @@
         alt=""
       />
       <img v-else class="logo" src="@/assets/layout/logo-white.png" alt="" />
-      <el-menu class="el-menu-demo" mode="horizontal">
-        <el-sub-menu index="1">
-          <template #title>Go Analytics</template>
-          <el-menu-item index="1-1">item one</el-menu-item>
-          <el-menu-item index="1-2">item two</el-menu-item>
-          <el-menu-item index="1-3">item three</el-menu-item>
-        </el-sub-menu>
-        <el-menu-item index="2">Go Push</el-menu-item>
-        <el-menu-item index="3">Community</el-menu-item>
-        <el-menu-item index="4">Learn</el-menu-item>
-      </el-menu>
-    </div>
-    <div class="h-right">
-      <div class="circle">
+      <div class="search-wrap">
         <svg
           class="icon"
           width="16"
@@ -34,22 +21,33 @@
         >
           <path
             d="M7.5 13C10.5376 13 13 10.5376 13 7.5C13 4.46243 10.5376 2 7.5 2C4.46243 2 2 4.46243 2 7.5C2 10.5376 4.46243 13 7.5 13Z"
-            stroke="#F8F8F8"
             stroke-width="1.5"
             stroke-linecap="round"
             stroke-linejoin="round"
           />
           <path
             d="M13.5 13.5L12 12"
-            stroke="#F8F8F8"
             stroke-width="1.5"
             stroke-linecap="round"
             stroke-linejoin="round"
           />
         </svg>
+        <el-autocomplete
+          v-model="keyword"
+          :fetch-suggestions="querySearch"
+          clearable
+          class="inline-input w-50"
+          placeholder="Search"
+          @select="handleSelect"
+        />
       </div>
+    </div>
+    <div class="h-right">
+      <div class="link">Community</div>
+      <div class="link">Learn</div>
       <div class="circle" @click="toggleDark()">
         <svg
+          v-if="isDark.value"
           class="icon"
           width="16"
           height="16"
@@ -64,9 +62,10 @@
             stroke-width="0.015625"
           />
         </svg>
+        <img v-else class="light" src="@/assets/layout/light.png" alt="" />
       </div>
-      <el-button type="primary">Create</el-button>
-      <el-button plain @click="goSignIn">Sign In</el-button>
+      <el-button class="btn" type="primary">Create</el-button>
+      <el-button class="btn2" plain @click="goSignIn">Sign In</el-button>
     </div>
     <SignInOrUp
       ref="signInOrUp"
@@ -98,10 +97,15 @@ export default {
   },
   data() {
     return {
+      keyword: "",
       toggleDark,
     };
   },
   methods: {
+    querySearch(queryString, cb) {
+      cb([]);
+    },
+    handleSelect() {},
     connectMetaMask() {
       this.$refs.connectWallet.connectMetaMask();
     },
@@ -119,10 +123,25 @@ export default {
 </script>
 
 <style lang="less" scoped>
-&.dark .head-wrap {
+.dark .head-wrap {
   background: #232324;
+  border-color: #232324 !important;
+  .search-wrap {
+    background: #313132 !important;
+    .icon {
+      path {
+        stroke: #c9cdd4 !important;
+      }
+    }
+  }
+  .h-right {
+    .circle {
+      border: 1px solid #343435 !important;
+    }
+  }
 }
 .head-wrap {
+  border-bottom: 1px solid #e5e6e8;
   position: sticky;
   z-index: 2;
   top: 0;
@@ -130,7 +149,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 80px;
+  height: 79px;
   background: white;
   .h-left {
     display: flex;
@@ -139,23 +158,66 @@ export default {
       margin-right: 25px;
       height: 34px;
     }
-    .el-menu-demo {
-      width: 500px;
-      border-bottom: 0;
+    .search-wrap {
+      display: flex;
+      align-items: center;
+      width: 214px;
+      height: 38px;
+      background: #f2f3f5;
+      border-radius: 34px;
+      box-sizing: border-box;
+      padding: 0 12px;
+      .icon {
+        flex: none;
+        path {
+          stroke: #4e5969;
+        }
+      }
+      ::v-deep(.el-autocomplete) {
+        .el-input__wrapper {
+          background: transparent;
+          box-shadow: none;
+        }
+      }
     }
   }
   .h-right {
     display: flex;
     align-items: center;
+    .link {
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 24px;
+      margin-right: 32px;
+      cursor: pointer;
+      &:hover {
+        color: var(--el-color-primary);
+      }
+    }
     .circle {
-      margin-right: 12px;
-      border: 1px solid #343435;
+      cursor: pointer;
+      margin-right: 32px;
+      border: 1px solid #f8f8f8;
       border-radius: 34px;
       width: 32px;
       height: 32px;
       display: flex;
       justify-content: center;
       align-items: center;
+      &:hover {
+        border-color: var(--el-color-primary) !important;
+      }
+    }
+    .light {
+      width: 16px;
+    }
+    .btn {
+      width: 97px;
+      height: 44px;
+    }
+    .btn2 {
+      width: 93px;
+      height: 44px;
     }
   }
 }

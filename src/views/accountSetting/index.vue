@@ -52,21 +52,74 @@
           <div class="split"></div>
           <div class="form-item">
             <div class="label">Email</div>
-            <el-button class="add-email" type="primary">
+            <el-button
+              v-if="!emailList.length"
+              class="add-email"
+              type="primary"
+            >
               <img src="@/assets/account/add.png" alt="" />
               <span> Link Email </span>
             </el-button>
-            <!-- <div class="email-list">
-
-            </div> -->
+            <div v-else class="email-list">
+              <div class="item">
+                <div class="email">nevaeh.simmons@example.com</div>
+                <img
+                  class="link hover-item"
+                  src="@/assets/account/unlink.png"
+                  alt=""
+                />
+              </div>
+              <div class="add-more">
+                <img class="icon" src="@/assets/account/add2.png" alt="" />
+                <span>Add More</span>
+              </div>
+            </div>
           </div>
           <div class="split"></div>
           <div class="form-item">
             <div class="label">Wallet</div>
-
-            <div class="wallet-list">
+            <el-button
+              v-if="!walletList.length"
+              class="add-email"
+              type="primary"
+            >
+              <img src="@/assets/account/add.png" alt="" />
+              <span> Link Wallet </span>
+            </el-button>
+            <div v-else class="wallet-list">
               <div class="item">
-                <img src="" alt="">
+                <img
+                  class="icon"
+                  src="@/assets/account/polkadot-b.png"
+                  alt=""
+                />
+                <span class="address"
+                  >14gVLR3kd8bYp9Hc6DuB7FfCtBNwk543EGe8uT8C2Rn1UWFC</span
+                >
+                <img
+                  class="link hover-item"
+                  src="@/assets/account/unlink.png"
+                  alt=""
+                />
+              </div>
+              <div class="item">
+                <img
+                  class="icon"
+                  src="@/assets/account/metamask-b.png"
+                  alt=""
+                />
+                <span class="address"
+                  >14gVLR3kd8bYp9Hc6DuB7FfCtBNwk543EGe8uT8C2Rn1UWFC</span
+                >
+                <img
+                  class="link hover-item"
+                  src="@/assets/account/unlink.png"
+                  alt=""
+                />
+              </div>
+              <div class="add-more">
+                <img class="icon" src="@/assets/account/add2.png" alt="" />
+                <span>Add More</span>
               </div>
             </div>
           </div>
@@ -92,6 +145,8 @@ export default {
           },
         ],
       },
+      walletList: [{}],
+      emailList: [{}],
     };
   },
   methods: {
@@ -149,6 +204,7 @@ export default {
         align-items: center;
         justify-content: flex-end;
         padding: 0 48px;
+        border-radius: 40px 8px 8px 8px;
         .avatar {
           position: absolute;
           left: 16px;
@@ -228,6 +284,72 @@ export default {
             img {
               width: 16px;
               margin-right: 4px;
+            }
+          }
+          .add-more {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            .icon {
+              width: 16px;
+              margin-right: 4px;
+            }
+            span {
+              color: var(--el-color-primary);
+              font-weight: 600;
+              font-size: 14px;
+              line-height: 22px;
+            }
+          }
+          .email-list {
+            .item {
+              display: flex;
+              align-items: center;
+              .email {
+                box-sizing: border-box;
+                width: 504px;
+                height: 48px;
+                line-height: 48px;
+                padding-left: 12px;
+                background: #202023;
+                border-radius: 12px;
+                font-weight: 400;
+                font-size: 14px;
+                color: #333c4d;
+              }
+              .link {
+                margin-left: 12px;
+                width: 24px;
+              }
+            }
+          }
+          .wallet-list {
+            .item {
+              width: 540px;
+              height: 77px;
+              box-sizing: border-box;
+              display: flex;
+              align-items: center;
+              background: #202023;
+              border-radius: 12px;
+              & + .item {
+                margin-top: 12px;
+              }
+              .icon {
+                margin-left: 12px;
+                width: 40px;
+              }
+              .address {
+                margin-left: 8px;
+                margin-right: 16px;
+                font-weight: 400;
+                font-size: 14px;
+                line-height: 22px;
+                color: #333c4d;
+              }
+              .link {
+                width: 24px;
+              }
             }
           }
         }

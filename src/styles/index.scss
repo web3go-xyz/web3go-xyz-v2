@@ -68,8 +68,43 @@ code {
 
 html body {
   --el-border-radius-base: 12px;
-  --77Color: #777E90;
-  --F8Color: #F8F8F8;
+  --el-text-color-primary: #1d2129;
+  --6bColor: #6b7785;
+}
+
+html.dark body {
+  --el-text-color-primary: #FFFFFF;
+  --6bColor: #c9cdd4;
+}
+
+.dark {
+  .el-button.is-plain {
+    color: #FFFFFF;
+    border-color: transparent;
+    background: #333335;
+
+    &:hover {
+      background: #525461;
+    }
+
+    &:active {
+      background: #2A2A2C;
+    }
+  }
+}
+
+.el-button.is-plain {
+  color: #6B7785;
+  border-color: transparent;
+  background: #F2F3F5;
+
+  &:hover {
+    background: #E5E6E8;
+  }
+
+  &:active {
+    background: #C9CDD4;
+  }
 }
 
 .el-dialog {
