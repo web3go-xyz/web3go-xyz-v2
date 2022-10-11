@@ -1,19 +1,12 @@
 # web3go-xyz-v2
 
-## Project setup
+## app-inherit-metabase
 
-```bash
-npm install
-```
+ It contains frontend and backend code, folked from metabase-v0.44.
+ More web3go features/functionalities are developed base on it.
 
-### Compiles and hot-reloads for development
+## api-service-extend
 
-```bash
-npm run dev
-```
+ Extention api functions are developed as a standalone service.
 
-### Compiles and minifies for production
-
-```bash
-npm run build
-```
+these two applications and services have very tight relationship, and will work together to provide whole features.

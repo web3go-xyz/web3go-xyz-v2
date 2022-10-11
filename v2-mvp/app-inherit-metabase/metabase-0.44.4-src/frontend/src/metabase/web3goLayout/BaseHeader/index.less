@@ -1,0 +1,118 @@
+.web3go-layout-baseheader-component {
+    .dark .head-wrap {
+        background: #232324;
+        border-color: #232324 !important;
+
+        .search-wrap {
+            background: #313132 !important;
+
+            .icon {
+                path {
+                    stroke: #c9cdd4 !important;
+                }
+            }
+        }
+
+        .h-right {
+            .circle {
+                border: 1px solid #343435 !important;
+            }
+        }
+    }
+
+    .head-wrap {
+        border-bottom: 1px solid #e5e6e8;
+        position: sticky;
+        z-index: 2;
+        top: 0;
+        padding: 0 80px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 79px;
+        background: white;
+
+        .h-left {
+            display: flex;
+            align-items: center;
+
+            .logo {
+                margin-right: 25px;
+                height: 34px;
+            }
+
+            .search-wrap {
+                display: flex;
+                align-items: center;
+                width: 214px;
+                height: 38px;
+                background: #f2f3f5;
+                border-radius: 34px;
+                box-sizing: border-box;
+                padding: 0 12px;
+
+                .icon {
+                    flex: none;
+
+                    path {
+                        stroke: #4e5969;
+                    }
+                }
+
+                .el-autocomplete {
+                    .el-input__wrapper {
+                        background: transparent;
+                        box-shadow: none;
+                    }
+                }
+            }
+        }
+
+        .h-right {
+            display: flex;
+            align-items: center;
+
+            .link {
+                font-weight: 600;
+                font-size: 16px;
+                line-height: 24px;
+                margin-right: 32px;
+                cursor: pointer;
+
+                &:hover {
+                    color: var(--el-color-primary);
+                }
+            }
+
+            .circle {
+                cursor: pointer;
+                margin-right: 32px;
+                border: 1px solid #f8f8f8;
+                border-radius: 34px;
+                width: 32px;
+                height: 32px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                &:hover {
+                    border-color: var(--el-color-primary) !important;
+                }
+            }
+
+            .light {
+                width: 16px;
+            }
+
+            .btn {
+                width: 97px;
+                height: 44px;
+            }
+
+            .btn2 {
+                width: 93px;
+                height: 44px;
+            }
+        }
+    }
+}
