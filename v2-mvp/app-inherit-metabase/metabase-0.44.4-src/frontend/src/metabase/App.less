@@ -1,0 +1,70 @@
+.hover-item {
+    cursor: pointer;
+
+    &:hover {
+        opacity: .8;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(38, 38, 38, 0.2);
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background: #ededed;
+}
+
+.common-bread {
+    display: flex;
+    align-items: center;
+
+    color: var(--86Color);
+
+    .item {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 22px;
+
+        &.active {
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 22px;
+            color: var(--el-text-color-primary);
+        }
+    }
+
+    .split {
+        margin: 0 8px;
+    }
+}
+
+body[arco-theme="dark"] {
+    background: rgb(23, 23, 26);
+    color: white;
+}
+
+body {
+    color: #1d2129;
+    --primary-color: #615CF6;
+    font-family: "Inter", "PingFang SC",
+        "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+}
+
+button,
+input,
+textarea {
+    font-family: "Inter", "PingFang SC",
+        "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+}
+.arco-btn{
+    border-radius: 12px;
+}

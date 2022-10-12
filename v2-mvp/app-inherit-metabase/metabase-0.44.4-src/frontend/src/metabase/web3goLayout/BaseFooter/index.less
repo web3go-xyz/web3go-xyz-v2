@@ -1,0 +1,124 @@
+body[arco-theme="dark"] .web3go-layout-basefooter-component {
+    .foundation {
+        fill: white !important;
+    }
+
+    .page-footer {
+        background: #232324 !important;
+
+        .i-right {
+            .col-item {
+                .title {
+                    color: #f8f8f8 !important;
+                }
+
+                .link {
+                    color: #c8cdda !important;
+                }
+            }
+        }
+    }
+}
+
+.web3go-layout-basefooter-component {
+
+    .page-footer {
+        padding: 40px 120px;
+        height: 252px;
+        box-sizing: border-box;
+        position: relative;
+        background: #F2F3F5;
+
+        .website-info {
+            display: flex;
+            justify-content: space-between;
+
+            .i-left {
+                .il-img-wrap {
+                    display: flex;
+                    align-items: center;
+                }
+
+                .logo {
+                    img {
+                        width: 151px;
+                    }
+                }
+
+                .icons {
+                    padding-top: 12px;
+                    display: flex;
+                    align-items: center;
+
+                    img {
+                        cursor: pointer;
+
+                        &+img {
+                            margin-left: 17px;
+                        }
+
+                        height: 24px;
+
+                        &:hover {
+                            opacity: 0.8;
+                        }
+                    }
+                }
+
+                .foundation {
+                    margin-left: 50px;
+                    cursor: pointer;
+
+                    &:hover {
+                        opacity: 0.8;
+                    }
+
+                    svg {}
+                }
+
+                .gray {
+                    margin-top: 78px;
+                    font-weight: 400;
+                    font-size: 12px;
+                    color: #a3aed0;
+                }
+            }
+
+            @media screen and (max-width: 1600px) {
+                .i-right {
+                    margin-left: 6% !important;
+                }
+            }
+
+            .i-right {
+                display: flex;
+                margin-left: 20%;
+                flex: 1;
+
+                .col-item {
+                    flex: 1;
+
+                    .title {
+                        font-weight: 700;
+                        font-size: 16px;
+                        color: #1D2129;
+                        margin-bottom: 16px;
+                    }
+
+                    .link {
+                        cursor: pointer;
+                        line-height: 22px;
+                        font-weight: 400;
+                        font-size: 16px;
+                        color: #6B7785;
+                        margin-bottom: 16px;
+
+                        &:hover {
+                            opacity: 0.8;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

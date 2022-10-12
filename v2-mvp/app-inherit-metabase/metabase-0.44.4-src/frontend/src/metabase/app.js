@@ -1,7 +1,7 @@
+import "@arco-design/web-react/dist/css/index.less";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-
 // Use of classList.add and .remove in Background and FitViewPort Hocs requires
 // this polyfill so that those work in older browsers
 import "classlist-polyfill";
@@ -55,6 +55,7 @@ import { DragDropContextProvider } from "react-dnd";
 
 import GlobalStyles from "metabase/styled-components/containers/GlobalStyles";
 
+import './App.less'
 // remove trailing slash
 const BASENAME = window.MetabaseRoot.replace(/\/+$/, "");
 
@@ -70,6 +71,13 @@ const theme = {
 };
 
 function _init(reducers, getRoutes, callback) {
+
+  const defaultIsDark = localStorage.getItem('isDark');
+  if (defaultIsDark == 'true') {
+    document.body.setAttribute('arco-theme', 'dark');
+  }
+
+
   const store = getStore(reducers, browserHistory);
   const routes = getRoutes(store);
   const history = syncHistoryWithStore(browserHistory, store);

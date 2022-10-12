@@ -54,10 +54,13 @@ function checkIsSidebarInitiallyOpen() {
 export const OPEN_NAVBAR = "metabase/app/OPEN_NAVBAR";
 export const CLOSE_NAVBAR = "metabase/app/CLOSE_NAVBAR";
 export const TOGGLE_NAVBAR = "metabase/app/TOGGLE_NAVBAR";
+export const TOGGLE_DARK = "metabase/app/TOGGLE_DARK";
+
 
 export const openNavbar = createAction(OPEN_NAVBAR);
 export const closeNavbar = createAction(CLOSE_NAVBAR);
 export const toggleNavbar = createAction(TOGGLE_NAVBAR);
+export const toggleDark = createAction(TOGGLE_DARK);
 
 export function getIsNavbarOpen(state) {
   return state.app.isNavbarOpen;
@@ -71,8 +74,24 @@ const isNavbarOpen = handleActions(
   },
   checkIsSidebarInitiallyOpen(),
 );
+const defaultIsDark = localStorage.getItem('isDark');
 
+const isDark = handleActions(
+  {
+    [TOGGLE_DARK]: (state) => {
+      localStorage.setItem('isDark', !state);
+      if (!state) {
+        document.body.setAttribute('arco-theme', 'dark');
+      } else {
+        document.body.removeAttribute('arco-theme');
+      }
+      return !state
+    },
+  },
+  defaultIsDark == 'true' ? true : false,
+);
 export default combineReducers({
   errorPage,
   isNavbarOpen,
+  isDark
 });

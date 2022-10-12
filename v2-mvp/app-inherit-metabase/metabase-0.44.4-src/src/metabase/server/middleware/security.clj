@@ -51,6 +51,7 @@
                                   ["'self'"
                                    "'unsafe-eval'" ; TODO - we keep working towards removing this entirely
                                    "https://maps.google.com"
+                                   "https://fonts.googleapis.com"
                                    "https://accounts.google.com"
                                    (when (public-settings/anon-tracking-enabled)
                                      "https://www.google-analytics.com")
@@ -69,13 +70,16 @@
                                  "https://accounts.google.com"]
                   :style-src    ["'self'"
                                  "'unsafe-inline'"
-                                 "https://accounts.google.com"]
+                                 "https://accounts.google.com"
+                                 "https://fonts.googleapis.com"
+                                 ]
                   :font-src     ["*"]
                   :img-src      ["*"
                                  "'self' data:"]
                   :connect-src  ["'self'"
                                  ;; Google Identity Services
                                  "https://accounts.google.com"
+                                 "https://fonts.googleapis.com"
                                  ;; MailChimp. So people can sign up for the Metabase mailing list in the sign up process
                                  "metabase.us10.list-manage.com"
                                  ;; Google analytics

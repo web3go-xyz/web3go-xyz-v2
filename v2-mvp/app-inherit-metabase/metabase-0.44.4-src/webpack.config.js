@@ -109,7 +109,17 @@ const config = (module.exports = {
       },
       {
         test: /\.less$/,
-        use: ['style-loader', 'css-loader', 'less-loader'] //还需安装less
+        use: ['style-loader', 'css-loader', {
+          loader: 'less-loader',
+          options: {
+            lessOptions: {
+              modifyVars: {
+                'arcoblue-6': '#615CF6',
+              },
+              javascriptEnabled: true
+            }
+          },
+        }] 
       },
     ],
   },
@@ -128,6 +138,7 @@ const config = (module.exports = {
       assets: ASSETS_PATH,
       fonts: FONTS_PATH,
       metabase: SRC_PATH,
+      '@': SRC_PATH,
       "metabase-lib": LIB_SRC_PATH,
       "metabase-enterprise": ENTERPRISE_SRC_PATH,
       "metabase-types": TYPES_SRC_PATH,
