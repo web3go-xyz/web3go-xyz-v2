@@ -54,7 +54,8 @@ import HTML5Backend from "react-dnd-html5-backend";
 import { DragDropContextProvider } from "react-dnd";
 
 import GlobalStyles from "metabase/styled-components/containers/GlobalStyles";
-
+import { ConfigProvider } from '@arco-design/web-react';
+import enUS from '@arco-design/web-react/es/locale/en-US';
 import './App.less'
 // remove trailing slash
 const BASENAME = window.MetabaseRoot.replace(/\/+$/, "");
@@ -92,8 +93,10 @@ function _init(reducers, getRoutes, callback) {
       <Provider store={store} ref={ref => (root = ref)}>
         <DragDropContextProvider backend={HTML5Backend} context={{ window }}>
           <ThemeProvider theme={theme}>
-            <GlobalStyles />
-            <Router history={history}>{routes}</Router>
+            <ConfigProvider locale={enUS}>
+              <GlobalStyles />
+              <Router history={history}>{routes}</Router>
+            </ConfigProvider>
           </ThemeProvider>
         </DragDropContextProvider>
       </Provider>
