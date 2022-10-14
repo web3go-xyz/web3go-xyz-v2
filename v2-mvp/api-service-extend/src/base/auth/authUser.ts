@@ -3,11 +3,10 @@ import { ApiProperty } from "@nestjs/swagger";
 export class AuthUser {
 
     @ApiProperty({ description: '' })
-    userId!: number;
+    id!: string;
 
     @ApiProperty({ description: '' })
-    username!: string;
-
+    name!: string;
 
     @ApiProperty({ description: '' })
     token?: string;

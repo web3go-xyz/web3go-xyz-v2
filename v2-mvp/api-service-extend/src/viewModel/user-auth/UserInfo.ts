@@ -1,15 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Account } from "src/base/entity/platform-user/Account.entity";
 
-export class UserInfo {
-    @ApiProperty()
-    web3Id: string;
+export class AccountInfo extends Account {
 
-    @ApiProperty()
-    displayName: string = "";
-
-    @ApiProperty()
-    imageBase64: string = "";
-
-    @ApiProperty()
-    last_login_time: Date;
 }

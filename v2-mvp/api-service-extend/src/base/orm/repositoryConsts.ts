@@ -1,4 +1,4 @@
-import { User } from "../entity/platform-user/User.entity";
+import { Account } from "../entity/platform-user/Account.entity";
 
 export class RepositoryConsts {
 
@@ -12,7 +12,7 @@ export class RepositoryConsts {
     PLATFORM_USER_REPOSITORY: {
       provide: 'PLATFORM_USER_REPOSITORY',
       connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
-      entityTarget: User
+      entityTarget: Account
     }
   }
 }

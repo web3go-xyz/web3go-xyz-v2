@@ -8,7 +8,7 @@ module.exports = {
         env: {
             PORT: 12350,
             DB_TYPE: "postgres",
-            DB_HOST: "16.163.5.216",
+            DB_HOST: "localhost",
             DB_PORT: 5432,
             DB_USERNAME: "postgres",
             DB_PASSWORD: "Dev123!@#",

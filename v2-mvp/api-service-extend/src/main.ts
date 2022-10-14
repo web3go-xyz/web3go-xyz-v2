@@ -1,10 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { AppConfig } from './base/setting/appConfig';
 
 async function bootstrap() {
 
   console.log(`process.env:`, process.env);
+  AppConfig.initilize();
 
   const app = await NestFactory.create(AppModule);
   app.enableCors();
