@@ -267,6 +267,7 @@
     "concurrently": "yarn && concurrently --kill-others -p name",
     "dev": "yarn concurrently -n 'backend,frontend,cljs,docs' -c 'blue,green,yellow,magenta' 'clojure -M:run' 'yarn build-hot:js' 'yarn build-hot:cljs' 'yarn docs'",
     "dev-ee": "yarn concurrently -n 'backend,frontend,cljs,docs' -c 'blue,green,yellow,magenta' 'clojure -M:run:ee' 'MB_EDITION=ee yarn build-hot:js' 'MB_EDITION=ee yarn build-hot:cljs' 'yarn docs'",
+    "dev-ee-pg":"yarn concurrently -n 'backend,frontend,cljs,docs' -c 'blue,green,yellow,magenta' 'MB_DB_TYPE=postgres MB_DB_DBNAME=dev-web3go-v2-metabase MB_DB_PORT=5432 MB_DB_USER=postgres MB_DB_PASS='Dev123!@#' MB_DB_HOST=localhost clojure -M:run:ee' 'MB_EDITION=ee yarn build-hot:js' 'MB_EDITION=ee yarn build-hot:cljs' 'yarn docs'",
     "type-check": "yarn && tsc --noEmit",
     "remove-webpack-cache": "rm -rf ./node_modules/.cache",
     "lint": "yarn lint-eslint && yarn lint-prettier && yarn lint-docs-links && yarn lint-yaml && yarn type-check",

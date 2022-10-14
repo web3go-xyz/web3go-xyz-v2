@@ -14,8 +14,11 @@ sudo bash ./bin/build
 
 # start dev app
 ```
-# start dev app 
+# start dev app with h2
 sudo yarn dev-ee
+
+# start dev app with postgres database
+sudo yarn dev-ee-pg  
 
 ```
 
@@ -55,10 +58,24 @@ yarn && yarn build
 pm2 start ecosystem.config.js
 ```
 
-run jar package
+run jar package with embeded h2 database 
 ```
  cp <metabase-src>/plugins ./
   
+ java -Xmx4g -DMB_JETTY_PORT=12345 -DMB_JETTY_HOST=0.0.0.0 -DMB_EDITION=ee -DMETASTORE_DEV_SERVER_URL=http://localhost:12346 -jar metabase.jar
+ 
+```
+
+run jar package with postgres database
+```
+ cp <metabase-src>/plugins ./  
+
+ export MB_DB_TYPE=postgres
+ export MB_DB_DBNAME=dev-web3go-v2-metabase
+ export MB_DB_PORT=5432
+ export MB_DB_USER=postgres
+ export MB_DB_PASS='Dev123!@#'
+ export MB_DB_HOST=localhost
  java -Xmx4g -DMB_JETTY_PORT=12345 -DMB_JETTY_HOST=0.0.0.0 -DMB_EDITION=ee -DMETASTORE_DEV_SERVER_URL=http://localhost:12346 -jar metabase.jar
  
 ```
