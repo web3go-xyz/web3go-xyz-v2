@@ -1,126 +1,96 @@
-body[arco-theme="dark"] .web3go-layout-baseheader-component {
-    .head-wrap {
-        background: #232324;
-        border-color: #232324 !important;
-
-        .search-wrap {
-            background: #313132 !important;
-
-            .icon {
-                path {
-                    stroke: #c9cdd4 !important;
-                }
-            }
-        }
-
-        .h-right {
-            .circle {
-                border: 1px solid #1a1a9b !important;
-
-                &:hover {
-                    border-color: var(--primary-color) !important;
-                }
-            }
+body[arco-theme="dark"] .dialot-content {
+    .wallet-wrap {
+        .item {
+            background: #343435 !important;
         }
     }
 }
 
-.web3go-layout-baseheader-component {
-    .head-wrap {
-        border-bottom: 1px solid #e5e6e8;
-        position: sticky;
-        z-index: 2;
-        top: 0;
-        padding: 0 80px;
+.dialot-content {
+    padding-bottom: 40px;
+
+    .subtitle {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 22px;
+        color: var(--6bColor);
+        margin-bottom: 32px;
+    }
+
+    .link-wrap {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        height: 79px;
-        background: white;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 22px;
 
-        .h-left {
-            display: flex;
-            align-items: center;
+        &.center {
+            justify-content: center;
+        }
 
-            .logo {
-                cursor: pointer;
-                margin-right: 25px;
-                height: 34px;
-            }
+        .left {
+            color: var(--6bColor);
 
-            .search-wrap {
-                display: flex;
-                align-items: center;
-                width: 214px;
-                height: 38px;
-                background: #f2f3f5;
-                border-radius: 34px;
-                box-sizing: border-box;
-                padding: 0 12px;
-
-                .icon {
-                    flex: none;
-
-                    path {
-                        stroke: #4e5969;
-                    }
-                }
-
-                .arco-autocomplete {
-                    .arco-input-inner-wrapper {
-                        background: transparent;
-                        box-shadow: none;
-                        border:0;
-                    }
-                }
+            .a {
+                color: var(--primary-color);
             }
         }
 
-        .h-right {
+        .right {}
+    }
+
+    .btn-wrap {
+        margin-top: 32px;
+
+        .btn {
+            width: 100%;
+            height: 48px;
+        }
+    }
+
+    .split-wrap {
+        margin-top: 32px;
+        display: flex;
+        align-items: center;
+
+        .split {
+            flex: 1;
+            height: 1px;
+            background: #373739;
+        }
+
+        span {
+            margin: 0 15px;
+            flex: none;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 22px;
+            color: var(--6bColor);
+        }
+    }
+
+    .wallet-wrap {
+        margin-top: 32px;
+        display: flex;
+        justify-content: center;
+
+        .item {
+            margin: 0 6px;
+            width: 84px;
+            height: 56px;
             display: flex;
             align-items: center;
+            background: #f2f3f5;
+            border-radius: 12px;
+            justify-content: center;
 
-            .a {
-                font-weight: 600;
-                font-size: 16px;
-                line-height: 24px;
-                margin-right: 32px;
-                cursor: pointer;
+            img {
+                height: 24px;
 
-                &:hover {
-                    color: var(--primary-color);
+                &.white {
+                    height: 40px;
                 }
-            }
-
-            .circle {
-                cursor: pointer;
-                margin-right: 32px;
-                border: 1px solid #f8f8f8;
-                border-radius: 34px;
-                width: 32px;
-                height: 32px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-
-                &:hover {
-                    border-color: var(--primary-color);
-                }
-            }
-
-            .light {
-                width: 16px;
-            }
-
-            .btn {
-                width: 97px;
-                height: 44px;
-            }
-
-            .btn2 {
-                margin-left: 12px;
-                width: 93px;
-                height: 44px;
             }
         }
     }

@@ -16,6 +16,7 @@ import App from "metabase/App.tsx";
 import ActivityApp from "metabase/home/containers/ActivityApp";
 // web3go
 import web3goLayout from "metabase/web3goLayout";
+import AccountSetting from "metabase/web3goLayout/AccountSetting";
 
 // auth containers
 import ForgotPasswordApp from "metabase/auth/containers/ForgotPasswordApp";
@@ -205,7 +206,14 @@ export const getRoutes = store => (
           <Route
             path="/layout"
             component={web3goLayout}
-          />
+          >
+            <IndexRedirect to="accountSetting" />
+            <Route
+              path="accountSetting"
+              component={AccountSetting}
+            >
+            </Route>
+          </Route>
         </Route>
         <Route
           path="/home"

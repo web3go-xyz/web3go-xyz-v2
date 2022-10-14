@@ -27,8 +27,7 @@ class Component extends React.Component {
         this.props.push('/');
     }
     goSignIn = () => {
-        console.log('111', this.SignInOrUpRef);
-        this.SignInOrUpRef.init();
+        this.SignInOrUpRef.init(true);
     }
     goForgetPsd = () => {
 
@@ -100,7 +99,7 @@ class Component extends React.Component {
                         <Button className="btn2" type='secondary' onClick={this.goSignIn}>Sign In</Button>
                     </div>
                     <SignInOrUp
-                        ref={this.SignInOrUpRef}
+                        onRef={(ref) => this.SignInOrUpRef = ref}
                         goForgetPsd={this.goForgetPsd}
                         connectMetaMask={this.connectMetaMask}
                     ></SignInOrUp>

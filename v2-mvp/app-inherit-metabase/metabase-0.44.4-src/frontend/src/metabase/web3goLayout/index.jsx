@@ -14,14 +14,10 @@ class Component extends React.Component {
     render() {
         return (<div className="web3go-layout-page">
             <BaseHeader />
-            {/* <div class="container-content">
-                    <div class="content">
-                        <router-view></router-view>
-                    </div>
-            </div> 
-            */}
-            <div className="container-content">
-                <div className="content"></div>
+            <div class="container-content">
+                <div class="content">
+                    {this.props.children}
+                </div>
             </div>
             <BaseFooter />
         </div>)

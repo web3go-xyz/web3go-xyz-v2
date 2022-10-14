@@ -1,0 +1,270 @@
+body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
+    .nav-list .item {
+        background: #2a2a2c !important;
+    }
+
+    .email-list {
+        .email {
+            background: #202023 !important;
+        }
+    }
+
+    .wallet-list {
+        .item {
+            background: #202023 !important;
+        }
+    }
+
+    .form .split {
+        background: #272e3b !important;
+    }
+}
+
+.web3go-layout-AccountSetting-page {
+    width: 100%;
+    padding: 20px 120px;
+
+    .page-main {
+        padding-top: 19px;
+        display: flex;
+
+        .nav {
+            flex: none;
+
+            .n-title {
+                font-weight: 400;
+                font-size: 14px;
+                line-height: 22px;
+                width: 183px;
+                height: 44px;
+                display: flex;
+                align-items: center;
+                padding: 0 24px;
+                color: var(--6bColor);
+            }
+
+            .nav-list {
+                .item {
+                    width: 183px;
+                    height: 44px;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 24px;
+                    background: #f2f3f5;
+                    border-radius: 12px;
+                    font-weight: 600;
+                    font-size: 14px;
+                    line-height: 22px;
+                }
+            }
+        }
+
+        .pm-right {
+            margin-left: 71px;
+            flex: 1;
+
+            .banner {
+                position: relative;
+                background-image: url(../assets/account/banner.png);
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: center;
+                height: 100px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding: 0 48px;
+                border-radius: 40px 8px 8px 8px;
+
+                .avatar {
+                    position: absolute;
+                    left: 16px;
+                    bottom: -80px;
+
+                    img {
+                        width: 116px;
+                        height: 116px;
+                    }
+                }
+
+                .text {
+                    font-weight: 600;
+                    font-size: 20px;
+                    line-height: 28px;
+                    width: 246px;
+                    color: #e6e7f0;
+                }
+            }
+
+            .form {
+                // width: 540px;
+                padding-left: 155px;
+                padding-top: 14px;
+
+                .arco-form-item-control-children {
+                    width: 540px;
+                }
+
+                .name {
+                    font-weight: 600;
+                    font-size: 24px;
+                    line-height: 32px;
+                }
+
+                .id {
+                    color: var(--6bColor);
+                    font-weight: 400;
+                    font-size: 14px;
+                    line-height: 22px;
+                    margin-bottom: 32px;
+                }
+
+                .nickname-row {
+                    .arco-form-item-control-children {
+                        display: flex;
+                        align-items: center;
+                        .el-input {
+                            flex: 1;
+                        }
+
+                        img {
+                            width: 24px;
+                            margin-left: 12px;
+                        }
+                    }
+                }
+
+                .form-item {
+                    .label {
+                        font-weight: 400;
+                        font-size: 14px;
+                        line-height: 22px;
+                        margin-bottom: 12px;
+                        color: var(--4eColor);
+                    }
+
+                    .value {
+                        display: flex;
+                        align-items: center;
+
+                        img {
+                            width: 48px;
+                            height: 48px;
+                            border-radius: 50%;
+                            margin-right: 20px;
+                        }
+
+                        .arco-btn {
+                            width: 100px;
+                            height: 44px;
+                            margin-right: 8px;
+                        }
+
+                        .tip {
+                            color: var(--86Color);
+                            font-weight: 400;
+                            font-size: 12px;
+                            line-height: 20px;
+                        }
+                    }
+
+                    .add-email {
+                        width: 119px;
+                        height: 48px;
+                        display: flex;
+                        align-items: center;
+                        img {
+                            width: 16px;
+                            margin-right: 4px;
+                        }
+                    }
+
+                    .add-more {
+                        display: flex;
+                        align-items: center;
+                        margin-top: 15px;
+
+                        .icon {
+                            width: 16px;
+                            margin-right: 4px;
+                        }
+
+                        span {
+                            color: var(--primary-color);
+                            font-weight: 600;
+                            font-size: 14px;
+                            line-height: 22px;
+                        }
+                    }
+
+                    .email-list {
+                        .item {
+                            display: flex;
+                            align-items: center;
+
+                            .email {
+                                box-sizing: border-box;
+                                width: 504px;
+                                height: 48px;
+                                line-height: 48px;
+                                padding-left: 12px;
+                                background: #f7f8fa;
+                                border-radius: 12px;
+                                font-weight: 400;
+                                font-size: 14px;
+                                color: var(--c9Color);
+                            }
+
+                            .a {
+                                margin-left: 12px;
+                                width: 24px;
+                            }
+                        }
+                    }
+
+                    .wallet-list {
+                        .item {
+                            width: 540px;
+                            height: 77px;
+                            box-sizing: border-box;
+                            display: flex;
+                            align-items: center;
+                            background: #f7f8fa;
+                            border-radius: 12px;
+
+                            &+.item {
+                                margin-top: 12px;
+                            }
+
+                            .icon {
+                                margin-left: 12px;
+                                width: 40px;
+                            }
+
+                            .address {
+                                margin-left: 8px;
+                                margin-right: 16px;
+                                font-weight: 400;
+                                font-size: 14px;
+                                line-height: 22px;
+                                color: var(--c9Color);
+                            }
+
+                            .a {
+                                width: 24px;
+                            }
+                        }
+                    }
+                }
+
+                .split {
+                    width: 100%;
+                    height: 1px;
+                    background: #e5e6e8;
+                    margin: 24px 0;
+                }
+            }
+        }
+    }
+
+}
