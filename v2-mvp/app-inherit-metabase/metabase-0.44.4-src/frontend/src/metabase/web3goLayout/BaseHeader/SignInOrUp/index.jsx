@@ -34,7 +34,7 @@ class Component extends React.Component {
             visible: true,
             isSignIn: isSignIn
         });
-        // this.clearForm();
+        this.clearForm();
     }
     connectMetaMask = () => {
         this.setState({
@@ -49,14 +49,7 @@ class Component extends React.Component {
         this.props.goForgetPsd();
     }
     clearForm = () => {
-        this.form = {
-            nickname: "",
-            email: "",
-            password: "",
-        };
-        this.$nextTick(() => {
-            this.$refs.form.clearValidate();
-        });
+        this.formRef.current.resetFields();
     }
     sure = () => {
         this.formRef.current.validate().then(() => {

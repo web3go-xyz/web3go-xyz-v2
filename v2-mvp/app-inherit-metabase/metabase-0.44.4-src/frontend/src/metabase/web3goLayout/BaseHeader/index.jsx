@@ -6,6 +6,10 @@ import { Button, AutoComplete } from '@arco-design/web-react';
 import { toggleDark } from "metabase/redux/app";
 import { push } from "react-router-redux";
 import SignInOrUp from './SignInOrUp';
+import ForgetPsd from './ForgetPsd';
+import ResetPsd from './ResetPsd';
+import ConnectWallet from './ConnectWallet';
+
 const mapStateToProps = state => {
     return {
         isDark: state.app.isDark
@@ -22,6 +26,10 @@ class Component extends React.Component {
             autoCompleteList: []
         }
         this.SignInOrUpRef = React.createRef();
+        this.ForgetPsdRef = React.createRef();
+        this.ResetPsdRef = React.createRef();
+        this.ConnectWalletRef = React.createRef();
+
     }
     goLayout = () => {
         this.props.push('/');
@@ -30,10 +38,13 @@ class Component extends React.Component {
         this.SignInOrUpRef.init(true);
     }
     goForgetPsd = () => {
-
+        this.ForgetPsdRef.init();
+    }
+    goResetPsd = () => {
+        this.ResetPsdRef.init();
     }
     connectMetaMask = () => {
-
+        this.$refs.connectWallet.connectMetaMask();
     }
     render() {
         return (
@@ -103,13 +114,14 @@ class Component extends React.Component {
                         goForgetPsd={this.goForgetPsd}
                         connectMetaMask={this.connectMetaMask}
                     ></SignInOrUp>
-                    {/* <ForgetPsd
-      ref="forgetPsd"
-      @goSignIn="goSignIn"
-      @goResetPsd="goResetPsd"
-    ></ForgetPsd>
-    <ResetPsd ref="resetPsd"></ResetPsd>
-    <ConnectWallet ref="connectWallet"></ConnectWallet>  */}
+                    <ForgetPsd
+                        onRef={(ref) => this.ForgetPsdRef = ref}
+                        goSignIn={this.goSignIn}
+                        goResetPsd={this.goResetPsd}
+                    ></ForgetPsd>
+                    <ResetPsd onRef={(ref) => this.ResetPsdRef = ref}></ResetPsd>
+
+                    <ConnectWallet onRef={(ref) => this.ConnectWalletRef = ref}></ConnectWallet>
                 </div>
             </div >
         )
