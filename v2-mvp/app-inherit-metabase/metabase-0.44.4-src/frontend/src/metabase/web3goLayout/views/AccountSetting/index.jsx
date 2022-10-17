@@ -2,8 +2,10 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Upload } from '@arco-design/web-react';
 import { push } from "react-router-redux";
+import Cropper from "react-cropper";
+import "cropperjs/dist/cropper.css";
 
 const mapStateToProps = state => {
     return {
@@ -19,11 +21,47 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            visible: false,
             walletList: [],
             emailList: [],
+            img: '',
+            cropper: null,
         }
     }
-
+    copperSure = () => {
+        if (this.state.cropper) {
+            this.state.cropper.getCroppedCanvas().toBlob((blob) => {
+                const formData = new FormData();
+              
+                // Pass the image file name as the third parameter if necessary.
+                formData.append('croppedImage', blob/*, 'example.png' */);
+              
+                // Use `jQuery.ajax` method for example
+                // $.ajax('/path/to/upload', {
+                //   method: 'POST',
+                //   data: formData,
+                //   processData: false,
+                //   contentType: false,
+                //   success() {
+                //     console.log('Upload success');
+                //   },
+                //   error() {
+                //     console.log('Upload error');
+                //   },
+                // });
+              }/*, 'image/png' */);
+        }
+    }
+    fileChange = (files) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.setState({
+                visible: true,
+                img: reader.result
+            });
+        };
+        reader.readAsDataURL(files[0].originFile);
+    }
     render() {
         return (
             <div className="web3go-layout-AccountSetting-page">
@@ -74,15 +112,10 @@ class Component extends React.Component {
                                 <div className="label">Avatar</div>
                                 <div className="value">
                                     <img src={require("@/web3goLayout/assets/account/Avatar.png")} alt="" />
-                                    {/* <el-upload
-                                        v-model:file-list="fileList"
-                                        className="upload"
-                                        action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-                :limit="1"
-              >
-                                    <Button plain>Change</Button>
-                                </el-upload> */}
-                                    <Button type='secondary' onClick={this.changeAvatar}>Change</Button>
+
+                                    <Upload action='/' showUploadList={false} autoUpload={false} onChange={this.fileChange}>
+                                        <Button>Change</Button>
+                                    </Upload>
                                     <span className="tip">JPG or PNG. Max size is 1MB</span>
                                 </div>
                             </div>
@@ -185,6 +218,39 @@ class Component extends React.Component {
                         </Form>
                     </div >
                 </div >
+                <Modal
+                    style={{ width: '800px' }}
+                    title='Upload Avatar'
+                    visible={this.state.visible}
+                    onCancel={() => this.setState({ visible: false })}
+                    footer={null}
+                >
+                    <div className="web3go-account-setting-avatar-modal">
+                        <Cropper
+                            style={{ height: 400, width: '100%' }}
+                            zoomTo={0.5}
+                            initialAspectRatio={1}
+                            preview="#avatar-preview"
+                            src={this.state.img}
+                            viewMode={1}
+                            minCropBoxHeight={10}
+                            minCropBoxWidth={10}
+                            background={false}
+                            responsive={true}
+                            autoCropArea={1}
+                            aspectRatio={1}
+                            checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
+                            onInitialized={(instance) => {
+                                this.setState({ cropper: instance });
+                            }}
+                            guides={true}
+                        />
+                        <div id="avatar-preview"></div>
+                        <div className="btn-wrap">
+                            <Button className="btn" type="primary" onClick={this.copperSure}>Sure</Button>
+                        </div >
+                    </div >
+                </Modal >
             </div >
         )
     }

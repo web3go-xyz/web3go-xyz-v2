@@ -1,15 +1,10 @@
-body[arco-theme="dark"] .web3go-signin-modal-content {
-    .wallet-wrap {
-        .item {
-            background: #343435 !important;
-        }
-    }
-}
+body[arco-theme="dark"] .web3go-forgetpsd-modal-content {}
 
-.web3go-signin-modal-content {
+.web3go-forgetpsd-modal-content {
     padding-bottom: 40px;
 
     .subtitle {
+        word-break: initial;
         font-weight: 400;
         font-size: 14px;
         line-height: 22px;
@@ -17,7 +12,31 @@ body[arco-theme="dark"] .web3go-signin-modal-content {
         margin-bottom: 32px;
     }
 
+    .email-row {
+        .arco-form-item-control-children{
+            display: flex;
+            align-items: center;
+            .el-input {
+                flex: 1;
+            }
+
+            .btn {
+                font-weight: 600;
+                font-size: 14px;
+                line-height: 22px;
+                flex: none;
+                margin-left: 12px;
+                color: var(--primary-color);
+
+                &.disabled {
+                    color: var(--6bColor);
+                }
+            }
+        }
+    }
+
     .link-wrap {
+        margin-top: 24px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -31,17 +50,15 @@ body[arco-theme="dark"] .web3go-signin-modal-content {
 
         .left {
             color: var(--6bColor);
-
-            .a {
-                color: var(--primary-color);
-            }
         }
 
-        .right {}
+        .a {
+            color: var(--primary-color);
+        }
     }
 
     .btn-wrap {
-        margin-top: 32px;
+        margin-top: 12px;
 
         .btn {
             width: 100%;
@@ -69,29 +86,5 @@ body[arco-theme="dark"] .web3go-signin-modal-content {
             color: var(--6bColor);
         }
     }
-
-    .wallet-wrap {
-        margin-top: 32px;
-        display: flex;
-        justify-content: center;
-
-        .item {
-            margin: 0 6px;
-            width: 84px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            background: #f2f3f5;
-            border-radius: 12px;
-            justify-content: center;
-
-            img {
-                height: 24px;
-
-                &.white {
-                    height: 40px;
-                }
-            }
-        }
-    }
+ 
 }

@@ -1,0 +1,96 @@
+body[arco-theme="dark"] .web3go-connectWallet-modal-content {
+    .section .list .item {
+        background: #343435 !important;
+    }
+}
+
+.web3go-connectWallet-modal-content {
+    padding-bottom: 40px;
+    padding-top: 20px;
+
+    .btn-wrap {
+        margin-top: 32px;
+
+        .btn {
+            width: 100%;
+            height: 48px;
+        }
+    }
+
+
+    .section {
+        &+.section {
+            margin-top: 24px;
+        }
+
+        .section-title {
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 22px;
+        }
+
+        .list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 12px;
+            margin-top: 12px;
+
+            .item {
+                width: 139px;
+                height: 80px;
+                box-sizing: border-box;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                border-radius: 12px;
+                border: 2px solid transparent;
+                background: #F2F3F5;
+
+                &.active {
+                    border: 2px solid var(--primary-color);
+                }
+
+                .img-wrap {
+                    img {
+                        height: 24px;
+
+                    }
+                }
+
+                .text {
+                    font-weight: 600;
+                    font-size: 14px;
+                    line-height: 22px;
+                }
+
+                .flex {
+                    display: flex;
+
+                    .right {
+                        margin-left: 5px;
+
+                        .name {
+                            font-weight: 600;
+                            font-size: 14px;
+                            line-height: 22px;
+                            max-width: 100px;
+                            overflow: hidden;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;
+                        }
+
+                        .address {
+                            font-weight: 400;
+                            font-size: 12px;
+                            line-height: 20px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+
+}

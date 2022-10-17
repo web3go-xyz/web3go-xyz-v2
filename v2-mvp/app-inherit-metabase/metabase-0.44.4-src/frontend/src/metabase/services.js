@@ -10,6 +10,10 @@ const embedBase = IS_EMBED_PREVIEW ? "/api/preview_embed" : "/api/embed";
 
 import getGAMetadata from "promise-loader?global!metabase/lib/ga-metadata"; // eslint-disable-line import/default
 
+export const LayoutLoginApi = {
+  login: GET(" http://localhost:12346/api/v2/user/auth/sso"),
+};
+
 export const ActivityApi = {
   list: GET("/api/activity"),
   recent_views: GET("/api/activity/recent_views"),
