@@ -1,3 +1,7 @@
+import { AccountEmail } from "../entity/platform-user/Account-Email.entity";
+import { AccountSocial } from "../entity/platform-user/Account-Social.entity";
+import { AccountVerifyCode } from "../entity/platform-user/Account-VerifyCode.entity";
+import { AccountWallet } from "../entity/platform-user/Account-Wallet.entity";
 import { Account } from "../entity/platform-user/Account.entity";
 
 export class RepositoryConsts {
@@ -9,10 +13,30 @@ export class RepositoryConsts {
     'DATABASE_CONNECTION_METABASE';
 
   public static REPOSITORYS_PLATFORM = {
-    PLATFORM_USER_REPOSITORY: {
-      provide: 'PLATFORM_USER_REPOSITORY',
+    PLATFORM_ACCOUNT_REPOSITORY: {
+      provide: 'PLATFORM_ACCOUNT_REPOSITORY',
       connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
       entityTarget: Account
+    },
+    PLATFORM_ACCOUNT_EMAIL_REPOSITORY: {
+      provide: 'PLATFORM_ACCOUNT_EMAIL_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: AccountEmail
+    },
+    PLATFORM_ACCOUNT_WALLET_REPOSITORY: {
+      provide: 'PLATFORM_ACCOUNT_WALLET_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: AccountWallet
+    },
+    PLATFORM_ACCOUNT_SOCIAL_REPOSITORY: {
+      provide: 'PLATFORM_ACCOUNT_SOCIAL_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: AccountSocial
+    },
+    PLATFORM_ACCOUNT_VERIFYCODE_REPOSITORY: {
+      provide: 'PLATFORM_ACCOUNT_VERIFYCODE_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: AccountVerifyCode
     }
   }
 }

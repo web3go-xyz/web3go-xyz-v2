@@ -1,8 +1,8 @@
 import { Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthUser } from 'src/base/auth/authUser';
-import { JwtAuthGuard } from 'src/base/auth/JwtAuthGuard';
-import { AccountInfo } from 'src/viewModel/user-auth/UserInfo';
+import { JwtAuthGuard } from 'src/base/auth/JwtAuthGuard'; 
+import { AccountInfo } from 'src/viewModel/user-auth/AccountInfo';
 import { AccountInfoService } from './account-info.service';
 
 @ApiBearerAuth()

@@ -10,16 +10,13 @@ import repositoryProviders_platform from 'src/base/orm/repository.provider.v2';
 import { AccountAuthService } from './account-auth.service';
 import { AccountAuthController } from './account-auth.controller';
 
-const authServiceProvider = {
-  provide: 'LOCAL_AUTH_SERVICE',
-  useExisting: AccountAuthService,
-};
+
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
       secret: JWTConfig.secret,
-      signOptions: { expiresIn: JWTConfig.expiresIn },
+      signOptions: { expiresIn: JWTConfig.expiresInSeconds },
     })
   ],
   controllers: [AccountAuthController],
@@ -27,8 +24,6 @@ const authServiceProvider = {
     ...databaseProviders_platform,
     ...repositoryProviders_platform,
     AccountAuthService,
-    authServiceProvider,
-    LocalStrategy,
     JwtStrategy
   ],
 })

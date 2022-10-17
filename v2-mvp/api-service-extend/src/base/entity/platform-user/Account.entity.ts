@@ -13,7 +13,7 @@ export class Account {
 
     @ApiProperty()
     @Column({
-        comment: 'web3 id defined, will used as DID, default value will be Web3Go<userId>, user can mint their own ID later.',
+        comment: 'web3 id defined, will used as DID, default value will be Web3Go<number>, user can mint their own ID later.',
         name: 'web3_id',
         nullable: false
     })

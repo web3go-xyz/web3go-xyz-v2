@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class AccountEmailVerify {
+export class AccountVerifyCode {
     @ApiProperty()
     @PrimaryGeneratedColumn({
         type: 'bigint', comment: '',
@@ -11,10 +11,24 @@ export class AccountEmailVerify {
 
     @ApiProperty()
     @Column({
-        comment: '',
+        comment: 'verify type, support: email,discord,telegram,etc.',
         nullable: false
     })
-    email: string;
+    verifyType: string;
+
+    @ApiProperty()
+    @Column({
+        comment: 'verify purpose, support: account,resetPassword,etc.',
+        nullable: false
+    })
+    purpose: string;
+
+    @ApiProperty()
+    @Column({
+        comment: 'key, the value can be: email, discord name, telegram name,etc.',
+        nullable: false
+    })
+    verifyKey: string;
 
     @ApiProperty()
     @Column({

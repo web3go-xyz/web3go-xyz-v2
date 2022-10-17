@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class UserSigninRequest {
+export class AccountSigninRequest {
     @ApiProperty({ description: 'email as login name' })
-    username: string = "";
+    email: string = "";
 
     @ApiProperty()
     password: string = "";

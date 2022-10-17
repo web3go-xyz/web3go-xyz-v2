@@ -16,7 +16,7 @@ import { AccountInfoController } from './account-info.controller';
     PassportModule,
     JwtModule.register({
       secret: JWTConfig.secret,
-      signOptions: { expiresIn: JWTConfig.expiresIn },
+      signOptions: { expiresIn: JWTConfig.expiresInSeconds },
     })
   ],
   controllers: [AccountInfoController],
