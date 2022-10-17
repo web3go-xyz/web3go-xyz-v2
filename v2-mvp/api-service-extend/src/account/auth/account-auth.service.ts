@@ -10,7 +10,6 @@ import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { AccountEmail } from 'src/base/entity/platform-user/Account-Email.entity';
 import { AccountWallet } from 'src/base/entity/platform-user/Account-Wallet.entity';
 import { AccountVerifyCode } from 'src/base/entity/platform-user/Account-VerifyCode.entity';
-import JWTConfig from 'src/base/auth/config';
 import { AccountSignupRequest } from 'src/viewModel/user-auth/AccountSignupRequest';
 import { AccountInfo } from 'src/viewModel/user-auth/AccountInfo';
 
@@ -22,7 +21,7 @@ import { VerifyCodeRequest } from 'src/viewModel/user-auth/VerifyCodeRequest';
 import { ChangePasswordRequest } from 'src/viewModel/user-auth/ChangePasswordRequest';
 import { AccountSigninRequest } from 'src/viewModel/user-auth/AccountSigninRequest';
 
-
+const escape = require('escape-html');
 const md5 = require('js-md5');
 
 export class AccountSearchResult {
@@ -278,7 +277,7 @@ export class AccountAuthService implements IAuthService {
       await this.accountVerifyCodeRepository.save(newCode);
 
       //send verfication code by email
-      await this.sendEmail(request.verifyCodePurpose, findAccount.nickName, request.email, newCode.code);
+      await this.sendEmail(request.email, "Verification mail from web3go.xyz", this.generateEmailContent4VerifyCode(request.verifyCodePurpose, request.email, findAccount, newCode));
 
       return true;
     }
@@ -295,14 +294,25 @@ export class AccountAuthService implements IAuthService {
     });
   }
 
-  sendEmail(purpose: VerifyCodePurpose, displayName: string, email: string, code: string) {
+  sendEmail(email: string, subject: string, html: string) {
     let mailer = new Mailer();
     mailer.send({
       to: email,
-      subject: 'Verification mail from web3go.xyz',
-      html: `<p> hi ${displayName}, <br>your are processing ${purpose}, below is the verification code:<br><h1>${code}</h1><br> sent by web3go.xyz</p>`
+      subject: subject,
+      html: html
     });
     return "email sent success";
+  }
+  generateEmailContent4VerifyCode(purpose: VerifyCodePurpose, email: string, account: Account, code: AccountVerifyCode) {
+
+    let url = (process.env.BASE_API_URL || 'http://localhost:12350') + `/api/v2/account/auth/verifyCode?accountId=${account.accountId}&email=${escape(email)}&code=${code.code}&verifyCodePurpose=${purpose}`;
+    let html = `<p> hi ${account.nickName}, </p>
+    <p>your are processing ${purpose}, below is the verification code:</p>
+    <h3>${code.code}</h3>
+     <p>please click the button below to verify:</p>
+     <div><a href="${url}" target="_blank" style="font-size:24px;">verify</a></div>`;
+    this.logger.debug(`generateEmailContent4VerifyCode:${html}`);
+    return html;
   }
 
   generateVerifyCode(codeLength: number): string {
@@ -316,6 +326,7 @@ export class AccountAuthService implements IAuthService {
   }
 
   async verifyCode(request: VerifyCodeRequest, clearAfterVerifiedSuccess: boolean = true): Promise<boolean> {
+    this.logger.debug(`verify code:${JSON.stringify(request)}`);
     let findCode = await this.accountVerifyCodeRepository.findOne({
       where: {
         accountId: request.accountId,

@@ -1,16 +1,14 @@
 import { BadRequestException, Get, Query } from '@nestjs/common';
-import { Response } from '@nestjs/common';
-import { Body, Controller, Post, Request } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthUser } from 'src/base/auth/authUser';
-import { Account } from 'src/base/entity/platform-user/Account.entity';
+import { VerifyCodePurpose } from 'src/base/entity/platform-user/VerifyCodeType';
 import { W3Logger } from 'src/base/log/logger.service';
 import { AccountInfo } from 'src/viewModel/user-auth/AccountInfo';
 import { AccountSigninRequest } from 'src/viewModel/user-auth/AccountSigninRequest';
 import { AccountSignupRequest } from 'src/viewModel/user-auth/AccountSignupRequest';
 import { ChangePasswordRequest } from 'src/viewModel/user-auth/ChangePasswordRequest';
 import { EmailVerifyRequest } from 'src/viewModel/user-auth/EmailVerifyRequest';
-import { VerifyCodeRequest } from 'src/viewModel/user-auth/VerifyCodeRequest';
 import { AccountAuthService, AccountSearchResult, } from './account-auth.service';
 
 
@@ -46,11 +44,21 @@ export class AccountAuthController {
     return await this.accountAuthService.sendVerifyEmail(request);
   }
 
-  @Post('/verifyCode')
+  @Get('/verifyCode')
   @ApiOperation({ summary: '[Web2] verify code if valid' })
   @ApiOkResponse({ type: Boolean })
-  async verifyCode(@Body() request: VerifyCodeRequest): Promise<boolean> {
-    return await this.accountAuthService.verifyCode(request);
+  async verifyCode(@Query('accountId') accountId: string,
+    @Query('email') email: string,
+    @Query('code') code: string,
+    @Query('verifyCodePurpose') verifyCodePurpose: string,
+  ): Promise<boolean> {
+
+    return await this.accountAuthService.verifyCode({
+      accountId: accountId,
+      email: email,
+      code: code,
+      verifyCodePurpose: verifyCodePurpose as VerifyCodePurpose
+    });
   }
 
   @Post('/changePassword')
