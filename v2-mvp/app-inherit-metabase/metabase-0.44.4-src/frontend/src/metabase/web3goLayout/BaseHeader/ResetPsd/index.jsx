@@ -31,8 +31,9 @@ class Component extends React.Component {
     init = () => {
         this.setState({
             visible: true,
+        }, () => {
+            this.clearForm();
         });
-        this.clearForm();
     }
 
     goHome = () => {
@@ -43,7 +44,9 @@ class Component extends React.Component {
     }
 
     clearForm = () => {
-        this.formRef.current.resetFields();
+        if (this.formRef.current) {
+            this.formRef.current.resetFields();
+        }
     }
     sure = () => {
         this.formRef.current.validate().then(() => {

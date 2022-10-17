@@ -33,14 +33,21 @@ class Component extends React.Component {
         this.setState({
             visible: true,
             isSignIn: isSignIn
+        }, () => {
+            this.clearForm();
         });
-        this.clearForm();
     }
     connectMetaMask = () => {
         this.setState({
             visible: false,
         });
         this.props.connectMetaMask();
+    }
+    connectPolkadot = () => {
+        this.setState({
+            visible: false,
+        });
+        this.props.connectPolkadot();
     }
     goForgetPsd = () => {
         this.setState({
@@ -49,7 +56,9 @@ class Component extends React.Component {
         this.props.goForgetPsd();
     }
     clearForm = () => {
-        this.formRef.current.resetFields();
+        if (this.formRef.current) {
+            this.formRef.current.resetFields();
+        }
     }
     sure = () => {
         this.formRef.current.validate().then(() => {
@@ -126,7 +135,7 @@ class Component extends React.Component {
                                 alt=""
                             /> : <img className="white" src={require('@/web3goLayout/assets/account/metamask.png')} alt="" />}
                         </div>
-                        <div className="item hover-item">
+                        <div className="item hover-item" onClick={this.connectPolkadot}>
                             {this.props.isDark ? <img
                                 src={require('@/web3goLayout/assets/layout/polkadoticon.png')}
                                 alt=""

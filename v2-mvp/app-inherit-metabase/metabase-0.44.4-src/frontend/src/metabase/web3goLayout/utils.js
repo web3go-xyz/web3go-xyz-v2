@@ -1,7 +1,6 @@
 import { BigNumber } from "bignumber.js";
-import {Message } from '@arco-design/web-react';
+import { Message } from '@arco-design/web-react';
 
-import store from '../store';
 export function formatDecimals(
     amount,
     decimals
@@ -51,11 +50,3 @@ export const getAssetsFile = (url) => {
     return new URL(`../assets/${url}`, import.meta.url).href
 }
 
-export function formatTimeZone(time) {
-    const zone = store.state.timeZone;
-    if (!zone) {
-        return ''
-    }
-
-    return moment.tz(time, zone.value).format('YYYY-MM-DD HH:mm:ss UTC(Z)')
-}

@@ -44,7 +44,10 @@ class Component extends React.Component {
         this.ResetPsdRef.init();
     }
     connectMetaMask = () => {
-        this.$refs.connectWallet.connectMetaMask();
+        this.ConnectWalletRef.connectMetaMask();
+    }
+    connectPolkadot = () => {
+        this.ConnectWalletRef.connectPolkadot();
     }
     render() {
         return (
@@ -113,6 +116,8 @@ class Component extends React.Component {
                         onRef={(ref) => this.SignInOrUpRef = ref}
                         goForgetPsd={this.goForgetPsd}
                         connectMetaMask={this.connectMetaMask}
+                        connectPolkadot={this.connectPolkadot}
+                        
                     ></SignInOrUp>
                     <ForgetPsd
                         onRef={(ref) => this.ForgetPsdRef = ref}

@@ -7,9 +7,18 @@ import { toggleDark } from "metabase/redux/app";
 import { push } from "react-router-redux";
 import { position } from "tether";
 import { shorterAddress } from '@/web3goLayout/utils';
+import Web3 from "web3";
+import IdentityIcon from "@/web3goLayout/components/IdentityIcon";
+// import {
+//     web3Accounts,
+//     // web3Enable,
+//     // web3AccountsSubscribe,
+// } from "@polkadot/extension-dapp";
+let web3;
 const mapStateToProps = state => {
     return {
-        isDark: state.app.isDark
+        isDark: state.app.isDark,
+
     }
 };
 const mapDispatchToProps = {
@@ -22,7 +31,10 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            visible: true,
+            walletType: "",
+            linkLoading: false,
+            visible: false,
+            polkadotAccountList: [{}, {}],
         }
         this.formRef = React.createRef();
     }
@@ -37,7 +49,7 @@ class Component extends React.Component {
     connectMetaMask = async () => {
         // 引入web3
         this.linkLoading = true;
-        this.web3 = new Web3(ethereum);
+        web3 = new Web3(ethereum);
         try {
             await ethereum.send("eth_requestAccounts");
         } catch (error) {
@@ -45,12 +57,12 @@ class Component extends React.Component {
             this.linkLoading = false;
             return;
         }
-        this.web3.eth.getAccounts((err, accs) => {
+        web3.eth.getAccounts((err, accs) => {
             console.log("web3 accounts:", accs);
             this.ethAccountList = accs;
             if (accs.length === 0) {
                 console.error(
-                    "cannot get account, please check if Metamask has been configured？"
+                    "cannot get account, please check if Metamask has been configured?"
                 );
                 return;
             }
@@ -71,8 +83,7 @@ class Component extends React.Component {
     }
     solveAccounts = (acc) => {
         // 查询token余额
-        this.web3.eth.getBalance(acc).then((d) => {
-            debugger;
+        web3.eth.getBalance(acc).then((d) => {
             // this.linkAccount.freeBalance = this.formatWithDecimals(d).toString();
             // this.linkAccount.address = acc[0];
             const walletData = {
@@ -108,70 +119,73 @@ class Component extends React.Component {
                 onCancel={() => this.setState({ visible: false })}
                 footer={null}
             >
-                <div className="dialot-content">
+                <div className="web3go-connectWallet-modal-content">
                     <div className="section">
                         <div className="section-title">Choose Wallet</div>
                         <div className="list">
                             <div
-                                className={'item hover-item' + (walletType == 'metamask' ? ' active' : '')}
-                                onClick="connectMetaMask"
+                                className={'item hover-item' + (this.state.walletType == 'metamask' ? ' active' : '')}
+                                onClick={this.connectMetaMask}
                             >
                                 <div className="center">
                                     <div className="img-wrap">
-                                        <img src="@/assets/layout/metamaskicon.png" alt="" />
+                                        <img className="white" src={require('@/web3goLayout/assets/layout/metamaskicon.png')} alt="" />
                                     </div>
                                     <div className="text">Metamask</div>
                                 </div>
                             </div>
                             <div
-                                className={'item hover-item' + (walletType == 'polkadot' ? ' active' : '')}
+                                className={'item hover-item' + (this.state.walletType == 'polkadot' ? ' active' : '')}
                                 onClick={this.connectPolkadot}
                             >
                                 <div className="center">
                                     <div className="img-wrap">
-                                        <img src="@/assets/layout/polkadoticon.png" alt="" />
+                                        {this.props.isDark ? <img
+                                            src={require('@/web3goLayout/assets/layout/polkadoticon.png')}
+                                            alt=""
+                                        /> : <img className="white" src={require('@/web3goLayout/assets/layout/polkadoticon-b.png')} alt="" />}
                                     </div>
                                     <div className="text">Polkadot.js</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="section" v-if="walletType == 'polkadot'">
-                        <div className="section-title">Choose Account</div>
-                        <div className="list">
-                            {
-                                this.state.accounts.map((v, i) =>
-                                (
-                                    <div
-                                        key="i"
-                                        className="item hover-item"
-                                        onClick={this.selectMetaBaseAccount}
-                                    >
-                                        <div className="center flex">
-                                            {/* <IdentityIcon
-                isPolkadot
-                address="67GdmSznJLbqAX84JUY4GwYFXuEsAFQegEZCXFv1btzGbDbq"
-              ></IdentityIcon> */}
-                                            <div className="right">
-                                                <div className="name">Account-01</div>
-                                                <div className="address">
-                                                    {
-                                                        shorterAddress("67GdmSznJLbqAX84JUY4GwYFXuEsAFQegEZCXFv1btzGbDbq")
-                                                    }
+                    {this.state.walletType == 'polkadot' ? (
+                        <div className="section">
+                            <div className="section-title">Choose Account</div>
+                            <div className="list">
+                                {
+                                    this.state.accounts.map((v, i) =>
+                                    (
+                                        <div
+                                            key="i"
+                                            className="item hover-item"
+                                            onClick={this.selectMetaBaseAccount}
+                                        >
+                                            <div className="center flex">
+                                                {/* <IdentityIcon
+                                                    isPolkadot
+                                                    address="67GdmSznJLbqAX84JUY4GwYFXuEsAFQegEZCXFv1btzGbDbq"
+                                                ></IdentityIcon> */}
+                                                <div className="right">
+                                                    <div className="name">Account-01</div>
+                                                    <div className="address">
+                                                        {
+                                                            shorterAddress("67GdmSznJLbqAX84JUY4GwYFXuEsAFQegEZCXFv1btzGbDbq")
+                                                        }
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )
-                                )
-                            }
+                                    )
+                                    )
+                                }
+                            </div>
+                        </div >
+                    ) : null}
 
-                        </div>
-                    </div >
                     <div className="btn-wrap">
-                        <el-button className="btn" type="primary" onClick={this.connect}
-                        >Connect wallet</el-button
-                        >
+                        <Button className="btn" type="primary" onClick={this.connect}>Connect wallet</Button>
                     </div >
                 </div >
             </Modal >
