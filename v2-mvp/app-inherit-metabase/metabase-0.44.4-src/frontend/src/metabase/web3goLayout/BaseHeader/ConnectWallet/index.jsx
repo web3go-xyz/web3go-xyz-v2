@@ -9,11 +9,11 @@ import { position } from "tether";
 import { shorterAddress } from '@/web3goLayout/utils';
 import Web3 from "web3";
 import IdentityIcon from "@/web3goLayout/components/IdentityIcon";
-// import {
-//     web3Accounts,
-//     // web3Enable,
-//     // web3AccountsSubscribe,
-// } from "@polkadot/extension-dapp";
+import {
+    web3Accounts,
+    web3Enable,
+    // web3AccountsSubscribe,
+} from "@polkadot/extension-dapp";
 let web3;
 const mapStateToProps = state => {
     return {
@@ -31,10 +31,13 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            // connect or switch
+            ifConnect: true,
             walletType: "",
             linkLoading: false,
+            chooseWalletLoading: false,
             visible: false,
-            polkadotAccountList: [{}, {}],
+            polkadotAccountList: [],
         }
         this.formRef = React.createRef();
     }
@@ -78,9 +81,6 @@ class Component extends React.Component {
             this.solveAccounts(accs[0]);
         });
     }
-    selectMetaBaseAccount = (acc) => {
-
-    }
     solveAccounts = (acc) => {
         // 查询token余额
         web3.eth.getBalance(acc).then((d) => {
@@ -101,77 +101,101 @@ class Component extends React.Component {
         });
     }
     connectPolkadot = async () => {
+        this.setState({
+            walletType: 'polkadot'
+        });
         await web3Enable("Web3Go");
-        this.polkadotAccountList = await web3Accounts({
+        const polkadotAccountList = await web3Accounts({
             // ss58Format: ss58Format,
             accountType: ["ed25519", "sr25519", "ecdsa"],
         });
-    }
-    connect = () => {
+        console.log('polkadotAccountList', polkadotAccountList);
+        this.setState({
+            visible: true,
+            polkadotAccountList
+        });
 
+    }
+    choosePolkadotWallet = async (account) => {
+        this.setState({
+            chooseWalletLoading: true
+        });
+        // await web3Enable(`Web3Go`);
+        const walletData = {
+            walletType: "polkadot",
+            address: account.address,
+            name: account.meta.name,
+            balance: {
+                free: 0,
+                reserved: 0,
+                total: 0,
+            },
+        };
     }
     render() {
         return (
             <Modal
-                title='Connect Wallet'
+                title={this.state.ifConnect ? 'Connect Wallet' : 'Switch Wallet'}
                 visible={this.state.visible}
                 onOk={() => this.setState({ visible: false })}
                 onCancel={() => this.setState({ visible: false })}
                 footer={null}
             >
                 <div className="web3go-connectWallet-modal-content">
-                    <div className="section">
-                        <div className="section-title">Choose Wallet</div>
-                        <div className="list">
-                            <div
-                                className={'item hover-item' + (this.state.walletType == 'metamask' ? ' active' : '')}
-                                onClick={this.connectMetaMask}
-                            >
-                                <div className="center">
-                                    <div className="img-wrap">
-                                        <img className="white" src={require('@/web3goLayout/assets/layout/metamaskicon.png')} alt="" />
+                    {this.state.ifConnect ? null : (
+                        <div className="section">
+                            <div className="section-title">Choose Wallet</div>
+                            <div className="list">
+                                <div
+                                    className={'item hover-item' + (this.state.walletType == 'metamask' ? ' active' : '')}
+                                    onClick={this.connectMetaMask}
+                                >
+                                    <div className="center">
+                                        <div className="img-wrap">
+                                            <img className="white" src={require('@/web3goLayout/assets/layout/metamaskicon.png')} alt="" />
+                                        </div>
+                                        <div className="text">Metamask</div>
                                     </div>
-                                    <div className="text">Metamask</div>
                                 </div>
-                            </div>
-                            <div
-                                className={'item hover-item' + (this.state.walletType == 'polkadot' ? ' active' : '')}
-                                onClick={this.connectPolkadot}
-                            >
-                                <div className="center">
-                                    <div className="img-wrap">
-                                        {this.props.isDark ? <img
-                                            src={require('@/web3goLayout/assets/layout/polkadoticon.png')}
-                                            alt=""
-                                        /> : <img className="white" src={require('@/web3goLayout/assets/layout/polkadoticon-b.png')} alt="" />}
+                                <div
+                                    className={'item hover-item' + (this.state.walletType == 'polkadot' ? ' active' : '')}
+                                    onClick={this.connectPolkadot}
+                                >
+                                    <div className="center">
+                                        <div className="img-wrap">
+                                            {this.props.isDark ? <img
+                                                src={require('@/web3goLayout/assets/layout/polkadoticon.png')}
+                                                alt=""
+                                            /> : <img className="white" src={require('@/web3goLayout/assets/layout/polkadoticon-b.png')} alt="" />}
+                                        </div>
+                                        <div className="text">Polkadot.js</div>
                                     </div>
-                                    <div className="text">Polkadot.js</div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                     {this.state.walletType == 'polkadot' ? (
                         <div className="section">
                             <div className="section-title">Choose Account</div>
                             <div className="list">
                                 {
-                                    this.state.accounts.map((v, i) =>
+                                    this.state.polkadotAccountList.map((v, i) =>
                                     (
                                         <div
-                                            key="i"
+                                            key={i}
                                             className="item hover-item"
-                                            onClick={this.selectMetaBaseAccount}
+                                            onClick={() => this.choosePolkadotWallet(v)}
                                         >
                                             <div className="center flex">
-                                                {/* <IdentityIcon
+                                                <IdentityIcon
                                                     isPolkadot
-                                                    address="67GdmSznJLbqAX84JUY4GwYFXuEsAFQegEZCXFv1btzGbDbq"
-                                                ></IdentityIcon> */}
+                                                    address={v.address}
+                                                ></IdentityIcon>
                                                 <div className="right">
-                                                    <div className="name">Account-01</div>
+                                                    <div className="name">{v.meta.name}</div>
                                                     <div className="address">
                                                         {
-                                                            shorterAddress("67GdmSznJLbqAX84JUY4GwYFXuEsAFQegEZCXFv1btzGbDbq")
+                                                            shorterAddress(v.address)
                                                         }
                                                     </div>
                                                 </div>
@@ -185,7 +209,8 @@ class Component extends React.Component {
                     ) : null}
 
                     <div className="btn-wrap">
-                        <Button className="btn" type="primary" onClick={this.connect}>Connect wallet</Button>
+
+                        {/* <Button className="btn" type="primary" onClick={this.connect}>Connect wallet</Button> */}
                     </div >
                 </div >
             </Modal >

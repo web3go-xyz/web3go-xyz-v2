@@ -5,6 +5,8 @@ import './index.less';
 import { Button, Modal, Form, Input, Message } from '@arco-design/web-react';
 import { toggleDark } from "metabase/redux/app";
 import { push } from "react-router-redux";
+import makeBlockie from "ethereum-blockies-base64";
+import Identicon from '@polkadot/react-identicon';
 
 const mapStateToProps = state => {
     return {
@@ -24,15 +26,29 @@ class Component extends React.Component {
         }
         this.formRef = React.createRef();
     }
-  
-    
+
+
     render() {
         return (
-            <div>3425</div>
+            <div className="web3go-layout-component-identity-icon">
+                {
+                    this.props.isPolkadot ?
+                        <Identicon
+                            value={this.props.address}
+                            size={this.props.iconSize || 24}
+                            theme='polkadot'
+                        />
+                        :
+                        <img
+                            className="eth-icon"
+                            style={{ width: this.props.iconSize || 24 + 'px' }}
+                            src={makeBlockie(this.props.address)}
+                            alt=""
+                        />
+                }
+            </div>
         )
-
     }
-
 }
 
 
