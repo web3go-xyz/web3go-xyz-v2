@@ -8,6 +8,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@/*": [
+        "./frontend/src/*"
+      ],
       "*": [
         "./frontend/src/*",
         "./frontend/test/*",

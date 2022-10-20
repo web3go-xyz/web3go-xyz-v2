@@ -67,6 +67,17 @@ const config = (module.exports = {
 
   module: {
     rules: [
+      // 解决polkadot 引入报错问题
+      {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false
+        }
+      },
+      {
+        test: /\.js$/,
+        loader: require.resolve('@open-wc/webpack-import-meta-loader'),
+      },
       {
         test: /\.(tsx?|jsx?)$/,
         exclude: /node_modules|cljs/,
@@ -119,7 +130,7 @@ const config = (module.exports = {
               javascriptEnabled: true
             }
           },
-        }] 
+        }]
       },
     ],
   },
