@@ -31,7 +31,7 @@ class Component extends React.Component {
     render() {
         return (
             <div className="web3go-layout-basefooter-component">
-                <div className="footer">
+                <div className="footer common-layout">
                     <div className="page-footer">
                         <div className="layout">
                             <div className="website-info">
@@ -97,7 +97,6 @@ class Component extends React.Component {
                                             </div>
                                         </div>
                                         <div
-                                            className="foundation"
                                             onClick={
                                                 () => this.jumpUrl(
                                                     'https://github.com/w3f/Grants-Program/blob/master/applications/Web3Go.md'

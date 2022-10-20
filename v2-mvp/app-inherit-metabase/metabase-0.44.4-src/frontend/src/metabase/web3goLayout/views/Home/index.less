@@ -3,8 +3,50 @@ body[arco-theme="dark"] .web3go-layout-home-page {}
 .web3go-layout-home-page {
     .banner-wrap {
         width: 100%;
-        img{
-            
+
+        .slide-item {
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .arco-carousel-indicator-wrapper {
+            background: transparent;
+        }
+
+        .arco-carousel-indicator {
+            bottom: 16px;
+            left: 20%;
+
+            .arco-carousel-indicator-item {
+                transition: all .5s;
+                background: #E5E6E8;
+                border-radius: 20px;
+                width: 16px;
+                height: 4px;
+
+                &.arco-carousel-indicator-item-active {
+                    background: var(--primary-color);
+                    border-radius: 20px;
+                    width: 24px;
+                }
+            }
+        }
+    }
+
+    .home-main {
+        .section-title {
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 28px;
+            display: flex;
+            align-items: center;
+            .arrow {
+                margin-left: 8px;
+                stroke: var(--86Color);
+            }
         }
     }
 }
