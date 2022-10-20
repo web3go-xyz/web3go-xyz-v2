@@ -6,10 +6,14 @@ import JWTConfig from 'src/base/auth/config';
 import { JwtStrategy } from 'src/base/auth/jwt.strategy';
 import { databaseProviders_platform } from 'src/base/orm/database.provider.v2';
 import repositoryProviders_platform from 'src/base/orm/repository.provider.v2';
-import { AccountAuthService } from './account-auth.service';
-import { AccountAuthController } from './account-auth.controller';
-import { AccountBaseService } from '../base/account-base.service';
 
+import { KVService } from 'src/base/kv/kv.service';
+import { KVModule } from 'src/base/kv/kv.module';
+import { Web3SignInController } from './web3.signin.controller';
+import { Web3SignInService } from './web3.signin.service';
+import { AccountBaseService } from '../base/account-base.service';
+import { PolkadotSignHelper } from 'src/base/web3/sign/polkadot/polkadot.sign.helper';
+import { MetamaskSignHelper } from 'src/base/web3/sign/metamask/metamask.sign.helper';
 
 
 @Module({
@@ -18,16 +22,19 @@ import { AccountBaseService } from '../base/account-base.service';
     JwtModule.register({
       secret: JWTConfig.secret,
       signOptions: { expiresIn: JWTConfig.expiresInSeconds },
-    })
+    }),
+    KVModule
   ],
-  controllers: [AccountAuthController],
+  controllers: [Web3SignInController],
   providers: [
     ...databaseProviders_platform,
     ...repositoryProviders_platform,
-    AccountAuthService,
+    Web3SignInService,
     JwtStrategy,
-    AccountBaseService
+    KVService,
+    AccountBaseService,
+    PolkadotSignHelper,
+    MetamaskSignHelper
   ],
-  exports: []
 })
-export class AccountAuthModule { }
+export class Web3SignInModule { }

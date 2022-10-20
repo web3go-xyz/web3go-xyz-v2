@@ -1,42 +1,36 @@
 import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityManager, FindManyOptions, Repository } from 'typeorm';
 
-import { JwtService } from '@nestjs/jwt';
 import { AuthUser } from 'src/base/auth/authUser';
 import { IAuthService } from 'src/base/auth/IAuthService';
-import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
-import { W3Logger } from 'src/base/log/logger.service';
-import { Account } from 'src/base/entity/platform-user/Account.entity';
-import { AccountEmail } from 'src/base/entity/platform-user/Account-Email.entity';
-import { AccountWallet } from 'src/base/entity/platform-user/Account-Wallet.entity';
-import { AccountVerifyCode } from 'src/base/entity/platform-user/Account-VerifyCode.entity';
-import { AccountSignupRequest } from 'src/viewModel/user-auth/AccountSignupRequest';
-import { AccountInfo } from 'src/viewModel/user-auth/AccountInfo';
-
-import { v4 as uuidv4 } from 'uuid';
-import { EmailVerifyRequest } from 'src/viewModel/user-auth/EmailVerifyRequest';
-import { VerifyCodePurpose, VerifyCodeType, VerifyFlag } from 'src/base/entity/platform-user/VerifyCodeType';
 import { Mailer } from 'src/base/email/mailer';
-import { VerifyCodeRequest } from 'src/viewModel/user-auth/VerifyCodeRequest';
-import { ChangePasswordRequest } from 'src/viewModel/user-auth/ChangePasswordRequest';
+import { AccountEmail } from 'src/base/entity/platform-user/Account-Email.entity';
+import { AccountVerifyCode } from 'src/base/entity/platform-user/Account-VerifyCode.entity';
+import { AccountWallet } from 'src/base/entity/platform-user/Account-Wallet.entity';
+import { Account } from 'src/base/entity/platform-user/Account.entity';
+import { VerifyCodeType, VerifyCodePurpose, VerifyFlag } from 'src/base/entity/platform-user/VerifyCodeType';
+import { W3Logger } from 'src/base/log/logger.service';
+import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
+import { AccountInfo } from 'src/viewModel/user-auth/AccountInfo';
+import { AccountSearchResult } from 'src/viewModel/user-auth/AccountSearchResult';
+
 import { AccountSigninRequest } from 'src/viewModel/user-auth/AccountSigninRequest';
+import { AccountSignupRequest } from 'src/viewModel/user-auth/AccountSignupRequest';
+import { ChangePasswordRequest } from 'src/viewModel/user-auth/ChangePasswordRequest';
+import { EmailVerifyRequest } from 'src/viewModel/user-auth/EmailVerifyRequest';
+import { SignTokenPayload } from 'src/viewModel/user-auth/SignTokenPayload';
+import { VerifyCodeRequest } from 'src/viewModel/user-auth/VerifyCodeRequest';
+import { Repository } from 'typeorm';
 
-const escape = require('escape-html');
-const md5 = require('js-md5');
+import { AccountBaseService } from '../base/account-base.service';
 
-export class AccountSearchResult {
-  accountId: string;
-  type: 'email' | 'wallet';
-  binding: string;
-  verified: boolean;
-}
+
 @Injectable()
 export class AccountAuthService implements IAuthService {
 
   logger: W3Logger;
 
   constructor(
-    private readonly jwtService: JwtService,
+    private readonly accountBaseService: AccountBaseService,
     @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_REPOSITORY.provide)
     private accountRepository: Repository<Account>,
 
@@ -53,18 +47,20 @@ export class AccountAuthService implements IAuthService {
   ) {
     this.logger = new W3Logger(`AccountAuthService`);
   }
-
+  async searchAccountsByEmail(email: string, verifiedOnly: boolean): Promise<AccountSearchResult[]> {
+    return await this.accountBaseService.searchAccountsByEmail(email, verifiedOnly)
+  }
   async signin(request: AccountSigninRequest): Promise<AuthUser> {
 
-    let searchAccounts = await this.searchAccountsByEmail(request.email, false);
-    if (!searchAccounts) {
+    let searchAccounts = await this.accountBaseService.searchAccountsByEmail(request.email, false);
+    if (!searchAccounts || searchAccounts.length == 0) {
       throw new BadRequestException("email not exist");
     }
     let searchAccount = searchAccounts[0];
     if (!searchAccount.verified) {
       throw new BadRequestException("email for account does not verified");
     }
-    let account = await this.getAccount(searchAccount.accountId);
+    let account = await this.accountBaseService.searchAccount(searchAccount.accountId);
     if (!account) {
       throw new BadRequestException("account not exist");
     }
@@ -76,122 +72,17 @@ export class AccountAuthService implements IAuthService {
     let accountId = account.accountId;
     let authUser = await this.validateUser(accountId, password_verify);
     if (authUser) {
-
-      const payload = {
+      const payload: SignTokenPayload = {
         id: authUser.id,
         email: request.email,
         first_name: authUser.name,
-        groups: await this.getAccountGroups(accountId),
+        groups: await this.accountBaseService.searchAccountGroups(accountId),
       };
-      let token = this.jwtService.sign(payload);
-      this.logger.debug(`signin with payload:${JSON.stringify(payload)}, got token:${token}`);
-      authUser.token = token;
+      authUser.token = await this.accountBaseService.grantToken(payload);
     }
     return authUser;
   }
-  async getAccountGroups(accountId: string): Promise<string[]> {
-    return ['CommonUsers', "BuilderV1"];
-  }
 
-  async searchAccountsByEmail(filter: string, verified: boolean): Promise<AccountSearchResult[]> {
-    if (!filter) return null;
-
-    let accountIds: AccountSearchResult[] = [];
-
-    //email
-    let condition: FindManyOptions<AccountEmail> = {
-      where: {
-        email: filter
-      }
-    };
-    if (verified) {
-      condition = {
-        where: {
-          email: filter,
-          verified: VerifyFlag.Verified
-        }
-      };
-    }
-    let records = await this.accountEmailRepository.find(condition);
-    if (records && records.length > 0) {
-      records.forEach(t => {
-        accountIds.push({
-          accountId: t.accountId,
-          type: 'email',
-          binding: filter,
-          verified: t.verified == 1 ? true : false
-        })
-      });
-    }
-
-    return accountIds;
-  }
-  async searchAccountsByWallet(filter: string, verified: boolean): Promise<AccountSearchResult[]> {
-    if (!filter) return null;
-
-    let accountIds: AccountSearchResult[] = [];
-
-    //wallet
-    let condition2: FindManyOptions<AccountWallet> = {
-      where: {
-        address: filter
-      }
-    };
-    if (verified) {
-      condition2 = {
-        where: {
-          address: filter,
-          verified: VerifyFlag.Verified
-        }
-      };
-    }
-    let records2 = await this.accountWalletRepository.find(condition2);
-    if (records2 && records2.length > 0) {
-      records2.forEach(t => {
-        accountIds.push({
-          accountId: t.accountId,
-          type: 'wallet',
-          binding: filter,
-          verified: t.verified == 1 ? true : false
-        })
-      });
-    }
-
-    return accountIds;
-  }
-  async getAccount(accountId: string): Promise<Account> {
-    if (!accountId) return null;
-
-    let account = await this.accountRepository.findOne({ where: { accountId: accountId } });
-    if (account) {
-      delete account.authMasterPassword;
-    }
-    return account;
-  }
-  async validateUser(account_id: string, password_verify: string): Promise<AuthUser> {
-    const account = await this.accountRepository.findOne({
-      where: { accountId: account_id }
-    });
-    if (account && this.verifyPassword(account.accountId, account.authMasterPassword, password_verify)) {
-
-      let authUser: AuthUser = { id: account.accountId, name: account.nickName };
-      this.logger.log(`validate user:${JSON.stringify(authUser)}`);
-
-      return authUser;
-    }
-    let error = `user [${account_id}] or password invalid, please check`;
-    this.logger.error(error);
-    throw new UnauthorizedException(error);
-  }
-
-  verifyPassword(id: string, passwordHash: string, password: string) {
-    let encrypt = this.encryptPassword(id, password);
-    return encrypt === passwordHash;
-  }
-  encryptPassword(id: string, password: string): string {
-    let encrypt = md5(id + password);
-    return encrypt;
-  }
 
   async checkEmailExist(email: string): Promise<boolean> {
     const record = await this.accountEmailRepository.findOne({
@@ -202,65 +93,21 @@ export class AccountAuthService implements IAuthService {
     }
     return false;
   }
-  async createAccount(request: AccountSignupRequest): Promise<AccountInfo> {
-
-    let accountId = uuidv4();
-    let newAccount: Account = {
-      accountId: accountId,
-      web3Id: '',
-      nickName: request.nickName,
-      avatar: '',
-      created_time: new Date(),
-      authMasterPassword: this.encryptPassword(accountId, request.password),
-      allowLogin: 1,
-      last_login_time: new Date()
-    }
-    let newAccountEmail: AccountEmail = {
-      accountId: accountId,
-      email: request.email,
-      verified: 0,
-      created_time: new Date()
-    }
-    this.logger.debug(`start to create new account:${JSON.stringify(newAccount)}`);
-
-    await this.accountRepository.manager.connection.transaction(async tm => {
-      newAccount.web3Id = await this.getNextWeb3Id(tm);
-      this.logger.debug(newAccount);
-      this.logger.debug(newAccountEmail);
-      await tm.save(Account, newAccount);
-      await tm.save(AccountEmail, newAccountEmail);
-
-    });
-    delete newAccount.authMasterPassword;
-    return {
-      account: newAccount,
-      accountEmails: [newAccountEmail],
-      accountWallets: null
-    };
-
-  }
-  async getNextWeb3Id(tm: EntityManager): Promise<string> {
-
-    let web3Id = '';
-    let record = await tm.query(`select count(*) as total from account`);
-    if (record && record.length > 0) {
-      let next = Number(record[0].total) + 1;
-
-      let full = '00000000' + next.toString();
-      full = full.substring(full.length - 8);
-      web3Id = 'Web3Go' + full;
-    }
-    this.logger.log(`generate Web3Id: ${web3Id}`);
-    return web3Id;
-  }
-
 
   async sendVerifyEmail(request: EmailVerifyRequest): Promise<Boolean> {
+    let findAccounts = await this.searchAccountsByEmail(request.email, false);
+
+    if (!findAccounts || findAccounts.length == 0) {
+      throw new BadRequestException('email does not exist');
+    }
+    let searchAccount = findAccounts[0];
+    this.logger.log(`sendVerifyEmail for account ${JSON.stringify(searchAccount)}`);
     let findAccount = await this.accountRepository.findOne({
       where: {
-        accountId: request.accountId
+        accountId: searchAccount.accountId
       }
     });
+
     if (findAccount) {
       //generate verification code
       await this.clearCode(findAccount.accountId, request.email, VerifyCodeType.Email, request.verifyCodePurpose);
@@ -270,9 +117,9 @@ export class AccountAuthService implements IAuthService {
         purpose: request.verifyCodePurpose,
         verifyKey: request.email,
         code: this.generateVerifyCode(6),
-        accountId: request.accountId,
+        accountId: findAccount.accountId,
         created_time: new Date(),
-        expired_time: new Date(new Date().getTime() + (1000 * 60 * 5))
+        expired_time: new Date(new Date().getTime() + (1000 * 60 * 10))
       }
       await this.accountVerifyCodeRepository.save(newCode);
 
@@ -282,9 +129,10 @@ export class AccountAuthService implements IAuthService {
       return true;
     }
     else {
-      throw new BadRequestException('the email not exist');
+      throw new BadRequestException('account with email does not exist');
     }
   }
+
   async clearCode(accountId: string, key: string, type: VerifyCodeType, purpose: VerifyCodePurpose) {
     await this.accountVerifyCodeRepository.delete({
       accountId: accountId,
@@ -305,7 +153,7 @@ export class AccountAuthService implements IAuthService {
   }
   generateEmailContent4VerifyCode(purpose: VerifyCodePurpose, email: string, account: Account, code: AccountVerifyCode) {
 
-    let url = (process.env.BASE_API_URL || 'http://localhost:12350') + `/api/v2/account/auth/verifyCode?accountId=${account.accountId}&email=${escape(email)}&code=${code.code}&verifyCodePurpose=${purpose}`;
+    let url = (process.env.BASE_WEB_URL || 'http://localhost:3000') + `/verifyEmail?accountId=${account.accountId}&email=${escape(email)}&code=${code.code}&verifyCodePurpose=${purpose}`;
     let html = `<p> hi ${account.nickName}, </p>
     <p>your are processing ${purpose}, below is the verification code:</p>
     <h3>${code.code}</h3>
@@ -325,7 +173,7 @@ export class AccountAuthService implements IAuthService {
     return code;
   }
 
-  async verifyCode(request: VerifyCodeRequest, clearAfterVerifiedSuccess: boolean = true): Promise<boolean> {
+  async verifyCode(request: VerifyCodeRequest, clearAfterVerifiedSuccess: boolean = true, autoGenerateSignInToken: boolean = true): Promise<any> {
     this.logger.debug(`verify code:${JSON.stringify(request)}`);
     let findCode = await this.accountVerifyCodeRepository.findOne({
       where: {
@@ -339,8 +187,8 @@ export class AccountAuthService implements IAuthService {
       if (findCode.expired_time.getTime() < new Date().getTime()) {
         throw new BadRequestException("code expired,please resend new code.");
       }
-
-      if (request.verifyCodePurpose == VerifyCodePurpose.Account) {
+      this.logger.debug(`verify code success:${JSON.stringify(request)}`);
+      if ([VerifyCodePurpose.Account, VerifyCodePurpose.ResetPassword].indexOf(request.verifyCodePurpose) > -1) {
         let findEmail = await this.accountEmailRepository.findOne({
           where: {
             accountId: request.accountId,
@@ -357,7 +205,25 @@ export class AccountAuthService implements IAuthService {
       if (clearAfterVerifiedSuccess) {
         await this.clearCode(request.accountId, request.email, VerifyCodeType.Email, request.verifyCodePurpose);
       }
-      return true;
+
+      if ([VerifyCodePurpose.Account].indexOf(request.verifyCodePurpose) > -1 && autoGenerateSignInToken) {
+        //
+        let account = await this.accountBaseService.searchAccount(request.accountId);
+        let payload: SignTokenPayload = {
+          id: account.accountId,
+          email: request.email,
+          first_name: account.nickName,
+          groups: await this.accountBaseService.searchAccountGroups(account.accountId)
+        };
+        let autoSignInToken = await this.accountBaseService.grantToken(payload);
+        return {
+          result: 'success',
+          token: autoSignInToken,
+          payload: payload
+        };
+
+      }
+      return { result: 'success' };
     }
     throw new BadRequestException("verify failure");
   }
@@ -379,11 +245,63 @@ export class AccountAuthService implements IAuthService {
     }
 
     //change password 
-    account.authMasterPassword = this.encryptPassword(account.accountId, request.newPassword);
+    account.authMasterPassword = this.accountBaseService.passwordEncrypt(account.accountId, request.newPassword);
     await this.accountRepository.save(account);
 
     return true;
   }
 
+  async createAccount4Email(request: AccountSignupRequest): Promise<AccountInfo> {
 
+    let accountId = this.accountBaseService.generateAccountId();
+    let newAccount: Account = {
+      accountId: accountId,
+      web3Id: '',
+      nickName: request.nickName,
+      avatar: '',
+      created_time: new Date(),
+      authMasterPassword: this.accountBaseService.passwordEncrypt(accountId, request.password),
+      allowLogin: 1,
+      last_login_time: new Date()
+    }
+    let newAccountEmail: AccountEmail = {
+      accountId: accountId,
+      email: request.email,
+      verified: 0,
+      created_time: new Date()
+    }
+    this.logger.debug(`start to create new account:${JSON.stringify(newAccount)}`);
+
+    await this.accountRepository.manager.connection.transaction(async tm => {
+      newAccount.web3Id = await this.accountBaseService.generateWeb3Id(tm);
+      this.logger.debug(newAccount);
+      this.logger.debug(newAccountEmail);
+      await tm.save(Account, newAccount);
+      await tm.save(AccountEmail, newAccountEmail);
+
+    });
+    delete newAccount.authMasterPassword;
+    return {
+      account: newAccount,
+      accountEmails: [newAccountEmail],
+      accountWallets: null
+    };
+
+  }
+
+  async validateUser(account_id: string, password_verify: string): Promise<AuthUser> {
+    const account = await this.accountRepository.findOne({
+      where: { accountId: account_id }
+    });
+    if (account && this.accountBaseService.passwordVerify(account.accountId, account.authMasterPassword, password_verify)) {
+
+      let authUser: AuthUser = { id: account.accountId, name: account.nickName };
+      this.logger.log(`validate user:${JSON.stringify(authUser)}`);
+
+      return authUser;
+    }
+    let error = `user [${account_id}] or password invalid, please check`;
+    this.logger.error(error);
+    throw new UnauthorizedException(error);
+  }
 }
