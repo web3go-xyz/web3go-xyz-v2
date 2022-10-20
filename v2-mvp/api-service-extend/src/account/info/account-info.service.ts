@@ -40,11 +40,14 @@ export class AccountInfoService {
       where: { accountId: accountId }
     });
 
-    return {
+    let d: AccountInfo = {
       account: account,
       accountEmails: accountEmails,
       accountWallets: accountWallets
     };
+
+    this.logger.debug(`getAccountInfo:${JSON.stringify(d)}`);
+    return d;
   }
 
 

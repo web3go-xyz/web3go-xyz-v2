@@ -17,7 +17,8 @@ module.exports = {
             DB_DATABASE_METABASE: "dev-web3go-v2-metabase",
 
 
-            BASE_API_URL: "http://192.168.50.188:12350"
+            BASE_API_URL: "http://192.168.50.188:12350",
+            BASE_WEB_URL: "http://192.168.50.188:3000"
         }
     }]
 } 

@@ -22,14 +22,14 @@ export class AccountWallet {
 
     @ApiProperty()
     @Column({
-        comment: 'chain name, eg: Polkadot, Ethereum, BSC, AAVE',
+        comment: 'chain name, eg: Polkadot, BSC',
         nullable: false
     })
     chain: string;
 
     @ApiProperty()
     @Column({
-        comment: 'wallet source, eg: Polkadot.js, Metamask, Subwallet',
+        comment: 'wallet source, eg: Polkadot.js, Metamask',
         nullable: false,
         name: 'wallet_source'
     })

@@ -1,3 +1,4 @@
+import { RedisModuleOptions } from 'nestjs-redis';
 export class AppConfig {
 
   public static dbConnection = {
@@ -17,6 +18,13 @@ export class AppConfig {
   public static typeOrmOption4MetabaseDB = {
     ...this.dbConnection,
     database: process.env.DB_DATABASE_METABASE,
+  };
+
+  public static redisOption: RedisModuleOptions = {
+    port: Number(process.env.REDIS_PORT || 6379),
+    host: process.env.REDIS_HOST || 'localhost',
+    password: process.env.REDIS_PASSWORD || 'redis123',
+    db: 0,
   };
 
   public static initilize() {
