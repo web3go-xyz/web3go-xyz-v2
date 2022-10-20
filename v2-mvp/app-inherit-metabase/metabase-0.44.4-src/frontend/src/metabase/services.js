@@ -1,6 +1,7 @@
 import _ from "underscore";
 
 import { GET, PUT, POST, DELETE } from "metabase/lib/api";
+import { GET as WGET, PUT as WPUT, POST as WPOST, DELETE as WDELETE } from "metabase/lib/web3goApi";
 import { IS_EMBED_PREVIEW } from "metabase/lib/embed";
 import Question from "metabase-lib/lib/Question";
 import { FieldDimension } from "metabase-lib/lib/Dimension";
@@ -9,11 +10,20 @@ import { FieldDimension } from "metabase-lib/lib/Dimension";
 const embedBase = IS_EMBED_PREVIEW ? "/api/preview_embed" : "/api/embed";
 
 import getGAMetadata from "promise-loader?global!metabase/lib/ga-metadata"; // eslint-disable-line import/default
-
+export const WEB3GO_BASE_URL = 'http://192.168.50.188:12350';
 export const LayoutLoginApi = {
-  login: GET(" http://localhost:12346/api/v2/user/auth/sso"),
+  signIn: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/signin"),
+  signUp: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/signup"),
+  sendVerifyEmail: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/sendVerifyEmail"),
+  verifyCode: WGET(WEB3GO_BASE_URL + "/api/v2/account/auth/verifyCode"),
+  changePassword: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/changePassword"),
+  searchAccountsByEmail: WGET(WEB3GO_BASE_URL + "/api/v2/account/auth/searchAccountsByEmail"),
+  searchAccountsByWallet: WGET(WEB3GO_BASE_URL + "/api/v2/account/auth/searchAccountsByWallet"),
+  getAccountInfo: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/getAccountInfo"),
+  web3_nonce: WPOST(WEB3GO_BASE_URL + "/api/v2/account/web3/web3_nonce"),
+  web3_challenge: WPOST(WEB3GO_BASE_URL + "/api/v2/account/web3/web3_challenge"),
+  getSupportedWallet: WGET(WEB3GO_BASE_URL + "/api/v2/account/web3/getSupportedWallet"),
 };
-
 export const ActivityApi = {
   list: GET("/api/activity"),
   recent_views: GET("/api/activity/recent_views"),

@@ -4,20 +4,27 @@ import { connect } from "react-redux";
 import './index.less';
 import { Button, AutoComplete } from '@arco-design/web-react';
 import { toggleDark } from "metabase/redux/app";
-import { push } from "react-router-redux";
+import { changeUserData } from "metabase/redux/app";
+import { push, replace } from "react-router-redux";
 import SignInOrUp from './SignInOrUp';
 import ForgetPsd from './ForgetPsd';
 import ResetPsd from './ResetPsd';
 import ConnectWallet from './ConnectWallet';
+import { LayoutLoginApi } from '@/services'
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     return {
-        isDark: state.app.isDark
+        currentUser: state.currentUser,
+        route: state.routing.locationBeforeTransitions,
+        isDark: state.app.isDark,
+        userData: state.app.userData
     }
 };
 const mapDispatchToProps = {
     toggleDark,
-    push
+    changeUserData,
+    push,
+    replace
 };
 class Component extends React.Component {
     constructor(props) {
@@ -29,7 +36,19 @@ class Component extends React.Component {
         this.ForgetPsdRef = React.createRef();
         this.ResetPsdRef = React.createRef();
         this.ConnectWalletRef = React.createRef();
-
+    }
+    componentDidMount() {
+        const { route } = this.props;
+        if (route.hash == '#showLogin') {
+            // 去掉hash
+            this.props.replace(route.pathname + route.search);
+            this.SignInOrUpRef.init(true);
+        }
+        if (localStorage.getItem('token')) {
+            LayoutLoginApi.getAccountInfo().then(d => {
+                this.props.changeUserData(d);
+            })
+        }
     }
     goLayout = () => {
         this.props.push('/');
@@ -40,14 +59,17 @@ class Component extends React.Component {
     goForgetPsd = () => {
         this.ForgetPsdRef.init();
     }
-    goResetPsd = () => {
-        this.ResetPsdRef.init();
+    goResetPsd = (form) => {
+        this.ResetPsdRef.init(form);
     }
-    connectMetaMask = () => {
-        this.ConnectWalletRef.connectMetaMask();
+    openConnectWalletModal = () => {
+        this.ConnectWalletRef.openConnectWalletModal();
     }
-    connectPolkadot = () => {
-        this.ConnectWalletRef.connectPolkadot();
+    goAccountSetting = () => {
+        this.props.push('/layout/accountSetting');
+    }
+    handleCreate = () => {
+        this.props.push('/home');
     }
     render() {
         return (
@@ -55,10 +77,10 @@ class Component extends React.Component {
                 <div className="head-wrap">
                     <div className="h-left">
                         {this.props.isDark ? <img
-                            className="logo" onClick={this.goLayout}
+                            className="logo hover-item" onClick={this.goLayout}
                             src={require('@/web3goLayout/assets/layout/logo.png')}
                             alt=""
-                        /> : <img className="logo" onClick={this.goLayout} src={require('@/web3goLayout/assets/layout/logo-white.png')} alt="" />}
+                        /> : <img className="logo hover-item" onClick={this.goLayout} src={require('@/web3goLayout/assets/layout/logo-white.png')} alt="" />}
                         <div className="search-wrap">
                             <svg
                                 className="icon"
@@ -109,15 +131,18 @@ class Component extends React.Component {
                                 </svg>) :
                                 <img className="light" src={require('@/web3goLayout/assets/layout/light.png')} alt="" />}
                         </div>
-                        <Button className="btn" type='primary'>Create</Button>
-                        <Button className="btn2" type='secondary' onClick={this.goSignIn}>Sign In</Button>
+                        <Button className="btn" type='primary' onClick={this.handleCreate}>Create</Button>
+                        {this.props.currentUser ?
+                            <img className="avatar hover-item" src={require("@/web3goLayout/assets/account/Avatar.png")} onClick={this.goAccountSetting} alt="" />
+                            :
+                            <Button className="btn2" type='secondary' onClick={this.goSignIn}>Sign In</Button>
+                        }
                     </div>
                     <SignInOrUp
                         onRef={(ref) => this.SignInOrUpRef = ref}
                         goForgetPsd={this.goForgetPsd}
-                        connectMetaMask={this.connectMetaMask}
-                        connectPolkadot={this.connectPolkadot}
-                        
+                        openConnectWalletModal={this.openConnectWalletModal}
+
                     ></SignInOrUp>
                     <ForgetPsd
                         onRef={(ref) => this.ForgetPsdRef = ref}

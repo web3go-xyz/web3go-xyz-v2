@@ -17,7 +17,8 @@ import ActivityApp from "metabase/home/containers/ActivityApp";
 // web3go
 import web3goLayout from "metabase/web3goLayout";
 import AccountSetting from "metabase/web3goLayout/views/AccountSetting";
-import Login from "metabase/web3goLayout/Login";
+import Home from "metabase/web3goLayout/views/Home";
+import VerifyEmailPage from "metabase/web3goLayout/views/VerifyEmailPage";
 
 // auth containers
 import ForgotPasswordApp from "metabase/auth/containers/ForgotPasswordApp";
@@ -103,7 +104,8 @@ const MetabaseIsSetup = UserAuthWrapper({
 });
 
 const UserIsAuthenticated = UserAuthWrapper({
-  failureRedirectPath: "/auth/login",
+  // failureRedirectPath: "/auth/login",
+  failureRedirectPath: "/layout/home#showLogin",
   authSelector: state => state.currentUser,
   wrapperDisplayName: "UserIsAuthenticated",
   redirectAction: routerActions.replace,
@@ -153,6 +155,11 @@ const CanAccessSettings = MetabaseIsSetup(
 
 export const getRoutes = store => (
   <Route title={t`Metabase`} component={App}>
+    <Route
+      path="/verifyEmail"
+      component={VerifyEmailPage}
+    >
+    </Route>
     {/* SETUP */}
     <Route
       path="/setup"
@@ -185,6 +192,29 @@ export const getRoutes = store => (
         trackPageView(nextState.location.pathname);
       }}
     >
+      {/* WEB3GO */}
+      <Route
+        path="/"
+      >
+        <IndexRedirect to="/layout" />
+        <Route
+          path="/layout"
+          component={web3goLayout}
+        >
+          <IndexRedirect to="home" />
+          <Route
+            path="home"
+            component={Home}
+          >
+          </Route>
+          <Route
+            path="accountSetting"
+            component={AccountSetting}
+          >
+          </Route>
+
+        </Route>
+      </Route>
       {/* AUTH */}
       <Route path="/auth">
         <IndexRedirect to="/auth/login" />
@@ -200,27 +230,6 @@ export const getRoutes = store => (
       {/* MAIN */}
       <Route component={IsAuthenticated}>
         {/* The global all hands rotues, things in here are for all the folks */}
-        <Route
-          path="/"
-        >
-          <IndexRedirect to="/layout" />
-          <Route
-            path="/layout"
-            component={web3goLayout}
-          >
-            <IndexRedirect to="accountSetting" />
-            <Route
-              path="accountSetting"
-              component={AccountSetting}
-            >
-            </Route>
-            <Route
-              path="login"
-              component={Login}
-            >
-            </Route>
-          </Route>
-        </Route>
         <Route
           path="/home"
           component={HomePage}

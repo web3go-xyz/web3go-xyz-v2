@@ -2,7 +2,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Message } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Message, Spin } from '@arco-design/web-react';
 import { toggleDark } from "metabase/redux/app";
 import { push } from "react-router-redux";
 import { position } from "tether";
@@ -12,13 +12,21 @@ import IdentityIcon from "@/web3goLayout/components/IdentityIcon";
 import {
     web3Accounts,
     web3Enable,
+    web3FromSource,
     // web3AccountsSubscribe,
 } from "@polkadot/extension-dapp";
+import { LayoutLoginApi } from '@/services'
+import {
+    cryptoWaitReady,
+    decodeAddress,
+    signatureVerify,
+} from "@polkadot/util-crypto";
+import { u8aToHex } from "@polkadot/util";
+
 let web3;
 const mapStateToProps = state => {
     return {
         isDark: state.app.isDark,
-
     }
 };
 const mapDispatchToProps = {
@@ -34,20 +42,63 @@ class Component extends React.Component {
             // connect or switch
             ifConnect: true,
             walletType: "",
+            networkObj: {
+                supportWallet: []
+            },
             linkLoading: false,
             chooseWalletLoading: false,
             visible: false,
             polkadotAccountList: [],
+            networkList: [{
+                name: 'BNB Chain',
+                key: 'BSC',
+                icon: require('@/web3goLayout/assets/layout/bnb.png'),
+            }, {
+                name: 'Polkadot',
+                key: 'Polkadot',
+                icon: require('@/web3goLayout/assets/layout/boka.png'),
+            }],
+            walletTypeList: [],
         }
         this.formRef = React.createRef();
     }
-    componentDidMount() {
+    async componentDidMount() {
+        const walletTypeList = await LayoutLoginApi.getSupportedWallet()
+        this.setState({
+            walletTypeList
+        });
         this.props.onRef(this)
+
+
     }
-    init = () => {
+    openConnectWalletModal = () => {
         this.setState({
             visible: true,
         });
+    }
+    getWalletIcon = (v) => {
+        if (v.wallet == 'Metamask') {
+            return require('@/web3goLayout/assets/layout/metamaskicon.png')
+        } else if (v.wallet == 'Polkadot.js') {
+            return require('@/web3goLayout/assets/layout/polkadoticon-b.png')
+        }
+    }
+    getWalletBlackIcon = (v) => {
+        if (v.wallet == 'Metamask') {
+            return require('@/web3goLayout/assets/layout/metamaskicon.png')
+        } else if (v.wallet == 'Polkadot.js') {
+            return require('@/web3goLayout/assets/layout/polkadoticon.png')
+        }
+    }
+    handleClickWalletType = (v) => {
+        this.setState({
+            walletType: v.wallet
+        });
+        if (v.wallet == 'Metamask') {
+            this.connectMetaMask();
+        } else if (v.wallet == 'Polkadot.js') {
+            this.connectPolkadot();
+        }
     }
     connectMetaMask = async () => {
         // 引入web3
@@ -101,9 +152,6 @@ class Component extends React.Component {
         });
     }
     connectPolkadot = async () => {
-        this.setState({
-            walletType: 'polkadot'
-        });
         await web3Enable("Web3Go");
         const polkadotAccountList = await web3Accounts({
             // ss58Format: ss58Format,
@@ -114,15 +162,61 @@ class Component extends React.Component {
             visible: true,
             polkadotAccountList
         });
-
+    }
+    isValidSignature = async (message, signature, address) => {
+        await cryptoWaitReady();
+        const publicKey = decodeAddress(address);
+        const hexPublicKey = u8aToHex(publicKey);
+        return signatureVerify(message, signature, hexPublicKey)
+            .isValid;
     }
     choosePolkadotWallet = async (account) => {
         this.setState({
             chooseWalletLoading: true
         });
+        const challengeObj = await LayoutLoginApi.web3_nonce({
+            "chain": this.state.networkObj.key,
+            "walletSource": this.state.walletType,
+            "address": account.address
+        });
+        const injector = await web3FromSource(account.meta.source);
+        // this injector object has a signer and a signRaw method
+        // to be able to sign raw bytes
+        const signRaw = injector && injector.signer && injector.signer.signRaw;
+
+        if (signRaw) {
+            // after making sure that signRaw is defined
+            // we can use it to sign our message
+            let accountAddress = account.address;
+            // const message = "challenge message at 20210-11-21 10:00:00";
+            const message = challengeObj.challenge;
+
+            const { signature } = await signRaw({
+                address: accountAddress,
+                data: message,
+                type: "bytes",
+            });
+            const isValid = await this.isValidSignature(
+                message,
+                signature,
+                accountAddress
+            );
+            console.log("isValid", isValid);
+            const tokenObj = await LayoutLoginApi.web3_challenge({
+                "chain": this.state.networkObj.key,
+                "walletSource": this.state.walletType,
+                signature,
+                identityNetwork: "polkadot",
+                scope: ["address", "balance"],
+                challenge: message,
+                address: accountAddress,
+                nonce: challengeObj.nonce,
+            });
+        }
+
         // await web3Enable(`Web3Go`);
         const walletData = {
-            walletType: "polkadot",
+            walletType: "polkadotjs",
             address: account.address,
             name: account.meta.name,
             balance: {
@@ -131,6 +225,13 @@ class Component extends React.Component {
                 total: 0,
             },
         };
+    }
+    changeNetwork = (v) => {
+        this.setState({
+            networkObj: v,
+            walletType: '',
+            polkadotAccountList: []
+        });
     }
     render() {
         return (
@@ -142,39 +243,57 @@ class Component extends React.Component {
                 footer={null}
             >
                 <div className="web3go-connectWallet-modal-content">
-                    {this.state.ifConnect ? null : (
-                        <div className="section">
-                            <div className="section-title">Choose Wallet</div>
-                            <div className="list">
-                                <div
-                                    className={'item hover-item' + (this.state.walletType == 'metamask' ? ' active' : '')}
-                                    onClick={this.connectMetaMask}
-                                >
-                                    <div className="center">
-                                        <div className="img-wrap">
-                                            <img className="white" src={require('@/web3goLayout/assets/layout/metamaskicon.png')} alt="" />
+                    <div className="section">
+                        <div className="section-title">Choose Network</div>
+                        <div className="list">
+                            {
+                                this.state.networkList.map(v => (
+                                    <div
+                                        key={v.name}
+                                        className={'item hover-item' + (this.state.networkObj.name == v.name ? ' active' : '')}
+                                        onClick={() => this.changeNetwork(v)}
+                                    >
+                                        <div className="center">
+                                            <div className="img-wrap">
+                                                <img className="white" src={v.icon} alt="" />
+                                            </div>
+                                            <div className="text">{v.name}</div>
                                         </div>
-                                        <div className="text">Metamask</div>
                                     </div>
-                                </div>
-                                <div
-                                    className={'item hover-item' + (this.state.walletType == 'polkadot' ? ' active' : '')}
-                                    onClick={this.connectPolkadot}
-                                >
-                                    <div className="center">
-                                        <div className="img-wrap">
-                                            {this.props.isDark ? <img
-                                                src={require('@/web3goLayout/assets/layout/polkadoticon.png')}
-                                                alt=""
-                                            /> : <img className="white" src={require('@/web3goLayout/assets/layout/polkadoticon-b.png')} alt="" />}
-                                        </div>
-                                        <div className="text">Polkadot.js</div>
-                                    </div>
-                                </div>
-                            </div>
+                                ))
+                            }
+
                         </div>
-                    )}
-                    {this.state.walletType == 'polkadot' ? (
+                    </div>
+                    <div className="section">
+                        <div className="section-title">Choose Wallet</div>
+                        <div className="list">
+                            {
+                                this.state.walletTypeList.map(v => (
+                                    <div
+                                        key={v.wallet}
+                                        className={'item hover-item'
+                                            +
+                                            (this.state.walletType == v.wallet ? ' active' : '')
+                                            +
+                                            (v.chains.includes(this.state.networkObj.key) ? '' : ' disabled')}
+                                        onClick={() => { this.handleClickWalletType(v) }}
+                                    >
+                                        <div className="center">
+                                            <div className="img-wrap">
+                                                {this.props.isDark ? <img
+                                                    src={this.getWalletBlackIcon(v)}
+                                                    alt=""
+                                                /> : <img className="white" src={this.getWalletIcon(v)} alt="" />}
+                                            </div>
+                                            <div className="text">{v.wallet}</div>
+                                        </div>
+                                    </div>
+                                ))
+                            }
+                        </div>
+                    </div>
+                    {this.state.walletType == 'Polkadot.js' ? (
                         <div className="section">
                             <div className="section-title">Choose Account</div>
                             <div className="list">
@@ -207,11 +326,15 @@ class Component extends React.Component {
                             </div>
                         </div >
                     ) : null}
+                    {
+                        this.state.chooseWalletLoading ? (
 
-                    <div className="btn-wrap">
-
-                        {/* <Button className="btn" type="primary" onClick={this.connect}>Connect wallet</Button> */}
-                    </div >
+                            <div className="btn-wrap">
+                                <Spin />
+                                <span>Connecting</span>
+                            </div >
+                        ) : null
+                    }
                 </div >
             </Modal >
         )

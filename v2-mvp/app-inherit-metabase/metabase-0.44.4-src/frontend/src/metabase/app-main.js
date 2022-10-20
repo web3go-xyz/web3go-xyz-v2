@@ -13,6 +13,7 @@ import api from "metabase/lib/api";
 
 import { setErrorPage } from "metabase/redux/app";
 import { clearCurrentUser } from "metabase/redux/user";
+import { changeUserData } from "metabase/redux/app";
 
 // If any of these receives a 403, we should display the "not authorized" page.
 const NOT_AUTHORIZED_TRIGGERS = [
@@ -37,9 +38,10 @@ init(reducers, getRoutes, store => {
     if (_.contains(["/api/session", "/api/session/"], url)) {
       return;
     }
-
     store.dispatch(clearCurrentUser());
-    store.dispatch(push("/auth/login"));
+    store.dispatch(changeUserData({})),
+
+    store.dispatch(push("/layout/home#showLogin"));
   });
 
   // received a 403 response

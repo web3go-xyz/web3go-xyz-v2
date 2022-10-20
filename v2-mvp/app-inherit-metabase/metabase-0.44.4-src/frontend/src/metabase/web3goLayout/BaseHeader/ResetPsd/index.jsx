@@ -6,6 +6,8 @@ import { Button, Modal, Form, Input, Message } from '@arco-design/web-react';
 import { toggleDark } from "metabase/redux/app";
 import { push } from "react-router-redux";
 import { position } from "tether";
+import { LayoutLoginApi } from '@/services'
+
 const mapStateToProps = state => {
     return {
         isDark: state.app.isDark
@@ -22,15 +24,17 @@ class Component extends React.Component {
         super(props);
         this.state = {
             visible: false,
+            preForm: null
         }
         this.formRef = React.createRef();
     }
     componentDidMount() {
         this.props.onRef(this)
     }
-    init = () => {
+    init = (form) => {
         this.setState({
             visible: true,
+            preForm: form
         }, () => {
             this.clearForm();
         });
@@ -49,12 +53,26 @@ class Component extends React.Component {
         }
     }
     sure = () => {
-        this.formRef.current.validate().then(() => {
-
+        this.formRef.current.validate().then((form) => {
+            LayoutLoginApi.searchAccountsByEmail({
+                filter: this.state.preForm.email,
+            }).then(d => {
+                const accountId = d[0].accountId;
+                LayoutLoginApi.changePassword({
+                    email: this.state.preForm.email,
+                    code: this.state.preForm.code,
+                    newPassword: form.password,
+                    accountId: accountId
+                }).then(d => {
+                    if (d) {
+                        this.visible = false;
+                        Message.success('Reset password success');
+                    }
+                })
+            })
         })
     }
     render() {
-
         return (
             <Modal
                 title='Reset Password'
@@ -69,16 +87,14 @@ class Component extends React.Component {
                         layout="vertical"
                         requiredSymbol={{ position: 'end' }}
                     >
-
                         <FormItem label='Enter your new password' field='password' rules={[{ required: true }]}>
                             <Input placeholder='please enter your new password...' />
                         </FormItem>
                     </Form>
 
-
                     <div className="btn-wrap">
                         <Button className="btn" type="primary" onClick={this.sure}>Save</Button>
-                    </div >
+                    </div>
 
                     <div className="link-wrap">
                         <div className="left">

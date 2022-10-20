@@ -55,12 +55,14 @@ export const OPEN_NAVBAR = "metabase/app/OPEN_NAVBAR";
 export const CLOSE_NAVBAR = "metabase/app/CLOSE_NAVBAR";
 export const TOGGLE_NAVBAR = "metabase/app/TOGGLE_NAVBAR";
 export const TOGGLE_DARK = "metabase/app/TOGGLE_DARK";
+export const CHANGE_USERDATA = "metabase/app/CHANGE_USERDATA";
 
 
 export const openNavbar = createAction(OPEN_NAVBAR);
 export const closeNavbar = createAction(CLOSE_NAVBAR);
 export const toggleNavbar = createAction(TOGGLE_NAVBAR);
 export const toggleDark = createAction(TOGGLE_DARK);
+export const changeUserData = createAction(CHANGE_USERDATA);
 
 export function getIsNavbarOpen(state) {
   return state.app.isNavbarOpen;
@@ -90,8 +92,18 @@ const isDark = handleActions(
   },
   defaultIsDark == 'true' ? true : false,
 );
+
+const userData = handleActions(
+  {
+    [CHANGE_USERDATA]: (state, { payload }) => {
+      return payload
+    },
+  },
+  {}
+);
 export default combineReducers({
   errorPage,
   isNavbarOpen,
-  isDark
+  isDark,
+  userData
 });

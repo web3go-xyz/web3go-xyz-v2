@@ -61,19 +61,19 @@ export class Api extends EventEmitter {
         let url = urlTemplate;
         data = { ...data };
         // 此方法去掉了端口号，先注释
-        for (const tag of url.match(/:\w+/g) || []) {
-          const paramName = tag.slice(1);
-          let value = data[paramName];
-          delete data[paramName];
-          if (value === undefined) {
-            console.warn("Warning: calling", method, "without", tag);
-            value = "";
-          }
-          if (!options.raw || !options.raw[paramName]) {
-            value = encodeURIComponent(value);
-          }
-          url = url.replace(tag, value);
-        }
+        // for (const tag of url.match(/:\w+/g) || []) {
+        //   const paramName = tag.slice(1);
+        //   let value = data[paramName];
+        //   delete data[paramName];
+        //   if (value === undefined) {
+        //     console.warn("Warning: calling", method, "without", tag);
+        //     value = "";
+        //   }
+        //   if (!options.raw || !options.raw[paramName]) {
+        //     value = encodeURIComponent(value);
+        //   }
+        //   url = url.replace(tag, value);
+        // }
         // remove undefined
         for (const name in data) {
           if (data[name] === undefined) {
@@ -88,7 +88,7 @@ export class Api extends EventEmitter {
         if (IFRAMED) {
           headers["X-Metabase-Embedded"] = "true";
         }
-
+        headers['Authorization'] = `Bearer ${localStorage.getItem('token')}`
         if (ANTI_CSRF_TOKEN) {
           headers[ANTI_CSRF_HEADER] = ANTI_CSRF_TOKEN;
         }
@@ -166,10 +166,10 @@ export class Api extends EventEmitter {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           // getResponseHeader() is case-insensitive
           
-          const antiCsrfToken = xhr.getResponseHeader(ANTI_CSRF_HEADER);
-          if (antiCsrfToken) {
-            ANTI_CSRF_TOKEN = antiCsrfToken;
-          }
+          // const antiCsrfToken = xhr.getResponseHeader(ANTI_CSRF_HEADER);
+          // if (antiCsrfToken) {
+          //   ANTI_CSRF_TOKEN = antiCsrfToken;
+          // }
 
           let body = xhr.responseText;
           if (options.json) {

@@ -9,7 +9,8 @@ import "cropperjs/dist/cropper.css";
 
 const mapStateToProps = state => {
     return {
-        isDark: state.app.isDark
+        isDark: state.app.isDark,
+        userData: state.app.userData
     }
 };
 const mapDispatchToProps = {
@@ -32,10 +33,10 @@ class Component extends React.Component {
         if (this.state.cropper) {
             this.state.cropper.getCroppedCanvas().toBlob((blob) => {
                 const formData = new FormData();
-              
+
                 // Pass the image file name as the third parameter if necessary.
                 formData.append('croppedImage', blob/*, 'example.png' */);
-              
+
                 // Use `jQuery.ajax` method for example
                 // $.ajax('/path/to/upload', {
                 //   method: 'POST',
@@ -49,7 +50,7 @@ class Component extends React.Component {
                 //     console.log('Upload error');
                 //   },
                 // });
-              }/*, 'image/png' */);
+            }/*, 'image/png' */);
         }
     }
     fileChange = (files) => {
@@ -95,10 +96,10 @@ class Component extends React.Component {
                             initialValues={{ nickname: 'admin' }}
                         >
 
-                            <div className="name">Arthur</div>
-                            <div className="id">Web3Go ID : 234156567</div>
+                            <div className="name">{this.props.userData.account && this.props.userData.account.nickName}</div>
+                            <div className="id">Web3Go ID : {this.props.userData.account && this.props.userData.account.web3Id}</div>
                             <FormItem label="Nickname" className="nickname-row" required>
-                                <FormItem style={{ width: '504px', marginBottom: 0 }} field="nickname" rules={[{ required: true }]}>
+                                <FormItem style={{ width: '504px' }} field="nickname" noStyle={{ showErrorTip: true }} rules={[{ required: true }]}>
                                     <Input
                                         disabled
                                         maxLength={50}

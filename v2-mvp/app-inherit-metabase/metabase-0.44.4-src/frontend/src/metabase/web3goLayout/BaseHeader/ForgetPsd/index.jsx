@@ -6,6 +6,8 @@ import { Button, Modal, Form, Input, Message } from '@arco-design/web-react';
 import { toggleDark } from "metabase/redux/app";
 import { push } from "react-router-redux";
 import { position } from "tether";
+import { LayoutLoginApi } from '@/services'
+
 const mapStateToProps = state => {
     return {
         isDark: state.app.isDark
@@ -22,14 +24,14 @@ class Component extends React.Component {
         super(props);
         this.state = {
             visible: false,
-            alreadySend: false
+            canSend: true
         }
         this.formRef = React.createRef();
     }
     componentDidMount() {
         this.props.onRef(this)
     }
-    init = () => {
+    init = (form) => {
         this.setState({
             visible: true,
         }, () => {
@@ -43,15 +45,34 @@ class Component extends React.Component {
         });
         this.props.goSignIn();
     }
+
     sendEmail = () => {
-        this.setState({
-            alreadySend: true
-        });
-
-        Message.success("Email has been sent. Please check the security code in the email.");
-    }
-    resendEmail = () => {
-
+        this.formRef.current.validate(['email']).then(() => {
+            const form = this.formRef.current.getFields();
+            LayoutLoginApi.sendVerifyEmail({
+                "email": form.email,
+                "verifyCodePurpose": "resetPassword"
+            }).then(d => {
+                this.setState({
+                    canSend: false
+                });
+                setTimeout(() => {
+                    this.setState({
+                        canSend: true
+                    });
+                }, 30000);
+                if (d) {
+                    Message.success('Email has been sent. Please check the security code in the email.');
+                }
+            }).catch(e => {
+                if (e && e.data && e.data.message) {
+                    Message.error({
+                        content: e.data.message,
+                        duration: 5000
+                    });
+                }
+            })
+        })
     }
     clearForm = () => {
         if (this.formRef.current) {
@@ -59,15 +80,14 @@ class Component extends React.Component {
         }
     }
     sure = () => {
-        this.formRef.current.validate().then(() => {
+        this.formRef.current.validate().then((form) => {
             this.setState({
                 visible: false
             });
-            this.props.goResetPsd();
+            this.props.goResetPsd(form);
         })
     }
     render() {
-
         return (
             <Modal
                 title='Forgot Password'
@@ -88,32 +108,29 @@ class Component extends React.Component {
                     >
 
                         <FormItem className="email-row" label='Email address' required>
-                            <FormItem style={{ marginBottom: 0 }} field='email' rules={[{ required: true }]}>
+                            <FormItem field='email' noStyle={{ showErrorTip: true }} rules={[{ required: true, type: 'email' }]}>
                                 <Input placeholder='helloworld@gmail.com' />
                             </FormItem>
-                            {this.state.alreadySend ?
-                                <div className="btn disabled">Send Email</div> :
-                                <div className="btn hover-item" onClick={this.sendEmail}>Send Email</div>
-                            }
+                            <FormItem shouldUpdate noStyle>
+                                {(values) => {
+                                    return this.state.canSend && values.email ?
+                                        <div className="btn hover-item" onClick={this.sendEmail}>Send Email</div> :
+                                        <div className="btn disabled">Send Email</div>
+                                }}
+                            </FormItem>
                         </FormItem>
                         <FormItem label='Security code' field='code' rules={[{ required: true }]}>
                             <Input placeholder='please enter your Security code...' />
                         </FormItem>
                     </Form>
-
-
                     <div className="btn-wrap">
                         <Button className="btn" type="primary" onClick={this.sure}>Next Step</Button>
-                    </div >
-
+                    </div>
                     <div className="link-wrap">
                         <div className="left">
                             <span className="hover-item" onClick={this.goSignIn}
                             >Back to previous page
                             </span>
-                        </div>
-                        <div className="hover-item a" onClick={this.resendEmail}>
-                            Resend password reset email
                         </div>
                     </div>
                 </div >

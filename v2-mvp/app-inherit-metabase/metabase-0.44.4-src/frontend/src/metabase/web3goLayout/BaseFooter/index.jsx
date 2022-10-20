@@ -48,13 +48,13 @@ class Component extends React.Component {
                                             <div className="icons">
                                                 {this.props.isDark ? <img
                                                     title="Github"
-                                                    onClick={() => this.jumpUrl('https ://github.com/web3go-xyz')}
+                                                    onClick={() => this.jumpUrl('https://github.com/web3go-xyz')}
                                                     src={require("@/web3goLayout/assets/layout/Frame31.png")}
                                                     alt=""
                                                 />
                                                     : <img
                                                         title="Github"
-                                                        onClick={() => this.jumpUrl('https ://github.com/web3go-xyz')}
+                                                        onClick={() => this.jumpUrl('https://github.com/web3go-xyz')}
                                                         src={require("@/web3goLayout/assets/layout/Frame31d.png")}
                                                         alt=""
                                                     />}
@@ -84,13 +84,13 @@ class Component extends React.Component {
                                                     />}
                                                 {this.props.isDark ? <img
                                                     title="Telegram"
-                                                    onClick={() => this.jumpUrl('https://t.me/web3go')}
+                                                    onClick={() => this.jumpUrl('https://t.me/Web3GoCommunity')}
                                                     src={require("@/web3goLayout/assets/layout/Frame29.png")}
                                                     alt=""
                                                 />
                                                     : <img
                                                         title="Telegram"
-                                                        onClick={() => this.jumpUrl('https://t.me/web3go')}
+                                                        onClick={() => this.jumpUrl('https://t.me/Web3GoCommunity')}
                                                         src={require("@/web3goLayout/assets/layout/Frame29d.png")}
                                                         alt=""
                                                     />}
@@ -286,7 +286,7 @@ class Component extends React.Component {
                                         >
                                             Discord
                                         </div>
-                                        <div className="link" onClick={() => this.jumpUrl('https://t.me/web3go')}>
+                                        <div className="link" onClick={() => this.jumpUrl('https://t.me/Web3GoCommunity')}>
                                             Telegram
                                         </div>
                                         <div className="link" onClick={() => this.jumpUrl('https://web3go.medium.com/')} >
