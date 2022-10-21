@@ -11,9 +11,14 @@
 - metabase-0.44.4-src\frontend\src\metabase\lib\api.js
 
 ```
- basename = ""; //TODO basename to connect backend api
+//CHANGE_ME change basename to connect webpack hot server, it is used only when DEV.
+// basename ="";  // keep empty in PRODUCTION 
+  basename = "http://13.214.196.16:3001";  //port should be same with value of [ build-hot:js ] in package.json
+  
 ```
-update it to connect with remove backend api
+update it to connect with remote js file server provided by webpack, eg: http://13.214.196.16:3001/
+
+
 
 3. Update code:
 - metabase-0.44.4-src\src\metabase\public_settings\premium_features.clj

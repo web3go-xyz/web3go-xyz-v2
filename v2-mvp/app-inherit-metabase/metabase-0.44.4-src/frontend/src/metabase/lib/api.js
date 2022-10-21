@@ -29,7 +29,10 @@ const DEFAULT_OPTIONS = {
 };
 
 export class Api extends EventEmitter {
-  basename = ""; //TODO basename to connect backend api
+  //CHANGE_ME change basename to connect webpack hot server, it is used only when DEV.
+
+  basename ="";  // keep empty in PRODUCTION 
+  //basename = "http://13.214.196.16:3001";  //port should be same with value of [ build-hot:js ] in package.json
 
   GET;
   POST;
@@ -165,7 +168,7 @@ export class Api extends EventEmitter {
       xhr.onreadystatechange = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           // getResponseHeader() is case-insensitive
-          
+
           const antiCsrfToken = xhr.getResponseHeader(ANTI_CSRF_HEADER);
           if (antiCsrfToken) {
             ANTI_CSRF_TOKEN = antiCsrfToken;
@@ -175,7 +178,7 @@ export class Api extends EventEmitter {
           if (options.json) {
             try {
               body = JSON.parse(body);
-            } catch (e) {}
+            } catch (e) { }
           }
           let status = xhr.status;
           if (status === 202 && body && body._status > 0) {
