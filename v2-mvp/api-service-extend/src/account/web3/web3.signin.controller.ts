@@ -91,7 +91,8 @@ export class Web3SignInController {
       let nonce = request.nonce;
       if (!challenge) {
         throw new BadRequestException('challenge invalid');
-      } if (!nonce) {
+      } 
+      if (!nonce) {
         throw new BadRequestException('nonce invalid');
       }
 

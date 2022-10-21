@@ -76,6 +76,7 @@ export class AccountAuthService implements IAuthService {
       const payload: SignTokenPayload = {
         id: authUser.id,
         email: request.email,
+        address: '',
         first_name: authUser.name,
         groups: await this.accountBaseService.searchAccountGroups(accountId),
       };
@@ -213,6 +214,7 @@ export class AccountAuthService implements IAuthService {
         let payload: SignTokenPayload = {
           id: account.accountId,
           email: request.email,
+          address: '',
           first_name: account.nickName,
           groups: await this.accountBaseService.searchAccountGroups(account.accountId)
         };

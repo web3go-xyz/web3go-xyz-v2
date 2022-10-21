@@ -17,7 +17,7 @@ export class MetamaskSignHelper implements IWeb3Sign {
     async createChallenge(request: Web3SignInNonceRequest): Promise<Web3SignInNonceResponse> {
 
         let nonce = `[web3_nonce][${new Date().getTime()}][${uuidv4()}][${generateNonce()}]`;
-        let challenge = `you are going to approve access to current application, the challenge message is: signin with [${request.chain}][${request.walletSource}][${request.address}]`;
+        let challenge = `challenge: signin with [${request.chain}][${request.walletSource}][${request.address}]`;
 
         let resp: Web3SignInNonceResponse = {
             chain: request.chain,
