@@ -10,6 +10,7 @@ import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { VerifyCodeType, VerifyCodePurpose, VerifyFlag } from 'src/base/entity/platform-user/VerifyCodeType';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
+import { AppConfig } from 'src/base/setting/appConfig';
 import { AccountInfo } from 'src/viewModel/user-auth/AccountInfo';
 import { AccountSearchResult } from 'src/viewModel/user-auth/AccountSearchResult';
 
@@ -75,6 +76,7 @@ export class AccountAuthService implements IAuthService {
       const payload: SignTokenPayload = {
         id: authUser.id,
         email: request.email,
+        address: '',
         first_name: authUser.name,
         groups: await this.accountBaseService.searchAccountGroups(accountId),
       };
@@ -153,7 +155,7 @@ export class AccountAuthService implements IAuthService {
   }
   generateEmailContent4VerifyCode(purpose: VerifyCodePurpose, email: string, account: Account, code: AccountVerifyCode) {
 
-    let url = (process.env.BASE_WEB_URL || 'http://localhost:3000') + `/verifyEmail?accountId=${account.accountId}&email=${escape(email)}&code=${code.code}&verifyCodePurpose=${purpose}`;
+    let url = (AppConfig.BASE_WEB_URL || 'http://localhost:3000') + `/verifyEmail?accountId=${account.accountId}&email=${escape(email)}&code=${code.code}&verifyCodePurpose=${purpose}`;
     let html = `<p> hi ${account.nickName}, </p>
     <p>your are processing ${purpose}, below is the verification code:</p>
     <h3>${code.code}</h3>
@@ -212,6 +214,7 @@ export class AccountAuthService implements IAuthService {
         let payload: SignTokenPayload = {
           id: account.accountId,
           email: request.email,
+          address: '',
           first_name: account.nickName,
           groups: await this.accountBaseService.searchAccountGroups(account.accountId)
         };

@@ -74,6 +74,7 @@ export class Web3SignInService {
   async signInWithWalletAddress(request: Web3SignInChallengeRequest): Promise<AuthUser> {
     let address = request.address;
     let accountId: string = null;
+    let mockEmail: string = `${request.chain.toLowerCase()}_${request.address.toLowerCase()}@web3go.xyz`;
 
     let searchAccounts = await this.accountBaseService.searchAccountsByWalletAddress(address, false);
     if (!searchAccounts || searchAccounts.length == 0) {
@@ -82,7 +83,7 @@ export class Web3SignInService {
 
       let newAccount = await this.createAccount4WalletAddress(request.address, request.chain, request.walletSource);
       accountId = newAccount.account.accountId;
-      
+
     } else {
       let searchAccount = searchAccounts[0];
       if (!searchAccount.verified) {
@@ -100,6 +101,7 @@ export class Web3SignInService {
     }
     let payload: SignTokenPayload = {
       id: account.accountId,
+      email: mockEmail,
       address: address,
       first_name: account.nickName,
       groups: await this.accountBaseService.searchAccountGroups(account.accountId),

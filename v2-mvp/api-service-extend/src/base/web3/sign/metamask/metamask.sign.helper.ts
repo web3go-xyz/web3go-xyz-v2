@@ -16,8 +16,8 @@ export class MetamaskSignHelper implements IWeb3Sign {
     }
     async createChallenge(request: Web3SignInNonceRequest): Promise<Web3SignInNonceResponse> {
 
-        let nonce = `[web3_nonce][${new Date().getTime()}][${uuidv4()}][${generateNonce()}]`;
-        let challenge = `you are going to approve access to current application, the challenge message is: signin with [${request.chain}][${request.walletSource}][${request.address}]`;
+        let nonce = `${generateNonce()}`;
+        let challenge = `challenge for signin with [${request.chain}] [${request.walletSource}] [${request.address}]`;
 
         let resp: Web3SignInNonceResponse = {
             chain: request.chain,
@@ -59,7 +59,9 @@ export class MetamaskSignHelper implements IWeb3Sign {
     }
 
     async isValidSignature(signedMessage, signature, address): Promise<boolean> {
+        this.logger.log(`signedMessage:${JSON.stringify(signedMessage)}`);
         const siweMessage = new SiweMessage(signedMessage);
+        this.logger.log(`siweMessage:${JSON.stringify(siweMessage)}`);
         try {
             let isValid = await siweMessage.validate(signature) != null;
             this.logger.debug(`isValid:${isValid},signedMessage:${signedMessage},signature:${signature}`);
