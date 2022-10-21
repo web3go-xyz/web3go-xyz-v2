@@ -55,6 +55,9 @@ export class Web3SignInController {
   @ApiOperation({ summary: '[Web3] find accountId with  wallet address' })
   @ApiOkResponse({ type: AccountSearchResult })
   async searchAccountsByWalletAddress(@Query('filter') filter: string): Promise<AccountSearchResult[]> {
+    if (!filter) {
+      throw new BadRequestException('request filter invalid');
+    }
     return await this.service.searchAccountsByWalletAddress(filter, false);
   }
 
@@ -62,8 +65,10 @@ export class Web3SignInController {
   @Post('/web3_nonce')
   @ApiOperation({ summary: '[Web3] create a nonce message for signin request' })
   @ApiOkResponse({ type: Web3SignInNonceResponse })
-  async nonce(@Body() request: Web3SignInNonceRequest): Promise<Web3SignInNonceResponse> {
-
+  async web3_nonce(@Body() request: Web3SignInNonceRequest): Promise<Web3SignInNonceResponse> {
+    if (!request.walletSource || !request.chain || !request.address) {
+      throw new BadRequestException('request parameter invalid');
+    }
     let resp = await this.getWeb3SignHelper(request.walletSource, request.chain).createChallenge(request);
 
     this.logger.debug(`web3_nonce: ${JSON.stringify(resp)}`);
@@ -77,8 +82,11 @@ export class Web3SignInController {
   @ApiOperation({ summary: '[Web3] verify the nonce message and signature' })
   @ApiOkResponse({ type: Web3SignInChallengeResponse })
   async challenge(@Body() request: Web3SignInChallengeRequest): Promise<Web3SignInChallengeResponse> {
-    try {
+    if (!request.walletSource || !request.chain || !request.address || !request.nonce || !request.challenge || !request.signature) {
+      throw new BadRequestException('request parameter invalid');
+    }
 
+    try {
       let challenge = request.challenge;
       let nonce = request.nonce;
       if (!challenge) {
