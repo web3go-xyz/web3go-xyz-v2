@@ -66,11 +66,11 @@ class Component extends React.Component {
         this.formRef = React.createRef();
     }
     async componentDidMount() {
+        this.props.onRef(this)
         const walletTypeList = await LayoutLoginApi.getSupportedWallet()
         this.setState({
             walletTypeList
         });
-        this.props.onRef(this)
     }
     openConnectWalletModal = () => {
         this.setState({

@@ -11,7 +11,7 @@ import ForgetPsd from './ForgetPsd';
 import ResetPsd from './ResetPsd';
 import ConnectWallet from './ConnectWallet';
 import { LayoutLoginApi } from '@/services'
-
+import event from '@/web3goLayout/event';
 const mapStateToProps = (state) => {
     return {
         currentUser: state.currentUser,
@@ -38,6 +38,9 @@ class Component extends React.Component {
         this.ConnectWalletRef = React.createRef();
     }
     componentDidMount() {
+        event.on('goSignIn', (text) => {
+            this.goSignIn();
+        })
         const { route } = this.props;
         if (route.hash == '#showLogin') {
             // 去掉hash

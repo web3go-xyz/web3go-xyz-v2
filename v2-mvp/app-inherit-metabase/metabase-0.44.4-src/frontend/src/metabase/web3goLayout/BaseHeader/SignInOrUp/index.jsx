@@ -93,7 +93,6 @@ class Component extends React.Component {
                         });
                     }
                 })
-
             } else {
                 LayoutLoginApi.signUp(form).then(d => {
                     this.setState({

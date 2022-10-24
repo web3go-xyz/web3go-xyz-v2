@@ -37,7 +37,6 @@ export const TableSchema = new schema.Entity(
           },
         };
       }
-
       return table;
     },
   },
