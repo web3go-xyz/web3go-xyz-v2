@@ -27,6 +27,7 @@ const NOT_AUTHORIZED_TRIGGERS = [
 init(reducers, getRoutes, store => {
   // received a 401 response
   api.on("401", url => {
+    localStorage.removeItem('token');
     if (url.indexOf("/api/user/current") >= 0) {
       return;
     }
@@ -41,7 +42,7 @@ init(reducers, getRoutes, store => {
     store.dispatch(clearCurrentUser());
     store.dispatch(changeUserData({})),
 
-    store.dispatch(push("/layout/home#showLogin"));
+      store.dispatch(push("/layout/home#showLogin"));
   });
 
   // received a 403 response

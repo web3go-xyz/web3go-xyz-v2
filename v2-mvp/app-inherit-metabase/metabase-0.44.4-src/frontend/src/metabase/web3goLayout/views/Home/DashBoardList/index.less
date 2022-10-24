@@ -1,0 +1,104 @@
+body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
+
+.web3go-layout-home-dashbaoard-list {
+    .filter-wrap {
+        display: flex;
+
+        .filter-btn {
+            flex: none;
+            width: 93px;
+            height: 32px;
+            border: 1px solid #C9CDD4;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+
+            &:hover {
+                border-color: var(--primary-color);
+
+                svg path {
+                    stroke: var(--primary-color)
+                }
+
+                span {
+                    color: var(--primary-color);
+                }
+
+            }
+
+            svg {
+                margin-right: 4px;
+            }
+
+            span {
+                font-weight: 400;
+                font-size: 14px;
+                line-height: 22px;
+                color: var(--6bColor);
+            }
+        }
+
+        .filter-list {
+            flex: 1;
+            padding-left: 40px;
+
+            .item {
+                display: inline-block;
+                padding: 5px 12px;
+                border-radius: 4px;
+                cursor: pointer;
+                margin-right: 20px;
+                margin-bottom: 10px;
+                max-width: 174px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+
+                &:hover {
+                    color: var(--primary-color);
+                }
+
+                &.active {
+                    background: #F2F3F5;
+                    color: var(--primary-color);
+                }
+            }
+        }
+    }
+
+    .search-params-wrap {
+        margin-top: 8px;
+        margin-bottom: 19px;
+        display: flex;
+        align-items: flex-end;
+
+        .createby {
+            .label {
+                font-weight: 400;
+                font-size: 14px;
+                line-height: 22px;
+                margin-bottom: 8px;
+            }
+        }
+
+        .arco-checkbox {
+            height: 48px;
+            line-height: 48px;
+            margin-left: 18px;
+        }
+    }
+
+    .total-wrap {
+        margin-top: 8px;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 20px;
+        color: var(--86Color);
+    }
+
+    .arco-table {
+        padding-top: 8px;
+    }
+}

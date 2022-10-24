@@ -193,11 +193,12 @@ body[arco-theme="dark"] {}
 }
 
 .arco-input {
-    height: 48px;
+    height: 46px;
     font-size: 14px;
     line-height: 22px;
     font-weight: 400;
     border-radius: 12px;
+    padding: 0;
 
     .el-input__wrapper {
         padding: 0 12px;
@@ -223,6 +224,58 @@ body[arco-theme="dark"] {}
     }
 }
 
+.arco-select-size-default.arco-select-single .arco-select-view {
+    border-radius: 12px;
+    height: 48px;
+    line-height: 48px;
+    padding: 0 16px;
+}
+
+.arco-select-arrow-icon {
+    font-size: 16px;
+}
+
+.arco-select-suffix-icon,
+.arco-select-search-icon,
+.arco-select-loading-icon,
+.arco-select-expand-icon,
+.arco-select-clear-icon {
+    font-size: 16px;
+}
+
+.arco-checkbox {
+    .arco-checkbox-mask {
+        width: 20px;
+        height: 20px;
+        border: 1px solid #C9CDD4;
+        border-radius: 4px;
+    }
+
+    .arco-checkbox-text {
+        color: var(--6bColor);
+
+    }
+}
+
+.arco-checkbox-checked .arco-checkbox-mask-icon {
+    transform-origin: center;
+    transform: scale(1.4);
+}
+
+.arco-checkbox:hover .arco-checkbox-icon-hover::before {
+    background: transparent;
+}
+
+.arco-checkbox:not(.arco-checkbox-checked):hover {
+    .arco-checkbox-mask {
+        border: 2px solid #D4CBFD;
+    }
+}
+
+.arco-checkbox>input[type='checkbox']:focus+.arco-checkbox-icon-hover::before {
+    background: transparent;
+}
+
 .arco-message {
     padding: 16px 32px;
     border-radius: 8px;
@@ -232,6 +285,29 @@ body[arco-theme="dark"] {}
         font-size: 14px;
         line-height: 22px;
     }
+}
+
+.arco-table table thead tr:first-child th:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.arco-table table thead tr:first-child th:last-child {
+    border-radius: 0 4px 4px 0;
+}
+
+thead>.arco-table-tr>.arco-table-th {
+    border-bottom: 0;
+}
+
+.arco-table-th {
+    background: #F7F8FA;
+    color: var(--6bColor);
+}
+
+.arco-table-td {
+    border-bottom: 0;
+    color: var(--4eColor);
+
 }
 
 .common-layout {
