@@ -13,6 +13,8 @@ export class AppController {
 
   @Get("api/:tokenId/v2/status")
   status(@Param() tokenId): any {
+    console.log(`request status:`, tokenId);
+
     return {
       valid: true,
       status: 'active',

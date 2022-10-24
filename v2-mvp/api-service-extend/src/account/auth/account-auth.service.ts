@@ -131,7 +131,7 @@ export class AccountAuthService implements IAuthService {
 
       //send email
       if ([VerifyCodePurpose.ResetPassword].indexOf(request.verifyCodePurpose) > -1) {
-        await this.sendEmail(request.email, "Security email from web3go.xyz", this.generateEmail4VerifyCode(request.verifyCodePurpose, request.email, findAccount, newCode, this.CODE_EXPIRED_MINUTES));
+        await this.sendEmail(request.email, "Security email from web3go.xyz", this.generateEmail4VerifyCode(findAccount, newCode, this.CODE_EXPIRED_MINUTES));
       }
       if ([VerifyCodePurpose.Account].indexOf(request.verifyCodePurpose) > -1) {
         await this.sendEmail(request.email, "Account activate email from web3go.xyz", this.generateEmail4AccountActivate(request.verifyCodePurpose, request.email, findAccount, newCode, this.CODE_EXPIRED_MINUTES));
@@ -162,52 +162,52 @@ export class AccountAuthService implements IAuthService {
     });
     return "email sent success";
   }
-  generateEmail4VerifyCode(purpose: VerifyCodePurpose, email: string, account: Account, code: AccountVerifyCode, expiredMinutes: number) {
+  generateEmail4VerifyCode(account: Account, code: AccountVerifyCode, expiredMinutes: number) {
 
     let email_template = join(__dirname, '../../..', 'public/code.html');
-    this.logger.debug(`email_template:${email_template}`);
-    var fs = require("fs");
-    let email_content = fs.readFileSync(email_template);
-    if (email_content) {
-      email_content = email_content.toString();
-    }
-
-    let handlebars = require('handlebars');
-    let template = handlebars.compile(email_content);
     var replacements = {
       NICK_NAME: account.nickName,
       EXPIRED_MINUTES: expiredMinutes.toString(),
       VERIFY_CODE: code.code
     };
-    let htmlToSend = template(replacements);
+    let htmlToSend = this.generateEmail(email_template, replacements);
     this.logger.debug(`generateEmail4VerifyCode:${htmlToSend}`);
     return htmlToSend;
   }
 
   generateEmail4AccountActivate(purpose: VerifyCodePurpose, email: string, account: Account, code: AccountVerifyCode, expiredMinutes: number) {
+    let email_template = join(__dirname, '../../..', 'public/activate.html');
 
     let url = (AppConfig.BASE_WEB_URL || 'http://localhost:3000') + `/verifyEmail?accountId=${account.accountId}&email=${escape(email)}&code=${code.code}&verifyCodePurpose=${purpose}`;
-
-    let email_template = join(__dirname, '../../..', 'public/activate.html');
-    this.logger.debug(`email_template:${email_template}`);
-    var fs = require("fs");
-    let email_content = fs.readFileSync(email_template);
-    if (email_content) {
-      email_content = email_content.toString();
-    }
-
-    let handlebars = require('handlebars');
-    let template = handlebars.compile(email_content);
-    var replacements = {
+    let replacements = {
       NICK_NAME: account.nickName,
       EXPIRED_MINUTES: expiredMinutes.toString(),
       ACTIVATE_URL: url,
       STATIC_ASSET_PREFIX: AppConfig.STATIC_ASSET_PREFIX
     };
-    let htmlToSend = template(replacements);
+    let htmlToSend = this.generateEmail(email_template, replacements);
     this.logger.debug(`generateEmail4AccountActivate:${htmlToSend}`);
     return htmlToSend;
   }
+  generateEmail(email_template_path: string, replacements: any) {
+    this.logger.debug(`email_template_path:${email_template_path}`);
+    var fs = require("fs");
+    let data = fs.readFileSync(email_template_path);
+    let email_content: string = '';
+    if (data) {
+      email_content = data.toString();
+    }
+    //update image links with prefix
+    email_content = email_content.replace(/.\/images/g, AppConfig.STATIC_ASSET_PREFIX + 'images');
+
+    let handlebars = require('handlebars');
+    let template = handlebars.compile(email_content);
+
+    let htmlToSend = template(replacements);
+    // this.logger.debug(`generateEmail for email_template_path=${email_template_path}:${htmlToSend}`);
+    return htmlToSend;
+  }
+
 
   generateVerifyCode(codeLength: number): string {
     let code = "";

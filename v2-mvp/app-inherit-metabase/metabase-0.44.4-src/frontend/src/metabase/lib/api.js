@@ -31,8 +31,8 @@ const DEFAULT_OPTIONS = {
 export class Api extends EventEmitter {
   //CHANGE_ME change basename to connect webpack hot server, it is used only when DEV.
 
-  basename ="";  // keep empty in PRODUCTION 
-  //basename = "http://13.214.196.16:3001";  //port should be same with value of [ build-hot:js ] in package.json
+  //basename ="";  // keep empty in PRODUCTION 
+  basename = "https://dev-v2.web3go.xyz/webpack";  //port should be same with value of [ build-hot:js ] in package.json
 
   GET;
   POST;
