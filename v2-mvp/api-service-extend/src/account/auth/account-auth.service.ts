@@ -1,4 +1,6 @@
 import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { fstat } from 'fs';
+import { join } from 'path';
 
 import { AuthUser } from 'src/base/auth/authUser';
 import { IAuthService } from 'src/base/auth/IAuthService';
@@ -27,6 +29,8 @@ import { AccountBaseService } from '../base/account-base.service';
 
 @Injectable()
 export class AccountAuthService implements IAuthService {
+
+  private CODE_EXPIRED_MINUTES: number = 10;
 
   logger: W3Logger;
 
@@ -121,12 +125,17 @@ export class AccountAuthService implements IAuthService {
         code: this.generateVerifyCode(6),
         accountId: findAccount.accountId,
         created_time: new Date(),
-        expired_time: new Date(new Date().getTime() + (1000 * 60 * 10))
+        expired_time: new Date(new Date().getTime() + (this.CODE_EXPIRED_MINUTES * 1000 * 60))
       }
       await this.accountVerifyCodeRepository.save(newCode);
 
-      //send verfication code by email
-      await this.sendEmail(request.email, "Verification mail from web3go.xyz", this.generateEmailContent4VerifyCode(request.verifyCodePurpose, request.email, findAccount, newCode));
+      //send email
+      if ([VerifyCodePurpose.ResetPassword].indexOf(request.verifyCodePurpose) > -1) {
+        await this.sendEmail(request.email, "Security email from web3go.xyz", this.generateEmail4VerifyCode(request.verifyCodePurpose, request.email, findAccount, newCode, this.CODE_EXPIRED_MINUTES));
+      }
+      if ([VerifyCodePurpose.Account].indexOf(request.verifyCodePurpose) > -1) {
+        await this.sendEmail(request.email, "Account activate email from web3go.xyz", this.generateEmail4AccountActivate(request.verifyCodePurpose, request.email, findAccount, newCode, this.CODE_EXPIRED_MINUTES));
+      }
 
       return true;
     }
@@ -153,16 +162,51 @@ export class AccountAuthService implements IAuthService {
     });
     return "email sent success";
   }
-  generateEmailContent4VerifyCode(purpose: VerifyCodePurpose, email: string, account: Account, code: AccountVerifyCode) {
+  generateEmail4VerifyCode(purpose: VerifyCodePurpose, email: string, account: Account, code: AccountVerifyCode, expiredMinutes: number) {
+
+    let email_template = join(__dirname, '../../..', 'public/code.html');
+    this.logger.debug(`email_template:${email_template}`);
+    var fs = require("fs");
+    let email_content = fs.readFileSync(email_template);
+    if (email_content) {
+      email_content = email_content.toString();
+    }
+
+    let handlebars = require('handlebars');
+    let template = handlebars.compile(email_content);
+    var replacements = {
+      NICK_NAME: account.nickName,
+      EXPIRED_MINUTES: expiredMinutes.toString(),
+      VERIFY_CODE: code.code
+    };
+    let htmlToSend = template(replacements);
+    this.logger.debug(`generateEmail4VerifyCode:${htmlToSend}`);
+    return htmlToSend;
+  }
+
+  generateEmail4AccountActivate(purpose: VerifyCodePurpose, email: string, account: Account, code: AccountVerifyCode, expiredMinutes: number) {
 
     let url = (AppConfig.BASE_WEB_URL || 'http://localhost:3000') + `/verifyEmail?accountId=${account.accountId}&email=${escape(email)}&code=${code.code}&verifyCodePurpose=${purpose}`;
-    let html = `<p> hi ${account.nickName}, </p>
-    <p>your are processing ${purpose}, below is the verification code:</p>
-    <h3>${code.code}</h3>
-     <p>please click the button below to verify:</p>
-     <div><a href="${url}" target="_blank" style="font-size:24px;">verify</a></div>`;
-    this.logger.debug(`generateEmailContent4VerifyCode:${html}`);
-    return html;
+
+    let email_template = join(__dirname, '../../..', 'public/activate.html');
+    this.logger.debug(`email_template:${email_template}`);
+    var fs = require("fs");
+    let email_content = fs.readFileSync(email_template);
+    if (email_content) {
+      email_content = email_content.toString();
+    }
+
+    let handlebars = require('handlebars');
+    let template = handlebars.compile(email_content);
+    var replacements = {
+      NICK_NAME: account.nickName,
+      EXPIRED_MINUTES: expiredMinutes.toString(),
+      ACTIVATE_URL: url,
+      STATIC_ASSET_PREFIX: AppConfig.STATIC_ASSET_PREFIX
+    };
+    let htmlToSend = template(replacements);
+    this.logger.debug(`generateEmail4AccountActivate:${htmlToSend}`);
+    return htmlToSend;
   }
 
   generateVerifyCode(codeLength: number): string {
