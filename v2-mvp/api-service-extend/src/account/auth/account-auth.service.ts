@@ -307,4 +307,9 @@ export class AccountAuthService implements IAuthService {
     this.logger.error(error);
     throw new UnauthorizedException(error);
   }
+
+  jwt_verify(jwt: string): Object | PromiseLike<Object> {
+    return this.accountBaseService.jwt_verify(jwt);
+  }
+
 }

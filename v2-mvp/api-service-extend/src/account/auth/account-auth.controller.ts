@@ -11,6 +11,7 @@ import { AccountSigninRequest } from 'src/viewModel/user-auth/AccountSigninReque
 import { AccountSignupRequest } from 'src/viewModel/user-auth/AccountSignupRequest';
 import { ChangePasswordRequest } from 'src/viewModel/user-auth/ChangePasswordRequest';
 import { EmailVerifyRequest } from 'src/viewModel/user-auth/EmailVerifyRequest';
+
 import { AccountAuthService, } from './account-auth.service';
 
 
@@ -88,5 +89,15 @@ export class AccountAuthController {
     }
   }
 
+
+  @Get('/jwt_verify')
+  @ApiOperation({ summary: 'verify access token' })
+  @ApiOkResponse({ type: Object })
+  async jwt_verify(@Query('jwt') jwt: string): Promise<Object> {
+    {
+      this.logger.debug(`jwt_verify:${jwt}`);
+      return await this.accountAuthService.jwt_verify(jwt);
+    }
+  }
 }
 

@@ -21,7 +21,7 @@ import { MetamaskSignHelper } from 'src/base/web3/sign/metamask/metamask.sign.he
     PassportModule,
     JwtModule.register({
       secret: JWTConfig.secret,
-      signOptions: { expiresIn: JWTConfig.expiresInSeconds },
+      signOptions: { expiresIn: JWTConfig.expiresIn },
     }),
     KVModule
   ],
