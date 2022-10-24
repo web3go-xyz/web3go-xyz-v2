@@ -8,6 +8,8 @@ import { push } from "react-router-redux";
 import { position } from "tether";
 import { shorterAddress } from '@/web3goLayout/utils';
 import Web3 from "web3";
+import { ethers } from "ethers";
+import { SiweMessage } from "siwe";
 import IdentityIcon from "@/web3goLayout/components/IdentityIcon";
 import {
     web3Accounts,
@@ -23,7 +25,8 @@ import {
 } from "@polkadot/util-crypto";
 import { u8aToHex } from "@polkadot/util";
 
-let web3;
+let provider;
+let signer;
 const mapStateToProps = state => {
     return {
         isDark: state.app.isDark,
@@ -68,8 +71,6 @@ class Component extends React.Component {
             walletTypeList
         });
         this.props.onRef(this)
-
-
     }
     openConnectWalletModal = () => {
         this.setState({
@@ -103,53 +104,72 @@ class Component extends React.Component {
     connectMetaMask = async () => {
         // 引入web3
         this.linkLoading = true;
-        web3 = new Web3(ethereum);
-        try {
-            await ethereum.send("eth_requestAccounts");
-        } catch (error) {
-            console.error("User denied account access");
-            this.linkLoading = false;
-            return;
-        }
-        web3.eth.getAccounts((err, accs) => {
-            console.log("web3 accounts:", accs);
-            this.ethAccountList = accs;
-            if (accs.length === 0) {
-                console.error(
-                    "cannot get account, please check if Metamask has been configured?"
-                );
-                return;
-            }
-            if (err != null) {
-                console.error(
-                    "cannot get account, please check if the MetaMask has been installed."
-                );
-                return;
-            }
-            this.solveAccounts(accs[0]);
-        });
-        ethereum.on("accountsChanged", (accs) => {
-            this.solveAccounts(accs[0]);
-        });
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = provider.getSigner();
+        provider
+            .send("eth_requestAccounts", [])
+            .then((accs) => {
+                console.log("web3 accounts:", accs);
+                if (accs && accs.length > 0) {
+                    this.ethAccountList = accs;
+                    this.solveMetaMaskAccounts(accs[0]);
+                }
+            })
+            .catch(() => {
+                this.linkLoading = false;
+                console.log("user rejected request")
+            });
     }
-    solveAccounts = (acc) => {
+    solveMetaMaskAccounts = async () => {
+        let address = await signer.getAddress();
+
         // 查询token余额
-        web3.eth.getBalance(acc).then((d) => {
-            // this.linkAccount.freeBalance = this.formatWithDecimals(d).toString();
-            // this.linkAccount.address = acc[0];
-            const walletData = {
-                walletType: "metamask",
-                address: acc,
-                name: acc,
-                balance: {
-                    free: 0,
-                    reserved: 0,
-                    total: 0,
-                },
-            };
-            localStorage.setItem("alreadyLinkMetaMask", true);
-            this.linkLoading = false;
+        // web3.eth.getBalance(acc).then((d) => {
+        //     const walletData = {
+        //         walletType: "metamask",
+        //         address: acc,
+        //         name: acc,
+        //         balance: {
+        //             free: 0,
+        //             reserved: 0,
+        //             total: 0,
+        //         },
+        //     };
+        //     localStorage.setItem("alreadyLinkMetaMask", true);
+        //     this.linkLoading = false;
+        // });
+        this.setState({
+            chooseWalletLoading: true
         });
+        const challengeObj = await LayoutLoginApi.web3_nonce({
+            "chain": this.state.networkObj.key,
+            "walletSource": this.state.walletType,
+            "address": address
+        });
+        const message = new SiweMessage({
+            domain: window.location.host,
+            address: address,
+            statement: challengeObj.challenge,
+            uri: window.location.origin,
+            version: "1",
+            chainId: "56",
+            nonce: challengeObj.nonce
+        });
+        let msg = message.prepareMessage();
+        let signature = await signer.signMessage(msg);
+        const tokenObj = await LayoutLoginApi.web3_challenge({
+            "chain": this.state.networkObj.key,
+            "walletSource": this.state.walletType,
+            signature,
+            scope: [],
+            challenge: JSON.stringify({
+                msg: msg
+            }),
+            address: address,
+            nonce: challengeObj.nonce,
+        });
+        localStorage.setItem('token', tokenObj.extra.token);
+        location.replace(`/auth/sso?jwt=${tokenObj.extra.token}&&return_to=/`)
     }
     connectPolkadot = async () => {
         await web3Enable("Web3Go");
@@ -206,12 +226,13 @@ class Component extends React.Component {
                 "chain": this.state.networkObj.key,
                 "walletSource": this.state.walletType,
                 signature,
-                identityNetwork: "polkadot",
                 scope: ["address", "balance"],
                 challenge: message,
                 address: accountAddress,
                 nonce: challengeObj.nonce,
             });
+            localStorage.setItem('token', tokenObj.extra.token);
+            location.replace(`/auth/sso?jwt=${tokenObj.extra.token}&&return_to=/`)
         }
 
         // await web3Enable(`Web3Go`);
