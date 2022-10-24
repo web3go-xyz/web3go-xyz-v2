@@ -186,7 +186,7 @@ export class AccountAuthService implements IAuthService {
       STATIC_ASSET_PREFIX: AppConfig.STATIC_ASSET_PREFIX
     };
     let htmlToSend = this.generateEmail(email_template, replacements);
-    this.logger.debug(`generateEmail4AccountActivate:${htmlToSend}`);
+    // this.logger.debug(`generateEmail4AccountActivate:${htmlToSend}`);
     return htmlToSend;
   }
   generateEmail(email_template_path: string, replacements: any) {

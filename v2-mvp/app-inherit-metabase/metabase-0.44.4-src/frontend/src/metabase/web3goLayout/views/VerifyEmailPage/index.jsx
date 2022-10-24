@@ -25,11 +25,15 @@ class Component extends React.Component {
         }
     }
     componentDidMount() {
+        let email = this.props.location.query['email'] || '';
+        let accountId = this.props.location.query['accountId'] || '';
+        let code = this.props.location.query['code'] || '';
+        let verifyCodePurpose = this.props.location.query['verifyCodePurpose'] || '';
         LayoutLoginApi.verifyCode({
-            "email": '00@qq.com',
-            "accountId": '1f61bd63-4a2e-49f0-a1c5-1a22201d8c70',
-            code: '936428',
-            "verifyCodePurpose": "account"
+            "email": email,
+            "accountId": accountId,
+            code: code,
+            "verifyCodePurpose": verifyCodePurpose
         }).then(d => {
             localStorage.setItem('token', d.token);
             location.replace(`/auth/sso?jwt=${d.token}&&return_to=/`)

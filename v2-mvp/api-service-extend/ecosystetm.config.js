@@ -18,7 +18,7 @@ module.exports = {
 
 
             BASE_API_URL: "https://dev-v2.web3go.xyz/api-ext",
-            BASE_WEB_URL: "https://dev-v2.web3go.xyz/"
+            BASE_WEB_URL: "https://dev-v2.web3go.xyz"
         }
     }]
 } 
