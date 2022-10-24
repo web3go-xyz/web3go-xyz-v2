@@ -17,7 +17,7 @@ import { AccountBaseService } from '../base/account-base.service';
     PassportModule,
     JwtModule.register({
       secret: JWTConfig.secret,
-      signOptions: { expiresIn: JWTConfig.expiresInSeconds },
+      signOptions: { expiresIn: JWTConfig.expiresIn },
     })
   ],
   controllers: [AccountAuthController],

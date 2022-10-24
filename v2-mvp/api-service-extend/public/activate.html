@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background: #F7F8FA
+        }
+
+        .page {
+            padding-top: 32px;
+            width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding-bottom: 24px;
+        }
+
+        .header img {
+            width: 120px;
+        }
+
+        .main {
+            background: #E8F3FF;
+            width: 600px;
+            height: 427px;
+            text-align: center;
+            padding: 33px 62px;
+            box-sizing: border-box;
+        }
+
+        .main .img-wrap img {
+            width: 172px;
+            margin-top: 24px;
+        }
+
+        .m-title {
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 28px;
+            color: #1D2129;
+        }
+
+        .hello {
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 22px;
+            color: #1D2129;
+            margin-top: 21px;
+        }
+
+        .main .text {
+            margin-top: 12px;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 22px;
+            color: #4E5969;
+        }
+
+        .btn-wrap {
+            display: flex;
+            justify-content: center;
+            margin-top: 32px;
+        }
+
+        .btn {
+            background: #615CF6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 194px;
+            height: 32px;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 22px;
+            color: #FFFFFF;
+        }
+
+        .btn:hover {
+            cursor: pointer;
+            opacity: .8;
+        }
+
+        .btn span {
+            margin: 0 8px;
+        }
+
+        .btn img {
+            width: 16px;
+        }
+
+        .red {
+            color: rgba(243, 77, 77, 1);
+        }
+
+        .footer {
+            padding-top: 40px;
+            text-align: center;
+        }
+
+        .footer .img-wrap img {
+            width: 28px;
+        }
+
+        .footer .text {
+            margin-top: 8px;
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 20px;
+            color: #6B7785;
+        }
+
+        .footer .icon-wrap {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer .icon-wrap img {
+            height: 24px;
+            margin-left: 10px;
+        }
+
+        .footer .icon-wrap a:hover {
+            cursor: pointer;
+            opacity: .8;
+        }
+
+        .footer .icon-wrap a:first-child img {
+            margin-left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <div class="header">
+            <img src="https://web3go.xyz/img/logo.47e6236c.png" alt="">
+            <img src="{{STATIC_ASSET_PREFIX}}/images/logo-white.png" alt="" onclick='window.open("https://web3go.xyz","_blank")'>
+        </div>
+        <div class="main">
+            <div class="m-title">Web3go-Acitvate Account!</div>
+            <div class="img-wrap">
+                <img src="{{STATIC_ASSET_PREFIX}}/images/Group394.png" alt="">
+
+            </div>
+            <div class="hello">Hello {{NICK_NAME}},</div>
+            <div class="text">
+                Last step to activate Web3go Account! Please verify your email address by clicking the button below to
+                start Web3go journey.
+            </div>
+            <div class="text">
+                If you do not verify the email address within {{EXPIRED_MINUTES}} minutes, you will need to resend the
+                activation link.
+            </div>
+            <div class="btn-wrap">
+                <div class="btn">
+                    <img src="{{STATIC_ASSET_PREFIX}}/images/check.png" alt="">
+
+                    <span onclick='window.open("{{ACTIVATE_URL}}","_blank")'>Activate Account</span>
+                    <img src="{{STATIC_ASSET_PREFIX}}/images/check.png" alt="">
+
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="img-wrap">
+                <img src="{{STATIC_ASSET_PREFIX}}/images/logo.png" alt="" onclick='window.open("https://web3go.xyz","_blank")'>
+
+            </div>
+            <div class="text">If you need any help, please contact us<br /> at info@web3go.xyz or find us on:</div>
+            <div class="icon-wrap">
+                <a target="_blank" href="https://github.com/web3go-xyz">
+                    <img src="{{STATIC_ASSET_PREFIX}}/images/Frame31d.png" alt="">
+                    
+                </a>
+                <a target="_blank" href="https://discord.gg/NTrHSqyuRg">
+                    <img src="{{STATIC_ASSET_PREFIX}}/images/Frame28d.png" alt="">
+                    
+                </a>
+                <a target="_blank" href="https://twitter.com/Web3Go">
+                    <img src="{{STATIC_ASSET_PREFIX}}/images/Frame30d.png" alt="">
+                    
+                </a>
+                <a target="_blank" href="https://t.me/Web3GoCommunity">
+                    <img src="{{STATIC_ASSET_PREFIX}}/images/Frame29d.png" alt="">                    
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>

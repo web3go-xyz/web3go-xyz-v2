@@ -31,7 +31,12 @@ export class AppConfig {
     db: 0,
   };
 
+  public static STATIC_ASSET_DIR: string = 'static/';
+  public static STATIC_ASSET_PREFIX: string = '';
+
   public static initilize() {
+    AppConfig.STATIC_ASSET_PREFIX = AppConfig.BASE_API_URL + '/' + AppConfig.STATIC_ASSET_DIR;
+
     console.log(AppConfig);
   }
 

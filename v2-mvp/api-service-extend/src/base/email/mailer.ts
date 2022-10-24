@@ -40,6 +40,7 @@ export class Mailer {
             to: mailOptions.to,
             subject: mailOptions.subject,
             html: mailOptions.html || '',
+            // textEncoding: 'base64'
         };
 
         // send mail with defined transport object 

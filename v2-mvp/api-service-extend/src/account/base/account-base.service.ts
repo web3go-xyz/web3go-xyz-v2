@@ -21,7 +21,6 @@ const md5 = require('js-md5');
 @Injectable()
 export class AccountBaseService {
 
-
   logger: W3Logger;
 
   constructor(
@@ -163,6 +162,10 @@ export class AccountBaseService {
     return accountIds;
   }
 
-
+  jwt_verify(jwt: string): Object | PromiseLike<Object> {
+    let verify_result = this.jwtService.verify(jwt);
+    this.logger.debug(`verify_result:${JSON.stringify(verify_result)}`);
+    return verify_result;
+  }
 
 }
