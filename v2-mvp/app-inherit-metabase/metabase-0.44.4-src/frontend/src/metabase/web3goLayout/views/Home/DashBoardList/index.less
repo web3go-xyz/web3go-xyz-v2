@@ -2,8 +2,8 @@ body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
 
 .web3go-layout-home-dashbaoard-list {
     .filter-wrap {
+        margin-bottom: 8px;
         display: flex;
-
         .filter-btn {
             flex: none;
             width: 93px;
@@ -69,10 +69,15 @@ body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
     }
 
     .search-params-wrap {
-        margin-top: 8px;
-        margin-bottom: 19px;
         display: flex;
         align-items: flex-end;
+        height: 0;
+        overflow: hidden;
+        transition: all 0.2s;
+        &.open {
+            height: 78px;
+            margin-bottom: 26px;
+        }
 
         .createby {
             .label {
@@ -99,6 +104,5 @@ body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
     }
 
     .arco-table {
-        padding-top: 8px;
     }
 }

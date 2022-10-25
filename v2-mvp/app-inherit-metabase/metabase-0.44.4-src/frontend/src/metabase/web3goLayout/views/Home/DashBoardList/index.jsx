@@ -52,6 +52,7 @@ class Component extends React.Component {
                                     <div className="item">Product Design abcefg</div>
                                     <div className="item">Label</div>
                                 </div>
+                                <div></div>
                             </div>
                         </div>
                     ),
@@ -131,38 +132,34 @@ class Component extends React.Component {
                         }
                     </div>
                 </div>
-                {
-                    this.state.paramsShow ? (
-                        <div className="search-params-wrap">
-                            <div className="createby">
-                                <div className="label">Created by</div>
-                                <Select
-                                    placeholder='Please select created by my following creators  '
-                                    style={{ width: 386 }}
-                                    allowClear
-                                    onChange={(value) => {
-                                        this.setState({
-                                            params: {
-                                                ...this.state.params,
-                                                createBy: value
-                                            }
-                                        });
-                                        this.getList();
+                <div className={"search-params-wrap" + (this.state.paramsShow ? ' open' : '')}>
+                    <div className="createby">
+                        <div className="label">Created by</div>
+                        <Select
+                            placeholder='Please select created by my following creators  '
+                            style={{ width: 386 }}
+                            allowClear
+                            onChange={(value) => {
+                                this.setState({
+                                    params: {
+                                        ...this.state.params,
+                                        createBy: value
                                     }
-                                    }
-                                >
-                                    {this.state.createByList.map((v, i) => (
-                                        <Option key={i} value={v.name}>
-                                            {v.name}
-                                        </Option>
-                                    ))}
-                                </Select>
-                            </div>
-                            <Checkbox>My favorite</Checkbox>
-                        </div>
-                    )
-                        : null
-                }
+                                });
+                                this.getList();
+                            }
+                            }
+                        >
+                            {this.state.createByList.map((v, i) => (
+                                <Option key={i} value={v.name}>
+                                    {v.name}
+                                </Option>
+                            ))}
+                        </Select>
+                    </div>
+                    <Checkbox>My favorite</Checkbox>
+                </div>
+
                 {/* <div className="total-wrap">123 dashboards with selected label on Web3go</div> */}
                 <Table borderCell={false} border={false} pagePosition='bottomCenter' columns={this.state.columns} data={this.state.data} />
             </div >
