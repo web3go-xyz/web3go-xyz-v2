@@ -10,7 +10,7 @@
     cursor: pointer;
 
     &:hover {
-        color: var(--primary-color)!important;
+        color: var(--primary-color) !important;
     }
 }
 
@@ -242,6 +242,15 @@ body[arco-theme="dark"] {}
     font-size: 16px;
 }
 
+.arco-select-popup {
+    padding: 8px 0;
+    border-radius: 8px;
+}
+
+.arco-select-popup .arco-select-option {
+    color: var(--6bColor);
+}
+
 .arco-select-suffix-icon,
 .arco-select-search-icon,
 .arco-select-loading-icon,
@@ -312,9 +321,25 @@ thead>.arco-table-tr>.arco-table-th {
 }
 
 .arco-table-td {
+    font-weight: 500;
+    padding: 13px 16px;
     border-bottom: 0;
     color: var(--4eColor);
 
+}
+
+.arco-pagination-item {
+    border-radius: 4px;
+    color: var(--6bColor);
+}
+.arco-pagination-item-active{
+    color: var(--primary-color);
+}
+.arco-pagination-item-prev,
+.arco-pagination-item-next {
+    .arco-icon {
+        transform: scale(1.3);
+    }
 }
 
 .common-layout {
