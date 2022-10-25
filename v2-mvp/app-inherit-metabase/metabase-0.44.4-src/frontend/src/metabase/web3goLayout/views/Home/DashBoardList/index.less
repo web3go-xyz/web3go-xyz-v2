@@ -2,6 +2,7 @@ body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
 
 .web3go-layout-home-dashbaoard-list {
     .filter-wrap {
+        margin-bottom: 8px;
         display: flex;
 
         .filter-btn {
@@ -69,10 +70,16 @@ body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
     }
 
     .search-params-wrap {
-        margin-top: 8px;
-        margin-bottom: 19px;
         display: flex;
         align-items: flex-end;
+        height: 0;
+        overflow: hidden;
+        transition: all 0.2s;
+
+        &.open {
+            height: 78px;
+            margin-bottom: 26px;
+        }
 
         .createby {
             .label {
@@ -99,6 +106,55 @@ body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
     }
 
     .arco-table {
-        padding-top: 8px;
+        .name-col {
+            display: flex;
+            align-items: flex-start;
+
+            .headicon {
+                margin-right: 8px;
+                width: 32px;
+                height: 32px;
+            }
+
+            .right {
+                .title {
+                    font-weight: 600;
+                    font-size: 14px;
+                    line-height: 22px;
+                    color: var(--4eColor);
+                    margin-bottom: 4px;
+
+                    &:hover {}
+                }
+
+                .tag-list {
+                    max-width: 700px;
+
+                    .item {
+                        display: inline-block;
+                        padding: 0 8px;
+                        background: #F2F3F5;
+                        border-radius: 4px;
+                        margin-right: 4px;
+                        margin-bottom: 4px;
+                        max-width: 166px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                }
+
+                .bottom {
+                    font-weight: 400;
+                    font-size: 12px;
+                    line-height: 20px;
+                    color: var(--86Color);
+
+                    .undeline {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
     }
 }

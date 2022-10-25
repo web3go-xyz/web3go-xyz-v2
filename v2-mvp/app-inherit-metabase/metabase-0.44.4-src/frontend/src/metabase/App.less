@@ -6,6 +6,14 @@
     }
 }
 
+.hover-primary {
+    cursor: pointer;
+
+    &:hover {
+        color: var(--primary-color)!important;
+    }
+}
+
 ::-webkit-scrollbar {
     width: 6px;
 }
@@ -198,7 +206,6 @@ body[arco-theme="dark"] {}
     line-height: 22px;
     font-weight: 400;
     border-radius: 12px;
-    padding: 0;
 
     .el-input__wrapper {
         padding: 0 12px;

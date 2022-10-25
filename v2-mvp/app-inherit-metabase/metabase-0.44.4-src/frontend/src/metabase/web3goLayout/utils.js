@@ -46,7 +46,9 @@ export function copy(text) {
     }
     document.body.removeChild(input);
 }
-export const getAssetsFile = (url) => {
-    return new URL(`../assets/${url}`, import.meta.url).href
-}
 
+// 数字千分位分隔显示
+export function numberSplit(num) {
+    var reg = /\d{1,3}(?=(\d{3})+$)/g;
+    return (num + '').replace(reg, '$&,');
+}

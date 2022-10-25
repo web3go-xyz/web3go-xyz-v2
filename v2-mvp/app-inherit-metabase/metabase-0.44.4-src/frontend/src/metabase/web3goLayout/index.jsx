@@ -11,6 +11,9 @@ class Component extends React.Component {
     constructor(props) {
         super(props)
     }
+    componentDidMount(){
+        
+    }
     render() {
         return (<div className="web3go-layout-page">
             <BaseHeader />

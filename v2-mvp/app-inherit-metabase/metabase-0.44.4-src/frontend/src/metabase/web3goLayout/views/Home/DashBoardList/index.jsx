@@ -6,6 +6,7 @@ import { IconDown } from '@arco-design/web-react/icon';
 import { Button, Modal, Form, Input, Upload, Select, Checkbox, Table, TableColumnProps } from '@arco-design/web-react';
 import { push } from "react-router-redux";
 import "cropperjs/dist/cropper.css";
+import { numberSplit } from '@/web3goLayout/utils';
 const Option = Select.Option;
 const mapStateToProps = state => {
     return {
@@ -46,11 +47,29 @@ class Component extends React.Component {
                         <div className="name-col">
                             <img className="headicon" src={require("@/web3goLayout/assets/account/Avatar.png")} alt="" />
                             <div className="right">
-                                <div className="title">Token Volume(Quick News)</div>
+                                <div className="title hover-primary">Token Volume(Quick News)</div>
                                 <div className="tag-list">
                                     <div className="item">Label</div>
                                     <div className="item">Product Design abcefg</div>
+                                    <div className="item">Label</div><div className="item">Label</div>
+                                    <div className="item">Product Design abcefg</div>
+                                    <div className="item">Label</div><div className="item">Label</div>
+                                    <div className="item">Product Design abcefg</div>
+                                    <div className="item">Label</div><div className="item">Label</div>
+                                    <div className="item">Product Design abcefg</div>
+                                    <div className="item">Label</div><div className="item">Label</div>
+                                    <div className="item">Product Design abcefg</div>
+                                    <div className="item">Label</div><div className="item">Label</div>
+                                    <div className="item">Product Design abcefg</div>
+                                    <div className="item">Label</div><div className="item">Label</div>
+                                    <div className="item">Product Design abcefg</div>
                                     <div className="item">Label</div>
+                                </div>
+                                <div className="bottom">
+                                    <span className="undeline hover-item">
+                                        SimonJohnson
+                                    </span>
+                                    <span> - 1hr ago</span>
                                 </div>
                             </div>
                         </div>
@@ -60,16 +79,20 @@ class Component extends React.Component {
                     title: 'Views',
                     dataIndex: 'salary',
                     sorter: (a, b) => a.email - b.email,
+                    render: (col, record, index) => <span>{numberSplit(8859835)}</span>
                 },
                 {
                     title: 'Favorites',
                     dataIndex: 'address',
                     sorter: (a, b) => a.email - b.email,
+                    render: (col, record, index) => <span>{numberSplit(8859835)}</span>
+
                 },
                 {
                     title: 'Shares',
                     dataIndex: 'email',
                     sorter: (a, b) => a.email - b.email,
+                    render: (col, record, index) => <span>{numberSplit(8859835)}</span>
                 },
                 {
                     title: '24h',
@@ -108,7 +131,6 @@ class Component extends React.Component {
             this.tableData = [{}, {}];
         }, 1000);
     }
-
     render() {
         return (
             <div className="web3go-layout-home-dashbaoard-list">
@@ -131,38 +153,34 @@ class Component extends React.Component {
                         }
                     </div>
                 </div>
-                {
-                    this.state.paramsShow ? (
-                        <div className="search-params-wrap">
-                            <div className="createby">
-                                <div className="label">Created by</div>
-                                <Select
-                                    placeholder='Please select created by my following creators  '
-                                    style={{ width: 386 }}
-                                    allowClear
-                                    onChange={(value) => {
-                                        this.setState({
-                                            params: {
-                                                ...this.state.params,
-                                                createBy: value
-                                            }
-                                        });
-                                        this.getList();
+                <div className={"search-params-wrap" + (this.state.paramsShow ? ' open' : '')}>
+                    <div className="createby">
+                        <div className="label">Created by</div>
+                        <Select
+                            placeholder='Please select created by my following creators  '
+                            style={{ width: 386 }}
+                            allowClear
+                            onChange={(value) => {
+                                this.setState({
+                                    params: {
+                                        ...this.state.params,
+                                        createBy: value
                                     }
-                                    }
-                                >
-                                    {this.state.createByList.map((v, i) => (
-                                        <Option key={i} value={v.name}>
-                                            {v.name}
-                                        </Option>
-                                    ))}
-                                </Select>
-                            </div>
-                            <Checkbox>My favorite</Checkbox>
-                        </div>
-                    )
-                        : null
-                }
+                                });
+                                this.getList();
+                            }
+                            }
+                        >
+                            {this.state.createByList.map((v, i) => (
+                                <Option key={i} value={v.name}>
+                                    {v.name}
+                                </Option>
+                            ))}
+                        </Select>
+                    </div>
+                    <Checkbox>My favorite</Checkbox>
+                </div>
+
                 {/* <div className="total-wrap">123 dashboards with selected label on Web3go</div> */}
                 <Table borderCell={false} border={false} pagePosition='bottomCenter' columns={this.state.columns} data={this.state.data} />
             </div >
