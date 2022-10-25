@@ -6,6 +6,7 @@ import { IconDown } from '@arco-design/web-react/icon';
 import { Button, Modal, Form, Input, Upload, Select, Checkbox, Table, TableColumnProps } from '@arco-design/web-react';
 import { push } from "react-router-redux";
 import "cropperjs/dist/cropper.css";
+import { numberSplit } from '@/web3goLayout/utils';
 const Option = Select.Option;
 const mapStateToProps = state => {
     return {
@@ -46,13 +47,30 @@ class Component extends React.Component {
                         <div className="name-col">
                             <img className="headicon" src={require("@/web3goLayout/assets/account/Avatar.png")} alt="" />
                             <div className="right">
-                                <div className="title">Token Volume(Quick News)</div>
+                                <div className="title hover-primary">Token Volume(Quick News)</div>
                                 <div className="tag-list">
                                     <div className="item">Label</div>
                                     <div className="item">Product Design abcefg</div>
+                                    <div className="item">Label</div><div className="item">Label</div>
+                                    <div className="item">Product Design abcefg</div>
+                                    <div className="item">Label</div><div className="item">Label</div>
+                                    <div className="item">Product Design abcefg</div>
+                                    <div className="item">Label</div><div className="item">Label</div>
+                                    <div className="item">Product Design abcefg</div>
+                                    <div className="item">Label</div><div className="item">Label</div>
+                                    <div className="item">Product Design abcefg</div>
+                                    <div className="item">Label</div><div className="item">Label</div>
+                                    <div className="item">Product Design abcefg</div>
+                                    <div className="item">Label</div><div className="item">Label</div>
+                                    <div className="item">Product Design abcefg</div>
                                     <div className="item">Label</div>
                                 </div>
-                                <div></div>
+                                <div className="bottom">
+                                    <span className="undeline hover-item">
+                                        SimonJohnson
+                                    </span>
+                                    <span> - 1hr ago</span>
+                                </div>
                             </div>
                         </div>
                     ),
@@ -61,16 +79,20 @@ class Component extends React.Component {
                     title: 'Views',
                     dataIndex: 'salary',
                     sorter: (a, b) => a.email - b.email,
+                    render: (col, record, index) => <span>{numberSplit(8859835)}</span>
                 },
                 {
                     title: 'Favorites',
                     dataIndex: 'address',
                     sorter: (a, b) => a.email - b.email,
+                    render: (col, record, index) => <span>{numberSplit(8859835)}</span>
+
                 },
                 {
                     title: 'Shares',
                     dataIndex: 'email',
                     sorter: (a, b) => a.email - b.email,
+                    render: (col, record, index) => <span>{numberSplit(8859835)}</span>
                 },
                 {
                     title: '24h',
@@ -109,7 +131,6 @@ class Component extends React.Component {
             this.tableData = [{}, {}];
         }, 1000);
     }
-
     render() {
         return (
             <div className="web3go-layout-home-dashbaoard-list">

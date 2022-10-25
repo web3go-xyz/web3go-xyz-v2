@@ -41,7 +41,6 @@ class Component extends React.Component {
             if (e && e.data && e.data.message) {
                 this.props.replace('/layout/home#showLogin');
                 Message.error(e.data.message);
-                // document.write(e.data.message)
             }
         })
     }

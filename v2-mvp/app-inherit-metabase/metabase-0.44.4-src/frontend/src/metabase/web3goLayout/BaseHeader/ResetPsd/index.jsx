@@ -65,7 +65,9 @@ class Component extends React.Component {
                     accountId: accountId
                 }).then(d => {
                     if (d) {
-                        this.visible = false;
+                        this.setState({
+                            visible: false
+                        });
                         Message.success('Reset password success');
                     }
                 })
