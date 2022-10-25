@@ -7,12 +7,13 @@ import { W3Logger } from 'src/base/log/logger.service';
 import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { AccountWallet } from 'src/base/entity/platform-user/Account-Wallet.entity';
 
-import { AccountSearchResult } from 'src/viewModel/user-auth/AccountSearchResult';
+import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
 import { Web3SignInChallengeRequest } from '../../base/web3/sign/model/Web3SignInChallengeRequest';
-import { SignTokenPayload } from 'src/viewModel/user-auth/SignTokenPayload';
+ 
 import { AuthUser } from 'src/base/auth/authUser';
 import { AccountBaseService } from '../base/account-base.service';
-import { AccountInfo } from 'src/viewModel/user-auth/AccountInfo';
+import { AccountInfo } from 'src/viewModel/account/AccountInfo';
+import { SignTokenPayload } from 'src/viewModel/account/auth/SignTokenPayload';
 
 
 @Injectable()

@@ -13,17 +13,17 @@ import { VerifyCodeType, VerifyCodePurpose, VerifyFlag } from 'src/base/entity/p
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { AppConfig } from 'src/base/setting/appConfig';
-import { AccountInfo } from 'src/viewModel/user-auth/AccountInfo';
-import { AccountSearchResult } from 'src/viewModel/user-auth/AccountSearchResult';
+import { AccountInfo } from 'src/viewModel/account/AccountInfo';
+import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
 
-import { AccountSigninRequest } from 'src/viewModel/user-auth/AccountSigninRequest';
-import { AccountSignupRequest } from 'src/viewModel/user-auth/AccountSignupRequest';
-import { ChangePasswordRequest } from 'src/viewModel/user-auth/ChangePasswordRequest';
-import { EmailVerifyRequest } from 'src/viewModel/user-auth/EmailVerifyRequest';
-import { SignTokenPayload } from 'src/viewModel/user-auth/SignTokenPayload';
-import { VerifyCodeRequest } from 'src/viewModel/user-auth/VerifyCodeRequest';
+import { AccountSigninRequest } from 'src/viewModel/account/auth/AccountSigninRequest';
+import { AccountSignupRequest } from 'src/viewModel/account/auth/AccountSignupRequest';
+import { ChangePasswordRequest } from 'src/viewModel/account/auth/ChangePasswordRequest';
+import { SignTokenPayload } from 'src/viewModel/account/auth/SignTokenPayload';
+import { EmailVerifyRequest } from 'src/viewModel/account/EmailVerifyRequest';
+import { VerifyCodeRequest } from 'src/viewModel/account/VerifyCodeRequest';
 import { Repository } from 'typeorm';
-
+ 
 import { AccountBaseService } from '../base/account-base.service';
 
 

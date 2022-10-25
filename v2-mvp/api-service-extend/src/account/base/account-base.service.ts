@@ -11,9 +11,9 @@ import { AccountVerifyCode } from 'src/base/entity/platform-user/Account-VerifyC
 
 import { v4 as uuidv4 } from 'uuid';
 import { VerifyFlag } from 'src/base/entity/platform-user/VerifyCodeType';
-import { AccountSearchResult } from 'src/viewModel/user-auth/AccountSearchResult';
-import { SignTokenPayload } from 'src/viewModel/user-auth/SignTokenPayload';
-
+import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
+import { SignTokenPayload } from 'src/viewModel/account/auth/SignTokenPayload';
+ 
 
 const md5 = require('js-md5');
 
