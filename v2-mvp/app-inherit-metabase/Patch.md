@@ -1,4 +1,4 @@
-1. Remove script
+## Remove script
 - package.json
 
  ```
@@ -7,20 +7,9 @@
  remove it since we don't use it as git hook
 
 
-2. Update file:
-- metabase-0.44.4-src\frontend\src\metabase\lib\api.js
-
-```
-//CHANGE_ME change basename to connect webpack hot server, it is used only when DEV.
-// basename ="";  // keep empty in PRODUCTION 
-  basename = "http://13.214.196.16:3001";  //port should be same with value of [ build-hot:js ] in package.json
-  
-```
-update it to connect with remote js file server provided by webpack, eg: http://13.214.196.16:3001/
 
 
-
-3. Update code:
+## Update code:
 - metabase-0.44.4-src\src\metabase\public_settings\premium_features.clj
 
 ```
@@ -37,7 +26,7 @@ Licence Code When active(64 chars required):
 ```
 0000000000000000000000000000000000000000000000000000000000000000
 ```
-4. Update file:
+## Update file:
 - metabase-0.44.4-src\bin\build-mb\src\build.clj
 ```
   (case (env/env :mb-edition)
@@ -48,7 +37,7 @@ Licence Code When active(64 chars required):
 ```
 update default build edition as "ee"
 
-5. Update Clojure version
+## Update Clojure version
 ```
 curl -O https://download.clojure.org/install/linux-install-1.11.1.1165.sh
 chmod +x linux-install-1.11.1.1165.sh
@@ -56,7 +45,7 @@ sudo ./linux-install-1.11.1.1165.sh
 ```
 
 
-6. FIx UI error:
+## FIx UI error:
 - metabase-0.44.4-src\frontend\src\metabase\query_builder\components\notebook\steps\JoinStep.jsx
 ```
 const stepShape = {
@@ -80,9 +69,30 @@ stepShape.previous=stepShape;
 stepShape.next=stepShape;
 
 ```
+## Update Code For Security Issue when load JS
+- src/metabase/server/middleware/security.clj
+```
+:script-src
+:connect-src
+
+localhost:8080 ==>  *
+
+```
+
+# Update files during development
+## It DOES NOT WORK in release version, these configurations are used in hot-reloading server only.
+
+- metabase-0.44.4-src\frontend\src\metabase\lib\api.js
+
+```
+//CHANGE_ME change basename to connect webpack hot server, it is used only when DEV.
+// basename ="";  // keep empty in PRODUCTION 
+  basename = "http://13.214.196.16:3001";  //port should be same with value of [ build-hot:js ] in package.json
+  
+```
+update it to connect with remote js file server provided by webpack, eg: http://13.214.196.16:3001，https://dev-v2.web3go.xyz/webpack
 
 
-7. Update files during development:
 - metabase-0.44.4-src\package.json:
 
 ```
@@ -94,22 +104,29 @@ manully assign port to hot server.
 - metabase-0.44.4-src\webpack.config.js
 ```
  // point the publicPath (inlined in index.html by HtmlWebpackPlugin) to the hot-reloading server
+ config.output.publicPath ="http://13.214.196.16:3001/" + config.output.publicPath;
+
+```
+
+
+## Be aware if we use nginx as proxy,  handle the location carefully!!!
+example:
+```
  config.output.publicPath =
-    "http://18.142.160.176:3001/" + config.output.publicPath;
+    "https://dev-v2.web3go.xyz/webpack/" + config.output.publicPath;
+```
+the real dir in webpack server will be : /webpack/<original_public_path>
+
+in nginx:
+```
+     location /webpack/ {
+          proxy_pass http://webpackmetabase/webpack/;  //keep the matched location regex
+     }
 
 ```
-these configurations are used in hot-reloading server only.
-It DOES NOT WORK in release version.
 
 
-8. Update Code For Security Issue when load JS
-- src/metabase/server/middleware/security.clj
-```
-:script-src
-:connect-src
-
-localhost:8080 ==>  *
 
 
-```
+
 
