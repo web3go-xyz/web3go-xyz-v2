@@ -33,7 +33,7 @@ server {
         }
 
         location /webpack/ {
-                proxy_pass http://webpackmetabase/;
+                proxy_pass http://webpackmetabase/webpack/;
         }
 
         location / {

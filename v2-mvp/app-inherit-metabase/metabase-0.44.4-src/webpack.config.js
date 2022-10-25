@@ -247,7 +247,7 @@ if (WEBPACK_BUNDLE === "hot") {
 
   // point the publicPath (inlined in index.html by HtmlWebpackPlugin) to the hot-reloading server
   config.output.publicPath =
-    "http://127.0.0.1:3001/" + config.output.publicPath;
+    "https://dev-v2.web3go.xyz/webpack/" + config.output.publicPath;
 
   config.module.rules.unshift({
     test: /\.(tsx?|jsx?)$/,
@@ -264,10 +264,13 @@ if (WEBPACK_BUNDLE === "hot") {
   });
 
   config.devServer = {
+    allowedHosts: 'all',
+    compress: true,
     hot: true,
     client: { overlay: false },
     headers: {
       "Access-Control-Allow-Origin": "*",
+      "X-Powered-By": "web3go.xyz"
     },
     // tweak stats to make the output in the console more legible
     // TODO - once we update webpack to v4+ we can just use `errors-warnings` preset
