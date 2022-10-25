@@ -1,0 +1,43 @@
+# dev-v2 server configuration
+#
+
+upstream apiextendservice {
+      server localhost:12350;
+}
+upstream appmetabase {
+      server localhost:3000;
+}
+upstream webpackmetabase {
+      server localhost:3001;
+}
+
+server {
+        listen 80;
+        server_name dev-v2.web3go.xyz;
+        return 301 https://dev-v2.web3go.xyz$request_uri;
+}
+
+server {
+
+        # SSL configuration
+        listen 443 ssl ;
+        listen [::]:443 ssl;
+
+        #root  /home/ubuntu/web3go-official-website-v2/ui-v2;
+        #index index.html index.htm index.nginx-debian.html;
+
+        server_name dev-v2.web3go.xyz;
+
+        location /api-ext/ {
+                proxy_pass http://apiextendservice/;
+        }
+
+        location /webpack/ {
+                proxy_pass http://webpackmetabase/;
+        }
+
+        location / {
+                proxy_pass http://appmetabase/;
+        }
+
+}

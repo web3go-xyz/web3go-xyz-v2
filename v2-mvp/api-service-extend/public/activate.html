@@ -63,23 +63,17 @@
         }
 
         .btn-wrap {
-            display: flex;
-            justify-content: center;
-            margin-top: 32px;
+            margin: 32px auto 0px;
+            width: 194px;
         }
 
         .btn {
-            background: #615CF6;
+            background: #615cf6;
             border-radius: 8px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 194px;
-            height: 32px;
-            font-weight: 400;
+            padding: 10px 15px;
             font-size: 14px;
-            line-height: 22px;
-            color: #FFFFFF;
+            color: #ffffff;
         }
 
         .btn:hover {
@@ -87,8 +81,11 @@
             opacity: .8;
         }
 
-        .btn span {
+        .btn a {
             margin: 0 8px;
+            color: #FFFFFF;
+            display: block;
+            text-decoration: none;
         }
 
         .btn img {
@@ -117,10 +114,9 @@
         }
 
         .footer .icon-wrap {
-            margin-top: 8px;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            margin: 10px auto 10px;
+            width: 150px;
         }
 
         .footer .icon-wrap img {
@@ -142,13 +138,14 @@
 <body>
     <div class="page">
         <div class="header">
-            <img src="https://web3go.xyz/img/logo.47e6236c.png" alt="">
-            <img src="{{STATIC_ASSET_PREFIX}}/images/logo-white.png" alt="" onclick='window.open("https://web3go.xyz","_blank")'>
+            <a target="_blank" href="https://web3go.xyz">
+                <img src="./images/logo-white.png" alt="">
+            </a>
         </div>
         <div class="main">
             <div class="m-title">Web3go-Acitvate Account!</div>
             <div class="img-wrap">
-                <img src="{{STATIC_ASSET_PREFIX}}/images/Group394.png" alt="">
+                <img src="./images/Group394.png" alt="">
 
             </div>
             <div class="hello">Hello {{NICK_NAME}},</div>
@@ -162,35 +159,36 @@
             </div>
             <div class="btn-wrap">
                 <div class="btn">
-                    <img src="{{STATIC_ASSET_PREFIX}}/images/check.png" alt="">
-
-                    <span onclick='window.open("{{ACTIVATE_URL}}","_blank")'>Activate Account</span>
-                    <img src="{{STATIC_ASSET_PREFIX}}/images/check.png" alt="">
+                    <img src="./images/check.png" alt="">
+                    <a href='{{ACTIVATE_URL}}'>Activate Account</a>
+                    <img src="./images/check.png" alt="">
 
                 </div>
             </div>
         </div>
         <div class="footer">
             <div class="img-wrap">
-                <img src="{{STATIC_ASSET_PREFIX}}/images/logo.png" alt="" onclick='window.open("https://web3go.xyz","_blank")'>
+                <a target="_blank" href="https://web3go.xyz">
+                    <img src="./images/logo.png" alt="">
+                </a>
 
             </div>
             <div class="text">If you need any help, please contact us<br /> at info@web3go.xyz or find us on:</div>
             <div class="icon-wrap">
                 <a target="_blank" href="https://github.com/web3go-xyz">
-                    <img src="{{STATIC_ASSET_PREFIX}}/images/Frame31d.png" alt="">
-                    
+                    <img src="./images/Frame31d.png" alt="">
+
                 </a>
                 <a target="_blank" href="https://discord.gg/NTrHSqyuRg">
-                    <img src="{{STATIC_ASSET_PREFIX}}/images/Frame28d.png" alt="">
-                    
+                    <img src="./images/Frame28d.png" alt="">
+
                 </a>
                 <a target="_blank" href="https://twitter.com/Web3Go">
-                    <img src="{{STATIC_ASSET_PREFIX}}/images/Frame30d.png" alt="">
-                    
+                    <img src="./images/Frame30d.png" alt="">
+
                 </a>
                 <a target="_blank" href="https://t.me/Web3GoCommunity">
-                    <img src="{{STATIC_ASSET_PREFIX}}/images/Frame29d.png" alt="">                    
+                    <img src="./images/Frame29d.png" alt="">
                 </a>
             </div>
         </div>

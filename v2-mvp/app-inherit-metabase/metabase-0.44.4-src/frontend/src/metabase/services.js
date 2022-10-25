@@ -11,7 +11,7 @@ const embedBase = IS_EMBED_PREVIEW ? "/api/preview_embed" : "/api/embed";
 
 import getGAMetadata from "promise-loader?global!metabase/lib/ga-metadata"; // eslint-disable-line import/default
 // export const WEB3GO_BASE_URL = 'http://192.168.50.188:12350';
-export const WEB3GO_BASE_URL = 'http://13.214.196.16:12350';
+export const WEB3GO_BASE_URL = 'https://dev-v2.web3go.xyz/api-ext';
 
 export const LayoutLoginApi = {
   signIn: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/signin"),
