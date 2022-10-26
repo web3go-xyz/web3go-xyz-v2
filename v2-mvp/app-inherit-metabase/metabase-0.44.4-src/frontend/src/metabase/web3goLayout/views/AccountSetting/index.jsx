@@ -6,6 +6,7 @@ import { Button, Modal, Form, Input, Upload } from '@arco-design/web-react';
 import { push } from "react-router-redux";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import { LayoutLoginApi } from '@/services'
 
 const mapStateToProps = state => {
     return {
@@ -22,12 +23,60 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            canSend: true,
+            nickNameCanEdit: false,
             visible: false,
+            linkEmailVisible: false,
             walletList: [],
-            emailList: [],
+            emailList: [{}],
             img: '',
             cropper: null,
         }
+        this.formRef = React.createRef();
+        this.emailModalFormRef = React.createRef();
+    }
+    componentDidUpdate(prevProps) {
+        if (JSON.stringify(this.props.userData) !== JSON.stringify(prevProps.userData)) {
+            this.setNickName();
+        }
+    }
+    cancelNickname = () => {
+        this.setNickName();
+        this.setState({
+            nickNameCanEdit: false
+        });
+    }
+    saveNickname = () => {
+        this.setState({
+            nickNameCanEdit: false
+        });
+    }
+    setNickName = () => {
+        if (!this.props.userData.account) {
+            return;
+        }
+        this.formRef.current.setFieldsValue({
+            nickname: this.props.userData.account.nickName,
+        });
+    }
+    sureLink = () => {
+        this.setState({
+            linkEmailVisible: false
+        })
+    }
+    unlinkEmail = () => {
+        Modal.confirm({
+            wrapClassName: 'common-confirm-modal',
+            closable: true,
+            title: 'Are you sure to unlink Email Address ?',
+            content:
+                'After you click ok, your Web3go account will be deleted. Your will lose all your data.',
+            okText: 'Confirm',
+            cancelText: 'Cancel',
+            onOk: () => {
+                console.log('ok');
+            }
+        });
     }
     copperSure = () => {
         if (this.state.cropper) {
@@ -63,6 +112,37 @@ class Component extends React.Component {
         };
         reader.readAsDataURL(files[0].originFile);
     }
+    handleLinkEmail = () => {
+
+    }
+    sendEmail = () => {
+        this.emailModalFormRef.current.validate(['email']).then(() => {
+            const form = this.emailModalFormRef.current.getFields();
+            LayoutLoginApi.sendVerifyEmail({
+                "email": form.email,
+                "verifyCodePurpose": "resetPassword"
+            }).then(d => {
+                this.setState({
+                    canSend: false
+                });
+                setTimeout(() => {
+                    this.setState({
+                        canSend: true
+                    });
+                }, 30000);
+                if (d) {
+                    Message.success('Email has been sent. Please check the security code in the email.');
+                }
+            }).catch(e => {
+                if (e && e.data && e.data.message) {
+                    Message.error({
+                        content: e.data.message,
+                        duration: 5000
+                    });
+                }
+            })
+        })
+    }
     render() {
         return (
             <div className="web3go-layout-AccountSetting-page">
@@ -93,27 +173,32 @@ class Component extends React.Component {
                             layout="vertical"
                             requiredSymbol={{ position: 'end' }}
                             className="form"
-                            initialValues={{ nickname: 'admin' }}
+                            initialValues={{ nickname: this.props.userData.account && this.props.userData.account.nickName }}
                         >
-
                             <div className="name">{this.props.userData.account && this.props.userData.account.nickName}</div>
                             <div className="id">Web3Go ID : {this.props.userData.account && this.props.userData.account.web3Id}</div>
                             <FormItem label="Nickname" className="nickname-row" required>
                                 <FormItem style={{ width: '504px' }} field="nickname" noStyle={{ showErrorTip: true }} rules={[{ required: true }]}>
                                     <Input
-                                        disabled
+                                        disabled={!this.state.nickNameCanEdit}
                                         maxLength={50}
                                         showWordLimit
                                     />
                                 </FormItem>
-                                <img className="hover-item" src={require("@/web3goLayout/assets/account/edit.png")} alt="" />
+                                <img onClick={() => { this.setState({ nickNameCanEdit: true }) }} className="hover-item" src={require("@/web3goLayout/assets/account/edit.png")} alt="" />
                             </FormItem>
-
+                            {
+                                this.state.nickNameCanEdit ? (
+                                    <div className="save-row">
+                                        <Button onClick={this.cancelNickname}>Cancel</Button>
+                                        <Button onClick={this.saveNickname} type="primary">Save</Button>
+                                    </div>
+                                ) : null
+                            }
                             <div className="form-item">
                                 <div className="label">Avatar</div>
                                 <div className="value">
                                     <img src={require("@/web3goLayout/assets/account/Avatar.png")} alt="" />
-
                                     <Upload action='/' showUploadList={false} autoUpload={false} onChange={this.fileChange}>
                                         <Button>Change</Button>
                                     </Upload>
@@ -136,12 +221,13 @@ class Component extends React.Component {
                                         <div className="item">
                                             <div className="email">nevaeh.simmons@example.com</div>
                                             <img
+                                                onClick={() => { this.unlinkEmail() }}
                                                 className="a hover-item"
                                                 src={require("@/web3goLayout/assets/account/unlink.png")}
                                                 alt=""
                                             />
                                         </div>
-                                        <div className="add-more hover-item">
+                                        <div onClick={() => { this.setState({ linkEmailVisible: true }) }} className="add-more hover-item">
                                             <img className="icon" src={require("@/web3goLayout/assets/account/add2.png")} alt="" />
                                             <span>Add More</span>
                                         </div>
@@ -217,8 +303,8 @@ class Component extends React.Component {
                                 )}
                             </div>
                         </Form>
-                    </div >
-                </div >
+                    </div>
+                </div>
                 <Modal
                     style={{ width: '800px' }}
                     title='Upload Avatar'
@@ -250,6 +336,44 @@ class Component extends React.Component {
                         <div className="btn-wrap">
                             <Button className="btn" type="primary" onClick={this.copperSure}>Sure</Button>
                         </div >
+                    </div >
+                </Modal >
+                <Modal
+                    wrapClassName="common-form-modal"
+                    style={{ width: '637px' }}
+                    title='Link with email'
+                    visible={this.state.linkEmailVisible}
+                    onCancel={() => this.setState({ linkEmailVisible: false })}
+                    footer={null}
+                >
+                    <div className="web3go-account-setting-email-modal">
+                        <Form
+                            ref={this.emailModalFormRef}
+                            layout="vertical"
+                            requiredSymbol={{ position: 'end' }}
+                        >
+                            <FormItem className="email-row" label='Email address' required>
+                                <FormItem field='email' noStyle={{ showErrorTip: true }} rules={[{ required: true, type: 'email' }]}>
+                                    <Input placeholder='helloworld@gmail.com' />
+                                </FormItem>
+                                <FormItem shouldUpdate noStyle>
+                                    {(values) => {
+                                        return this.state.canSend && values.email ?
+                                            <div className="btn hover-item" onClick={this.sendEmail}>Send Email</div> :
+                                            <div className="btn disabled">Send Email</div>
+                                    }}
+                                </FormItem>
+                            </FormItem>
+                            <FormItem label='Security code' field='code' rules={[{ required: true }]}>
+                                <Input placeholder='please enter your security code' />
+                            </FormItem>
+                            <FormItem label='Password' field='password' rules={[{ required: true }]}>
+                                <Input type="password" onPressEnter={this.handleLinkEmail} placeholder='please enter your password...' />
+                            </FormItem>
+                        </Form>
+                        <div className="btn-wrap">
+                            <Button className="btn" type="primary" onClick={this.handleLinkEmail}>Link</Button>
+                        </div>
                     </div >
                 </Modal >
             </div >

@@ -23,6 +23,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading: false,
             timer: null,
             visible: false,
             verifyModalVisible: false,
@@ -82,6 +83,9 @@ class Component extends React.Component {
     sure = () => {
         this.formRef.current.validate().then((form) => {
             if (this.state.isSignIn) {
+                this.setState({
+                    loading: true
+                })
                 LayoutLoginApi.signIn(form).then(d => {
                     localStorage.setItem('token', d.token);
                     location.replace(`/auth/sso?jwt=${d.token}&&return_to=/`)
@@ -128,6 +132,7 @@ class Component extends React.Component {
     render() {
         return (
             <Modal
+                wrapClassName="web3go-signin-common-modal"
                 title={this.state.isSignIn ? 'Sign In' : 'Sign Up'}
                 visible={this.state.visible}
                 onOk={() => this.setState({ visible: false })}
@@ -157,7 +162,7 @@ class Component extends React.Component {
                             <Input placeholder='helloworld@gmail.com' />
                         </FormItem>
                         <FormItem label='Password' field='password' rules={[{ required: true }]}>
-                            <Input type='password' placeholder='please enter your password...' />
+                            <Input type='password' onPressEnter={this.sure} placeholder='please enter your password...' />
                         </FormItem>
                     </Form>
 
@@ -181,7 +186,7 @@ class Component extends React.Component {
                     }
 
                     <div className="btn-wrap">
-                        <Button className="btn" type="primary" onClick={this.sure}>{
+                        <Button className="btn" type="primary" loading={this.state.loading} onClick={this.sure}>{
                             this.state.isSignIn ? "Sign In" : "Sign Up"
                         }</Button>
                     </div >
@@ -205,8 +210,8 @@ class Component extends React.Component {
                         </div>
                     </div>
                     <Modal
-                        title='Verify Email'
                         className="web3go-signUp-verifyEmail-modal"
+                        title='Verify Email'
                         visible={this.state.verifyModalVisible}
                         onCancel={() => this.setState({ verifyModalVisible: false })}
                         footer={null}

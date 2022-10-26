@@ -120,7 +120,7 @@ class Component extends React.Component {
                             </FormItem>
                         </FormItem>
                         <FormItem label='Security code' field='code' rules={[{ required: true }]}>
-                            <Input placeholder='please enter your Security code...' />
+                            <Input onPressEnter={this.sure} placeholder='please enter your security code...' />
                         </FormItem>
                     </Form>
                     <div className="btn-wrap">

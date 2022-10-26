@@ -9,7 +9,7 @@ import "cropperjs/dist/cropper.css";
 import event from '@/web3goLayout/event';
 import { IconPlus, IconCheck } from '@arco-design/web-react/icon';
 import { numberSplit } from '@/web3goLayout/utils';
-import DashBoardList from './DashBoardList'
+import DashBoardList from './DashBoardList';
 const mapStateToProps = state => {
     return {
         isDark: state.app.isDark,
@@ -42,6 +42,7 @@ class Component extends React.Component {
             <div className="web3go-layout-home-page">
                 <div className="banner-wrap">
                     <Carousel
+                        showArrow='never'
                         autoPlay={true}
                         style={{ height: 350 }}
                         indicatorType="line"
@@ -61,7 +62,7 @@ class Component extends React.Component {
                     </div>
                     {
                         !this.props.currentUser ? (
-                            <div className="signin-wrap">
+                            <div className="signin-wrap" style={{ backgroundImage: this.props.isDark ? `url(${require("@/web3goLayout/assets/home/Conten1.png")})` : `url(${require("@/web3goLayout/assets/home/Conten.png")})` }}>
                                 <div className="left">
                                     <div className="title">Create your own analytics and build personal space </div>
                                     <div className="sub-title">sign in to unlock more access</div>
@@ -82,9 +83,14 @@ class Component extends React.Component {
                                             <div className="value">800,246</div>
                                         </div>
                                     </div>
-                                    <img src={require("@/web3goLayout/assets/home/info11.png")} alt="" />
+                                    {
+                                        this.props.isDark ?
+                                            <img src={require("@/web3goLayout/assets/home/info11-b.png")} alt="" />
+                                            :
+                                            <img src={require("@/web3goLayout/assets/home/info11.png")} alt="" />
+                                    }
                                 </div >
-                                <div className="info-item hover-item">
+                                {/* <div className="info-item hover-item">
                                     <div className="i-left">
                                         <div className="circle">
                                             <img src={require("@/web3goLayout/assets/home/info2.png")} alt="" />
@@ -95,7 +101,7 @@ class Component extends React.Component {
                                         </div>
                                     </div>
                                     <img src={require("@/web3goLayout/assets/home/info22.png")} alt="" />
-                                </div>
+                                </div> */}
                                 <div className="info-item hover-item">
                                     <div className="i-left">
                                         <div className="circle">
@@ -106,7 +112,12 @@ class Component extends React.Component {
                                             <div className="value">800,246</div>
                                         </div>
                                     </div>
-                                    <img src={require("@/web3goLayout/assets/home/info33.png")} alt="" />
+                                    {
+                                        this.props.isDark ?
+                                            <img src={require("@/web3goLayout/assets/home/info33-b.png")} alt="" />
+                                            :
+                                            <img src={require("@/web3goLayout/assets/home/info33.png")} alt="" />
+                                    }
                                 </div>
                                 <div className="btn hover-item" onClick={() => { this.props.push('/home'); }}>
                                     <img src={require("@/web3goLayout/assets/home/add.png")} alt="" />
@@ -135,7 +146,7 @@ class Component extends React.Component {
                             <div key={i} className={"item" + (i == 0 ? ' active' : '')}>
                                 <div className="i-top">
                                     <div className="headicon-wrap">
-                                        <img className="icon" src={require(`@/web3goLayout/assets/home/${i + 1 < 5 ? i + 1 : 4}.png`)} alt="" />
+                                        <img className="icon" src={require(`@/web3goLayout/assets/home/${i + 1}.png`)} alt="" />
                                         <span>{i + 1}</span>
                                         <img className="headicon" src={require("@/web3goLayout/assets/account/Avatar.png")} alt="" />
                                     </div>

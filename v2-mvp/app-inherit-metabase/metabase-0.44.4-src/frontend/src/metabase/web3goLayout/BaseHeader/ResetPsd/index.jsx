@@ -77,6 +77,7 @@ class Component extends React.Component {
     render() {
         return (
             <Modal
+                wrapClassName="web3go-signin-common-modal"
                 title='Reset Password'
                 visible={this.state.visible}
                 onOk={() => this.setState({ visible: false })}
@@ -90,7 +91,7 @@ class Component extends React.Component {
                         requiredSymbol={{ position: 'end' }}
                     >
                         <FormItem label='Enter your new password' field='password' rules={[{ required: true }]}>
-                            <Input placeholder='please enter your new password...' />
+                            <Input onPressEnter={this.sure} placeholder='please enter your new password...' />
                         </FormItem>
                     </Form>
 
