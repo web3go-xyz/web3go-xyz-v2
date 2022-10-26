@@ -13,6 +13,8 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors();
+  app.useLogger(['debug', 'log', 'verbose', 'error', 'warn']);
+
   const config = new DocumentBuilder()
     .addBearerAuth()
     .setTitle('api-service')
