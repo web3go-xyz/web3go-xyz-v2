@@ -25,5 +25,9 @@ export class W3ExceptionsFilter implements ExceptionFilter {
             }
             response.status(status).json(json);
         }
+        else {
+            let httpException = exception as HttpException
+            response.status(httpException.getStatus()).json(httpException);
+        }
     }
 }

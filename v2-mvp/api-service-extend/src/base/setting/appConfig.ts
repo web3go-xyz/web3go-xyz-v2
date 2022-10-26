@@ -8,7 +8,7 @@ export class AppConfig {
     username: process.env.DB_USERNAME || 'postgres',
     password: process.env.DB_PASSWORD || 'Dev123!@#',
     synchronize: true,
-    logging: false,
+    logging: true,
   }
 
   public static typeOrmOption4PlatformDB = {

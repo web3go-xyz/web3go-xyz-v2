@@ -28,7 +28,7 @@ async function bootstrap() {
     prefix: '/' + AppConfig.STATIC_ASSET_DIR,
   });
 
-  app.useGlobalFilters(new W3ExceptionsFilter());
+   app.useGlobalFilters(new W3ExceptionsFilter());
   await app.listen(process.env.PORT || AppConfig.PORT);
 }
 bootstrap();
