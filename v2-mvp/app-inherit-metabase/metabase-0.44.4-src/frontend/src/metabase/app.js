@@ -57,6 +57,8 @@ import GlobalStyles from "metabase/styled-components/containers/GlobalStyles";
 import { ConfigProvider } from '@arco-design/web-react';
 import enUS from '@arco-design/web-react/es/locale/en-US';
 import './App.less'
+
+
 // remove trailing slash
 const BASENAME = window.MetabaseRoot.replace(/\/+$/, "");
 

@@ -1,6 +1,22 @@
-body[arco-theme="dark"] .web3go-layout-home-page {}
+body[arco-theme="dark"] .web3go-layout-home-page {
+    --creator-bg-color: linear-gradient(280.53deg, #2A2A2B 0%, #30303B 99.47%);
+    --creator-split-color: #4E5969;
+    --creator-follow-bg: transparent;
+    --creator-follow-border: #4E5969;
+    --info-item-bg: #232324;
+    --info-item-circle-bg: #313132;
+    --info-item-circle-shadow: rgba(0, 0, 0, 0.12);
+}
 
 .web3go-layout-home-page {
+    --info-item-circle-shadow: rgba(112, 144, 176, 0.12);
+    --info-item-circle-bg: white;
+    --info-item-bg: #F7F8FA;
+    --creator-bg-color: linear-gradient(281.09deg, #EEF0F3 2.27%, #F7F8FA 100%);
+    --creator-split-color: #E5E6E8;
+    --creator-follow-bg: #F7F8FA;
+    --creator-follow-border: #E5E6E8;
+
     .banner-wrap {
         width: 100%;
 
@@ -56,7 +72,6 @@ body[arco-theme="dark"] .web3go-layout-home-page {}
 
         .signin-wrap {
             height: 80px;
-            background-image: url(../../assets/home/Conten.png);
             background-repeat: no-repeat;
             background-position: center;
             background-size: cover;
@@ -98,10 +113,10 @@ body[arco-theme="dark"] .web3go-layout-home-page {}
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                background: #F7F8FA;
+                background: var(--info-item-bg);
                 border-radius: 16px;
                 margin-right: 20px;
-
+                padding-right: 4px;
                 .i-left {
                     display: flex;
                     align-items: center;
@@ -111,8 +126,8 @@ body[arco-theme="dark"] .web3go-layout-home-page {}
                         margin-right: 12px;
                         width: 48px;
                         height: 48px;
-                        background: #FFFFFF;
-                        box-shadow: 0px 10px 12px 4px rgba(112, 144, 176, 0.12);
+                        background: var(--info-item-circle-bg);
+                        box-shadow: 0px 10px 12px 4px var(--info-item-circle-shadow);
                         border-radius: 33px;
                         display: flex;
                         align-items: center;
@@ -138,6 +153,7 @@ body[arco-theme="dark"] .web3go-layout-home-page {}
 
                 &:nth-child(1) {
                     &>img {
+                        mix-blend-mode: multiply;
                         width: 62px;
                     }
 
@@ -146,18 +162,20 @@ body[arco-theme="dark"] .web3go-layout-home-page {}
                     }
                 }
 
+                // &:nth-child(2) {
+                //     &>img {
+                //         mix-blend-mode: multiply;
+                //         width: 52px;
+                //     }
+
+                //     .circle img {
+                //         width: 26px;
+                //     }
+                // }
+
                 &:nth-child(2) {
                     &>img {
-                        width: 52px;
-                    }
-
-                    .circle img {
-                        width: 26px;
-                    }
-                }
-
-                &:nth-child(3) {
-                    &>img {
+                        mix-blend-mode: multiply;
                         width: 65px;
                     }
 
@@ -202,7 +220,7 @@ body[arco-theme="dark"] .web3go-layout-home-page {}
                 box-sizing: border-box;
                 height: 169px;
                 border-radius: 12px;
-                background: linear-gradient(281.09deg, #EEF0F3 2.27%, #F7F8FA 100%);
+                background: var(--creator-bg-color);
 
                 &:not(.active) {
                     .i-top .it-right .btn:hover {
@@ -239,6 +257,7 @@ body[arco-theme="dark"] .web3go-layout-home-page {}
 
                     .i-top .it-right .btn {
                         background: transparent;
+                        border-color: white;
                     }
 
                     .i-top .it-right .btn .arco-icon {
@@ -292,9 +311,9 @@ body[arco-theme="dark"] .web3go-layout-home-page {}
 
                         .btn {
                             padding: 2px 6px;
-                            border: 1px solid #E5E6E8;
+                            border: 1px solid var(--creator-follow-border);
                             border-radius: 4px;
-                            background: #F7F8FA;
+                            background: var(--creator-follow-bg);
                             display: inline-block;
                             margin-top: 8px;
                             cursor: pointer;
@@ -317,7 +336,7 @@ body[arco-theme="dark"] .web3go-layout-home-page {}
                 }
 
                 .i-bottom {
-                    border-top: 1px dashed #E5E6E8;
+                    border-top: 1px dashed var(--creator-split-color);
                     padding-top: 16px;
                     display: flex;
                     justify-content: space-between;

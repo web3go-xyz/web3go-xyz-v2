@@ -2,7 +2,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, AutoComplete } from '@arco-design/web-react';
+import { Button, AutoComplete, Menu, Dropdown, Modal } from '@arco-design/web-react';
 import { toggleDark } from "metabase/redux/app";
 import { changeUserData } from "metabase/redux/app";
 import { push, replace } from "react-router-redux";
@@ -12,6 +12,8 @@ import ResetPsd from './ResetPsd';
 import ConnectWallet from './ConnectWallet';
 import { LayoutLoginApi } from '@/services'
 import event from '@/web3goLayout/event';
+import { logout } from "@/auth/actions";
+
 const mapStateToProps = (state) => {
     return {
         currentUser: state.currentUser,
@@ -21,6 +23,7 @@ const mapStateToProps = (state) => {
     }
 };
 const mapDispatchToProps = {
+    onLogout: logout,
     toggleDark,
     changeUserData,
     push,
@@ -51,6 +54,23 @@ class Component extends React.Component {
             LayoutLoginApi.getAccountInfo().then(d => {
                 this.props.changeUserData(d);
             })
+        }
+    }
+    clickDropdownIcon = (key) => {
+        if (key == 2) {
+            this.props.push('/layout/accountSetting');
+        } else if (key == 3) {
+            Modal.confirm({
+                wrapClassName: 'common-confirm-modal',
+                closable: true,
+                title: 'Confirm',
+                content:
+                    'Are you sure to sign out ?',
+                cancelText: 'Cancel',
+                onOk: () => {
+                    this.props.onLogout();
+                }
+            });
         }
     }
     goLayout = () => {
@@ -136,7 +156,17 @@ class Component extends React.Component {
                         </div>
                         <Button className="btn" type='primary' onClick={this.handleCreate}>Create</Button>
                         {this.props.currentUser ?
-                            <img className="avatar hover-item" src={require("@/web3goLayout/assets/account/Avatar.png")} onClick={this.goAccountSetting} alt="" />
+                            (
+                                <Dropdown trigger='click' droplist={
+                                    <Menu onClickMenuItem={(key) => { this.clickDropdownIcon(key) }}>
+                                        <Menu.Item key='1'>My Space</Menu.Item>
+                                        <Menu.Item key='2'>Account Setting</Menu.Item>
+                                        <Menu.Item key='3'>Sign Out</Menu.Item>
+                                    </Menu>
+                                }>
+                                    < img className="avatar hover-item" src={require("@/web3goLayout/assets/account/Avatar.png")} alt="" />
+                                </Dropdown>
+                            )
                             :
                             <Button className="btn2" type='secondary' onClick={this.goSignIn}>Sign In</Button>
                         }
@@ -153,7 +183,6 @@ class Component extends React.Component {
                         goResetPsd={this.goResetPsd}
                     ></ForgetPsd>
                     <ResetPsd onRef={(ref) => this.ResetPsdRef = ref}></ResetPsd>
-
                     <ConnectWallet onRef={(ref) => this.ConnectWalletRef = ref}></ConnectWallet>
                 </div>
             </div >

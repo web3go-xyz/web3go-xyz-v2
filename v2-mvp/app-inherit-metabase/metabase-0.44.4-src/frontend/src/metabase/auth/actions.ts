@@ -76,16 +76,16 @@ export const logout = createThunkAction(
       }
       await dispatch(clearCurrentUser());
       await dispatch(changeUserData({})),
-      await dispatch(refreshLocale());
-      trackLogout();
+        // await dispatch(refreshLocale());
+        trackLogout();
+      // let loginUrl = "/auth/login";
+      // if (redirectUrl) {
+      //   loginUrl += `?redirect=${encodeURIComponent(redirectUrl)}`;
+      // }
+      dispatch(push('/'));
 
-      let loginUrl = "/auth/login";
-      if (redirectUrl) {
-        loginUrl += `?redirect=${encodeURIComponent(redirectUrl)}`;
-      }
-
-      dispatch(push(loginUrl));
-      window.location.reload(); // clears redux state and browser caches
+      // dispatch(push(loginUrl));
+      // window.location.reload(); // clears redux state and browser caches
     };
   },
 );

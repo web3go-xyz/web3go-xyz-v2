@@ -131,3 +131,47 @@ body[arco-theme="dark"] .web3go-layout-baseheader-component {
         }
     }
 }
+
+.web3go-signin-common-modal {
+    .arco-modal {
+        border-radius: 16px;
+
+        .arco-modal-header {
+            padding: 40px;
+            padding-bottom: 10px;
+            height: auto;
+            border: 0;
+
+            .arco-modal-title {
+                color: var(--common-text-color);
+                font-weight: 600;
+                font-size: 32px;
+                line-height: 40px;
+                text-align: left;
+            }
+        }
+
+        .arco-modal-close-icon {
+            top: 41px;
+            right: 41px;
+            font-size: 22px;
+
+            &:hover {
+                color: var(--primary-color);
+            }
+
+            &::before {
+                background-color: transparent;
+            }
+        }
+
+        .arco-modal-content {
+            padding: 0 40px;
+            color: var(--common-text-color);
+        }
+
+        .arco-modal-footer {
+            padding: 20px 40px;
+        }
+    }
+}

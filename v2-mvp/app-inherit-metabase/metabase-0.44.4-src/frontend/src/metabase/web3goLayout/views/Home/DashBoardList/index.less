@@ -1,6 +1,16 @@
-body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
+body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {
+    --filter-btn-border: #4E5969;
+    --filter-item-active: #2A2A2C;
+    --tag-item-bg: #2A2A2B;
+    --tag-item-color: #6B7785;
+}
 
 .web3go-layout-home-dashbaoard-list {
+    --tag-item-color: #4E5969;
+    --tag-item-bg: #F2F3F5;
+    --filter-btn-border: #C9CDD4;
+    --filter-item-active: #F2F3F5;
+
     .filter-wrap {
         margin-bottom: 8px;
         display: flex;
@@ -9,7 +19,7 @@ body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
             flex: none;
             width: 93px;
             height: 32px;
-            border: 1px solid #C9CDD4;
+            border: 1px solid var(--filter-btn-border);
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -66,7 +76,7 @@ body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
                 }
 
                 &.active {
-                    background: #F2F3F5;
+                    background: var(--filter-item-active);
                     color: var(--primary-color);
                 }
             }
@@ -139,7 +149,7 @@ body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
                     .item {
                         display: inline-block;
                         padding: 0 8px;
-                        background: #F2F3F5;
+                        background: var(--tag-item-bg);
                         border-radius: 4px;
                         margin-right: 4px;
                         margin-bottom: 4px;
@@ -150,7 +160,7 @@ body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
                         font-weight: 400;
                         font-size: 12px;
                         line-height: 20px;
-                        color: var(--4eColor);
+                        color: var(--tag-item-color);
                     }
                 }
 
@@ -171,8 +181,11 @@ body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
             display: flex;
             align-items: center;
 
+            svg {
+                stroke: var(--4eColor);
+            }
+
             .star {
-                stroke: #4E5969;
 
                 &.active {
                     fill: #F34D4D;
@@ -211,4 +224,8 @@ body[arco-theme="dark"] .web3go-layout-home-dashbaoard-list {}
             background-color: var(--color-fill-2);
         }
     }
+}
+
+.home-share-modal{
+
 }
