@@ -1,9 +1,15 @@
-import { Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthUser } from 'src/base/auth/authUser';
 import { JwtAuthGuard } from 'src/base/auth/JwtAuthGuard';
 import { W3Logger } from 'src/base/log/logger.service';
-import { AccountInfo } from 'src/viewModel/user-auth/AccountInfo';
+import { AccountInfo } from 'src/viewModel/account/AccountInfo';
+import { ChangeAvatarRequest } from 'src/viewModel/account/info/ChangeAvatarRequest';
+import { ChangeNickNameRequest } from 'src/viewModel/account/info/ChangeNickNameRequest';
+import { LinkEmailRequest } from 'src/viewModel/account/info/LinkEmailRequest';
+import { LinkWalletRequest } from 'src/viewModel/account/info/LinkWalletRequest';
+import { UnlinkEmailRequest } from 'src/viewModel/account/info/UnlinkEmailRequest';
+import { UnlinkWalletRequest } from 'src/viewModel/account/info/UnlinkWalletRequest';
 import { AccountInfoService } from './account-info.service';
 
 @ApiBearerAuth()
@@ -28,6 +34,95 @@ export class AccountInfoController {
     this.logger.log(`validateUser:${JSON.stringify(validateUser)}`);
     let accountId = validateUser.id;
     return await this.accountInfoService.getAccountInfo(accountId);
+  }
+
+  @Post('/changeName')
+  @ApiOperation({
+    summary: 'change nickname for account',
+  })
+  @ApiOkResponse({ type: Boolean })
+  async changeNickname(@Request() request, @Body() payload: ChangeNickNameRequest): Promise<Boolean> {
+
+    this.requireAccountIdMatch(request, payload);
+    return await this.accountInfoService.changeNickname(payload);
+  }
+
+  @Post('/changeAvatar')
+  @ApiOperation({
+    summary: 'change avatar for account',
+  })
+  @ApiOkResponse({ type: Boolean })
+  async changeAvatar(@Request() request, @Body() payload: ChangeAvatarRequest): Promise<Boolean> {
+
+    this.requireAccountIdMatch(request, payload);
+    return await this.accountInfoService.changeAvatar(payload);
+  }
+
+  @Post('/linkEmail')
+  @ApiOperation({
+    summary: 'link email with account',
+  })
+  @ApiOkResponse({ type: Boolean })
+  async linkEmail(@Request() request, @Body() payload: LinkEmailRequest): Promise<Boolean> {
+
+    this.requireAccountIdMatch(request, payload);
+    return await this.accountInfoService.linkEmail(payload);
+  }
+
+  @Post('/unlinkEmail')
+  @ApiOperation({
+    summary: 'unlink email with account',
+  })
+  @ApiOkResponse({ type: Boolean })
+  async unlinkEmail(@Request() request, @Body() payload: UnlinkEmailRequest): Promise<Boolean> {
+
+    this.requireAccountIdMatch(request, payload);
+    return await this.accountInfoService.unlinkEmail(payload);
+  }
+
+
+  @Post('/linkWallet')
+  @ApiOperation({
+    summary: 'link wallet address with account',
+  })
+  @ApiOkResponse({ type: Boolean })
+  async linkWallet(@Request() request, @Body() payload: LinkWalletRequest): Promise<Boolean> {
+
+    this.requireAccountIdMatch(request, payload);
+    return await this.accountInfoService.linkWallet(payload);
+  }
+
+  @Post('/unlinkWallet')
+  @ApiOperation({
+    summary: 'unlink wallet with account',
+  })
+  @ApiOkResponse({ type: Boolean })
+  async unlinkWallet(@Request() request, @Body() payload: UnlinkWalletRequest): Promise<Boolean> {
+
+    this.requireAccountIdMatch(request, payload);
+    return await this.accountInfoService.unlinkWallet(payload);
+  }
+
+
+  requireAccountIdMatch(request: any, payload: any) {
+    if (request && request.user) {
+      let validateUser: AuthUser = request.user;
+      if (payload && payload.accountId) {
+        let matched = validateUser.id.toLowerCase() === payload.accountId.toLowerCase();
+        if (matched) {
+          return true;
+        }
+        else {
+          throw new BadRequestException(`accountId not match with authorized user`);
+        }
+      } else {
+        throw new BadRequestException(`no accountId in payload`);
+      }
+    } else {
+      throw new BadRequestException(`no authorized user`);
+    }
+
+
   }
 
 }

@@ -8,7 +8,7 @@ import { Web3SignInNonceRequest } from '../../base/web3/sign/model/Web3SignInNon
 import { Web3SignInNonceResponse } from '../../base/web3/sign/model/Web3SignInNonceResponse';
 import { KVService } from 'src/base/kv/kv.service';
 import { Web3SignInService } from './web3.signin.service';
-import { AccountSearchResult } from 'src/viewModel/user-auth/AccountSearchResult';
+import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
 import { WalletSupported } from 'src/viewModel/chain/walletSupported';
 import { BlockChainSupported } from 'src/viewModel/chain/blockChainSupported';
 import { PolkadotSignHelper } from 'src/base/web3/sign/polkadot/polkadot.sign.helper';
@@ -91,7 +91,7 @@ export class Web3SignInController {
       let nonce = request.nonce;
       if (!challenge) {
         throw new BadRequestException('challenge invalid');
-      } 
+      }
       if (!nonce) {
         throw new BadRequestException('nonce invalid');
       }

@@ -5,13 +5,13 @@ import { AuthUser } from 'src/base/auth/authUser';
 import { AccountVerifyCode } from 'src/base/entity/platform-user/Account-VerifyCode.entity';
 import { VerifyCodePurpose } from 'src/base/entity/platform-user/VerifyCodeType';
 import { W3Logger } from 'src/base/log/logger.service';
-import { AccountInfo } from 'src/viewModel/user-auth/AccountInfo';
-import { AccountSearchResult } from 'src/viewModel/user-auth/AccountSearchResult';
-import { AccountSigninRequest } from 'src/viewModel/user-auth/AccountSigninRequest';
-import { AccountSignupRequest } from 'src/viewModel/user-auth/AccountSignupRequest';
-import { ChangePasswordRequest } from 'src/viewModel/user-auth/ChangePasswordRequest';
-import { EmailVerifyRequest } from 'src/viewModel/user-auth/EmailVerifyRequest';
-
+import { AccountInfo } from 'src/viewModel/account/AccountInfo';
+import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
+import { AccountSigninRequest } from 'src/viewModel/account/auth/AccountSigninRequest';
+import { AccountSignupRequest } from 'src/viewModel/account/auth/AccountSignupRequest';
+import { ChangePasswordRequest } from 'src/viewModel/account/auth/ChangePasswordRequest';
+import { EmailVerifyRequest } from 'src/viewModel/account/EmailVerifyRequest';
+ 
 import { AccountAuthService, } from './account-auth.service';
 
 
