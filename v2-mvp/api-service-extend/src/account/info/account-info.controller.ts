@@ -6,6 +6,7 @@ import { W3Logger } from 'src/base/log/logger.service';
 import { AccountInfo } from 'src/viewModel/account/AccountInfo';
 import { ChangeAvatarRequest } from 'src/viewModel/account/info/ChangeAvatarRequest';
 import { ChangeNickNameRequest } from 'src/viewModel/account/info/ChangeNickNameRequest';
+import { CheckEmailRequest } from 'src/viewModel/account/info/CheckEmailRequest';
 import { LinkEmailRequest } from 'src/viewModel/account/info/LinkEmailRequest';
 import { LinkWalletRequest } from 'src/viewModel/account/info/LinkWalletRequest';
 import { UnlinkEmailRequest } from 'src/viewModel/account/info/UnlinkEmailRequest';
@@ -58,6 +59,20 @@ export class AccountInfoController {
     return await this.accountInfoService.changeAvatar(payload);
   }
 
+
+  @Post('/checkEmailBeforeLink')
+  @ApiOperation({
+    summary: 'check email before link it with account, if passed, an email with code will be sent.',
+  })
+  @ApiOkResponse({ type: Boolean })
+  async checkEmailBeforeLink(@Request() request, @Body() payload: CheckEmailRequest): Promise<Boolean> {
+
+    this.requireAccountIdMatch(request, payload);
+
+    return await this.accountInfoService.checkEmailBeforeLink(payload);
+
+  }
+
   @Post('/linkEmail')
   @ApiOperation({
     summary: 'link email with account',
@@ -66,7 +81,9 @@ export class AccountInfoController {
   async linkEmail(@Request() request, @Body() payload: LinkEmailRequest): Promise<Boolean> {
 
     this.requireAccountIdMatch(request, payload);
+
     return await this.accountInfoService.linkEmail(payload);
+
   }
 
   @Post('/unlinkEmail')
@@ -77,7 +94,11 @@ export class AccountInfoController {
   async unlinkEmail(@Request() request, @Body() payload: UnlinkEmailRequest): Promise<Boolean> {
 
     this.requireAccountIdMatch(request, payload);
-    return await this.accountInfoService.unlinkEmail(payload);
+    try {
+      return await this.accountInfoService.unlinkEmail(payload);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
 
@@ -89,7 +110,11 @@ export class AccountInfoController {
   async linkWallet(@Request() request, @Body() payload: LinkWalletRequest): Promise<Boolean> {
 
     this.requireAccountIdMatch(request, payload);
-    return await this.accountInfoService.linkWallet(payload);
+    try {
+      return await this.accountInfoService.linkWallet(payload);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   @Post('/unlinkWallet')
@@ -100,7 +125,11 @@ export class AccountInfoController {
   async unlinkWallet(@Request() request, @Body() payload: UnlinkWalletRequest): Promise<Boolean> {
 
     this.requireAccountIdMatch(request, payload);
-    return await this.accountInfoService.unlinkWallet(payload);
+    try {
+      return await this.accountInfoService.unlinkWallet(payload);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
 

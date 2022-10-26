@@ -1,29 +1,20 @@
 import { Module } from '@nestjs/common';
 
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
-import JWTConfig from 'src/base/auth/config';
-import { LocalStrategy } from 'src/base/auth/local.strategy';
-import { JwtStrategy } from 'src/base/auth/jwt.strategy';
-import { databaseProviders_platform } from 'src/base/orm/database.provider.v2';
-import repositoryProviders_platform from 'src/base/orm/repository.provider.v2';
 import { AccountInfoService } from './account-info.service';
 import { AccountInfoController } from './account-info.controller';
+import { Web3SignModule } from '../web3/web3.sign.module';
+import { AccountBaseModule } from '../base/account-base.module';
 
 
 @Module({
   imports: [
-    PassportModule,
-    JwtModule.register({
-      secret: JWTConfig.secret,
-      signOptions: { expiresIn: JWTConfig.expiresIn },
-    })
+    AccountBaseModule,
+    Web3SignModule
   ],
   controllers: [AccountInfoController],
   providers: [
-    ...databaseProviders_platform,
-    ...repositoryProviders_platform,
-    AccountInfoService,
+    AccountInfoService
   ],
+  exports: []
 })
 export class AccountInfoModule { }

@@ -6,7 +6,8 @@ export enum VerifyCodeType {
 export enum VerifyCodePurpose {
 
     Account = 'account',
-    ResetPassword = 'resetPassword'
+    ResetPassword = 'resetPassword',
+    LinkEmail = 'linkEmail',
 }
 
 export enum VerifyFlag {

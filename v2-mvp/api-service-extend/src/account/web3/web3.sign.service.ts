@@ -9,26 +9,41 @@ import { AccountWallet } from 'src/base/entity/platform-user/Account-Wallet.enti
 
 import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
 import { Web3SignInChallengeRequest } from '../../base/web3/sign/model/Web3SignInChallengeRequest';
- 
+
 import { AuthUser } from 'src/base/auth/authUser';
 import { AccountBaseService } from '../base/account-base.service';
 import { AccountInfo } from 'src/viewModel/account/AccountInfo';
 import { SignTokenPayload } from 'src/viewModel/account/auth/SignTokenPayload';
+import { KVService } from 'src/base/kv/kv.service';
+import { MetamaskSignHelper } from 'src/base/web3/sign/metamask/metamask.sign.helper';
+import { PolkadotSignHelper } from 'src/base/web3/sign/polkadot/polkadot.sign.helper';
+import { Web3SignInNonceRequest } from 'src/base/web3/sign/model/Web3SignInNonceRequest';
+import { Web3SignInNonceResponse } from 'src/base/web3/sign/model/Web3SignInNonceResponse';
+import { WalletSupported } from 'src/viewModel/chain/walletSupported';
+import { IWeb3Sign } from 'src/base/web3/sign/IWeb3Sign';
+import { Web3SignInChallengeResponse } from 'src/base/web3/sign/model/Web3SignInChallengeResponse';
 
 
 @Injectable()
-export class Web3SignInService {
+export class Web3SignService {
+
 
   logger: W3Logger;
 
   constructor(
+    private kvService: KVService,
+
+    private readonly polkadotSignHelper: PolkadotSignHelper,
+    private readonly metamaskSignHelper: MetamaskSignHelper,
     private readonly accountBaseService: AccountBaseService,
     @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_REPOSITORY.provide)
     private accountRepository: Repository<Account>,
 
   ) {
-    this.logger = new W3Logger(`Web3SignInService`);
+    this.logger = new W3Logger(`Web3SignService`);
   }
+
+
   async searchAccountsByWalletAddress(address: string, verifiedOnly: boolean): Promise<AccountSearchResult[]> {
     return await this.accountBaseService.searchAccountsByWalletAddress(address, verifiedOnly)
   }
@@ -116,4 +131,61 @@ export class Web3SignInService {
       token: token
     };
   }
+
+
+  async web3_challenge(request: Web3SignInChallengeRequest): Promise<Web3SignInChallengeResponse> {
+    try {
+      let challenge = request.challenge;
+      let nonce = request.nonce;
+      if (!challenge) {
+        throw new BadRequestException('challenge invalid');
+      }
+      if (!nonce) {
+        throw new BadRequestException('nonce invalid');
+      }
+
+      //check nonce exist
+      let nonceCache = await this.kvService.get(nonce);
+      if (nonceCache) {
+
+        //verify signature
+        let resp = await this.getWeb3SignHelper(request.walletSource, request.chain).challenge(request);
+
+        //remove nonce
+        this.kvService.del(nonce);
+
+        if (resp.verified) {
+          this.logger.log(`challenge success`);
+        }
+        else {
+          throw new BadRequestException('challenge failed');
+        }
+        return resp;
+      } else {
+        throw new BadRequestException('nonce not exist');
+      }
+
+    } catch (error) {
+      this.logger.error(error);
+      throw new BadRequestException('request invalid, ' + error);
+    }
+  }
+  async web3_nonce(request: Web3SignInNonceRequest): Promise<Web3SignInNonceResponse> {
+    let resp = await this.getWeb3SignHelper(request.walletSource, request.chain).createChallenge(request);
+
+    this.logger.debug(`web3_nonce: ${JSON.stringify(resp)}`);
+    let cacheExpireSeconds = 120;
+    this.kvService.set(resp.nonce, JSON.stringify(resp), cacheExpireSeconds);
+    return resp;
+  }
+  getWeb3SignHelper(walletSource: string, chain: string): IWeb3Sign {
+    if (walletSource.toLowerCase() == WalletSupported.Polkadot_JS.toLowerCase()) {
+      return this.polkadotSignHelper;
+    }
+    if (walletSource.toLowerCase() == WalletSupported.Metamask.toLowerCase()) {
+      return this.metamaskSignHelper;
+    }
+    return null;
+  }
+
 }

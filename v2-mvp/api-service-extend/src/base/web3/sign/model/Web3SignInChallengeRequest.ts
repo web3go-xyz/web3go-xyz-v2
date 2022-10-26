@@ -11,9 +11,6 @@ export class Web3SignInChallengeRequest {
     @ApiProperty({ required: true })
     address: string;
 
-    @ApiProperty({ required: true })
-    scope: string[];
-
     @ApiProperty({
         required: true,
         description: "For polkadot, the challenge will use value returned from web3_nonce directly.   For BSC, the challenge will be created by Siwe package, refer to: https://github.com/web3go-xyz/parachain_smart_notify_services/blob/main/ui/simple-board/src/views/signin/index.vue"

@@ -1,9 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class ChangeNickNameRequest {
+export class CheckEmailRequest {
     @ApiProperty({ required: true })
     accountId: string;
 
-    @ApiProperty({ required: true, })
-    nickName: string;
+    @ApiProperty({ required: true })
+    email: string;
+
 }

@@ -1,18 +1,12 @@
 import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { fstat } from 'fs';
-import { join } from 'path';
 
 import { AuthUser } from 'src/base/auth/authUser';
 import { IAuthService } from 'src/base/auth/IAuthService';
-import { Mailer } from 'src/base/email/mailer';
 import { AccountEmail } from 'src/base/entity/platform-user/Account-Email.entity';
 import { AccountVerifyCode } from 'src/base/entity/platform-user/Account-VerifyCode.entity';
-import { AccountWallet } from 'src/base/entity/platform-user/Account-Wallet.entity';
 import { Account } from 'src/base/entity/platform-user/Account.entity';
-import { VerifyCodeType, VerifyCodePurpose, VerifyFlag } from 'src/base/entity/platform-user/VerifyCodeType';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
-import { AppConfig } from 'src/base/setting/appConfig';
 import { AccountInfo } from 'src/viewModel/account/AccountInfo';
 import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
 
@@ -23,19 +17,21 @@ import { SignTokenPayload } from 'src/viewModel/account/auth/SignTokenPayload';
 import { EmailVerifyRequest } from 'src/viewModel/account/EmailVerifyRequest';
 import { VerifyCodeRequest } from 'src/viewModel/account/VerifyCodeRequest';
 import { Repository } from 'typeorm';
- 
+
 import { AccountBaseService } from '../base/account-base.service';
+import { EmailBaseService } from '../../base/email/email-base.service';
+import { VerifyCodeBaseService } from '../base/verifycode-base.service';
+import { VerifyCodeType, VerifyCodePurpose, VerifyFlag } from 'src/viewModel/VerifyCodeType';
 
 
 @Injectable()
 export class AccountAuthService implements IAuthService {
-
-  private CODE_EXPIRED_MINUTES: number = 10;
-
   logger: W3Logger;
 
   constructor(
     private readonly accountBaseService: AccountBaseService,
+    private readonly verifyCodeBaseService: VerifyCodeBaseService,
+    private readonly emailBaseService: EmailBaseService,
     @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_REPOSITORY.provide)
     private accountRepository: Repository<Account>,
 
@@ -43,11 +39,6 @@ export class AccountAuthService implements IAuthService {
     private accountEmailRepository: Repository<AccountEmail>,
 
 
-    @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_WALLET_REPOSITORY.provide)
-    private accountWalletRepository: Repository<AccountWallet>,
-
-    @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_VERIFYCODE_REPOSITORY.provide)
-    private accountVerifyCodeRepository: Repository<AccountVerifyCode>,
 
   ) {
     this.logger = new W3Logger(`AccountAuthService`);
@@ -116,25 +107,14 @@ export class AccountAuthService implements IAuthService {
 
     if (findAccount) {
       //generate verification code
-      await this.clearCode(findAccount.accountId, request.email, VerifyCodeType.Email, request.verifyCodePurpose);
-      let newCode: AccountVerifyCode = {
-        id: 0,
-        verifyType: VerifyCodeType.Email,
-        purpose: request.verifyCodePurpose,
-        verifyKey: request.email,
-        code: this.generateVerifyCode(6),
-        accountId: findAccount.accountId,
-        created_time: new Date(),
-        expired_time: new Date(new Date().getTime() + (this.CODE_EXPIRED_MINUTES * 1000 * 60))
-      }
-      await this.accountVerifyCodeRepository.save(newCode);
+      let newCode: AccountVerifyCode = await this.verifyCodeBaseService.newCode(findAccount.accountId, request.email, VerifyCodeType.Email, request.verifyCodePurpose);
 
       //send email
       if ([VerifyCodePurpose.ResetPassword].indexOf(request.verifyCodePurpose) > -1) {
-        await this.sendEmail(request.email, "Security email from web3go.xyz", this.generateEmail4VerifyCode(findAccount, newCode, this.CODE_EXPIRED_MINUTES));
+        await this.emailBaseService.sendEmail(request.email, "Security email from web3go.xyz", this.emailBaseService.generateEmail4ResetPassword(findAccount.nickName, newCode.code, this.verifyCodeBaseService.CODE_EXPIRED_MINUTES));
       }
       if ([VerifyCodePurpose.Account].indexOf(request.verifyCodePurpose) > -1) {
-        await this.sendEmail(request.email, "Account activate email from web3go.xyz", this.generateEmail4AccountActivate(request.verifyCodePurpose, request.email, findAccount, newCode, this.CODE_EXPIRED_MINUTES));
+        await this.emailBaseService.sendEmail(request.email, "Account activate email from web3go.xyz", this.emailBaseService.generateEmail4AccountActivate(request.verifyCodePurpose, request.email, findAccount.accountId, findAccount.nickName, newCode.code, this.verifyCodeBaseService.CODE_EXPIRED_MINUTES));
       }
 
       return true;
@@ -144,95 +124,12 @@ export class AccountAuthService implements IAuthService {
     }
   }
 
-  async clearCode(accountId: string, key: string, type: VerifyCodeType, purpose: VerifyCodePurpose) {
-    await this.accountVerifyCodeRepository.delete({
-      accountId: accountId,
-      verifyKey: key,
-      verifyType: type,
-      purpose: purpose
-    });
-  }
 
-  sendEmail(email: string, subject: string, html: string) {
-    let mailer = new Mailer();
-    mailer.send({
-      to: email,
-      subject: subject,
-      html: html
-    });
-    return "email sent success";
-  }
-  generateEmail4VerifyCode(account: Account, code: AccountVerifyCode, expiredMinutes: number) {
-
-    let email_template = join(__dirname, '../../..', 'public/code.html');
-    var replacements = {
-      NICK_NAME: account.nickName,
-      EXPIRED_MINUTES: expiredMinutes.toString(),
-      VERIFY_CODE: code.code
-    };
-    let htmlToSend = this.generateEmail(email_template, replacements);
-    this.logger.debug(`generateEmail4VerifyCode:${htmlToSend}`);
-    return htmlToSend;
-  }
-
-  generateEmail4AccountActivate(purpose: VerifyCodePurpose, email: string, account: Account, code: AccountVerifyCode, expiredMinutes: number) {
-    let email_template = join(__dirname, '../../..', 'public/activate.html');
-
-    let url = (AppConfig.BASE_WEB_URL || 'http://localhost:3000') + `/verifyEmail?accountId=${account.accountId}&email=${escape(email)}&code=${code.code}&verifyCodePurpose=${purpose}`;
-    let replacements = {
-      NICK_NAME: account.nickName,
-      EXPIRED_MINUTES: expiredMinutes.toString(),
-      ACTIVATE_URL: url,
-      STATIC_ASSET_PREFIX: AppConfig.STATIC_ASSET_PREFIX
-    };
-    let htmlToSend = this.generateEmail(email_template, replacements);
-    // this.logger.debug(`generateEmail4AccountActivate:${htmlToSend}`);
-    return htmlToSend;
-  }
-  generateEmail(email_template_path: string, replacements: any) {
-    this.logger.debug(`email_template_path:${email_template_path}`);
-    var fs = require("fs");
-    let data = fs.readFileSync(email_template_path);
-    let email_content: string = '';
-    if (data) {
-      email_content = data.toString();
-    }
-    //update image links with prefix
-    email_content = email_content.replace(/.\/images/g, AppConfig.STATIC_ASSET_PREFIX + 'images');
-
-    let handlebars = require('handlebars');
-    let template = handlebars.compile(email_content);
-
-    let htmlToSend = template(replacements);
-    // this.logger.debug(`generateEmail for email_template_path=${email_template_path}:${htmlToSend}`);
-    return htmlToSend;
-  }
-
-
-  generateVerifyCode(codeLength: number): string {
-    let code = "";
-    var codeChars = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-    for (var i = 0; i < codeLength; i++) {
-      var charNum = Math.floor((Math.random() * (new Date()).getTime()) % codeChars.length);
-      code += codeChars[charNum];
-    }
-    return code;
-  }
-
-  async verifyCode(request: VerifyCodeRequest, clearAfterVerifiedSuccess: boolean = true, autoGenerateSignInToken: boolean = true): Promise<any> {
+  async verifyCodeAndGrantToken(request: VerifyCodeRequest, clearAfterVerifiedSuccess: boolean = true, autoGenerateSignInToken: boolean = true): Promise<any> {
     this.logger.debug(`verify code:${JSON.stringify(request)}`);
-    let findCode = await this.accountVerifyCodeRepository.findOne({
-      where: {
-        accountId: request.accountId,
-        code: request.code,
-        verifyKey: request.email,
-        purpose: request.verifyCodePurpose
-      }
-    });
-    if (findCode) {
-      if (findCode.expired_time.getTime() < new Date().getTime()) {
-        throw new BadRequestException("code expired,please resend new code.");
-      }
+    let verify_result = await this.verifyCodeBaseService.verifyCode(request.accountId, request.code, request.email, VerifyCodeType.Email, request.verifyCodePurpose);
+
+    if (verify_result) {
       this.logger.debug(`verify code success:${JSON.stringify(request)}`);
       if ([VerifyCodePurpose.Account, VerifyCodePurpose.ResetPassword].indexOf(request.verifyCodePurpose) > -1) {
         let findEmail = await this.accountEmailRepository.findOne({
@@ -249,7 +146,7 @@ export class AccountAuthService implements IAuthService {
 
       //remove verification code 
       if (clearAfterVerifiedSuccess) {
-        await this.clearCode(request.accountId, request.email, VerifyCodeType.Email, request.verifyCodePurpose);
+        await this.verifyCodeBaseService.clearCode(request.accountId, request.email, VerifyCodeType.Email, request.verifyCodePurpose);
       }
 
       if ([VerifyCodePurpose.Account].indexOf(request.verifyCodePurpose) > -1 && autoGenerateSignInToken) {
@@ -273,6 +170,7 @@ export class AccountAuthService implements IAuthService {
       return { result: 'success' };
     }
     throw new BadRequestException("verify failure");
+
   }
 
   async changePassword(request: ChangePasswordRequest): Promise<boolean> {
@@ -281,12 +179,13 @@ export class AccountAuthService implements IAuthService {
       throw new BadRequestException('account not exist');
     }
 
-    let verify = await this.verifyCode({
-      accountId: request.accountId,
-      email: request.email,
-      code: request.code,
-      verifyCodePurpose: VerifyCodePurpose.ResetPassword
-    })
+    let verify = await this.verifyCodeBaseService.verifyCode(
+      request.accountId,
+      request.code,
+      request.email,
+      VerifyCodeType.Email,
+      VerifyCodePurpose.ResetPassword
+    )
     if (!verify) {
       throw new BadRequestException('verify failure');
     }

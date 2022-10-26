@@ -17,6 +17,11 @@ export class DebugService {
     }
 
     async DEBUG_verifyCode(): Promise<any> {
-        return await this.accountVerifyCodeRepository.find();
+        return await this.accountVerifyCodeRepository.find({
+            order: {
+                created_time: 'DESC'
+            },
+            take: 50
+        });
     }
 }

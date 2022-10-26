@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { VerifyCodePurpose } from "src/base/entity/platform-user/VerifyCodeType";
-
+import { VerifyCodePurpose } from "../VerifyCodeType";
+ 
 export class EmailVerifyRequest {
     @ApiProperty()
     email: string;

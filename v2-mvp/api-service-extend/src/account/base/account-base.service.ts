@@ -9,11 +9,11 @@ import { AccountEmail } from 'src/base/entity/platform-user/Account-Email.entity
 import { AccountWallet } from 'src/base/entity/platform-user/Account-Wallet.entity';
 import { AccountVerifyCode } from 'src/base/entity/platform-user/Account-VerifyCode.entity';
 
-import { v4 as uuidv4 } from 'uuid';
-import { VerifyFlag } from 'src/base/entity/platform-user/VerifyCodeType';
+import { v4 as uuidv4 } from 'uuid'; 
 import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
 import { SignTokenPayload } from 'src/viewModel/account/auth/SignTokenPayload';
- 
+import { VerifyFlag } from 'src/viewModel/VerifyCodeType';
+
 
 const md5 = require('js-md5');
 
@@ -31,12 +31,8 @@ export class AccountBaseService {
     @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_EMAIL_REPOSITORY.provide)
     private accountEmailRepository: Repository<AccountEmail>,
 
-
     @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_WALLET_REPOSITORY.provide)
     private accountWalletRepository: Repository<AccountWallet>,
-
-    @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_VERIFYCODE_REPOSITORY.provide)
-    private accountVerifyCodeRepository: Repository<AccountVerifyCode>,
 
   ) {
     this.logger = new W3Logger(`AccountBaseService`);

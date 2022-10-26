@@ -6,29 +6,22 @@ import { Web3SignInChallengeRequest } from '../../base/web3/sign/model/Web3SignI
 import { Web3SignInChallengeResponse } from '../../base/web3/sign/model/Web3SignInChallengeResponse';
 import { Web3SignInNonceRequest } from '../../base/web3/sign/model/Web3SignInNonceRequest';
 import { Web3SignInNonceResponse } from '../../base/web3/sign/model/Web3SignInNonceResponse';
-import { KVService } from 'src/base/kv/kv.service';
-import { Web3SignInService } from './web3.signin.service';
+import { Web3SignService } from './web3.sign.service';
 import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
 import { WalletSupported } from 'src/viewModel/chain/walletSupported';
 import { BlockChainSupported } from 'src/viewModel/chain/blockChainSupported';
-import { PolkadotSignHelper } from 'src/base/web3/sign/polkadot/polkadot.sign.helper';
-import { MetamaskSignHelper } from 'src/base/web3/sign/metamask/metamask.sign.helper';
-import { IWeb3Sign } from 'src/base/web3/sign/IWeb3Sign';
 
 
 @Controller('/api/v2/account/web3')
 @ApiTags('/api/v2/account/web3')
-export class Web3SignInController {
+export class Web3SignController {
   logger: W3Logger;
 
   constructor(
-    private kvService: KVService,
-    private readonly service: Web3SignInService,
+    private readonly service: Web3SignService,
 
-    private readonly polkadotSignHelper: PolkadotSignHelper,
-    private readonly metamaskSignHelper: MetamaskSignHelper
   ) {
-    this.logger = new W3Logger(`Web3SignInController`);
+    this.logger = new W3Logger(`Web3SignController`);
   }
 
   @Get('/getSupportedWallet')
@@ -69,11 +62,7 @@ export class Web3SignInController {
     if (!request.walletSource || !request.chain || !request.address) {
       throw new BadRequestException('request parameter invalid');
     }
-    let resp = await this.getWeb3SignHelper(request.walletSource, request.chain).createChallenge(request);
-
-    this.logger.debug(`web3_nonce: ${JSON.stringify(resp)}`);
-    let cacheExpireSeconds = 120;
-    this.kvService.set(resp.nonce, JSON.stringify(resp), cacheExpireSeconds);
+    let resp: Web3SignInNonceResponse = await this.service.web3_nonce(request);
 
     return resp;
   }
@@ -86,56 +75,17 @@ export class Web3SignInController {
       throw new BadRequestException('request parameter invalid');
     }
 
-    try {
-      let challenge = request.challenge;
-      let nonce = request.nonce;
-      if (!challenge) {
-        throw new BadRequestException('challenge invalid');
+    let resp: Web3SignInChallengeResponse = await this.service.web3_challenge(request);
+    if (resp.verified) {
+      let authUser = await this.service.signInWithWalletAddress(request);
+      if (authUser) {
+        resp.extra = authUser;
       }
-      if (!nonce) {
-        throw new BadRequestException('nonce invalid');
-      }
-
-      //check nonce exist
-      let nonceCache = await this.kvService.get(nonce);
-      if (nonceCache) {
-
-        //verify signature
-        let resp = await this.getWeb3SignHelper(request.walletSource, request.chain).challenge(request);
-
-        //remove nonce
-        this.kvService.del(nonce);
-
-        if (resp.verified) {
-
-          let authUser = await this.service.signInWithWalletAddress(request);
-          if (authUser) {
-            resp.extra = authUser;
-          }
-        }
-        else {
-          throw new BadRequestException('challenge failed');
-        }
-        return resp;
-      } else {
-        throw new BadRequestException('nonce not exist');
-      }
-
-    } catch (error) {
-      this.logger.error(error);
-      throw new BadRequestException('request invalid, ' + error);
     }
+    return resp;
+
   }
 
-  getWeb3SignHelper(walletSource: string, chain: string): IWeb3Sign {
-    if (walletSource.toLowerCase() == WalletSupported.Polkadot_JS.toLowerCase()) {
-      return this.polkadotSignHelper;
-    }
-    if (walletSource.toLowerCase() == WalletSupported.Metamask.toLowerCase()) {
-      return this.metamaskSignHelper;
-    }
-    return null;
-  }
 
 }
 

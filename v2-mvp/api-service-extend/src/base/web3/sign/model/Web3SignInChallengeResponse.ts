@@ -12,9 +12,6 @@ export class Web3SignInChallengeResponse {
     address: string;
 
     @ApiProperty()
-    scope: string[];
-
-    @ApiProperty()
     challenge: string;
 
     @ApiProperty()

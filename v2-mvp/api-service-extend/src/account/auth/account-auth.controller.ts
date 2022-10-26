@@ -1,9 +1,7 @@
 import { BadRequestException, Get, Query } from '@nestjs/common';
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthUser } from 'src/base/auth/authUser';
-import { AccountVerifyCode } from 'src/base/entity/platform-user/Account-VerifyCode.entity';
-import { VerifyCodePurpose } from 'src/base/entity/platform-user/VerifyCodeType';
+import { AuthUser } from 'src/base/auth/authUser'; 
 import { W3Logger } from 'src/base/log/logger.service';
 import { AccountInfo } from 'src/viewModel/account/AccountInfo';
 import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
@@ -11,7 +9,8 @@ import { AccountSigninRequest } from 'src/viewModel/account/auth/AccountSigninRe
 import { AccountSignupRequest } from 'src/viewModel/account/auth/AccountSignupRequest';
 import { ChangePasswordRequest } from 'src/viewModel/account/auth/ChangePasswordRequest';
 import { EmailVerifyRequest } from 'src/viewModel/account/EmailVerifyRequest';
- 
+import { VerifyCodePurpose } from 'src/viewModel/VerifyCodeType';
+
 import { AccountAuthService, } from './account-auth.service';
 
 
@@ -57,7 +56,7 @@ export class AccountAuthController {
     @Query('verifyCodePurpose') verifyCodePurpose: string,
   ): Promise<boolean> {
 
-    return await this.accountAuthService.verifyCode({
+    return await this.accountAuthService.verifyCodeAndGrantToken({
       accountId: accountId,
       email: email,
       code: code,

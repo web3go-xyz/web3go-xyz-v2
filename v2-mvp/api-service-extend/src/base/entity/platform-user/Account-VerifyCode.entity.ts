@@ -18,7 +18,7 @@ export class AccountVerifyCode {
 
     @ApiProperty()
     @Column({
-        comment: 'verify purpose, support: account,resetPassword,etc.',
+        comment: 'verify purpose, refer to VerifyCodePurpose.',
         nullable: false
     })
     purpose: string;
