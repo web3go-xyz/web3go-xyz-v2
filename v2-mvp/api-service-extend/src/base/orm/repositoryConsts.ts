@@ -1,3 +1,4 @@
+import { ReportDashboard } from "../entity/metabase/Report-Dashboard";
 import { AccountEmail } from "../entity/platform-user/Account-Email.entity";
 import { AccountSocial } from "../entity/platform-user/Account-Social.entity";
 import { AccountVerifyCode } from "../entity/platform-user/Account-VerifyCode.entity";
@@ -38,6 +39,15 @@ export class RepositoryConsts {
       connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
       entityTarget: AccountVerifyCode
     }
+  }
+
+
+  public static REPOSITORYS_METABASE = {
+    MB_REPORT_DASHBOARD_REPOSITORY: {
+      provide: 'MB_REPORT_DASHBOARD_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_METABASE,
+      entityTarget: ReportDashboard
+    },
   }
 }
 

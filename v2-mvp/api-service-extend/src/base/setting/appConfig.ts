@@ -17,6 +17,7 @@ export class AppConfig {
   };
   public static typeOrmOption4MetabaseDB = {
     ...this.dbConnection,
+    synchronize: false, //!important, DO NOT change schema for metabase tables. It's out of control.
     database: process.env.DB_DATABASE_METABASE || 'dev-web3go-v2-metabase',
   };
 

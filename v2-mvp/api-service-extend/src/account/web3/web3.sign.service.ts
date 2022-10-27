@@ -54,10 +54,11 @@ export class Web3SignService {
   async createAccount4WalletAddress(address: string, chain: string, walletSource: string): Promise<AccountInfo> {
 
     let accountId = this.accountBaseService.generateAccountId();
+    let mockNickname = `${chain}_${address}`;
     let newAccount: Account = {
       accountId: accountId,
       web3Id: '',
-      nickName: address,
+      nickName: mockNickname,
       avatar: '',
       created_time: new Date(),
       allowLogin: 1,
@@ -91,7 +92,6 @@ export class Web3SignService {
   async signInWithWalletAddress(request: Web3SignChallengeRequest): Promise<AuthorizedUser> {
     let address = request.address;
     let accountId: string = null;
-    let mockEmail: string = `${request.chain.toLowerCase()}_${request.address.toLowerCase()}@web3go.xyz`;
 
     let searchAccounts = await this.accountBaseService.searchAccountsByWalletAddress(address, false);
     if (!searchAccounts || searchAccounts.length == 0) {
@@ -109,19 +109,20 @@ export class Web3SignService {
       accountId = searchAccount.accountId;
     }
 
-    let account = await this.accountBaseService.searchAccount(accountId);
-    if (!account) {
+    let findAccount = await this.accountBaseService.searchAccount(accountId);
+    if (!findAccount) {
       throw new BadRequestException("account not exist");
     }
-    if (!account.allowLogin) {
+    if (!findAccount.allowLogin) {
       throw new BadRequestException("account is disabled to login");
     }
+    let mockEmail: string = `${accountId}@web3go.xyz`;
     let payload: SignTokenPayload = {
-      id: account.accountId,
+      id: accountId,
       email: mockEmail,
       address: address,
-      first_name: account.nickName,
-      groups: await this.accountBaseService.searchAccountGroups(account.accountId),
+      first_name: findAccount.nickName,
+      groups: await this.accountBaseService.searchAccountGroups(accountId),
     };
 
     let token = await this.jwtAuthService.grantToken(payload);

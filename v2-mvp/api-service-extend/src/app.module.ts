@@ -9,6 +9,10 @@ import { DebugModule } from './debug/debug.module';
 import { KVModule } from './base/kv/kv.module';
 import { AccountBaseModule } from './account/base/account-base.module';
 import { JWTAuthModule } from './base/auth/jwt-auth.module';
+import { HomepageModule } from './homepage/homepage.module';
+import { DashboardController } from './dashboard/dashboard.controller';
+import { DashboardService } from './dashboard/dashboard.service';
+import { DashboardModule } from './dashboard/dashboard.module';
 @Module({
   imports: [
     StatusMonitorModule.forRoot(),
@@ -18,6 +22,8 @@ import { JWTAuthModule } from './base/auth/jwt-auth.module';
     AccountAuthModule,
     Web3SignModule,
     DebugModule,
+    HomepageModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
