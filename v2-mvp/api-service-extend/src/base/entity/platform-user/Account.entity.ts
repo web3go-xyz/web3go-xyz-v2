@@ -42,16 +42,7 @@ export class Account {
     })
     created_time: Date;
 
-
-    @ApiProperty()
-    @Column({
-        comment: 'password hashed. it is master password for login by emails, all these emails will share the same password.',
-
-        nullable: true,
-        name: 'auth_master_password'
-    })
-    authMasterPassword: string;
-
+ 
     @ApiProperty()
     @Column({
         comment: 'user allow login status, default =1 , set to 0 when disabled.',

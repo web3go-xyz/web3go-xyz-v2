@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class Web3SignInChallengeResponse {
+export class Web3SignChallengeResponse {
 
     @ApiProperty({ description: 'chain name, eg: Polkadot, BSC', })
     chain: string;
@@ -11,15 +11,15 @@ export class Web3SignInChallengeResponse {
     @ApiProperty({ description: 'address', })
     address: string;
 
-    @ApiProperty()
+    @ApiProperty({ description: `original challenge` })
     challenge: string;
 
-    @ApiProperty()
+    @ApiProperty({ description: 'original signature' })
     signature: string;
 
-    @ApiProperty()
+    @ApiProperty({ description: `verified result` })
     verified: boolean;
 
-    @ApiProperty()
+    @ApiProperty({ description: 'if verified passed, it will contain extra info like token or account info' })
     extra: any;
 } 

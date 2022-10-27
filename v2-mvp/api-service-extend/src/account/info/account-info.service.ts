@@ -19,6 +19,7 @@ import { CheckEmailRequest } from 'src/viewModel/account/info/CheckEmailRequest'
 import { EmailBaseService } from 'src/base/email/email-base.service';
 import { VerifyCodeBaseService } from '../base/verifycode-base.service';
 import { VerifyCodePurpose, VerifyCodeType, VerifyFlag } from 'src/viewModel/VerifyCodeType';
+import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
 
 
 
@@ -31,6 +32,7 @@ export class AccountInfoService {
     private readonly verifyCodeBaseService: VerifyCodeBaseService,
     private readonly emailBaseService: EmailBaseService,
     private readonly web3SignService: Web3SignService,
+    private readonly jwtAuthService: JWTAuthService,
 
     @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_REPOSITORY.provide)
     private accountRepository: Repository<Account>,
@@ -51,11 +53,15 @@ export class AccountInfoService {
     const account = await this.accountRepository.findOne({
       where: { accountId: accountId }
     });
-    delete account.authMasterPassword;
 
     let accountEmails = await this.accountEmailRepository.find({
       where: { accountId: accountId }
     });
+    if (accountEmails) {
+      for (const e of accountEmails) {
+        delete e.password_hash;
+      }
+    }
 
     let accountWallets = await this.accountWalletRepository.find({
       where: { accountId: accountId }
@@ -112,7 +118,8 @@ export class AccountInfoService {
       accountId: payload.accountId,
       email: payload.email,
       verified: VerifyFlag.Verified,
-      created_time: new Date()
+      created_time: new Date(),
+      password_hash: this.jwtAuthService.passwordEncrypt(payload.accountId, payload.password)
     };
     await this.accountEmailRepository.save(newEmailLink);
     this.logger.warn(`success linkEmail ${JSON.stringify(payload)}`);

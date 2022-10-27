@@ -1,10 +1,11 @@
-import { Web3SignInChallengeRequest } from "./model/Web3SignInChallengeRequest";
-import { Web3SignInChallengeResponse } from "./model/Web3SignInChallengeResponse";
-import { Web3SignInNonceRequest } from "./model/Web3SignInNonceRequest";
-import { Web3SignInNonceResponse } from "./model/Web3SignInNonceResponse";
+import { Web3SignChallengeRequest } from "./model/Web3SignChallengeRequest";
+import { Web3SignChallengeResponse } from "./model/Web3SignChallengeResponse";
+import { Web3SignNonceRequest } from "./model/Web3SignNonceRequest";
+import { Web3SignNonceResponse } from "./model/Web3SignNonceResponse";
 
+ 
 export interface IWeb3Sign {
-    createChallenge(request: Web3SignInNonceRequest): Promise<Web3SignInNonceResponse>;
-    challenge(request: Web3SignInChallengeRequest): Promise<Web3SignInChallengeResponse>;
+    createChallenge(request: Web3SignNonceRequest): Promise<Web3SignNonceResponse>;
+    challenge(request: Web3SignChallengeRequest): Promise<Web3SignChallengeResponse>;
 
 }

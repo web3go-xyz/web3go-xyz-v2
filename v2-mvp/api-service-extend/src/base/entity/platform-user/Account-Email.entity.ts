@@ -35,4 +35,12 @@ export class AccountEmail {
         nullable: false
     })
     created_time: Date;
+
+    @ApiProperty()
+    @Column({
+        comment: 'password hashed. for login by emails, each email has its own password',
+        nullable: true, default: '',
+        name: 'password_hash'
+    })
+    password_hash: string;
 }

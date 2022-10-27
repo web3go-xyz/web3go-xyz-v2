@@ -1,11 +1,11 @@
-import { Web3SignInChallengeRequest } from "../model/Web3SignInChallengeRequest";
-import { Web3SignInChallengeResponse } from "../model/Web3SignInChallengeResponse";
-import { Web3SignInNonceRequest } from "../model/Web3SignInNonceRequest";
-import { Web3SignInNonceResponse } from "../model/Web3SignInNonceResponse";
+
 import { IWeb3Sign } from "../IWeb3Sign";
 import { W3Logger } from "src/base/log/logger.service";
 import { generateNonce, SiweMessage } from 'siwe';
-const { v4: uuidv4 } = require('uuid');
+import { Web3SignChallengeRequest } from "../model/Web3SignChallengeRequest";
+import { Web3SignChallengeResponse } from "../model/Web3SignChallengeResponse";
+import { Web3SignNonceRequest } from "../model/Web3SignNonceRequest";
+import { Web3SignNonceResponse } from "../model/Web3SignNonceResponse";
 
 export class MetamaskSignHelper implements IWeb3Sign {
 
@@ -14,15 +14,13 @@ export class MetamaskSignHelper implements IWeb3Sign {
     constructor() {
         this.logger = new W3Logger(`MetamaskSignHelper`);
     }
-    async createChallenge(request: Web3SignInNonceRequest): Promise<Web3SignInNonceResponse> {
+    async createChallenge(request: Web3SignNonceRequest): Promise<Web3SignNonceResponse> {
 
         let nonce = `${generateNonce()}`;
-        let challenge = `challenge for signin with [${request.chain}] [${request.walletSource}] [${request.address}]`;
+        let challenge = `${request.nonce_description}: sign with [${request.chain}][${request.walletSource}][${request.address}]`;
 
-        let resp: Web3SignInNonceResponse = {
+        let resp: Web3SignNonceResponse = {
             chain: request.chain,
-            callbackEndpoint: '/challenge',
-            scope: ["address"],
             challenge: challenge,
             nonce: nonce,
             walletSource: request.walletSource,
@@ -33,11 +31,11 @@ export class MetamaskSignHelper implements IWeb3Sign {
         return resp;
     }
 
-    async challenge(request: Web3SignInChallengeRequest): Promise<Web3SignInChallengeResponse> {
+    async challenge(request: Web3SignChallengeRequest): Promise<Web3SignChallengeResponse> {
 
         this.logger.debug(`challenge request:${JSON.stringify(request)}`);
 
-        let resp: Web3SignInChallengeResponse = {
+        let resp: Web3SignChallengeResponse = {
             ...request,
             verified: false,
             extra: ''

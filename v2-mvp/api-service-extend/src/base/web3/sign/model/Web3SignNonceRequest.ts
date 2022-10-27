@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class Web3SignInNonceRequest {
+export class Web3SignNonceRequest {
 
     @ApiProperty({ description: 'chain name, eg: Polkadot, BSC', required: true })
     chain: string;
@@ -10,4 +10,12 @@ export class Web3SignInNonceRequest {
 
     @ApiProperty({ description: 'address', required: true })
     address: string;
+
+    @ApiProperty({
+        description: 'description for current nonce, it will be a part of challenge in response',
+        required: true,
+        default: 'sign'
+    })
+    nonce_description: string;
+
 }

@@ -1,7 +1,7 @@
 import { BadRequestException, Get, Query } from '@nestjs/common';
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthUser } from 'src/base/auth/authUser'; 
+import { AuthorizedUser } from 'src/base/auth/AuthorizedUser'; 
 import { W3Logger } from 'src/base/log/logger.service';
 import { AccountInfo } from 'src/viewModel/account/AccountInfo';
 import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
@@ -80,8 +80,8 @@ export class AccountAuthController {
 
   @Post('/signin')
   @ApiOperation({ summary: '[Web2] login in , return user info and access token' })
-  @ApiOkResponse({ type: AuthUser })
-  async signin(@Body() request: AccountSigninRequest): Promise<AuthUser> {
+  @ApiOkResponse({ type: AuthorizedUser })
+  async signin(@Body() request: AccountSigninRequest): Promise<AuthorizedUser> {
     {
       this.logger.debug(`signin:${JSON.stringify(request)}`);
       return await this.accountAuthService.signin(request);

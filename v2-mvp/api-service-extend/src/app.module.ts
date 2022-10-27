@@ -8,10 +8,11 @@ import { Web3SignModule } from './account/web3/web3.sign.module';
 import { DebugModule } from './debug/debug.module';
 import { KVModule } from './base/kv/kv.module';
 import { AccountBaseModule } from './account/base/account-base.module';
+import { JWTAuthModule } from './base/auth/jwt-auth.module';
 @Module({
   imports: [
-
     StatusMonitorModule.forRoot(),
+    JWTAuthModule,
     KVModule,
     AccountInfoModule,
     AccountAuthModule,

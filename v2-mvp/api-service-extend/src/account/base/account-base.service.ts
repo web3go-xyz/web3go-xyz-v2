@@ -1,19 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityManager, FindManyOptions, Repository } from 'typeorm';
 
-import { JwtService } from '@nestjs/jwt';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { W3Logger } from 'src/base/log/logger.service';
 import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { AccountEmail } from 'src/base/entity/platform-user/Account-Email.entity';
 import { AccountWallet } from 'src/base/entity/platform-user/Account-Wallet.entity';
-import { AccountVerifyCode } from 'src/base/entity/platform-user/Account-VerifyCode.entity';
 
-import { v4 as uuidv4 } from 'uuid'; 
+import { v4 as uuidv4 } from 'uuid';
 import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
-import { SignTokenPayload } from 'src/viewModel/account/auth/SignTokenPayload';
 import { VerifyFlag } from 'src/viewModel/VerifyCodeType';
-
 
 const md5 = require('js-md5');
 
@@ -24,7 +20,6 @@ export class AccountBaseService {
   logger: W3Logger;
 
   constructor(
-    private readonly jwtService: JwtService,
     @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_REPOSITORY.provide)
     private accountRepository: Repository<Account>,
 
@@ -41,11 +36,7 @@ export class AccountBaseService {
   generateAccountId() {
     return uuidv4();
   }
-  async grantToken(payload: SignTokenPayload): Promise<string> {
-    let token = this.jwtService.sign(payload);
-    this.logger.debug(`signin with payload:${JSON.stringify(payload)}, got token:${token}`);
-    return token;
-  }
+
   async searchAccountGroups(accountId: string): Promise<string[]> {
     return ['CommonUsers', "BuilderV1"];
   }
@@ -89,20 +80,11 @@ export class AccountBaseService {
     if (!accountId) return null;
 
     let account = await this.accountRepository.findOne({ where: { accountId: accountId } });
-    if (account) {
-      delete account.authMasterPassword;
-    }
+
     return account;
   }
 
-  passwordVerify(id: string, passwordHash: string, password: string) {
-    let encrypt = this.passwordEncrypt(id, password);
-    return encrypt === passwordHash;
-  }
-  passwordEncrypt(id: string, password: string): string {
-    let encrypt = md5(id + password);
-    return encrypt;
-  }
+
 
 
   async generateWeb3Id(tm: EntityManager): Promise<string> {
@@ -156,12 +138,6 @@ export class AccountBaseService {
     }
 
     return accountIds;
-  }
-
-  jwt_verify(jwt: string): Object | PromiseLike<Object> {
-    let verify_result = this.jwtService.verify(jwt);
-    this.logger.debug(`verify_result:${JSON.stringify(verify_result)}`);
-    return verify_result;
   }
 
 }

@@ -1,6 +1,7 @@
 import { BadRequestException, Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthUser } from 'src/base/auth/authUser';
+import { AuthorizedUser } from 'src/base/auth/AuthorizedUser';
+
 import { JwtAuthGuard } from 'src/base/auth/JwtAuthGuard';
 import { W3Logger } from 'src/base/log/logger.service';
 import { AccountInfo } from 'src/viewModel/account/AccountInfo';
@@ -31,7 +32,7 @@ export class AccountInfoController {
   @ApiOkResponse({ type: AccountInfo })
   async getAccountInfo(@Request() request): Promise<AccountInfo> {
 
-    let validateUser: AuthUser = request.user;
+    let validateUser: AuthorizedUser = request.user;
     this.logger.log(`validateUser:${JSON.stringify(validateUser)}`);
     let accountId = validateUser.id;
     return await this.accountInfoService.getAccountInfo(accountId);
@@ -135,7 +136,7 @@ export class AccountInfoController {
 
   requireAccountIdMatch(request: any, payload: any) {
     if (request && request.user) {
-      let validateUser: AuthUser = request.user;
+      let validateUser: AuthorizedUser = request.user;
       if (payload && payload.accountId) {
         let matched = validateUser.id.toLowerCase() === payload.accountId.toLowerCase();
         if (matched) {

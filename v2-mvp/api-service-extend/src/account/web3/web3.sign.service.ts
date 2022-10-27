@@ -8,20 +8,21 @@ import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { AccountWallet } from 'src/base/entity/platform-user/Account-Wallet.entity';
 
 import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
-import { Web3SignInChallengeRequest } from '../../base/web3/sign/model/Web3SignInChallengeRequest';
 
-import { AuthUser } from 'src/base/auth/authUser';
 import { AccountBaseService } from '../base/account-base.service';
 import { AccountInfo } from 'src/viewModel/account/AccountInfo';
-import { SignTokenPayload } from 'src/viewModel/account/auth/SignTokenPayload';
 import { KVService } from 'src/base/kv/kv.service';
 import { MetamaskSignHelper } from 'src/base/web3/sign/metamask/metamask.sign.helper';
 import { PolkadotSignHelper } from 'src/base/web3/sign/polkadot/polkadot.sign.helper';
-import { Web3SignInNonceRequest } from 'src/base/web3/sign/model/Web3SignInNonceRequest';
-import { Web3SignInNonceResponse } from 'src/base/web3/sign/model/Web3SignInNonceResponse';
 import { WalletSupported } from 'src/viewModel/chain/walletSupported';
 import { IWeb3Sign } from 'src/base/web3/sign/IWeb3Sign';
-import { Web3SignInChallengeResponse } from 'src/base/web3/sign/model/Web3SignInChallengeResponse';
+import { Web3SignChallengeRequest } from 'src/base/web3/sign/model/Web3SignChallengeRequest';
+import { Web3SignChallengeResponse } from 'src/base/web3/sign/model/Web3SignChallengeResponse';
+import { Web3SignNonceRequest } from 'src/base/web3/sign/model/Web3SignNonceRequest';
+import { Web3SignNonceResponse } from 'src/base/web3/sign/model/Web3SignNonceResponse';
+import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
+import { AuthorizedUser } from 'src/base/auth/AuthorizedUser';
+import { SignTokenPayload } from 'src/base/auth/SignTokenPayload';
 
 
 @Injectable()
@@ -36,6 +37,8 @@ export class Web3SignService {
     private readonly polkadotSignHelper: PolkadotSignHelper,
     private readonly metamaskSignHelper: MetamaskSignHelper,
     private readonly accountBaseService: AccountBaseService,
+    private readonly jwtAuthService: JWTAuthService,
+
     @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_REPOSITORY.provide)
     private accountRepository: Repository<Account>,
 
@@ -57,7 +60,6 @@ export class Web3SignService {
       nickName: address,
       avatar: '',
       created_time: new Date(),
-      authMasterPassword: '',
       allowLogin: 1,
       last_login_time: new Date()
     }
@@ -79,7 +81,6 @@ export class Web3SignService {
       await tm.save(AccountWallet, newAccountWallet);
 
     });
-    delete newAccount.authMasterPassword;
     return {
       account: newAccount,
       accountEmails: null,
@@ -87,7 +88,7 @@ export class Web3SignService {
     };
 
   }
-  async signInWithWalletAddress(request: Web3SignInChallengeRequest): Promise<AuthUser> {
+  async signInWithWalletAddress(request: Web3SignChallengeRequest): Promise<AuthorizedUser> {
     let address = request.address;
     let accountId: string = null;
     let mockEmail: string = `${request.chain.toLowerCase()}_${request.address.toLowerCase()}@web3go.xyz`;
@@ -123,7 +124,7 @@ export class Web3SignService {
       groups: await this.accountBaseService.searchAccountGroups(account.accountId),
     };
 
-    let token = await this.accountBaseService.grantToken(payload);
+    let token = await this.jwtAuthService.grantToken(payload);
 
     return {
       id: payload.id,
@@ -133,7 +134,7 @@ export class Web3SignService {
   }
 
 
-  async web3_challenge(request: Web3SignInChallengeRequest): Promise<Web3SignInChallengeResponse> {
+  async web3_challenge(request: Web3SignChallengeRequest): Promise<Web3SignChallengeResponse> {
     try {
       let challenge = request.challenge;
       let nonce = request.nonce;
@@ -170,7 +171,7 @@ export class Web3SignService {
       throw new BadRequestException('request invalid, ' + error);
     }
   }
-  async web3_nonce(request: Web3SignInNonceRequest): Promise<Web3SignInNonceResponse> {
+  async web3_nonce(request: Web3SignNonceRequest): Promise<Web3SignNonceResponse> {
     let resp = await this.getWeb3SignHelper(request.walletSource, request.chain).createChallenge(request);
 
     this.logger.debug(`web3_nonce: ${JSON.stringify(resp)}`);

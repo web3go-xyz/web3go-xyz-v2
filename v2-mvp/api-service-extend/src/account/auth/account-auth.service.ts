@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 
-import { AuthUser } from 'src/base/auth/authUser';
-import { IAuthService } from 'src/base/auth/IAuthService';
+import { AuthorizedUser } from 'src/base/auth/AuthorizedUser';
+import { AuthParameter, IAuthService } from 'src/base/auth/IAuthService';
 import { AccountEmail } from 'src/base/entity/platform-user/Account-Email.entity';
 import { AccountVerifyCode } from 'src/base/entity/platform-user/Account-VerifyCode.entity';
 import { Account } from 'src/base/entity/platform-user/Account.entity';
@@ -13,7 +13,6 @@ import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
 import { AccountSigninRequest } from 'src/viewModel/account/auth/AccountSigninRequest';
 import { AccountSignupRequest } from 'src/viewModel/account/auth/AccountSignupRequest';
 import { ChangePasswordRequest } from 'src/viewModel/account/auth/ChangePasswordRequest';
-import { SignTokenPayload } from 'src/viewModel/account/auth/SignTokenPayload';
 import { EmailVerifyRequest } from 'src/viewModel/account/EmailVerifyRequest';
 import { VerifyCodeRequest } from 'src/viewModel/account/VerifyCodeRequest';
 import { Repository } from 'typeorm';
@@ -22,6 +21,8 @@ import { AccountBaseService } from '../base/account-base.service';
 import { EmailBaseService } from '../../base/email/email-base.service';
 import { VerifyCodeBaseService } from '../base/verifycode-base.service';
 import { VerifyCodeType, VerifyCodePurpose, VerifyFlag } from 'src/viewModel/VerifyCodeType';
+import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
+import { SignTokenPayload } from 'src/base/auth/SignTokenPayload';
 
 
 @Injectable()
@@ -32,6 +33,8 @@ export class AccountAuthService implements IAuthService {
     private readonly accountBaseService: AccountBaseService,
     private readonly verifyCodeBaseService: VerifyCodeBaseService,
     private readonly emailBaseService: EmailBaseService,
+    private readonly jwtAuthService: JWTAuthService,
+
     @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_REPOSITORY.provide)
     private accountRepository: Repository<Account>,
 
@@ -46,7 +49,7 @@ export class AccountAuthService implements IAuthService {
   async searchAccountsByEmail(email: string, verifiedOnly: boolean): Promise<AccountSearchResult[]> {
     return await this.accountBaseService.searchAccountsByEmail(email, verifiedOnly)
   }
-  async signin(request: AccountSigninRequest): Promise<AuthUser> {
+  async signin(request: AccountSigninRequest): Promise<AuthorizedUser> {
 
     let searchAccounts = await this.accountBaseService.searchAccountsByEmail(request.email, false);
     if (!searchAccounts || searchAccounts.length == 0) {
@@ -66,8 +69,13 @@ export class AccountAuthService implements IAuthService {
     }
     let password_verify = request.password;
     let accountId = account.accountId;
-    let authUser = await this.validateUser(accountId, password_verify);
+    let authUser = await this.validateUser({
+      id: accountId,
+      name: request.email,
+      secret: password_verify
+    });
     if (authUser) {
+      authUser.name = account.nickName;
       const payload: SignTokenPayload = {
         id: authUser.id,
         email: request.email,
@@ -75,7 +83,7 @@ export class AccountAuthService implements IAuthService {
         first_name: authUser.name,
         groups: await this.accountBaseService.searchAccountGroups(accountId),
       };
-      authUser.token = await this.accountBaseService.grantToken(payload);
+      authUser.token = await this.jwtAuthService.grantToken(payload);
     }
     return authUser;
   }
@@ -159,7 +167,7 @@ export class AccountAuthService implements IAuthService {
           first_name: account.nickName,
           groups: await this.accountBaseService.searchAccountGroups(account.accountId)
         };
-        let autoSignInToken = await this.accountBaseService.grantToken(payload);
+        let autoSignInToken = await this.jwtAuthService.grantToken(payload);
         return {
           result: 'success',
           token: autoSignInToken,
@@ -174,9 +182,15 @@ export class AccountAuthService implements IAuthService {
   }
 
   async changePassword(request: ChangePasswordRequest): Promise<boolean> {
-    let account = await this.accountRepository.findOne({ where: { accountId: request.accountId } });
-    if (!account) {
-      throw new BadRequestException('account not exist');
+    let accountEmail = await this.accountEmailRepository.findOne({
+      where: {
+        accountId:
+          request.accountId,
+        email: request.email
+      }
+    });
+    if (!accountEmail) {
+      throw new BadRequestException('account with email not exist');
     }
 
     let verify = await this.verifyCodeBaseService.verifyCode(
@@ -191,8 +205,8 @@ export class AccountAuthService implements IAuthService {
     }
 
     //change password 
-    account.authMasterPassword = this.accountBaseService.passwordEncrypt(account.accountId, request.newPassword);
-    await this.accountRepository.save(account);
+    accountEmail.password_hash = this.jwtAuthService.passwordEncrypt(accountEmail.accountId, request.newPassword);
+    await this.accountEmailRepository.save(accountEmail);
 
     return true;
   }
@@ -206,7 +220,6 @@ export class AccountAuthService implements IAuthService {
       nickName: request.nickName,
       avatar: '',
       created_time: new Date(),
-      authMasterPassword: this.accountBaseService.passwordEncrypt(accountId, request.password),
       allowLogin: 1,
       last_login_time: new Date()
     }
@@ -214,7 +227,8 @@ export class AccountAuthService implements IAuthService {
       accountId: accountId,
       email: request.email,
       verified: 0,
-      created_time: new Date()
+      created_time: new Date(),
+      password_hash: this.jwtAuthService.passwordEncrypt(accountId, request.password),
     }
     this.logger.debug(`start to create new account:${JSON.stringify(newAccount)}`);
 
@@ -226,7 +240,7 @@ export class AccountAuthService implements IAuthService {
       await tm.save(AccountEmail, newAccountEmail);
 
     });
-    delete newAccount.authMasterPassword;
+    delete newAccountEmail.password_hash;
     return {
       account: newAccount,
       accountEmails: [newAccountEmail],
@@ -235,13 +249,20 @@ export class AccountAuthService implements IAuthService {
 
   }
 
-  async validateUser(account_id: string, password_verify: string): Promise<AuthUser> {
-    const account = await this.accountRepository.findOne({
-      where: { accountId: account_id }
-    });
-    if (account && this.accountBaseService.passwordVerify(account.accountId, account.authMasterPassword, password_verify)) {
+  async validateUser(parameter: AuthParameter): Promise<AuthorizedUser> {
+    let account_id = parameter.id;
+    let email = parameter.name;
+    let password_verify = parameter.secret;
 
-      let authUser: AuthUser = { id: account.accountId, name: account.nickName };
+    const accountEmail = await this.accountEmailRepository.findOne({
+      where: {
+        accountId: account_id,
+        email: email
+      }
+    });
+    if (accountEmail && this.jwtAuthService.passwordVerify(account_id, accountEmail.password_hash, password_verify)) {
+
+      let authUser: AuthorizedUser = { id: account_id, name: email };
       this.logger.log(`validate user:${JSON.stringify(authUser)}`);
 
       return authUser;
@@ -252,7 +273,7 @@ export class AccountAuthService implements IAuthService {
   }
 
   jwt_verify(jwt: string): Object | PromiseLike<Object> {
-    return this.accountBaseService.jwt_verify(jwt);
+    return this.jwtAuthService.jwt_verify(jwt);
   }
 
 }
