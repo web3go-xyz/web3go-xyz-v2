@@ -64,13 +64,6 @@ class Component extends React.Component {
                 if (d) {
                     Message.success('Email has been sent. Please check the security code in the email.');
                 }
-            }).catch(e => {
-                if (e && e.data && e.data.message) {
-                    Message.error({
-                        content: e.data.message,
-                        duration: 5000
-                    });
-                }
             })
         })
     }
@@ -90,6 +83,7 @@ class Component extends React.Component {
     render() {
         return (
             <Modal
+            wrapClassName="web3go-signin-common-modal"
                 title='Forgot Password'
                 visible={this.state.visible}
                 onOk={() => this.setState({ visible: false })}

@@ -40,7 +40,6 @@ class Component extends React.Component {
         }).catch(e => {
             if (e && e.data && e.data.message) {
                 this.props.replace('/layout/home#showLogin');
-                Message.error(e.data.message);
             }
         })
     }

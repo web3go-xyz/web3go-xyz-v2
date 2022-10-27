@@ -25,6 +25,13 @@ export const LayoutLoginApi = {
   web3_nonce: WPOST(WEB3GO_BASE_URL + "/api/v2/account/web3/web3_nonce"),
   web3_challenge: WPOST(WEB3GO_BASE_URL + "/api/v2/account/web3/web3_challenge"),
   getSupportedWallet: WGET(WEB3GO_BASE_URL + "/api/v2/account/web3/getSupportedWallet"),
+  changeName: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/changeName"),
+  changeAvatar: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/changeAvatar"),
+  checkEmailBeforeLink: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/checkEmailBeforeLink"),
+  linkEmail: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/linkEmail"),
+  linkWallet: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/linkWallet"),
+  unlinkEmail: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/unlinkEmail"),
+  unlinkWallet: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/unlinkWallet"),
 };
 export const ActivityApi = {
   list: GET("/api/activity"),

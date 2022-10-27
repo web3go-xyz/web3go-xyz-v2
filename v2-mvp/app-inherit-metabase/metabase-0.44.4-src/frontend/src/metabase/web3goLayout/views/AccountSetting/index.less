@@ -84,6 +84,7 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
                     img {
                         width: 116px;
                         height: 116px;
+                        border-radius: 50%;
                     }
                 }
 
@@ -118,7 +119,7 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
                     margin-bottom: 32px;
                 }
 
-                .nickname-row {
+                .nickName-row {
                     width: 540px;
 
                     .arco-form-item-control-children {
@@ -192,7 +193,9 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
                             margin-right: 4px;
                         }
                     }
-
+                    .add-more-wrap{
+                        display: flex;
+                    }
                     .add-more {
                         display: flex;
                         align-items: center;
@@ -215,7 +218,9 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
                         .item {
                             display: flex;
                             align-items: center;
-
+                            &+.item{
+                                margin-top: 12px;
+                            }
                             .email {
                                 box-sizing: border-box;
                                 width: 504px;
@@ -256,6 +261,7 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
                             }
 
                             .address {
+                                flex: 1;
                                 margin-left: 8px;
                                 margin-right: 16px;
                                 font-weight: 400;
@@ -265,6 +271,7 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
                             }
 
                             .a {
+                                margin-right: 22px;
                                 width: 24px;
                             }
                         }
@@ -321,6 +328,7 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
     .btn-wrap {
         margin-top: 12px;
         text-align: center;
+
         .btn {
             width: 240px;
             height: 44px;
