@@ -89,13 +89,10 @@ class Component extends React.Component {
                 LayoutLoginApi.signIn(form).then(d => {
                     localStorage.setItem('token', d.token);
                     location.replace(`/auth/sso?jwt=${d.token}&&return_to=/`)
-                }).catch(e => {
-                    if (e && e.data && e.data.message) {
-                        Message.error({
-                            content: e.data.message,
-                            duration: 5000
-                        });
-                    }
+                }).catch(() => {
+                    this.setState({
+                        loading: false
+                    })
                 })
             } else {
                 LayoutLoginApi.signUp(form).then(d => {
@@ -103,13 +100,10 @@ class Component extends React.Component {
                         currentAccount: d.account
                     });
                     this.verifyEmail();
-                }).catch(e => {
-                    if (e && e.data && e.data.message) {
-                        Message.error({
-                            content: e.data.message,
-                            duration: 5000
-                        });
-                    }
+                }).catch(() => {
+                    this.setState({
+                        loading: false
+                    })
                 })
             }
         })

@@ -4,6 +4,7 @@ import EventEmitter from "events";
 
 import { delay } from "metabase/lib/promise";
 import { IFRAMED } from "metabase/lib/dom";
+import { Message } from '@arco-design/web-react';
 
 const ONE_SECOND = 1000;
 const MAX_RETRIES = 10;
@@ -165,7 +166,7 @@ export class Api extends EventEmitter {
       xhr.onreadystatechange = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           // getResponseHeader() is case-insensitive
-          
+
           // const antiCsrfToken = xhr.getResponseHeader(ANTI_CSRF_HEADER);
           // if (antiCsrfToken) {
           //   ANTI_CSRF_TOKEN = antiCsrfToken;
@@ -175,7 +176,7 @@ export class Api extends EventEmitter {
           if (options.json) {
             try {
               body = JSON.parse(body);
-            } catch (e) {}
+            } catch (e) { }
           }
           let status = xhr.status;
           if (status === 202 && body && body._status > 0) {
@@ -187,6 +188,7 @@ export class Api extends EventEmitter {
             }
             resolve(body);
           } else {
+            Message.error((body && body.message) || 'request error');
             reject({
               status: status,
               data: body,

@@ -11,6 +11,7 @@ import Web3 from "web3";
 import { ethers } from "ethers";
 import { SiweMessage } from "siwe";
 import IdentityIcon from "@/web3goLayout/components/IdentityIcon";
+import { changeUserData } from "metabase/redux/app";
 import {
     web3Accounts,
     web3Enable,
@@ -24,17 +25,20 @@ import {
     signatureVerify,
 } from "@polkadot/util-crypto";
 import { u8aToHex } from "@polkadot/util";
+import event from '@/web3goLayout/event';
 
 let provider;
 let signer;
 const mapStateToProps = state => {
     return {
         isDark: state.app.isDark,
+        userData: state.app.userData
     }
 };
 const mapDispatchToProps = {
     toggleDark,
-    push
+    push,
+    changeUserData
 };
 const FormItem = Form.Item;
 
@@ -42,7 +46,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // connect or switch
+            // connect or add
             ifConnect: true,
             walletType: "",
             networkObj: {
@@ -66,15 +70,47 @@ class Component extends React.Component {
         this.formRef = React.createRef();
     }
     async componentDidMount() {
+        event.on('openAddWalletModal', this.openAddWalletModal)
         this.props.onRef(this)
         const walletTypeList = await LayoutLoginApi.getSupportedWallet()
         this.setState({
             walletTypeList
         });
     }
+    clearUI = () => {
+        this.setState({
+            // connect or add
+            ifConnect: true,
+            walletType: "",
+            networkObj: {
+                supportWallet: []
+            },
+            linkLoading: false,
+            chooseWalletLoading: false,
+            visible: false,
+            polkadotAccountList: [],
+            networkList: [{
+                name: 'BNB Chain',
+                key: 'BSC',
+                icon: require('@/web3goLayout/assets/layout/bnb.png'),
+            }, {
+                name: 'Polkadot',
+                key: 'Polkadot',
+                icon: require('@/web3goLayout/assets/layout/boka.png'),
+            }],
+        });
+    }
     openConnectWalletModal = () => {
+        // this.clearUI();
         this.setState({
             visible: true,
+        });
+    }
+    openAddWalletModal = () => {
+        this.clearUI();
+        this.setState({
+            visible: true,
+            ifConnect: false
         });
     }
     getWalletIcon = (v) => {
@@ -157,19 +193,46 @@ class Component extends React.Component {
         });
         let msg = message.prepareMessage();
         let signature = await signer.signMessage(msg);
-        const tokenObj = await LayoutLoginApi.web3_challenge({
-            "chain": this.state.networkObj.key,
-            "walletSource": this.state.walletType,
-            signature,
-            scope: [],
-            challenge: JSON.stringify({
-                msg: msg
-            }),
-            address: address,
-            nonce: challengeObj.nonce,
-        });
-        localStorage.setItem('token', tokenObj.extra.token);
-        location.replace(`/auth/sso?jwt=${tokenObj.extra.token}&&return_to=/`)
+        if (this.state.ifConnect) {
+            const tokenObj = await LayoutLoginApi.web3_challenge({
+                "chain": this.state.networkObj.key,
+                "walletSource": this.state.walletType,
+                signature,
+                scope: [],
+                challenge: JSON.stringify({
+                    msg: msg
+                }),
+                address: address,
+                nonce: challengeObj.nonce,
+            });
+            localStorage.setItem('token', tokenObj.extra.token);
+            location.replace(`/auth/sso?jwt=${tokenObj.extra.token}&&return_to=/`)
+        } else {
+            try {
+                await LayoutLoginApi.linkWallet({
+                    accountId: this.props.userData.account.accountId,
+                    "chain": this.state.networkObj.key,
+                    "walletSource": this.state.walletType,
+                    signature,
+                    challenge: JSON.stringify({
+                        msg: msg
+                    }),
+                    address: address,
+                    nonce: challengeObj.nonce,
+                });
+                this.setState({
+                    chooseWalletLoading: false,
+                    visible: false
+                });
+                LayoutLoginApi.getAccountInfo().then(d => {
+                    this.props.changeUserData(d);
+                })
+            } catch (error) {
+                this.setState({
+                    chooseWalletLoading: false,
+                });
+            }
+        }
     }
     connectPolkadot = async () => {
         await web3Enable("Web3Go");
@@ -222,30 +285,45 @@ class Component extends React.Component {
                 accountAddress
             );
             console.log("isValid", isValid);
-            const tokenObj = await LayoutLoginApi.web3_challenge({
-                "chain": this.state.networkObj.key,
-                "walletSource": this.state.walletType,
-                signature,
-                scope: ["address", "balance"],
-                challenge: message,
-                address: accountAddress,
-                nonce: challengeObj.nonce,
-            });
-            localStorage.setItem('token', tokenObj.extra.token);
-            location.replace(`/auth/sso?jwt=${tokenObj.extra.token}&&return_to=/`)
+            if (this.state.ifConnect) {
+                const tokenObj = await LayoutLoginApi.web3_challenge({
+                    "chain": this.state.networkObj.key,
+                    "walletSource": this.state.walletType,
+                    signature,
+                    scope: ["address", "balance"],
+                    challenge: message,
+                    address: accountAddress,
+                    nonce: challengeObj.nonce,
+                });
+                localStorage.setItem('token', tokenObj.extra.token);
+                location.replace(`/auth/sso?jwt=${tokenObj.extra.token}&&return_to=/`)
+            } else {
+                try {
+                    await LayoutLoginApi.linkWallet({
+                        accountId: this.props.userData.account.accountId,
+                        "chain": this.state.networkObj.key,
+                        "walletSource": this.state.walletType,
+                        signature,
+                        challenge: message,
+                        address: accountAddress,
+                        nonce: challengeObj.nonce,
+                    });
+                    this.setState({
+                        chooseWalletLoading: false,
+                        visible: false
+                    });
+                    LayoutLoginApi.getAccountInfo().then(d => {
+                        this.props.changeUserData(d);
+                    })
+                } catch (error) {
+                    this.setState({
+                        chooseWalletLoading: false,
+                    });
+                }
+            }
         }
 
-        // await web3Enable(`Web3Go`);
-        const walletData = {
-            walletType: "polkadotjs",
-            address: account.address,
-            name: account.meta.name,
-            balance: {
-                free: 0,
-                reserved: 0,
-                total: 0,
-            },
-        };
+
     }
     changeNetwork = (v) => {
         this.setState({
@@ -257,7 +335,8 @@ class Component extends React.Component {
     render() {
         return (
             <Modal
-                title={this.state.ifConnect ? 'Connect Wallet' : 'Switch Wallet'}
+                wrapClassName="web3go-signin-common-modal"
+                title={this.state.ifConnect ? 'Connect Wallet' : 'Add Wallet'}
                 visible={this.state.visible}
                 onOk={() => this.setState({ visible: false })}
                 onCancel={() => this.setState({ visible: false })}

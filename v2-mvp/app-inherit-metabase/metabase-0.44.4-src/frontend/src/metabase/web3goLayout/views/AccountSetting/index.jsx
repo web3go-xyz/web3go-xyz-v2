@@ -2,20 +2,24 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Upload } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Upload, Message } from '@arco-design/web-react';
 import { push } from "react-router-redux";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import { changeUserData } from "metabase/redux/app";
 import { LayoutLoginApi } from '@/services'
+import event from '@/web3goLayout/event';
 
 const mapStateToProps = state => {
+    console.log('redux', state);
     return {
         isDark: state.app.isDark,
         userData: state.app.userData
     }
 };
 const mapDispatchToProps = {
-    push
+    push,
+    changeUserData
 };
 const FormItem = Form.Item;
 
@@ -27,13 +31,14 @@ class Component extends React.Component {
             nickNameCanEdit: false,
             visible: false,
             linkEmailVisible: false,
-            walletList: [],
-            emailList: [{}],
             img: '',
             cropper: null,
         }
         this.formRef = React.createRef();
         this.emailModalFormRef = React.createRef();
+    }
+    componentDidMount() {
+
     }
     componentDidUpdate(prevProps) {
         if (JSON.stringify(this.props.userData) !== JSON.stringify(prevProps.userData)) {
@@ -47,24 +52,48 @@ class Component extends React.Component {
         });
     }
     saveNickname = () => {
-        this.setState({
-            nickNameCanEdit: false
-        });
+        const { nickName } = this.formRef.current.getFields();
+        LayoutLoginApi.changeName({
+            accountId: this.props.userData.account.accountId,
+            nickName
+        }).then(d => {
+            if (d) {
+                this.setState({
+                    nickNameCanEdit: false
+                });
+                this.refreshAccountInfo();
+            }
+        })
     }
     setNickName = () => {
         if (!this.props.userData.account) {
             return;
         }
         this.formRef.current.setFieldsValue({
-            nickname: this.props.userData.account.nickName,
+            nickName: this.props.userData.account.nickName,
         });
     }
-    sureLink = () => {
-        this.setState({
-            linkEmailVisible: false
+    linkEmail = () => {
+        this.emailModalFormRef.current.validate().then((form) => {
+            LayoutLoginApi.linkEmail({
+                accountId: this.props.userData.account.accountId,
+                email: form.email,
+                password: form.password,
+                code: form.code
+            }).then(d => {
+                if (d) {
+                    this.setState({
+                        linkEmailVisible: false
+                    })
+                    this.refreshAccountInfo();
+                }
+            })
         })
     }
-    unlinkEmail = () => {
+    handleLinkWallet = () => {
+        event.emit('openAddWalletModal');
+    }
+    unlinkEmail = (v) => {
         Modal.confirm({
             wrapClassName: 'common-confirm-modal',
             closable: true,
@@ -74,35 +103,72 @@ class Component extends React.Component {
             okText: 'Confirm',
             cancelText: 'Cancel',
             onOk: () => {
-                console.log('ok');
+                LayoutLoginApi.unlinkEmail({
+                    accountId: this.props.userData.account.accountId,
+                    email: v.email,
+                }).then(d => {
+                    if (d) {
+                        this.refreshAccountInfo();
+                    }
+                })
             }
         });
     }
+    unlinkWallet = (v) => {
+        Modal.confirm({
+            wrapClassName: 'common-confirm-modal',
+            closable: true,
+            title: 'Are you sure to unlink Wallet ?',
+            content:
+                'After you click ok, your Web3go account will be deleted. Your will lose all your data.',
+            okText: 'Confirm',
+            cancelText: 'Cancel',
+            onOk: () => {
+                LayoutLoginApi.unlinkWallet({
+                    accountId: this.props.userData.account.accountId,
+                    address: v.address,
+                    chain: v.chain
+                }).then(d => {
+                    if (d) {
+                        this.refreshAccountInfo();
+                    }
+                })
+            }
+        });
+    }
+    refreshAccountInfo() {
+        LayoutLoginApi.getAccountInfo().then(d => {
+            this.props.changeUserData(d);
+        })
+    }
     copperSure = () => {
         if (this.state.cropper) {
-            this.state.cropper.getCroppedCanvas().toBlob((blob) => {
-                const formData = new FormData();
-
-                // Pass the image file name as the third parameter if necessary.
-                formData.append('croppedImage', blob/*, 'example.png' */);
-
-                // Use `jQuery.ajax` method for example
-                // $.ajax('/path/to/upload', {
-                //   method: 'POST',
-                //   data: formData,
-                //   processData: false,
-                //   contentType: false,
-                //   success() {
-                //     console.log('Upload success');
-                //   },
-                //   error() {
-                //     console.log('Upload error');
-                //   },
-                // });
-            }/*, 'image/png' */);
+            const avatar = this.state.cropper.getCroppedCanvas().toDataURL('image/jpeg');
+            LayoutLoginApi.changeAvatar({
+                accountId: this.props.userData.account.accountId,
+                avatar
+            }).then(d => {
+                if (d) {
+                    this.setState({
+                        visible: false
+                    });
+                    this.refreshAccountInfo();
+                }
+            });
         }
     }
+    openCropperModal = () => {
+        this.setState({
+            visible: true,
+            img: ''
+        });
+    }
     fileChange = (files) => {
+        const isLt1M = files[0].originFile.size / 1024 / 1024 < 1;
+        if (!isLt1M) {
+            Message.error('Max size is 1MB');
+            return;
+        }
         const reader = new FileReader();
         reader.onload = () => {
             this.setState({
@@ -112,15 +178,12 @@ class Component extends React.Component {
         };
         reader.readAsDataURL(files[0].originFile);
     }
-    handleLinkEmail = () => {
-
-    }
     sendEmail = () => {
         this.emailModalFormRef.current.validate(['email']).then(() => {
             const form = this.emailModalFormRef.current.getFields();
-            LayoutLoginApi.sendVerifyEmail({
+            LayoutLoginApi.checkEmailBeforeLink({
                 "email": form.email,
-                "verifyCodePurpose": "resetPassword"
+                accountId: this.props.userData.account.accountId,
             }).then(d => {
                 this.setState({
                     canSend: false
@@ -133,15 +196,14 @@ class Component extends React.Component {
                 if (d) {
                     Message.success('Email has been sent. Please check the security code in the email.');
                 }
-            }).catch(e => {
-                if (e && e.data && e.data.message) {
-                    Message.error({
-                        content: e.data.message,
-                        duration: 5000
-                    });
-                }
             })
         })
+    }
+    zoomBig = () => {
+        this.state.cropper.zoom(0.1);
+    }
+    zoomSmall = () => {
+        this.state.cropper.zoom(-0.1);
     }
     render() {
         return (
@@ -161,7 +223,7 @@ class Component extends React.Component {
                     <div className="pm-right">
                         <div className="banner">
                             <div className="avatar">
-                                <img src={require("@/web3goLayout/assets/account/Avatar.png")} alt="" />
+                                <img src={this.props.userData.account && this.props.userData.account.avatar} alt="" />
                             </div>
                             <div className="text">
                                 Everyone can <br />
@@ -173,12 +235,12 @@ class Component extends React.Component {
                             layout="vertical"
                             requiredSymbol={{ position: 'end' }}
                             className="form"
-                            initialValues={{ nickname: this.props.userData.account && this.props.userData.account.nickName }}
+                            initialValues={{ nickName: this.props.userData.account && this.props.userData.account.nickName }}
                         >
                             <div className="name">{this.props.userData.account && this.props.userData.account.nickName}</div>
                             <div className="id">Web3Go ID : {this.props.userData.account && this.props.userData.account.web3Id}</div>
-                            <FormItem label="Nickname" className="nickname-row" required>
-                                <FormItem style={{ width: '504px' }} field="nickname" noStyle={{ showErrorTip: true }} rules={[{ required: true }]}>
+                            <FormItem label="Nickname" className="nickName-row" required>
+                                <FormItem style={{ width: '504px' }} field="nickName" noStyle={{ showErrorTip: true }} rules={[{ required: true }]}>
                                     <Input
                                         disabled={!this.state.nickNameCanEdit}
                                         maxLength={50}
@@ -198,18 +260,24 @@ class Component extends React.Component {
                             <div className="form-item">
                                 <div className="label">Avatar</div>
                                 <div className="value">
-                                    <img src={require("@/web3goLayout/assets/account/Avatar.png")} alt="" />
-                                    <Upload action='/' showUploadList={false} autoUpload={false} onChange={this.fileChange}>
-                                        <Button>Change</Button>
-                                    </Upload>
+                                    <img src={this.props.userData.account && this.props.userData.account.avatar} alt="" />
+                                    {/* <Upload action='/'
+                                        key={Math.random()}
+                                        accept='.jpg,.png'
+                                        showUploadList={false}
+                                        autoUpload={false}
+                                        onChange={this.fileChange}>
+                                    </Upload> */}
+                                    <Button onClick={this.openCropperModal}>Change</Button>
                                     <span className="tip">JPG or PNG. Max size is 1MB</span>
                                 </div>
                             </div>
                             <div className="split"></div>
                             <div className="form-item">
                                 <div className="label">Email</div>
-                                {!this.state.emailList.length ? (
+                                {!(this.props.userData.accountEmails && this.props.userData.accountEmails.length) ? (
                                     <Button
+                                        onClick={() => { this.setState({ linkEmailVisible: true }) }}
                                         className="add-email"
                                         type="primary"
                                     >
@@ -218,18 +286,26 @@ class Component extends React.Component {
                                     </Button>
                                 ) : (
                                     <div className="email-list">
-                                        <div className="item">
-                                            <div className="email">nevaeh.simmons@example.com</div>
-                                            <img
-                                                onClick={() => { this.unlinkEmail() }}
-                                                className="a hover-item"
-                                                src={require("@/web3goLayout/assets/account/unlink.png")}
-                                                alt=""
-                                            />
-                                        </div>
-                                        <div onClick={() => { this.setState({ linkEmailVisible: true }) }} className="add-more hover-item">
-                                            <img className="icon" src={require("@/web3goLayout/assets/account/add2.png")} alt="" />
-                                            <span>Add More</span>
+                                        {
+                                            this.props.userData.accountEmails.map((v, i) =>
+                                            (
+                                                <div className="item" key={i}>
+                                                    <div className="email">{v.email}</div>
+                                                    <img
+                                                        onClick={() => { this.unlinkEmail(v) }}
+                                                        className="a hover-item"
+                                                        src={require("@/web3goLayout/assets/account/unlink.png")}
+                                                        alt=""
+                                                    />
+                                                </div>
+                                            )
+                                            )
+                                        }
+                                        <div className="add-more-wrap">
+                                            <div onClick={() => { this.setState({ linkEmailVisible: true }) }} className="add-more hover-item">
+                                                <img className="icon" src={require("@/web3goLayout/assets/account/add2.png")} alt="" />
+                                                <span>Add More</span>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -237,8 +313,9 @@ class Component extends React.Component {
                             <div className="split"></div>
                             <div className="form-item">
                                 <div className="label">Wallet</div>
-                                {!this.state.walletList.length ? (
+                                {!(this.props.userData.accountWallets && this.props.userData.accountWallets.length) ? (
                                     <Button
+                                        onClick={this.handleLinkWallet}
                                         className="add-email"
                                         type="primary"
                                     >
@@ -247,57 +324,56 @@ class Component extends React.Component {
                                     </Button>
                                 ) : (
                                     <div className="wallet-list">
-                                        <div className="item">
-                                            {
-                                                this.props.isDark ?
+                                        {
+                                            this.props.userData.accountWallets.map((v, i) =>
+                                            (
+                                                <div className="item" key={i}>
+                                                    {
+                                                        v.walletSource == 'Metamask' ? (
+                                                            this.props.isDark ?
+                                                                <img
+                                                                    className="icon"
+                                                                    src={require("@/web3goLayout/assets/account/metamask-b.png")}
+                                                                    alt=""
+                                                                /> :
+                                                                <img
+                                                                    className="icon"
+                                                                    src={require("@/web3goLayout/assets/account/metamask.png")}
+                                                                    alt=""
+                                                                />
+                                                        ) : (
+                                                            this.props.isDark ?
+                                                                <img
+                                                                    className="icon"
+                                                                    src={require("@/web3goLayout/assets/account/polkadot-b.png")}
+                                                                    alt=""
+                                                                /> :
+                                                                <img
+                                                                    className="icon"
+                                                                    src={require("@/web3goLayout/assets/account/polkadot.png")}
+                                                                    alt=""
+                                                                />
+                                                        )
+
+                                                    }
+                                                    <span className="address"
+                                                    >{v.address}</span
+                                                    >
                                                     <img
-                                                        className="icon"
-                                                        src={require("@/web3goLayout/assets/account/polkadot-b.png")}
-                                                        alt=""
-                                                    /> :
-                                                    <img
-                                                        className="icon"
-                                                        src={require("@/web3goLayout/assets/account/polkadot.png")}
+                                                        onClick={() => { this.unlinkWallet(v) }}
+                                                        className="a hover-item"
+                                                        src={require("@/web3goLayout/assets/account/unlink.png")}
                                                         alt=""
                                                     />
-                                            }
-                                            <span className="address"
-                                            >14gVLR3kd8bYp9Hc6DuB7FfCtBNwk543EGe8uT8C2Rn1UWFC</span
-                                            >
-                                            <img
-                                                className="a hover-item"
-                                                src={require("@/web3goLayout/assets/account/unlink.png")}
-                                                alt=""
-                                            />
-                                        </div>
-                                        <div className="item">
-                                            {
-                                                this.props.isDark ?
-                                                    <img
-                                                        className="icon"
-                                                        src={require("@/web3goLayout/assets/account/metamask-b.png")}
-                                                        alt=""
-                                                    /> :
-                                                    <img
-                                                        className="icon"
-                                                        src={require("@/web3goLayout/assets/account/metamask.png")}
-                                                        alt=""
-                                                    />
-
-                                            }
-
-                                            <span className="address"
-                                            >14gVLR3kd8bYp9Hc6DuB7FfCtBNwk543EGe8uT8C2Rn1UWFC</span
-                                            >
-                                            <img
-                                                className="a hover-item"
-                                                src={require("@/web3goLayout/assets/account/unlink.png")}
-                                                alt=""
-                                            />
-                                        </div>
-                                        <div className="add-more hover-item">
-                                            <img className="icon" src={require("@/web3goLayout/assets/account/add2.png")} alt="" />
-                                            <span>Add More</span>
+                                                </div>
+                                            )
+                                            )
+                                        }
+                                        <div className="add-more-wrap">
+                                            <div className="add-more hover-item" onClick={this.handleLinkWallet}>
+                                                <img className="icon" src={require("@/web3goLayout/assets/account/add2.png")} alt="" />
+                                                <span>Add More</span>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -306,35 +382,94 @@ class Component extends React.Component {
                     </div>
                 </div>
                 <Modal
-                    style={{ width: '800px' }}
+                    wrapClassName="common-form-modal web3go-account-setting-avatar-modal"
+                    style={{ width: '640px' }}
                     title='Upload Avatar'
                     visible={this.state.visible}
                     onCancel={() => this.setState({ visible: false })}
                     footer={null}
                 >
-                    <div className="web3go-account-setting-avatar-modal">
-                        <Cropper
-                            style={{ height: 400, width: '100%' }}
-                            zoomTo={0.5}
-                            initialAspectRatio={1}
-                            preview="#avatar-preview"
-                            src={this.state.img}
-                            viewMode={1}
-                            minCropBoxHeight={10}
-                            minCropBoxWidth={10}
-                            background={false}
-                            responsive={true}
-                            autoCropArea={1}
-                            aspectRatio={1}
-                            checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
-                            onInitialized={(instance) => {
-                                this.setState({ cropper: instance });
-                            }}
-                            guides={true}
-                        />
-                        <div id="avatar-preview"></div>
-                        <div className="btn-wrap">
-                            <Button className="btn" type="primary" onClick={this.copperSure}>Sure</Button>
+                    <div className="modal-content">
+                        <div className="modal-main">
+                            <div className="m-left">
+                                {
+                                    this.state.img ? (
+                                        <div className="cropper-wrap">
+                                            <Cropper
+                                                style={{ height: 320, width: 320 }}
+                                                zoomTo={0.5}
+                                                initialAspectRatio={1}
+                                                preview="#avatar-preview"
+                                                src={this.state.img}
+                                                viewMode={1}
+                                                minCropBoxHeight={10}
+                                                minCropBoxWidth={10}
+                                                background={false}
+                                                responsive={true}
+                                                autoCropArea={1}
+                                                aspectRatio={1}
+                                                checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
+                                                onInitialized={(instance) => {
+                                                    this.setState({ cropper: instance });
+                                                }}
+                                                guides={true}
+                                            />
+                                            <div className="operation-wrap">
+                                                <Upload action='/'
+                                                    key={Math.random()}
+                                                    accept='.jpg,.png'
+                                                    showUploadList={false}
+                                                    autoUpload={false}
+                                                    onChange={this.fileChange}>
+                                                    <span className="text hover-item">Reupload</span>
+                                                </Upload>
+                                                <div className="o-right">
+                                                    <img
+                                                        className="hover-item"
+                                                        onClick={this.zoomBig}
+                                                        src={require("@/web3goLayout/assets/account/plus.png")}
+                                                        alt=""
+                                                    />
+                                                    <img
+                                                        className="hover-item"
+                                                        onClick={this.zoomSmall}
+                                                        src={require("@/web3goLayout/assets/account/minus.png")}
+                                                        alt=""
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                        :
+                                        (
+                                            <Upload action='/'
+                                                key={Math.random()}
+                                                accept='.jpg,.png'
+                                                showUploadList={false}
+                                                autoUpload={false}
+                                                onChange={this.fileChange}>
+                                                <div className="m-btn-wrap">
+                                                    <div className="img-wrap">
+                                                        <img src={require("@/web3goLayout/assets/account/add-circle.png")} alt="" />
+                                                    </div>
+                                                    <div className="tip">
+                                                        Format: JPG or PNG<br />
+                                                        Max size of 1MB
+                                                    </div>
+                                                </div>
+                                            </Upload>
+                                        )
+                                }
+                            </div>
+                            <div className="split"></div>
+                            <div className="m-right">
+                                <div id="avatar-preview"></div>
+                                <div className="text">Preview</div>
+                            </div>
+                        </div>
+                        <div className="btn-wrap" style={this.state.img ? { marginTop: '64px' } : {}}>
+                            <Button className="btn" onClick={() => this.setState({ visible: false })}>Cancel</Button>
+                            <Button className="btn" type="primary" onClick={this.copperSure}>Upload</Button>
                         </div >
                     </div >
                 </Modal >
@@ -368,11 +503,11 @@ class Component extends React.Component {
                                 <Input placeholder='please enter your security code' />
                             </FormItem>
                             <FormItem label='Password' field='password' rules={[{ required: true }]}>
-                                <Input type="password" onPressEnter={this.handleLinkEmail} placeholder='please enter your password...' />
+                                <Input type="password" onPressEnter={this.linkEmail} placeholder='please enter your password...' />
                             </FormItem>
                         </Form>
                         <div className="btn-wrap">
-                            <Button className="btn" type="primary" onClick={this.handleLinkEmail}>Link</Button>
+                            <Button className="btn" type="primary" onClick={this.linkEmail}>Link</Button>
                         </div>
                     </div >
                 </Modal >

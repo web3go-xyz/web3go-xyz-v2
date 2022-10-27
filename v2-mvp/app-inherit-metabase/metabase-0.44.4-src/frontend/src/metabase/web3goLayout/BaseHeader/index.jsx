@@ -164,7 +164,7 @@ class Component extends React.Component {
                                         <Menu.Item key='3'>Sign Out</Menu.Item>
                                     </Menu>
                                 }>
-                                    < img className="avatar hover-item" src={require("@/web3goLayout/assets/account/Avatar.png")} alt="" />
+                                    < img className="avatar hover-item" src={this.props.userData.account && this.props.userData.account.avatar} alt="" />
                                 </Dropdown>
                             )
                             :

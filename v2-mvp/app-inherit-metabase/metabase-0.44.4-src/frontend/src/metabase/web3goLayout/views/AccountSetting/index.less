@@ -84,6 +84,7 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
                     img {
                         width: 116px;
                         height: 116px;
+                        border-radius: 50%;
                     }
                 }
 
@@ -118,7 +119,7 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
                     margin-bottom: 32px;
                 }
 
-                .nickname-row {
+                .nickName-row {
                     width: 540px;
 
                     .arco-form-item-control-children {
@@ -193,6 +194,10 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
                         }
                     }
 
+                    .add-more-wrap {
+                        display: flex;
+                    }
+
                     .add-more {
                         display: flex;
                         align-items: center;
@@ -215,6 +220,10 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
                         .item {
                             display: flex;
                             align-items: center;
+
+                            &+.item {
+                                margin-top: 12px;
+                            }
 
                             .email {
                                 box-sizing: border-box;
@@ -256,6 +265,7 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
                             }
 
                             .address {
+                                flex: 1;
                                 margin-left: 8px;
                                 margin-right: 16px;
                                 font-weight: 400;
@@ -265,6 +275,7 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
                             }
 
                             .a {
+                                margin-right: 22px;
                                 width: 24px;
                             }
                         }
@@ -283,14 +294,128 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
 }
 
 .web3go-account-setting-avatar-modal {
-    padding-top: 20px;
+    .modal-content {
+        .modal-main {
+            display: flex;
+            align-items: flex-start;
+        }
 
-    #avatar-preview {
-        overflow: hidden;
-        width: 116px;
-        height: 116px;
-        border-radius: 50%;
+        .m-left {
+            width: 320px;
+            height: 320px;
+            background: #F2F3F5;
+
+            .cropper-wrap {
+                .operation-wrap {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-top: 8px;
+                    .arco-upload{
+                        width: auto;
+                        display: inline-block;
+                    }
+                    .text {
+                        font-weight: 400;
+                        font-size: 14px;
+                        line-height: 22px;
+                        color: var(--primary-color);
+                    }
+
+                    .o-right {
+                        display: flex;
+                        align-items: center;
+
+                        img {
+                            width: 16px;
+                            margin-left: 16px;
+                        }
+                    }
+                }
+            }
+
+            .arco-upload {
+                width: 100%;
+                height: 100%;
+
+                .arco-upload-trigger {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+
+            .m-btn-wrap {
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+                padding-top: 111px;
+                box-sizing: border-box;
+
+                &:hover {
+                    img {
+                        opacity: .8;
+                    }
+                }
+
+                .img-wrap {
+                    text-align: center;
+
+                    img {
+                        width: 48px;
+                    }
+                }
+
+                .tip {
+                    text-align: center;
+                    font-weight: 400;
+                    font-size: 12px;
+                    line-height: 20px;
+                    color: var(--86Color);
+                }
+            }
+        }
+
+        .split {
+            margin: 0 47px;
+            width: 1px;
+            height: 157px;
+            background: #E5E6E8;
+        }
+
+        .m-right {
+            #avatar-preview {
+                overflow: hidden;
+                width: 160px;
+                height: 160px;
+                border-radius: 50%;
+                background: #F2F3F5;
+            }
+
+            .text {
+                text-align: center;
+                margin-top: 8px;
+                font-weight: 400;
+                font-size: 14px;
+                line-height: 22px;
+                color: var(--6bColor);
+            }
+        }
+
+        .btn-wrap {
+            margin-top: 32px;
+            text-align: center;
+
+            .btn {
+                width: 93px;
+                height: 44px;
+
+                &+.btn {
+                    margin-left: 12px;
+                }
+            }
+        }
     }
+
 }
 
 .web3go-account-setting-email-modal {
@@ -321,6 +446,7 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
     .btn-wrap {
         margin-top: 12px;
         text-align: center;
+
         .btn {
             width: 240px;
             height: 44px;

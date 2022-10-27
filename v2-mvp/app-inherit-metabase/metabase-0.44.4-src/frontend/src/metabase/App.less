@@ -8,9 +8,13 @@ html body[arco-theme="dark"] {
     --c9Color: #333C4D;
     --global-table-th-color: #232324;
     --global-pagination-item-active-bg: #D4CBFD;
+    --global-common-form-modal-header-bg: #2A2A2B;
+    --global-common-form-modal-content-bg: #232324;
 }
 
 html body {
+    --global-common-form-modal-content-bg: white;
+    --global-common-form-modal-header-bg: #F2F3F5;
     --global-pagination-item-active-bg: #EDE8FF;
     --global-table-th-color: #F7F8FA;
     color: #1d2129;
@@ -96,6 +100,9 @@ textarea {
     border-radius: 12px;
 }
 
+.arco-btn-secondary:not(.arco-btn-disabled):focus-visible {
+    box-shadow: none;
+}
 
 
 .arco-form {
@@ -376,19 +383,22 @@ thead>.arco-table-tr>.arco-table-th {
 .common-form-modal {
     .arco-modal {
         border-radius: 16px;
-
         .arco-modal-header {
             height: 64px;
             border-radius: 16px 16px 0px 0px;
-            background: #F2F3F5;
+            background: var(--global-common-form-modal-header-bg);
             border-bottom: 0;
 
             .arco-modal-title {
+                font-weight: 400;
+                font-size: 16px;
+                line-height: 24px;
                 text-align: left;
             }
         }
 
         .arco-modal-content {
+            background: var(--global-common-form-modal-content-bg);
             padding: 24px 32px;
         }
 
