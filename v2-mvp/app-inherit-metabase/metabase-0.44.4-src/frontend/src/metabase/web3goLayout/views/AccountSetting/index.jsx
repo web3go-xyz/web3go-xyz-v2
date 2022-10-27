@@ -29,9 +29,8 @@ class Component extends React.Component {
         this.state = {
             canSend: true,
             nickNameCanEdit: false,
-            visible: false,
+            visible: true,
             linkEmailVisible: false,
-
             img: '',
             cropper: null,
         }
@@ -158,6 +157,12 @@ class Component extends React.Component {
             });
         }
     }
+    openCropperModal = () => {
+        this.setState({
+            visible: true,
+            img: ''
+        });
+    }
     fileChange = (files) => {
         const isLt1M = files[0].originFile.size / 1024 / 1024 < 1;
         if (!isLt1M) {
@@ -193,6 +198,12 @@ class Component extends React.Component {
                 }
             })
         })
+    }
+    zoomBig = () => {
+        this.state.cropper.zoom(0.1);
+    }
+    zoomSmall = () => {
+        this.state.cropper.zoom(-0.1);
     }
     render() {
         return (
@@ -250,14 +261,14 @@ class Component extends React.Component {
                                 <div className="label">Avatar</div>
                                 <div className="value">
                                     <img src={this.props.userData.account && this.props.userData.account.avatar} alt="" />
-                                    <Upload action='/'
+                                    {/* <Upload action='/'
                                         key={Math.random()}
                                         accept='.jpg,.png'
                                         showUploadList={false}
                                         autoUpload={false}
                                         onChange={this.fileChange}>
-                                        <Button>Change</Button>
-                                    </Upload>
+                                    </Upload> */}
+                                    <Button onClick={this.openCropperModal}>Change</Button>
                                     <span className="tip">JPG or PNG. Max size is 1MB</span>
                                 </div>
                             </div>
@@ -371,36 +382,94 @@ class Component extends React.Component {
                     </div>
                 </div>
                 <Modal
-                    wrapClassName="common-form-modal"
-                    style={{ width: '800px' }}
+                    wrapClassName="common-form-modal web3go-account-setting-avatar-modal"
+                    style={{ width: '640px' }}
                     title='Upload Avatar'
                     visible={this.state.visible}
                     onCancel={() => this.setState({ visible: false })}
                     footer={null}
                 >
-                    <div className="web3go-account-setting-avatar-modal">
-                        <Cropper
-                            style={{ height: 400, width: '100%' }}
-                            zoomTo={0.5}
-                            initialAspectRatio={1}
-                            preview="#avatar-preview"
-                            src={this.state.img}
-                            viewMode={1}
-                            minCropBoxHeight={10}
-                            minCropBoxWidth={10}
-                            background={false}
-                            responsive={true}
-                            autoCropArea={1}
-                            aspectRatio={1}
-                            checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
-                            onInitialized={(instance) => {
-                                this.setState({ cropper: instance });
-                            }}
-                            guides={true}
-                        />
-                        <div id="avatar-preview"></div>
-                        <div className="btn-wrap">
-                            <Button className="btn" type="primary" onClick={this.copperSure}>Sure</Button>
+                    <div className="modal-content">
+                        <div className="modal-main">
+                            <div className="m-left">
+                                {
+                                    this.state.img ? (
+                                        <div className="cropper-wrap">
+                                            <Cropper
+                                                style={{ height: 320, width: 320 }}
+                                                zoomTo={0.5}
+                                                initialAspectRatio={1}
+                                                preview="#avatar-preview"
+                                                src={this.state.img}
+                                                viewMode={1}
+                                                minCropBoxHeight={10}
+                                                minCropBoxWidth={10}
+                                                background={false}
+                                                responsive={true}
+                                                autoCropArea={1}
+                                                aspectRatio={1}
+                                                checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
+                                                onInitialized={(instance) => {
+                                                    this.setState({ cropper: instance });
+                                                }}
+                                                guides={true}
+                                            />
+                                            <div className="operation-wrap">
+                                                <Upload action='/'
+                                                    key={Math.random()}
+                                                    accept='.jpg,.png'
+                                                    showUploadList={false}
+                                                    autoUpload={false}
+                                                    onChange={this.fileChange}>
+                                                    <span className="text hover-item">Reupload</span>
+                                                </Upload>
+                                                <div className="o-right">
+                                                    <img
+                                                        className="hover-item"
+                                                        onClick={this.zoomBig}
+                                                        src={require("@/web3goLayout/assets/account/plus.png")}
+                                                        alt=""
+                                                    />
+                                                    <img
+                                                        className="hover-item"
+                                                        onClick={this.zoomSmall}
+                                                        src={require("@/web3goLayout/assets/account/minus.png")}
+                                                        alt=""
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                        :
+                                        (
+                                            <Upload action='/'
+                                                key={Math.random()}
+                                                accept='.jpg,.png'
+                                                showUploadList={false}
+                                                autoUpload={false}
+                                                onChange={this.fileChange}>
+                                                <div className="m-btn-wrap">
+                                                    <div className="img-wrap">
+                                                        <img src={require("@/web3goLayout/assets/account/add-circle.png")} alt="" />
+                                                    </div>
+                                                    <div className="tip">
+                                                        Format: JPG or PNG<br />
+                                                        Max size of 1MB
+                                                    </div>
+                                                </div>
+                                            </Upload>
+                                        )
+                                }
+                            </div>
+                            <div className="split"></div>
+                            <div className="m-right">
+                                <div id="avatar-preview"></div>
+                                <div className="text">Preview</div>
+                            </div>
+                        </div>
+                        <div className="btn-wrap" style={this.state.img ? { marginTop: '64px' } : {}}>
+                            <Button className="btn" onClick={() => this.setState({ visible: false })}>Cancel</Button>
+                            <Button className="btn" type="primary" onClick={this.copperSure}>Upload</Button>
                         </div >
                     </div >
                 </Modal >
