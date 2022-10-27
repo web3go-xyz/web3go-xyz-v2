@@ -29,7 +29,7 @@ class Component extends React.Component {
         this.state = {
             canSend: true,
             nickNameCanEdit: false,
-            visible: true,
+            visible: false,
             linkEmailVisible: false,
             img: '',
             cropper: null,
