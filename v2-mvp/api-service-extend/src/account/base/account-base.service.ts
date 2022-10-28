@@ -4,8 +4,8 @@ import { EntityManager, FindManyOptions, Repository } from 'typeorm';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { W3Logger } from 'src/base/log/logger.service';
 import { Account } from 'src/base/entity/platform-user/Account.entity';
-import { AccountEmail } from 'src/base/entity/platform-user/Account-Email.entity';
-import { AccountWallet } from 'src/base/entity/platform-user/Account-Wallet.entity';
+import { AccountEmail } from 'src/base/entity/platform-user/AccountEmail.entity';
+import { AccountWallet } from 'src/base/entity/platform-user/AccountWallet.entity';
 
 import { v4 as uuidv4 } from 'uuid';
 import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';

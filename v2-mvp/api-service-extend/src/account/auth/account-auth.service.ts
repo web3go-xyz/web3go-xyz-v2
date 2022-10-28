@@ -2,8 +2,8 @@ import { BadRequestException, Inject, Injectable, UnauthorizedException } from '
 
 import { AuthorizedUser } from 'src/base/auth/AuthorizedUser';
 import { AuthParameter, IAuthService } from 'src/base/auth/IAuthService';
-import { AccountEmail } from 'src/base/entity/platform-user/Account-Email.entity';
-import { AccountVerifyCode } from 'src/base/entity/platform-user/Account-VerifyCode.entity';
+import { AccountEmail } from 'src/base/entity/platform-user/AccountEmail.entity';
+import { AccountVerifyCode } from 'src/base/entity/platform-user/AccountVerifyCode.entity';
 import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';

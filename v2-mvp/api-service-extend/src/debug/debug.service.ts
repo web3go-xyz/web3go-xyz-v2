@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { AccountVerifyCode } from 'src/base/entity/platform-user/Account-VerifyCode.entity';
+import { AccountVerifyCode } from 'src/base/entity/platform-user/AccountVerifyCode.entity';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { Repository } from 'typeorm';

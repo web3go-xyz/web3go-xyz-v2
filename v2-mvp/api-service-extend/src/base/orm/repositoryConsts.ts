@@ -1,8 +1,8 @@
-import { ReportDashboard } from "../entity/metabase/Report-Dashboard";
-import { AccountEmail } from "../entity/platform-user/Account-Email.entity";
-import { AccountSocial } from "../entity/platform-user/Account-Social.entity";
-import { AccountVerifyCode } from "../entity/platform-user/Account-VerifyCode.entity";
-import { AccountWallet } from "../entity/platform-user/Account-Wallet.entity";
+import { ReportDashboard } from "../entity/metabase/ReportDashboard";
+import { AccountEmail } from "../entity/platform-user/AccountEmail.entity";
+import { AccountSocial } from "../entity/platform-user/AccountSocial.entity";
+import { AccountVerifyCode } from "../entity/platform-user/AccountVerifyCode.entity";
+import { AccountWallet } from "../entity/platform-user/AccountWallet.entity";
 import { Account } from "../entity/platform-user/Account.entity";
 
 export class RepositoryConsts {

@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { W3Logger } from 'src/base/log/logger.service';
 import { Account } from 'src/base/entity/platform-user/Account.entity';
-import { AccountWallet } from 'src/base/entity/platform-user/Account-Wallet.entity';
+import { AccountWallet } from 'src/base/entity/platform-user/AccountWallet.entity';
 
 import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
 

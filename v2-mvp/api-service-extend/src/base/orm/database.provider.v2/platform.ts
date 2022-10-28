@@ -17,6 +17,35 @@ export const databaseProviders_platform = [
             'platform-user',
             '*.{js,ts}',
           ),
+          join(
+            __dirname,
+            '../..',
+            'entity',
+            'platform-dashboard',
+            '*.{js,ts}',
+          ),
+          join(
+            __dirname,
+            '../..',
+            'entity',
+            'platform-dataset',
+            '*.{js,ts}',
+          ),
+          join(
+            __dirname,
+            '../..',
+            'entity',
+            'platform-ad',
+            '*.{js,ts}',
+          ),
+          ,
+          join(
+            __dirname,
+            '../..',
+            'entity',
+            'platform-config',
+            '*.{js,ts}',
+          ),
         ],
       };
       return await createConnection(connectionOption);

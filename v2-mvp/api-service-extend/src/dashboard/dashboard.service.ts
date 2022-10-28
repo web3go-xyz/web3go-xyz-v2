@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ReportDashboard } from 'src/base/entity/metabase/Report-Dashboard';
+import { ReportDashboard } from 'src/base/entity/metabase/ReportDashboard';
 import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
