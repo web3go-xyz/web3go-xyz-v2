@@ -68,7 +68,9 @@ run jar package with embeded h2 database
 
 run jar package with postgres database
 ```
- cp <metabase-src>/plugins ./  
+ cp <metabase-src>/plugins ./target/uberjar -rf
+
+ cd ./target/uberjar  
 
  export MB_DB_TYPE=postgres
  export MB_DB_DBNAME=dev-web3go-v2-metabase
@@ -77,5 +79,6 @@ run jar package with postgres database
  export MB_DB_PASS='Dev123!@#'
  export MB_DB_HOST=localhost
  java -Xmx4g -DMB_JETTY_PORT=12345 -DMB_JETTY_HOST=0.0.0.0 -DMB_EDITION=ee -DMETASTORE_DEV_SERVER_URL=http://localhost:12346 -jar metabase.jar
+ // nohup java -Xmx4g -DMB_JETTY_PORT=12345 -DMB_JETTY_HOST=0.0.0.0 -DMB_EDITION=ee -DMETASTORE_DEV_SERVER_URL=http://localhost:12346 -jar metabase.jar &
  
 ```

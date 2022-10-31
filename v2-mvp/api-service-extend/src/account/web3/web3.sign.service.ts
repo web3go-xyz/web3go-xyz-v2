@@ -52,7 +52,7 @@ export class Web3SignService {
   }
 
   async createAccount4WalletAddress(address: string, chain: string, walletSource: string): Promise<AccountInfo> {
-
+    address = address.toLowerCase();
     let accountId = this.accountBaseService.generateAccountId();
     let mockNickname = `${chain}_${address}`;
     let newAccount: Account = {
@@ -90,7 +90,7 @@ export class Web3SignService {
 
   }
   async signInWithWalletAddress(request: Web3SignChallengeRequest): Promise<AuthorizedUser> {
-    let address = request.address;
+    let address = request.address.toLowerCase();
     let accountId: string = null;
 
     let searchAccounts = await this.accountBaseService.searchAccountsByWalletAddress(address, false);
@@ -98,7 +98,7 @@ export class Web3SignService {
       this.logger.warn(`wallet address ${address} does not exist`);
       this.logger.log(`creating new account for wallet address ${address}`);
 
-      let newAccount = await this.createAccount4WalletAddress(request.address, request.chain, request.walletSource);
+      let newAccount = await this.createAccount4WalletAddress(address, request.chain, request.walletSource);
       accountId = newAccount.account.accountId;
 
     } else {

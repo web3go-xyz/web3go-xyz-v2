@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ReportDashboard } from 'src/base/entity/metabase/ReportDashboard';
+import { ConfigTag } from 'src/base/entity/platform-config/ConfigTag';
 import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
@@ -7,6 +8,7 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class DashboardService {
+
     logger: W3Logger;
 
     constructor(
@@ -17,9 +19,21 @@ export class DashboardService {
         @Inject(RepositoryConsts.REPOSITORYS_METABASE.MB_REPORT_DASHBOARD_REPOSITORY.provide)
         private mb_rdRepo: Repository<ReportDashboard>,
 
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_CONFIG_TAG_REPOSITORY.provide)
+        private ctRepo: Repository<ConfigTag>,
     ) {
         this.logger = new W3Logger(`DashboardService`);
     }
+
+    async listAllTags(request: Object): Promise<ConfigTag[]> {
+        let records = await this.ctRepo.find({
+            order: {
+                tagName: 'ASC'
+            }
+        });
+        return records;
+    }
+
     async list(request: Object): Promise<any> {
         let query = `
     SELECT

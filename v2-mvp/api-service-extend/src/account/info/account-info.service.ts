@@ -205,7 +205,7 @@ export class AccountInfoService {
 
     let newWalletLink: AccountWallet = {
       accountId: payload.accountId,
-      address: payload.address,
+      address: payload.address.toLowerCase(),
       chain: payload.chain,
       walletSource: payload.walletSource,
       verified: VerifyFlag.Verified,
@@ -219,7 +219,7 @@ export class AccountInfoService {
     let findWallet = await this.accountWalletRepository.findOne({
       where: {
         accountId: payload.accountId,
-        address: payload.address,
+        address: payload.address.toLowerCase(),
         chain: payload.chain
       }
     });
@@ -250,7 +250,7 @@ export class AccountInfoService {
     let findWallet = await this.accountWalletRepository.findOne({
       where: {
         accountId: payload.accountId,
-        address: payload.address,
+        address: payload.address.toLowerCase(),
         chain: payload.chain
       }
     });

@@ -4,6 +4,7 @@ import { AccountSocial } from "../entity/platform-user/AccountSocial.entity";
 import { AccountVerifyCode } from "../entity/platform-user/AccountVerifyCode.entity";
 import { AccountWallet } from "../entity/platform-user/AccountWallet.entity";
 import { Account } from "../entity/platform-user/Account.entity";
+import { ConfigTag } from "../entity/platform-config/ConfigTag";
 
 export class RepositoryConsts {
 
@@ -38,7 +39,13 @@ export class RepositoryConsts {
       provide: 'PLATFORM_ACCOUNT_VERIFYCODE_REPOSITORY',
       connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
       entityTarget: AccountVerifyCode
-    }
+    },
+
+    PLATFORM_CONFIG_TAG_REPOSITORY: {
+      provide: 'PLATFORM_CONFIG_TAG_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: ConfigTag
+    },
   }
 
 
@@ -47,7 +54,7 @@ export class RepositoryConsts {
       provide: 'MB_REPORT_DASHBOARD_REPOSITORY',
       connection: RepositoryConsts.DATABASE_CONNECTION_METABASE,
       entityTarget: ReportDashboard
-    },
+    }
   }
 }
 
