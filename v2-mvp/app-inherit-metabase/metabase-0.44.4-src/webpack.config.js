@@ -247,7 +247,7 @@ if (WEBPACK_BUNDLE === "hot") {
 
   // point the publicPath (inlined in index.html by HtmlWebpackPlugin) to the hot-reloading server
   config.output.publicPath =
-    "http://127.0.0.1:3001/" + config.output.publicPath;
+    "https://dev-v2.web3go.xyz/webpack/" + config.output.publicPath;
 
   config.module.rules.unshift({
     test: /\.(tsx?|jsx?)$/,
