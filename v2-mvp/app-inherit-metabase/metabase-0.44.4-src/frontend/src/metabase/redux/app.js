@@ -56,6 +56,7 @@ export const CLOSE_NAVBAR = "metabase/app/CLOSE_NAVBAR";
 export const TOGGLE_NAVBAR = "metabase/app/TOGGLE_NAVBAR";
 export const TOGGLE_DARK = "metabase/app/TOGGLE_DARK";
 export const CHANGE_USERDATA = "metabase/app/CHANGE_USERDATA";
+export const CHANGE_GLOBAL_SEARCH_VALUE = "metabase/app/CHANGE_GLOBAL_SEARCH_VALUE";
 
 
 export const openNavbar = createAction(OPEN_NAVBAR);
@@ -63,6 +64,7 @@ export const closeNavbar = createAction(CLOSE_NAVBAR);
 export const toggleNavbar = createAction(TOGGLE_NAVBAR);
 export const toggleDark = createAction(TOGGLE_DARK);
 export const changeUserData = createAction(CHANGE_USERDATA);
+export const changeGlobalSearchValue = createAction(CHANGE_GLOBAL_SEARCH_VALUE);
 
 export function getIsNavbarOpen(state) {
   return state.app.isNavbarOpen;
@@ -93,7 +95,7 @@ const isDark = handleActions(
   defaultIsDark == 'true' ? true : false,
 );
 
-const userData = handleActions(
+const userData = handleActions( 
   {
     [CHANGE_USERDATA]: (state, { payload }) => {
       return payload
@@ -101,9 +103,18 @@ const userData = handleActions(
   },
   {}
 );
+const globalSearchValue = handleActions(
+  {
+    [CHANGE_GLOBAL_SEARCH_VALUE]: (state, { payload }) => {
+      return payload
+    },
+  },
+  '',
+);
 export default combineReducers({
   errorPage,
   isNavbarOpen,
   isDark,
-  userData
+  userData,
+  globalSearchValue
 });

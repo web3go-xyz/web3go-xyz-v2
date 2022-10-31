@@ -209,7 +209,7 @@ class Component extends React.Component {
         return (
             <div className="web3go-layout-AccountSetting-page">
                 <div className="common-bread">
-                    <div className="item">User</div>
+                    <div className="item hover-primary" onClick={() => { this.props.push('/') }}>Home</div>
                     <div className="split">/</div>
                     <div className="item active">Account Setting</div>
                 </div>

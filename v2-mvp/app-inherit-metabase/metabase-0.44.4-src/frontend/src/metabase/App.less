@@ -104,6 +104,9 @@ textarea {
     box-shadow: none;
 }
 
+.arco-btn-primary:not(.arco-btn-disabled):focus-visible {
+    box-shadow: none;
+}
 
 .arco-form {
     .arco-form-label-item>label {
@@ -296,6 +299,7 @@ thead>.arco-table-tr>.arco-table-th {
 }
 
 .arco-table-th {
+    font-weight: 400;
     background: var(--global-table-th-color);
     color: var(--6bColor);
 }
@@ -312,6 +316,11 @@ thead>.arco-table-tr>.arco-table-th {
 .arco-pagination-item {
     border-radius: 4px;
     color: var(--6bColor);
+}
+
+.arco-pagination-jumper-input {
+    height: 32px;
+    border-radius: 4px;
 }
 
 .arco-pagination-item-active {
@@ -383,6 +392,7 @@ thead>.arco-table-tr>.arco-table-th {
 .common-form-modal {
     .arco-modal {
         border-radius: 16px;
+
         .arco-modal-header {
             height: 64px;
             border-radius: 16px 16px 0px 0px;
