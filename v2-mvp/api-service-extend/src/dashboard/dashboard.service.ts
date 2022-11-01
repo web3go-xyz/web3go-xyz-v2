@@ -76,7 +76,7 @@ export class DashboardService {
 
         let resp: QueryDashboardListResponse = new QueryDashboardListResponse();
 
-        let filterDashboardIds: number[] = null;
+        let filterDashboardIds: number[] = [];
         if (request.tagIds && request.tagIds.length > 0) {
             let filter_dashboard_tags = await this.dtagRepo.createQueryBuilder('t')
                 .where("t.tag_id IN (:...tagIds)", { tagIds: request.tagIds })
@@ -86,7 +86,6 @@ export class DashboardService {
 
             // this.logger.debug(`filter_dashboard_tags:${JSON.stringify(filter_dashboard_tags)}`);
             if (filter_dashboard_tags) {
-                filterDashboardIds = [];
                 for (const d of filter_dashboard_tags) {
                     filterDashboardIds.push(d.dashboardId);
                 }
@@ -98,6 +97,13 @@ export class DashboardService {
             }
         }
 
+        if (request.dashboardIds && request.dashboardIds.length > 0) {
+            for (const d of request.dashboardIds) {
+                if (filterDashboardIds.indexOf(d) == -1) {
+                    filterDashboardIds.push(d);
+                }
+            }
+        }
 
         let where: FindConditions<DashboardExt> = {};
         if (filterDashboardIds && filterDashboardIds.length > 0) {
@@ -129,8 +135,11 @@ export class DashboardService {
         resp.list = [];
 
         let records = dashboardResult[0];
+        if (!records || records.length == 0) {
+            this.logger.warn(`no dashboards found`);
+            return resp;
+        }
         filterDashboardIds = records.map(t => t.id);
-
         let dashboard_tags = await this.dtagRepo.find({
             where: {
                 dashboardId: In(filterDashboardIds)

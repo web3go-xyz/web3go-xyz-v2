@@ -21,5 +21,12 @@ export class QueryDashboardListRequest extends PageRequest {
         default: ''
     })
     creator: string;
+
+
+    @ApiProperty({
+        description: 'specified dashboard id list',
+        default: []
+    })
+    dashboardIds: number[];
 }
 
