@@ -5,6 +5,14 @@ import { AccountVerifyCode } from "../entity/platform-user/AccountVerifyCode.ent
 import { AccountWallet } from "../entity/platform-user/AccountWallet.entity";
 import { Account } from "../entity/platform-user/Account.entity";
 import { ConfigTag } from "../entity/platform-config/ConfigTag";
+import { AccountFollower } from "../entity/platform-user/AccountFollower";
+import { AdCourse } from "../entity/platform-ad/AdCourse";
+import { DashboardExt } from "../entity/platform-dashboard/DashboardExt";
+import { DashboardFavoriteLog } from "../entity/platform-dashboard/DashboardFavoriteLog";
+import { DashboardForkLog } from "../entity/platform-dashboard/DashboardForkLog";
+import { DashboardShareLog } from "../entity/platform-dashboard/DashboardShareLog";
+import { DashboardViewLog } from "../entity/platform-dashboard/DashboardViewLog";
+import { DashboardTag } from "../entity/platform-dashboard/DashboradTag";
 
 export class RepositoryConsts {
 
@@ -41,10 +49,54 @@ export class RepositoryConsts {
       entityTarget: AccountVerifyCode
     },
 
+    PLATFORM_ACCOUNT_FOLLOWER_REPOSITORY: {
+      provide: 'PLATFORM_ACCOUNT_FOLLOWER_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: AccountFollower
+    },
+
     PLATFORM_CONFIG_TAG_REPOSITORY: {
       provide: 'PLATFORM_CONFIG_TAG_REPOSITORY',
       connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
       entityTarget: ConfigTag
+    },
+
+    PLATFORM_AD_COURSE_REPOSITORY: {
+      provide: 'PLATFORM_AD_COURSE_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: AdCourse
+    },
+
+    //dashboard
+    PLATFORM_DASHBOARD_EXT_REPOSITORY: {
+      provide: 'PLATFORM_DASHBOARD_EXT_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: DashboardExt
+    },
+    PLATFORM_DASHBOARD_FAVORITE_LOG_REPOSITORY: {
+      provide: 'PLATFORM_DASHBOARD_FAVORITE_LOG_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: DashboardFavoriteLog
+    },
+    PLATFORM_DASHBOARD_FORK_LOG_REPOSITORY: {
+      provide: 'PLATFORM_DASHBOARD_FORK_LOG_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: DashboardForkLog
+    },
+    PLATFORM_DASHBOARD_SHARE_LOG_REPOSITORY: {
+      provide: 'PLATFORM_DASHBOARD_SHARE_LOG_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: DashboardShareLog
+    },
+    PLATFORM_DASHBOARD_VIEW_LOG_REPOSITORY: {
+      provide: 'PLATFORM_DASHBOARD_VIEW_LOG_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: DashboardViewLog
+    },
+    PLATFORM_DASHBOARD_TAG_REPOSITORY: {
+      provide: 'PLATFORM_DASHBOARD_TAG_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: DashboardTag
     },
   }
 

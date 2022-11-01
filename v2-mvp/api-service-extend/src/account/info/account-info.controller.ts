@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthorizedUser } from 'src/base/auth/AuthorizedUser';
 
@@ -24,6 +24,14 @@ export class AccountInfoController {
     this.logger = new W3Logger('AccountInfoController');
   }
 
+  @Post('/searchAccountInfo')
+  @ApiOperation({
+    summary: 'search account info for specified account',
+  })
+  @ApiOkResponse({ type: AccountInfo })
+  async getSimpleAccountInfo(@Query('accountId') accountId: string, @Query('includeExtraInfo') includeExtraInfo: boolean): Promise<AccountInfo> {
+    return await this.accountInfoService.getAccountInfo(accountId, includeExtraInfo || false);
+  }
 
   @Post('/getAccountInfo')
   @ApiOperation({
@@ -35,7 +43,7 @@ export class AccountInfoController {
     let validateUser: AuthorizedUser = request.user;
     this.logger.log(`validateUser:${JSON.stringify(validateUser)}`);
     let accountId = validateUser.id;
-    return await this.accountInfoService.getAccountInfo(accountId);
+    return await this.accountInfoService.getAccountInfo(accountId, true);
   }
 
   @Post('/changeName')

@@ -14,6 +14,14 @@ export class DashboardExt {
     name: string;
 
     @Column({
+        type: "text", name: "description",
+        comment: 'dashboard description',
+        nullable: true,
+        default: ''
+    })
+    description: string;
+
+    @Column({
         type: "text",
         name: "creator_account_id",
         comment: "refer to account.accountId"
@@ -31,4 +39,45 @@ export class DashboardExt {
     updatedAt: Date;
 
 
+
+
+    @ApiProperty({
+        description: 'view count',
+    })
+    @Column({
+        name: "view_count",
+        type: "integer",
+        default: 0
+    })
+    viewCount: number;
+
+    @ApiProperty({
+        description: 'share count',
+    })
+    @Column({
+        name: "share_count",
+        type: "integer",
+        default: 0
+    })
+    shareCount: number;
+
+    @ApiProperty({
+        description: 'fork count',
+    })
+    @Column({
+        name: "fork_count",
+        type: "integer",
+        default: 0
+    })
+    forkCount: number;
+
+    @ApiProperty({
+        description: 'favorite count',
+    })
+    @Column({
+        name: "favorite_ount",
+        type: "integer",
+        default: 0
+    })
+    favoriteCount: number;
 }

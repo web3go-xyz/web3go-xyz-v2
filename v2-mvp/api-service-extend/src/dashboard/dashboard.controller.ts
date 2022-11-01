@@ -2,6 +2,8 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import { ConfigTag } from 'src/base/entity/platform-config/ConfigTag';
 import { W3Logger } from 'src/base/log/logger.service';
+import { QueryDashboardListRequest } from 'src/viewModel/dashboard/QueryDashboardListRequest';
+import { QueryDashboardListResponse } from 'src/viewModel/dashboard/QueryDashboardListResponse';
 import { DashboardService } from './dashboard.service';
 
 
@@ -22,8 +24,8 @@ export class DashboardController {
 
     @Post('/list')
     @ApiOperation({ summary: 'list dashboard' })
-    @ApiOkResponse({ type: Object })
-    async list(@Body() request: Object): Promise<any> {
+    @ApiOkResponse({ type: QueryDashboardListResponse })
+    async list(@Body() request: QueryDashboardListRequest): Promise<QueryDashboardListResponse> {
 
         this.logger.debug(`list:${JSON.stringify(request)}`);
         return await this.service.list(request);

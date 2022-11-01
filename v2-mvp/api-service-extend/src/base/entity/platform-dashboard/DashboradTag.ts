@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity("dashboard_tag", { schema: "public" })
-export class DashboradTag {
+export class DashboardTag {
 
     @PrimaryColumn({
         type: "bigint",

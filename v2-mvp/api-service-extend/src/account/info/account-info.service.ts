@@ -49,33 +49,36 @@ export class AccountInfoService {
     this.logger = new W3Logger(`AccountInfoService`);
   }
 
-  async getAccountInfo(accountId: string): Promise<AccountInfo> {
+  async getAccountInfo(accountId: string, includeExtraInfo: boolean): Promise<AccountInfo> {
     const account = await this.accountRepository.findOne({
       where: { accountId: accountId }
     });
+    let d = new AccountInfo();
+    d.account = account;
 
-    let accountEmails = await this.accountEmailRepository.find({
-      where: { accountId: accountId }
-    });
-    if (accountEmails) {
-      for (const e of accountEmails) {
-        delete e.password_hash;
+    if (includeExtraInfo) {
+      let accountEmails = await this.accountEmailRepository.find({
+        where: { accountId: accountId }
+      });
+      if (accountEmails) {
+        for (const e of accountEmails) {
+          delete e.password_hash;
+        }
       }
-    }
 
-    let accountWallets = await this.accountWalletRepository.find({
-      where: { accountId: accountId }
-    });
+      let accountWallets = await this.accountWalletRepository.find({
+        where: { accountId: accountId }
+      });
 
-    let d: AccountInfo = {
-      account: account,
-      accountEmails: accountEmails,
-      accountWallets: accountWallets
+
+      d.accountEmails = accountEmails;
+      d.accountWallets = accountWallets;
     };
-
     this.logger.debug(`getAccountInfo:${JSON.stringify(d)}`);
+
     return d;
   }
+
 
 
   async changeNickname(payload: ChangeNickNameRequest): Promise<Boolean> {
