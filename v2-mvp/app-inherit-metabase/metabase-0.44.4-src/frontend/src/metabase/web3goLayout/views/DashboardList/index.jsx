@@ -38,7 +38,7 @@ class Component extends React.Component {
     }
     render() {
         return (
-            <div className="web3go-global-search-page">
+            <div className="web3go-dashboardlist-page">
                 <div className="common-layout">
                     <div className="common-bread">
                         <div className="item hover-primary" onClick={() => { this.props.push('/') }}>Home</div>
@@ -49,14 +49,14 @@ class Component extends React.Component {
                 <div className="common-layout">
                     <Tabs defaultActiveTab="1" onChange={() => { this.props.push('/layout/creatorList') }}>
                         <TabPane key='1' title={'Dashboard'}>
-
-                        </TabPane>
-                        <TabPane key='2' title={'Creators'}>
                             <Typography.Paragraph>
-                                <div className="createlist-wrap">
-                                    <CreatorList></CreatorList>
+                                <div className="dashboardlist-wrap">
+                                    <DashBoardList></DashBoardList>
                                 </div>
                             </Typography.Paragraph>
+                        </TabPane>
+                        <TabPane key='2' title={'Creators'}>
+
                         </TabPane>
                     </Tabs>
                 </div>
