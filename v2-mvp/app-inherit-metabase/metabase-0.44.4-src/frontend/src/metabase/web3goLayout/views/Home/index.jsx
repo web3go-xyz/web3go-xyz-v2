@@ -9,7 +9,7 @@ import "cropperjs/dist/cropper.css";
 import event from '@/web3goLayout/event';
 import { IconPlus, IconCheck } from '@arco-design/web-react/icon';
 import { numberSplit } from '@/web3goLayout/utils';
-import DashBoardList from './DashBoardList';
+import DashBoardList from '@/web3goLayout/components/DashBoardList';
 const mapStateToProps = state => {
     return {
         isDark: state.app.isDark,
@@ -128,7 +128,7 @@ class Component extends React.Component {
                     }
                     <div className="section-title">
                         <span>Dashboard</span>
-                        <svg className="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg onClick={() => { this.props.push('/layout/dashboardList') }} className="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M9.24269 3.75667L13.4854 7.99933L9.24269 12.242M1.66669 8H13.0984" strokeWidth="1.5" />
                         </svg>
                     </div>

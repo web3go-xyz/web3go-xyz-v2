@@ -3,7 +3,7 @@ import React from "react";
 import { connect } from "react-redux";
 import './index.less';
 import { Button, AutoComplete, Menu, Dropdown, Modal } from '@arco-design/web-react';
-import { toggleDark } from "metabase/redux/app";
+import { toggleDark, changeGlobalSearchValue } from "metabase/redux/app";
 import { changeUserData } from "metabase/redux/app";
 import { push, replace } from "react-router-redux";
 import SignInOrUp from './SignInOrUp';
@@ -19,13 +19,15 @@ const mapStateToProps = (state) => {
         currentUser: state.currentUser,
         route: state.routing.locationBeforeTransitions,
         isDark: state.app.isDark,
-        userData: state.app.userData
+        userData: state.app.userData,
+        globalSearchValue: state.app.globalSearchValue,
     }
 };
 const mapDispatchToProps = {
     onLogout: logout,
     toggleDark,
     changeUserData,
+    changeGlobalSearchValue,
     push,
     replace
 };
@@ -94,6 +96,9 @@ class Component extends React.Component {
     handleCreate = () => {
         this.props.push('/home');
     }
+    handleSearch = () => {
+        this.props.push('/layout/globalSearch');
+    }
     render() {
         return (
             <div className="web3go-layout-baseheader-component">
@@ -106,7 +111,8 @@ class Component extends React.Component {
                         /> : <img className="logo hover-item" onClick={this.goLayout} src={require('@/web3goLayout/assets/layout/logo-white.png')} alt="" />}
                         <div className="search-wrap">
                             <svg
-                                className="icon"
+                                onClick={this.handleSearch}
+                                className="icon hover-item"
                                 width="16"
                                 height="16"
                                 viewBox="0 0 16 16"
@@ -127,7 +133,10 @@ class Component extends React.Component {
                                 />
                             </svg>
                             <AutoComplete
-                                placeholder='Search'
+                                onPressEnter={this.handleSearch}
+                                value={this.props.globalSearchValue}
+                                onChange={(value) => { this.props.changeGlobalSearchValue(value) }}
+                                placeholder='Token'
                                 data={this.state.autoCompleteList}
                             />
                         </div>

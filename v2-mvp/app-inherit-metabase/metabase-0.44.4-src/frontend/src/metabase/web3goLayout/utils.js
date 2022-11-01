@@ -36,15 +36,7 @@ export function shorterAddress(address, lengthThresold = 20, subLength = 5) {
 }
 
 export function copy(text) {
-    const input = document.createElement("input");
-    document.body.appendChild(input);
-    input.setAttribute("value", text);
-    input.select();
-    if (document.execCommand("copy")) {
-        document.execCommand("copy");
-        Message.success("Address Copied");
-    }
-    document.body.removeChild(input);
+    navigator.clipboard.writeText(text);
 }
 
 // 数字千分位分隔显示

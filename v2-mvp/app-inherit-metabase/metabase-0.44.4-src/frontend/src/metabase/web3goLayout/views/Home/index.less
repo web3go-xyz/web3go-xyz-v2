@@ -63,8 +63,14 @@ body[arco-theme="dark"] .web3go-layout-home-page {
             align-items: center;
 
             .arrow {
-                margin-left: 8px;
+                margin-left: 4px;
                 stroke: var(--86Color);
+                padding: 4px;
+                cursor: pointer;
+
+                &:hover {
+                    stroke: var(--primary-color);
+                }
             }
         }
 
@@ -117,6 +123,7 @@ body[arco-theme="dark"] .web3go-layout-home-page {
                 border-radius: 16px;
                 margin-right: 20px;
                 padding-right: 4px;
+
                 .i-left {
                     display: flex;
                     align-items: center;
@@ -317,8 +324,6 @@ body[arco-theme="dark"] .web3go-layout-home-page {
                             display: inline-block;
                             margin-top: 8px;
                             cursor: pointer;
-
-
 
                             .arco-icon {
                                 stroke: var(--6bColor);

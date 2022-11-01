@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import './index.less';
 import BaseHeader from './BaseHeader';
 import BaseFooter from './BaseFooter';
+
 const mapStateToProps = state => ({
 
 });
