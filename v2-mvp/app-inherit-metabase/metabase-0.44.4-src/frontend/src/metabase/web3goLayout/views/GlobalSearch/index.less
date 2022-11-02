@@ -1,10 +1,20 @@
-body[arco-theme="dark"] .web3go-global-search-page {}
+body[arco-theme="dark"] .web3go-global-search-page {
+    --gray-bg: transparent;
+    --search-wrap-bg: #333335;
+    --search-wrap-shadow: rgba(0, 0, 0, 0.16);
+    --search-wrap-icon: #C9CDD4;
+}
 
 .web3go-global-search-page {
+    --search-wrap-icon: #4e5969;
+    --search-wrap-bg: #FFFFFF;
+    --search-wrap-shadow: rgba(112, 144, 176, 0.16);
+    --gray-bg: #F7F8FA;
+
     .gray-bg {
         margin-bottom: 30px;
         padding-top: 20px;
-        background: #F7F8FA;
+        background: var(--gray-bg);
         height: 94px;
 
         .search-wrap {
@@ -12,17 +22,17 @@ body[arco-theme="dark"] .web3go-global-search-page {}
             display: flex;
             align-items: center;
             height: 64px;
-            background: #FFFFFF;
+            background: var(--search-wrap-bg);
             border-radius: 54px;
             box-sizing: border-box;
             padding: 0 20px;
-            box-shadow: 0px 15px 14px -7px rgba(112, 144, 176, 0.16);
+            box-shadow: 0px 15px 14px -7px var(--search-wrap-shadow);
 
             .icon {
                 flex: none;
 
                 path {
-                    stroke: #4e5969;
+                    stroke: var(--search-wrap-icon);
                 }
             }
 

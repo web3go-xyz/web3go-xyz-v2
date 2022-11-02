@@ -1,9 +1,15 @@
 body[arco-theme="dark"] .web3go-layout-home-creator-list {
     --creator-follow-bg: transparent;
     --creator-follow-border: #4E5969;
+    --select-wrap-border: #4E5969;
+    --table-item-bg: #232324;
+    --it-right-split: #4E5969;
 }
 
 .web3go-layout-home-creator-list {
+    --it-right-split: #E5E6E8;
+    --table-item-bg: #F7F8FA;
+    --select-wrap-border: #C9CDD4;
     --creator-follow-bg: #F7F8FA;
     --creator-follow-border: #E5E6E8;
 
@@ -20,7 +26,7 @@ body[arco-theme="dark"] .web3go-layout-home-creator-list {
                 align-items: center;
                 width: 140px;
                 height: 32px;
-                border: 1px solid #C9CDD4;
+                border: 1px solid var(--select-wrap-border);
                 border-radius: 8px;
                 cursor: pointer;
 
@@ -88,7 +94,7 @@ body[arco-theme="dark"] .web3go-layout-home-creator-list {
             width: 285px;
             height: 184px;
             box-sizing: border-box;
-            background: #F7F8FA;
+            background: var(--table-item-bg);
             margin: 10px;
             border-radius: 12px;
             padding: 12px;
@@ -125,7 +131,7 @@ body[arco-theme="dark"] .web3go-layout-home-creator-list {
                         .split {
                             width: 1px;
                             height: 8px;
-                            background: #E5E6E8;
+                            background: var(--it-right-split);
                             margin: 0 4px;
                         }
 
@@ -160,7 +166,7 @@ body[arco-theme="dark"] .web3go-layout-home-creator-list {
                         font-weight: 400;
                         font-size: 12px;
                         line-height: 20px;
-                        color: var(--6bColor)
+                        color: #6B7785;
                     }
 
                     .value {
@@ -226,9 +232,39 @@ body[arco-theme="dark"] .web3go-layout-home-creator-list {
 }
 
 .web3go-layout-home-creator-list-sort {
+
     .arco-select-option {
         display: flex;
         align-items: center;
+
+        &:nth-child(1) {
+            path {
+                fill: var(--6bColor);
+            }
+        }
+
+        &:nth-child(2) {
+            path {
+                stroke: var(--6bColor);
+            }
+        }
+
+        &:nth-child(3) {
+            path {
+                stroke: var(--6bColor);
+            }
+        }
+
+        &:nth-child(4) {
+            path:nth-child(1) {
+                fill: var(--6bColor);
+            }
+
+            path:nth-child(2) {
+                stroke: var(--6bColor);
+                fill: var(--6bColor);
+            }
+        }
 
         svg {
             margin-right: 4px;
