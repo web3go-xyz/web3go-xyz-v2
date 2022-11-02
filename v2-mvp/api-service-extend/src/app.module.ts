@@ -13,9 +13,12 @@ import { HomepageModule } from './homepage/homepage.module';
 import { DashboardController } from './dashboard/dashboard.controller';
 import { DashboardService } from './dashboard/dashboard.service';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     StatusMonitorModule.forRoot(),
+    ScheduleModule.forRoot(),
+
     JWTAuthModule,
     KVModule,
     AccountInfoModule,
