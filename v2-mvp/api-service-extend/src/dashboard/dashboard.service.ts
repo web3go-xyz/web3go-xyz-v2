@@ -59,20 +59,6 @@ export class DashboardService {
     }
 
     async list(request: QueryDashboardListRequest): Promise<QueryDashboardListResponse> {
-        // let query = `
-        //         SELECT
-        //             d."id",
-        //             d."name",
-        //             d.created_at as "createdAt",
-        //             d.updated_at as "updatedAt",
-        //             d.description,
-        //             d.creator_id,
-        //             u.login_attributes :: json ->> 'id' AS "creatorAccountId" 
-        //         FROM
-        //             report_dashboard d
-        //             LEFT JOIN core_user u ON d.creator_id = u."id"`;
-
-        // let result = await this.mb_rdRepo.query(query);
 
         let resp: QueryDashboardListResponse = new QueryDashboardListResponse();
 

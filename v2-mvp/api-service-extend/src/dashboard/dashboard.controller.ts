@@ -30,4 +30,21 @@ export class DashboardController {
         this.logger.debug(`list:${JSON.stringify(request)}`);
         return await this.service.list(request);
     }
+
+
+    // @Post('/markTag')
+    // @ApiOperation({ summary: 'mark tag for specified dashboard' })
+    // @ApiOkResponse({ type: MarkTag4DashboardResponse })
+    // async markTag(@Body() request: MarkTag4DashboardRequest): Promise<MarkTag4DashboardResponse> {
+    //     this.logger.debug(`markTag:${JSON.stringify(request)}`);
+    //     return await this.service.markTag(request);
+    // }
+
+    // @Post('/removeTag')
+    // @ApiOperation({ summary: 'remove tag for specified dashboard' })
+    // @ApiOkResponse({ type: RemoveTag4DashboardResponse })
+    // async removeTag(@Body() request: RemoveTag4DashboardRequest): Promise<RemoveTag4DashboardResponse> {
+    //     this.logger.debug(`removeTag:${JSON.stringify(request)}`);
+    //     return await this.service.removeTag(request);
+    // }
 }
