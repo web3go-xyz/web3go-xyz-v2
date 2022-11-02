@@ -41,17 +41,19 @@ class Component extends React.Component {
         return (
             <div className="web3go-layout-home-page">
                 <div className="banner-wrap">
-                    <Carousel
-                        showArrow='never'
-                        autoPlay={true}
-                        style={{ height: 350 }}
-                        indicatorType="line"
-                    >
-                        {this.state.slideList.map((v, index) => (
-                            <div className="slide-item" key={index} style={{ backgroundImage: `url(${v})` }}>
-                            </div>
-                        ))}
-                    </Carousel>
+                    <div className="common-layout">
+                        <Carousel
+                            showArrow='never'
+                            autoPlay={true}
+                            style={{ height: 350 }}
+                            indicatorType="line"
+                        >
+                            {this.state.slideList.map((v, index) => (
+                                <div className="slide-item" key={index} style={{ backgroundImage: `url(${v})` }}>
+                                </div>
+                            ))}
+                        </Carousel>
+                    </div>
                 </div >
                 <div className="home-main common-layout">
                     <div className="section-title">
