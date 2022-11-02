@@ -144,7 +144,7 @@ class Component extends React.Component {
                     >
                         {!this.state.isSignIn ?
                             (
-                                <FormItem label='Have a nick name' field='nickName' rules={[{ required: true }]}>
+                                <FormItem label='Have a nick name' field='nickName' rules={[{ required: true, message: 'Name cannot be empty' }]}>
                                     <Input
                                         placeholder='Enter a nick name'
                                         maxLength={50}
@@ -152,10 +152,10 @@ class Component extends React.Component {
                                 </FormItem>
                             )
                             : null}
-                        <FormItem label='Email address' field='email' rules={[{ required: true, type: 'email' }]}>
+                        <FormItem label='Email address' field='email' rules={[{ required: true, message: 'Email address cannot be empty' }, { type: 'email', message: 'Invalid email' }]}>
                             <Input placeholder='helloworld@gmail.com' />
                         </FormItem>
-                        <FormItem label='Password' field='password' rules={[{ required: true }]}>
+                        <FormItem label='Password' field='password' rules={[{ required: true, message: 'Password cannot be empty' }]}>
                             <Input type='password' onPressEnter={this.sure} placeholder='please enter your password...' />
                         </FormItem>
                     </Form>

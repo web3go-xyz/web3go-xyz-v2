@@ -12,6 +12,7 @@ import ResetPsd from './ResetPsd';
 import ConnectWallet from './ConnectWallet';
 import { LayoutLoginApi } from '@/services'
 import event from '@/web3goLayout/event';
+import HeadIcon from '@/web3goLayout/components/HeadIcon';
 import { logout } from "@/auth/actions";
 
 const mapStateToProps = (state) => {
@@ -35,7 +36,8 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            autoCompleteList: []
+            autoCompleteList: [],
+            ifScroll: false
         }
         this.SignInOrUpRef = React.createRef();
         this.ForgetPsdRef = React.createRef();
@@ -46,6 +48,21 @@ class Component extends React.Component {
         event.on('goSignIn', (text) => {
             this.goSignIn();
         })
+        const mainEl = document.querySelector('main');
+        mainEl.addEventListener("scroll", (e) => {
+            let ifScroll;
+            if (mainEl.scrollTop > 10) {
+                ifScroll = true;
+
+            } else {
+                ifScroll = false;
+            }
+            if (this.state.ifScroll !== ifScroll) {
+                this.setState({
+                    ifScroll
+                });
+            }
+        });
         const { route } = this.props;
         if (route.hash == '#showLogin') {
             // 去掉hash
@@ -101,7 +118,7 @@ class Component extends React.Component {
     }
     render() {
         return (
-            <div className="web3go-layout-baseheader-component">
+            <div className={'web3go-layout-baseheader-component' + (this.state.ifScroll ? ' scroll' : '')}>
                 <div className="head-wrap">
                     <div className="h-left">
                         {this.props.isDark ? <img
@@ -166,14 +183,16 @@ class Component extends React.Component {
                         <Button className="btn" type='primary' onClick={this.handleCreate}>Create</Button>
                         {this.props.currentUser ?
                             (
-                                <Dropdown trigger='click' droplist={
+                                <Dropdown trigger='click' position="bottom" droplist={
                                     <Menu onClickMenuItem={(key) => { this.clickDropdownIcon(key) }}>
                                         <Menu.Item key='1'>My Space</Menu.Item>
                                         <Menu.Item key='2'>Account Setting</Menu.Item>
                                         <Menu.Item key='3'>Sign Out</Menu.Item>
                                     </Menu>
                                 }>
-                                    < img className="avatar hover-item" src={this.props.userData.account && this.props.userData.account.avatar} alt="" />
+                                    <div className="headicon-wrap">
+                                        <HeadIcon></HeadIcon>
+                                    </div>
                                 </Dropdown>
                             )
                             :
