@@ -83,7 +83,7 @@ class Component extends React.Component {
     render() {
         return (
             <Modal
-            wrapClassName="web3go-signin-common-modal"
+                wrapClassName="web3go-signin-common-modal"
                 title='Forgot Password'
                 visible={this.state.visible}
                 onOk={() => this.setState({ visible: false })}
@@ -102,7 +102,7 @@ class Component extends React.Component {
                     >
 
                         <FormItem className="email-row" label='Email address' required>
-                            <FormItem field='email' noStyle={{ showErrorTip: true }} rules={[{ required: true, type: 'email' }]}>
+                            <FormItem field='email' noStyle={{ showErrorTip: true }} rules={[{ required: true, message: 'Email address cannot be empty' }, { type: 'email', message: 'Invalid email' }]}>
                                 <Input placeholder='helloworld@gmail.com' />
                             </FormItem>
                             <FormItem shouldUpdate noStyle>
@@ -113,7 +113,7 @@ class Component extends React.Component {
                                 }}
                             </FormItem>
                         </FormItem>
-                        <FormItem label='Security code' field='code' rules={[{ required: true }]}>
+                        <FormItem label='Security code' field='code' rules={[{ required: true, message: 'Code cannot be empty' }]}>
                             <Input onPressEnter={this.sure} placeholder='please enter your security code...' />
                         </FormItem>
                     </Form>

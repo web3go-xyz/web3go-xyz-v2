@@ -258,7 +258,7 @@ class Component extends React.Component {
                                     <div className="col-item">
                                         <div className="title">About</div>
                                         <div
-                                            className="link"
+                                            className="a"
                                             onClick={
                                                 () => this.jumpUrl(
                                                     'https://zealous-pufferfish-7e6.notion.site/a2552d2b97e14c498a9ddef3edbb9161?v=5d8fd89aaee0443695f8f8bb96b82c9b'
@@ -267,44 +267,44 @@ class Component extends React.Component {
                                         >
                                             Roadmap
                                         </div>
-                                        <div className="link" onClick={this.jumpToArticle('Privacy Policy')}>
+                                        <div className="a" onClick={this.jumpToArticle('Privacy Policy')}>
                                             Privacy Policy
                                         </div>
-                                        <div className="link" onClick={this.jumpToArticle('Terms and Conditions')}>
+                                        <div className="a" onClick={this.jumpToArticle('Terms and Conditions')}>
                                             Terms and Conditions
                                         </div>
                                     </div>
                                     <div className="col-item">
                                         <div className="title">Media</div>
-                                        <div className="link" onClick={() => this.jumpUrl('https://twitter.com/Web3Go')}>
+                                        <div className="a" onClick={() => this.jumpUrl('https://twitter.com/Web3Go')}>
                                             Twitter
                                         </div>
                                         <div
-                                            className="link"
+                                            className="a"
                                             onClick={() => this.jumpUrl('https://discord.gg/NTrHSqyuRg')}
                                         >
                                             Discord
                                         </div>
-                                        <div className="link" onClick={() => this.jumpUrl('https://t.me/Web3GoCommunity')}>
+                                        <div className="a" onClick={() => this.jumpUrl('https://t.me/Web3GoCommunity')}>
                                             Telegram
                                         </div>
-                                        <div className="link" onClick={() => this.jumpUrl('https://web3go.medium.com/')} >
+                                        <div className="a" onClick={() => this.jumpUrl('https://web3go.medium.com/')} >
                                             Medium
                                         </div >
                                     </div >
                                     <div className="col-item">
                                         <div className="title">Resources</div>
-                                        <div className="link" onClick={() => this.jumpUrl('https://doc.web3go.xyz/')}>
+                                        <div className="a" onClick={() => this.jumpUrl('https://doc.web3go.xyz/')}>
                                             Docs
                                         </div>
                                         <div
-                                            className="link"
+                                            className="a"
                                             onClick={() => this.jumpUrl('https://github.com/web3go-xyz')}
                                         >
                                             Github
                                         </div >
                                         <div
-                                            className="link"
+                                            className="a"
                                             onClick={
                                                 () => this.jumpUrl(
                                                     'https://www.youtube.com/channel/UCxUyipJO6O6LYNF-T7r-Kwg'

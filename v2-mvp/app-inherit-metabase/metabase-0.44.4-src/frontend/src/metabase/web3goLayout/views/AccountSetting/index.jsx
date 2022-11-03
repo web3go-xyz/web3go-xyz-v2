@@ -9,9 +9,9 @@ import "cropperjs/dist/cropper.css";
 import { changeUserData } from "metabase/redux/app";
 import { LayoutLoginApi } from '@/services'
 import event from '@/web3goLayout/event';
+import HeadIcon from '@/web3goLayout/components/HeadIcon';
 
 const mapStateToProps = state => {
-    console.log('redux', state);
     return {
         isDark: state.app.isDark,
         userData: state.app.userData
@@ -223,7 +223,7 @@ class Component extends React.Component {
                     <div className="pm-right">
                         <div className="banner">
                             <div className="avatar">
-                                <img src={this.props.userData.account && this.props.userData.account.avatar} alt="" />
+                                <HeadIcon iconSize={116} fontSize={28}></HeadIcon>
                             </div>
                             <div className="text">
                                 Everyone can <br />
@@ -260,14 +260,7 @@ class Component extends React.Component {
                             <div className="form-item">
                                 <div className="label">Avatar</div>
                                 <div className="value">
-                                    <img src={this.props.userData.account && this.props.userData.account.avatar} alt="" />
-                                    {/* <Upload action='/'
-                                        key={Math.random()}
-                                        accept='.jpg,.png'
-                                        showUploadList={false}
-                                        autoUpload={false}
-                                        onChange={this.fileChange}>
-                                    </Upload> */}
+                                    <HeadIcon iconSize={48}></HeadIcon>
                                     <Button onClick={this.openCropperModal}>Change</Button>
                                     <span className="tip">JPG or PNG. Max size is 1MB</span>
                                 </div>
@@ -406,7 +399,7 @@ class Component extends React.Component {
                                                 minCropBoxWidth={10}
                                                 background={false}
                                                 responsive={true}
-                                                autoCropArea={1}
+                                                autoCropArea={0.6}
                                                 aspectRatio={1}
                                                 checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
                                                 onInitialized={(instance) => {

@@ -130,6 +130,7 @@ textarea {
     .arco-form-message>div {
         display: flex;
         align-items: center;
+        color: #F34D4D;
 
         &::before {
             margin-right: 2px;
@@ -313,6 +314,24 @@ thead>.arco-table-tr>.arco-table-th {
 
 }
 
+.arco-table-th.arco-table-col-sorted {
+    background-color: var(--global-table-th-color);
+}
+
+.arco-table-td.arco-table-col-sorted {
+    background-color: transparent;
+}
+
+.arco-table-th-item.arco-table-col-has-filter {
+    padding-right: 38px;
+}
+
+.arco-table-filters {
+    right: 10px;
+
+    &:hover {}
+}
+
 .arco-pagination-item {
     border-radius: 4px;
     color: var(--6bColor);
@@ -365,7 +384,7 @@ thead>.arco-table-tr>.arco-table-th {
     }
 
     .arco-modal-footer {
-        margin-top: 40px;
+        margin-top: 24px;
 
         .arco-btn {
             width: 93px;
@@ -408,6 +427,7 @@ thead>.arco-table-tr>.arco-table-th {
         }
 
         .arco-modal-content {
+            border-radius: 0px 0px 16px 16px;
             background: var(--global-common-form-modal-content-bg);
             padding: 24px 32px;
         }

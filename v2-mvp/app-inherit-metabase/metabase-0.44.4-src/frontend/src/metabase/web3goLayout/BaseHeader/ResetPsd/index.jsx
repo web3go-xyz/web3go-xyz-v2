@@ -90,7 +90,7 @@ class Component extends React.Component {
                         layout="vertical"
                         requiredSymbol={{ position: 'end' }}
                     >
-                        <FormItem label='Enter your new password' field='password' rules={[{ required: true }]}>
+                        <FormItem label='Enter your new password' field='password' rules={[{ required: true, message: 'New password cannot be empty' }]}>
                             <Input onPressEnter={this.sure} placeholder='please enter your new password...' />
                         </FormItem>
                     </Form>
