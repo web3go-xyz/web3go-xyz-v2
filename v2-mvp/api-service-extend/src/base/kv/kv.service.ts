@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { W3Logger } from './../log/logger.service';
 
-import { RedisService } from 'nestjs-redis';
+import { RedisService } from '@liaoliaots/nestjs-redis';
 import { Redis } from 'ioredis';
 const Redlock = require('redlock');
 

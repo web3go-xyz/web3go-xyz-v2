@@ -7,18 +7,14 @@ import { AccountInfoModule } from './account/info/account-info.module';
 import { Web3SignModule } from './account/web3/web3.sign.module';
 import { DebugModule } from './debug/debug.module';
 import { KVModule } from './base/kv/kv.module';
-import { AccountBaseModule } from './account/base/account-base.module';
 import { JWTAuthModule } from './base/auth/jwt-auth.module';
 import { HomepageModule } from './homepage/homepage.module';
-import { DashboardController } from './dashboard/dashboard.controller';
-import { DashboardService } from './dashboard/dashboard.service';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     StatusMonitorModule.forRoot(),
     ScheduleModule.forRoot(),
-
     JWTAuthModule,
     KVModule,
     AccountInfoModule,
