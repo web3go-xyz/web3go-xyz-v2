@@ -43,7 +43,9 @@ export class Job_SyncDashboardFromMB {
             let mb_dashboard_list: ReportDashboard[] = [];
             if (dashboard_id > 0) {
                 mb_dashboard_list = await this.mb_rdRepo.find({
-                    id: dashboard_id
+                    where: {
+                        id: dashboard_id
+                    }
                 });
             } else {
                 mb_dashboard_list = await this.mb_rdRepo.find();

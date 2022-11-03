@@ -1,4 +1,4 @@
-import { RedisModuleOptions } from 'nestjs-redis';
+import { RedisModuleOptions } from '@liaoliaots/nestjs-redis';
 export class AppConfig {
 
   public static dbConnection = {
@@ -25,11 +25,11 @@ export class AppConfig {
   public static BASE_API_URL = process.env.BASE_API_URL || "http://localhost:12350";
   public static BASE_WEB_URL = process.env.BASE_WEB_URL || "http://localhost:3000";
 
-  public static redisOption: RedisModuleOptions = {
+  public static redisOption = { 
     port: Number(process.env.REDIS_PORT || 6379),
     host: process.env.REDIS_HOST || 'localhost',
     password: process.env.REDIS_PASSWORD || 'redis123',
-    db: 0,
+    db: 0, 
   };
 
   public static STATIC_ASSET_DIR: string = 'static/';

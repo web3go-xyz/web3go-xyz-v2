@@ -6,6 +6,7 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 import { W3ExceptionsFilter } from './base/filter/W3ExceptionFilter';
 import { AppConfig } from './base/setting/appConfig';
+import "reflect-metadata";
 
 async function bootstrap() {
 

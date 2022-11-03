@@ -20,7 +20,7 @@ import { QueryDashboardDetailResponse } from 'src/viewModel/dashboard/QueryDashb
 import { QueryDashboardListRequest } from 'src/viewModel/dashboard/QueryDashboardListRequest';
 import { QueryDashboardListResponse } from 'src/viewModel/dashboard/QueryDashboardListResponse';
 import { QueryMyFavoriteDashboardListRequest } from 'src/viewModel/dashboard/QueryMyFavoriteDashboardListRequest';
-import { FindConditions, FindManyOptions, In, Like, Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, In, Like, Repository } from 'typeorm';
 import { Log4FavoriteDashboardResponse } from '../viewModel/dashboard/interact-log/Log4FavoriteDashboardResponse';
 import { Log4ViewDashboardResponse } from '../viewModel/dashboard/interact-log/Log4ViewDashboardResponse';
 import { QueryMyFavoriteDashboardListResponse } from '../viewModel/dashboard/QueryMyFavoriteDashboardListResponse';
@@ -99,7 +99,7 @@ export class DashboardService {
             }
         }
 
-        let where: FindConditions<DashboardExt> = {};
+        let where: FindOptionsWhere<DashboardExt> = {};
         if (filterDashboardIds && filterDashboardIds.length > 0) {
             where.id = In(filterDashboardIds);
         }
