@@ -1,8 +1,8 @@
 import { BadRequestException, Body, Controller, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthorizedUser } from 'src/base/auth/AuthorizedUser';
+import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
 
-import { JwtAuthGuard } from 'src/base/auth/JwtAuthGuard';
 import { W3Logger } from 'src/base/log/logger.service';
 import { AccountInfo } from 'src/viewModel/account/AccountInfo';
 import { ChangeAvatarRequest } from 'src/viewModel/account/info/ChangeAvatarRequest';

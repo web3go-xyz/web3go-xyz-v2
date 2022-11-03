@@ -6,10 +6,12 @@ import { Web3SignModule } from '../web3/web3.sign.module';
 import { AccountBaseModule } from '../base/account-base.module';
 import { EmailBaseModule } from 'src/base/email/email-base.module';
 import { JWTAuthModule } from 'src/base/auth/jwt-auth.module';
+import { OrmModule } from 'src/base/orm/orm.module';
 
 
 @Module({
   imports: [
+    OrmModule,
     AccountBaseModule,
     Web3SignModule,
     EmailBaseModule,

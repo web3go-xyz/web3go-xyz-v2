@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
 import { W3Logger } from 'src/base/log/logger.service';
+import { AuthorizedUser } from './AuthorizedUser';
 import { SignTokenPayload } from './SignTokenPayload';
-
+import { Request } from 'express';
 const md5 = require('js-md5');
 
 @Injectable()
 export class JWTAuthService {
+
 
   logger: W3Logger;
 
@@ -42,4 +44,30 @@ export class JWTAuthService {
     return verify_result;
   }
 
+  jwt_decode(jwt: string): Object | PromiseLike<Object> {
+    let decode_result = this.jwtService.decode(jwt);
+    this.logger.debug(`decode_result:${JSON.stringify(decode_result)}`);
+    return decode_result;
+  }
+
+  decodeAuthUserFromHttpRequest(request: Request): AuthorizedUser {
+    let jwt = '';
+    if (request && request.headers && request.headers.authorization) {
+      jwt = request.headers.authorization.replace('Bearer', '').trim();
+    }
+    if (!jwt) {
+      return null;
+    }
+    let decode_result = this.jwt_decode(jwt);
+    if (decode_result) {
+
+      let user: AuthorizedUser = {
+        id: (decode_result as any).id || '',
+        name: (decode_result as any).first_name || ''
+      };
+      return user;
+    }
+    return null;
+
+  }
 }

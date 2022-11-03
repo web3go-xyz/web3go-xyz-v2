@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -14,6 +15,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors();
   app.useLogger(['debug', 'log', 'verbose', 'error', 'warn']);
+  app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
     .addBearerAuth()
@@ -28,7 +30,7 @@ async function bootstrap() {
     prefix: '/' + AppConfig.STATIC_ASSET_DIR,
   });
 
-   app.useGlobalFilters(new W3ExceptionsFilter());
+  app.useGlobalFilters(new W3ExceptionsFilter());
   await app.listen(process.env.PORT || AppConfig.PORT);
 }
 bootstrap();
