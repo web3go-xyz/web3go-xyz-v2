@@ -17,8 +17,9 @@ import ActivityApp from "metabase/home/containers/ActivityApp";
 // web3go
 import web3goLayout from "metabase/web3goLayout";
 import AccountSetting from "metabase/web3goLayout/views/AccountSetting";
+import MySpace from "metabase/web3goLayout/views/MySpace";
 import GlobalSearch from "metabase/web3goLayout/views/GlobalSearch";
-import DashboardList from "metabase/web3goLayout/views/DashboardList";
+import DashBoardList from "metabase/web3goLayout/views/DashBoardList";
 import CreatorList from "metabase/web3goLayout/views/CreatorList";
 import Home from "metabase/web3goLayout/views/Home";
 import VerifyEmailPage from "metabase/web3goLayout/views/VerifyEmailPage";
@@ -216,13 +217,18 @@ export const getRoutes = store => (
           >
           </Route>
           <Route
+            path="mySpace"
+            component={MySpace}
+          >
+          </Route>
+          <Route
             path="globalSearch"
             component={GlobalSearch}
           >
           </Route>
           <Route
-            path="dashboardList"
-            component={DashboardList}
+            path="dashBoardList"
+            component={DashBoardList}
           >
           </Route>
           <Route

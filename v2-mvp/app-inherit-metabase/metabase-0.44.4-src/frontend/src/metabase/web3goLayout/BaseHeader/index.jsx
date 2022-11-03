@@ -12,7 +12,7 @@ import ResetPsd from './ResetPsd';
 import ConnectWallet from './ConnectWallet';
 import { LayoutLoginApi } from '@/services'
 import event from '@/web3goLayout/event';
-import HeadIcon from '@/web3goLayout/components/HeadIcon';
+import MyHeadIcon from '@/web3goLayout/components/MyHeadIcon';
 import { logout } from "@/auth/actions";
 
 const mapStateToProps = (state) => {
@@ -191,7 +191,7 @@ class Component extends React.Component {
                                     </Menu>
                                 }>
                                     <div className="headicon-wrap">
-                                        <HeadIcon></HeadIcon>
+                                        <MyHeadIcon></MyHeadIcon>
                                     </div>
                                 </Dropdown>
                             )

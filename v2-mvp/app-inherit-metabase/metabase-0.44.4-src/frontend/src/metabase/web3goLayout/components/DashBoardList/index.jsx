@@ -8,6 +8,7 @@ import { push } from "react-router-redux";
 import "cropperjs/dist/cropper.css";
 import { numberSplit } from '@/web3goLayout/utils';
 import ShareModal from "@/web3goLayout/components/ShareModal";
+import { LayoutDashboardApi } from '@/services'
 const Option = Select.Option;
 const mapStateToProps = state => {
     return {
@@ -24,16 +25,8 @@ class Component extends React.Component {
         super(props);
         this.state = {
             shareVisible: false,
-            filterList: [{
-                name: 'All'
-            }, {
-                name: 'Chain'
-            }, {
-                name: 'Product Design abcefghi'
-            }, {
-                name: 'Fundrasising'
-            }],
-            currentFilter: { name: 'All' },
+            filterList: [],
+            currentFilter: {},
             tableData: [],
             paramsShow: false,
             params: {
@@ -49,7 +42,7 @@ class Component extends React.Component {
                         <div className="name-col">
                             <img className="headicon" src={require("@/web3goLayout/assets/account/Avatar.png")} alt="" />
                             <div className="right">
-                                <div className="title hover-primary">Token Volume(Quick News)</div>
+                                <div className="title hover-primary">{record.name}</div>
                                 <div className="tag-list">
                                     <div className="item">Label</div>
                                     <div className="item">Product Design abcefg</div>
@@ -72,14 +65,14 @@ class Component extends React.Component {
                     dataIndex: 'salary',
                     align: 'right',
                     sorter: (a, b) => a.email - b.email,
-                    render: (col, record, index) => <span>{numberSplit(8859835)}</span>
+                    render: (col, record, index) => <span>{numberSplit(record.viewCount)}</span>
                 },
                 {
                     title: 'Favorites',
                     dataIndex: 'address',
                     align: 'right',
                     sorter: (a, b) => a.email - b.email,
-                    render: (col, record, index) => <span>{numberSplit(8859835)}</span>
+                    render: (col, record, index) => <span>{numberSplit(record.favoriteCount)}</span>
 
                 },
                 {
@@ -87,13 +80,13 @@ class Component extends React.Component {
                     dataIndex: 'email',
                     align: 'right',
                     sorter: (a, b) => a.email - b.email,
-                    render: (col, record, index) => <span>{numberSplit(8859835)}</span>
+                    render: (col, record, index) => <span>{numberSplit(record.shareCount)}</span>
                 },
                 {
                     title: '24h',
                     dataIndex: '24h',
                     align: 'right',
-                    width: 80,
+                    width: 105,
                     filterIcon: <IconDown />,
                     filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
                         return (
@@ -134,7 +127,15 @@ class Component extends React.Component {
         this.ShareModalRef = React.createRef();
     }
     componentDidMount() {
+        this.getTags();
         this.getList();
+    }
+    getTags = () => {
+        LayoutDashboardApi.listAllTags().then(d => {
+            this.setState({
+                filterList: d
+            });
+        });
     }
     openShareModal() {
         this.ShareModalRef.init();
@@ -158,17 +159,21 @@ class Component extends React.Component {
     }
     getList = () => {
         this.setState({ loading: true });
-        setTimeout(() => {
-            this.setState({ loading: false });
-            const tableData = [
-                { key: 1 },
-                { key: 2 },
-                { key: 3 }
-            ];
+        LayoutDashboardApi.list({
+            "pageSize": this.state.pagination.pageSize,
+            "pageIndex": this.state.pagination.current,
+            "orderBys": [],
+            "tagIds": [],
+            "searchName": "",
+            "creator": "",
+            "dashboardIds": []
+        }).then(d => {
             this.setState({
-                tableData
+                loading: false,
+                tableData: d.list,
+                pagination: { ...this.state.pagination, total: d.totalCount }
             });
-        }, 1000);
+        });
     }
     change24h = (str, confirm) => {
         this.setState((state => {
@@ -191,13 +196,18 @@ class Component extends React.Component {
                         <span>Filters</span>
                     </div>
                     <div className="filter-list">
+                        <div
+                            className={"item" + (!this.state.currentFilter.id ? ' active' : '')}
+                            onClick={() => { this.changeFilter({}) }}
+                            title="All"
+                        >All</div>
                         {
                             this.state.filterList.map((v, i) =>
                                 <div
-                                    className={"item" + (this.state.currentFilter.name == v.name ? ' active' : '')}
+                                    className={"item" + (this.state.currentFilter.id == v.id ? ' active' : '')}
                                     onClick={() => { this.changeFilter(v) }}
-                                    title={v.name}
-                                    key={i}>{v.name}</div>
+                                    title={v.tagName}
+                                    key={i}>{v.tagName}</div>
                             )
                         }
                     </div>
@@ -232,6 +242,7 @@ class Component extends React.Component {
 
                 {/* <div className="total-wrap">123 dashboards with selected label on Web3go</div> */}
                 <Table
+                    rowKey="id"
                     borderCell={false}
                     border={false}
                     pagePosition='bottomCenter'

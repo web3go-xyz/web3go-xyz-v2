@@ -9,7 +9,7 @@ import "cropperjs/dist/cropper.css";
 import { changeUserData } from "metabase/redux/app";
 import { LayoutLoginApi } from '@/services'
 import event from '@/web3goLayout/event';
-import HeadIcon from '@/web3goLayout/components/HeadIcon';
+import MyHeadIcon from '@/web3goLayout/components/MyHeadIcon';
 
 const mapStateToProps = state => {
     return {
@@ -223,7 +223,7 @@ class Component extends React.Component {
                     <div className="pm-right">
                         <div className="banner">
                             <div className="avatar">
-                                <HeadIcon iconSize={116} fontSize={28}></HeadIcon>
+                                <MyHeadIcon iconSize={116} fontSize={28}></MyHeadIcon>
                             </div>
                             <div className="text">
                                 Everyone can <br />
@@ -260,7 +260,7 @@ class Component extends React.Component {
                             <div className="form-item">
                                 <div className="label">Avatar</div>
                                 <div className="value">
-                                    <HeadIcon iconSize={48}></HeadIcon>
+                                    <MyHeadIcon iconSize={48}></MyHeadIcon>
                                     <Button onClick={this.openCropperModal}>Change</Button>
                                     <span className="tip">JPG or PNG. Max size is 1MB</span>
                                 </div>
