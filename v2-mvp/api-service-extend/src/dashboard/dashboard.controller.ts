@@ -36,28 +36,28 @@ export class DashboardController {
     @Post('/listAllTags')
     @ApiOperation({ summary: 'list all tags' })
     @ApiOkResponse({ type: ConfigTag, isArray: true })
-    async listAllTags(@Body() request: Object): Promise<ConfigTag[]> {
-        return await this.service.listAllTags(request);
+    async listAllTags(@Body() param: Object): Promise<ConfigTag[]> {
+        return await this.service.listAllTags(param);
     }
 
     @AllowAnonymous()
     @Post('/list')
     @ApiOperation({ summary: 'list dashboard' })
     @ApiOkResponse({ type: QueryDashboardListResponse })
-    async list(@Body() request: QueryDashboardListRequest): Promise<QueryDashboardListResponse> {
+    async list(@Body() param: QueryDashboardListRequest): Promise<QueryDashboardListResponse> {
 
-        this.logger.debug(`list:${JSON.stringify(request)}`);
-        return await this.service.list(request);
+        this.logger.debug(`list:${JSON.stringify(param)}`);
+        return await this.service.list(param);
     }
 
     @AllowAnonymous()
     @Post('/detail')
     @ApiOperation({ summary: 'get detail info of the specified dashboard' })
     @ApiOkResponse({ type: QueryDashboardDetailResponse })
-    async detail(@Body() request: QueryDashboardDetailRequest): Promise<QueryDashboardDetailResponse> {
+    async detail(@Body() param: QueryDashboardDetailRequest): Promise<QueryDashboardDetailResponse> {
 
-        this.logger.debug(`detail:${JSON.stringify(request)}`);
-        return await this.service.detail(request);
+        this.logger.debug(`detail:${JSON.stringify(param)}`);
+        return await this.service.detail(param);
     }
 
     @Post('/listMyFavorites')
@@ -67,7 +67,7 @@ export class DashboardController {
         @Body() param: QueryMyFavoriteDashboardListRequest): Promise<QueryMyFavoriteDashboardListResponse> {
         let validateUser: AuthorizedUser = request.user;
         param.accountId = validateUser.id;
-        this.logger.debug(`listMyFavorites:${JSON.stringify(request)}`);
+        this.logger.debug(`listMyFavorites:${JSON.stringify(param)}`);
         return await this.service.listMyFavorites(param);
     }
 
@@ -79,8 +79,8 @@ export class DashboardController {
         let validateUser: AuthorizedUser = request.user;
         param.accountId = validateUser.id;
 
-        this.logger.debug(`logFavorite:${JSON.stringify(request)}`);
-        return await this.service.logFavorite(request);
+        this.logger.debug(`logFavorite:${JSON.stringify(param)}`);
+        return await this.service.logFavorite(param);
     }
 
     @AllowAnonymous()
