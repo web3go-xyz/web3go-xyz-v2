@@ -164,7 +164,7 @@ class Component extends React.Component {
         });
     }
     fileChange = (files) => {
-        const isLt1M = files[0].originFile.size / 1024 / 1024 < 1;
+        const isLt1M = files[files.length-1].originFile.size / 1024 / 1024 < 1;
         if (!isLt1M) {
             Message.error('Max size is 1MB');
             return;
@@ -215,9 +215,9 @@ class Component extends React.Component {
                 </div>
                 <div className="page-main">
                     <div className="nav">
-                        <div className="n-title">My Space</div>
                         <div className="nav-list">
-                            <div className="item">Account Setting</div>
+                            <div className="item" onClick={()=>{this.props.push('/layout/mySpace')}}>My Space</div>
+                            <div className="item active">Account Setting</div>
                         </div>
                     </div>
                     <div className="pm-right">

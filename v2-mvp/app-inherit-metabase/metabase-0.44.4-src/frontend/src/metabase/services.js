@@ -36,6 +36,10 @@ export const LayoutLoginApi = {
 export const LayoutDashboardApi = {
   listAllTags: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/listAllTags"),
   list: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/list"),
+  listMyFavorites: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/listMyFavorites"),
+  detail: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/detail"),
+  logFavorite: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/logFavorite"),
+  logView: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/logView"),
 };
 
 export const ActivityApi = {
