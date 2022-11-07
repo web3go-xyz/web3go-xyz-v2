@@ -7,6 +7,7 @@ import { AppModule } from './app.module';
 import { W3ExceptionsFilter } from './base/filter/W3ExceptionFilter';
 import { AppConfig } from './base/setting/appConfig';
 import "reflect-metadata";
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
 
@@ -17,7 +18,8 @@ async function bootstrap() {
   app.enableCors();
   app.useLogger(['debug', 'log', 'verbose', 'error', 'warn']);
   app.useGlobalPipes(new ValidationPipe());
-
+  app.use(json({ limit: '10mb' }));
+  app.use(urlencoded({ extended: true, limit: '10mb' }));
   const config = new DocumentBuilder()
     .addBearerAuth()
     .setTitle('api-service')
