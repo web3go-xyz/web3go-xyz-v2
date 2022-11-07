@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { W3Logger } from 'src/base/log/logger.service';
@@ -49,16 +49,22 @@ export class AccountInfoService {
     this.logger = new W3Logger(`AccountInfoService`);
   }
 
-  async getAccountInfo(accountId: string, includeExtraInfo: boolean): Promise<AccountInfo> {
-    const account = await this.accountRepository.findOne({
-      where: { accountId: accountId }
+  async getAccountInfo(accountIds: string[], includeExtraInfo: boolean): Promise<AccountInfo[]> {
+    const accounts = await this.accountRepository.find({
+      where: { accountId: In(accountIds) }
     });
-    let d = new AccountInfo();
-    d.account = account;
+    let d: AccountInfo[] = [];
+    accounts.forEach(a => {
+      d.push({
+        account: a,
+        accountEmails: [],
+        accountWallets: []
+      })
+    });
 
     if (includeExtraInfo) {
       let accountEmails = await this.accountEmailRepository.find({
-        where: { accountId: accountId }
+        where: { accountId: In(accountIds) }
       });
       if (accountEmails) {
         for (const e of accountEmails) {
@@ -67,12 +73,21 @@ export class AccountInfoService {
       }
 
       let accountWallets = await this.accountWalletRepository.find({
-        where: { accountId: accountId }
+        where: { accountId: In(accountIds) }
       });
 
-
-      d.accountEmails = accountEmails;
-      d.accountWallets = accountWallets;
+      for (const ae of accountEmails) {
+        let findAccount = d.find(t => t.account.accountId == ae.accountId);
+        if (findAccount) {
+          findAccount.accountEmails.push(ae);
+        }
+      }
+      for (const aw of accountWallets) {
+        let findAccount = d.find(t => t.account.accountId == aw.accountId);
+        if (findAccount) {
+          findAccount.accountWallets.push(aw);
+        }
+      }
     };
     this.logger.debug(`getAccountInfo:${JSON.stringify(d)}`);
 

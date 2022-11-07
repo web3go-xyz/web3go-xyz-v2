@@ -20,13 +20,18 @@ import { QueryDashboardDetailResponse } from 'src/viewModel/dashboard/QueryDashb
 import { QueryDashboardListRequest } from 'src/viewModel/dashboard/QueryDashboardListRequest';
 import { QueryDashboardListResponse } from 'src/viewModel/dashboard/QueryDashboardListResponse';
 import { QueryMyFavoriteDashboardListRequest } from 'src/viewModel/dashboard/QueryMyFavoriteDashboardListRequest';
+import { MarkTag4DashboardRequest } from 'src/viewModel/dashboard/tag/MarkTag4DashboardRequest';
+import { MarkTag4DashboardResponse } from 'src/viewModel/dashboard/tag/MarkTag4DashboardResponse';
+import { RemoveTag4DashboardRequest } from 'src/viewModel/dashboard/tag/RemoveTag4DashboardRequest';
 import { FindManyOptions, FindOptionsWhere, In, Like, Repository } from 'typeorm';
 import { Log4FavoriteDashboardResponse } from '../viewModel/dashboard/interact-log/Log4FavoriteDashboardResponse';
 import { Log4ViewDashboardResponse } from '../viewModel/dashboard/interact-log/Log4ViewDashboardResponse';
 import { QueryMyFavoriteDashboardListResponse } from '../viewModel/dashboard/QueryMyFavoriteDashboardListResponse';
+import { RemoveTag4DashboardResponse } from '../viewModel/dashboard/tag/RemoveTag4DashboardResponse';
 
 @Injectable()
 export class DashboardService {
+
 
     logger: W3Logger;
 
@@ -267,7 +272,7 @@ export class DashboardService {
         });
         if (findRecord) {
             resp.id = findRecord.id;
-            if (request.isCancelFavorite === true) {
+            if (request.operationFlag === "cancel") {
                 await this.dfavlRepo.remove(findRecord);
                 resp.msg = "cancelFavorite";
             } else {
@@ -318,6 +323,59 @@ export class DashboardService {
 
         return resp;
     }
+
+    async removeTags(param: RemoveTag4DashboardRequest, accountId: string): Promise<RemoveTag4DashboardResponse> {
+
+        let resp: RemoveTag4DashboardResponse = {
+            msg: ''
+        };
+        let removedTagIds: number[] = [];
+        for (const tagId of param.tagIds) {
+            let record = await this.dtagRepo.findOne({
+                where: {
+                    creator: accountId,
+                    dashboardId: param.dashboardId,
+                    tagId: tagId
+                }
+            });
+            if (record) {
+                await this.dtagRepo.remove(record);
+                removedTagIds.push(tagId);
+            }
+        }
+        resp.msg = removedTagIds.join('');
+        return resp;
+    }
+    async markTags(param: MarkTag4DashboardRequest, accountId: string): Promise<MarkTag4DashboardResponse> {
+        let resp: MarkTag4DashboardResponse = {
+            msg: ''
+        };
+        let newTagIds: number[] = [];
+        for (const tagId of param.tagIds) {
+            let record = await this.dtagRepo.findOne({
+                where: {
+                    creator: accountId,
+                    dashboardId: param.dashboardId,
+                    tagId: tagId
+                }
+            });
+            if (!record) {
+
+                let newTag: DashboardTag = {
+                    dashboardId: param.dashboardId,
+                    tagId: tagId,
+                    createdAt: new Date(),
+                    creator: accountId
+                };
+                await this.dtagRepo.save(newTag);
+                newTagIds.push(tagId);
+
+            }
+        }
+        resp.msg = newTagIds.join('');
+        return resp;
+    }
+
 
     async raiseEvent(payload: any): Promise<any> {
         this.logger.debug(`raiseEvent:${JSON.stringify(payload)}`);

@@ -1,14 +1,17 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty } from "class-validator";
 
 export class Log4FavoriteDashboardRequest {
     @ApiProperty()
     accountId: string;
 
-    @ApiProperty()
+    @ApiProperty({ required: true })
+    @IsNotEmpty()
     dashboardId: number;
 
     @ApiProperty({
-        description: 'yes for add favorite, false for cancel favorite.', default: false
+        description: '"add" for add favorite, "cancel" for cancel favorite.', default: "add", required: true
     })
-    isCancelFavorite: boolean;
+    @IsNotEmpty()
+    operationFlag: string;
 }

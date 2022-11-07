@@ -19,6 +19,10 @@ import { QueryDashboardListResponse } from 'src/viewModel/dashboard/QueryDashboa
 import { QueryMyFavoriteDashboardListRequest } from 'src/viewModel/dashboard/QueryMyFavoriteDashboardListRequest';
 import { QueryMyFavoriteDashboardListResponse } from 'src/viewModel/dashboard/QueryMyFavoriteDashboardListResponse';
 import { DashboardService } from './dashboard.service';
+import { MarkTag4DashboardRequest } from 'src/viewModel/dashboard/tag/MarkTag4DashboardRequest';
+import { MarkTag4DashboardResponse } from 'src/viewModel/dashboard/tag/MarkTag4DashboardResponse';
+import { RemoveTag4DashboardRequest } from 'src/viewModel/dashboard/tag/RemoveTag4DashboardRequest';
+import { RemoveTag4DashboardResponse } from 'src/viewModel/dashboard/tag/RemoveTag4DashboardResponse';
 
 
 @ApiBearerAuth()
@@ -116,20 +120,27 @@ export class DashboardController {
     // }
 
 
-    // @Post('/markTag')
-    // @ApiOperation({ summary: 'mark tag for specified dashboard' })
-    // @ApiOkResponse({ type: MarkTag4DashboardResponse })
-    // async markTag(@Body() request: MarkTag4DashboardRequest): Promise<MarkTag4DashboardResponse> {
-    //     this.logger.debug(`markTag:${JSON.stringify(request)}`);
-    //     return await this.service.markTag(request);
-    // }
+    @Post('/markTags')
+    @ApiOperation({ summary: 'mark tag for specified dashboard' })
+    @ApiOkResponse({ type: MarkTag4DashboardResponse })
+    async markTags(@Req() request, @Body() param: MarkTag4DashboardRequest): Promise<MarkTag4DashboardResponse> {
+        this.logger.debug(`markTags:${JSON.stringify(param)}`);
+        let validateUser: AuthorizedUser = request.user;
+        let accountId = validateUser.id;
 
-    // @Post('/removeTag')
-    // @ApiOperation({ summary: 'remove tag for specified dashboard' })
-    // @ApiOkResponse({ type: RemoveTag4DashboardResponse })
-    // async removeTag(@Body() request: RemoveTag4DashboardRequest): Promise<RemoveTag4DashboardResponse> {
-    //     this.logger.debug(`removeTag:${JSON.stringify(request)}`);
-    //     return await this.service.removeTag(request);
-    // }
+        return await this.service.markTags(param, accountId);
+    }
+
+    @Post('/removeTags')
+    @ApiOperation({ summary: 'remove tag for specified dashboard' })
+    @ApiOkResponse({ type: RemoveTag4DashboardResponse })
+    async removeTags(@Req() request, @Body() param: RemoveTag4DashboardRequest): Promise<RemoveTag4DashboardResponse> {
+
+        this.logger.debug(`removeTags:${JSON.stringify(param)}`);
+        let validateUser: AuthorizedUser = request.user;
+        let accountId = validateUser.id;
+
+        return await this.service.removeTags(param, accountId);
+    }
 
 }

@@ -10,6 +10,7 @@ import { ChangeNickNameRequest } from 'src/viewModel/account/info/ChangeNickName
 import { CheckEmailRequest } from 'src/viewModel/account/info/CheckEmailRequest';
 import { LinkEmailRequest } from 'src/viewModel/account/info/LinkEmailRequest';
 import { LinkWalletRequest } from 'src/viewModel/account/info/LinkWalletRequest';
+import { SearchAccountInfoRequest } from 'src/viewModel/account/info/SearchAccountInfoRequest';
 import { UnlinkEmailRequest } from 'src/viewModel/account/info/UnlinkEmailRequest';
 import { UnlinkWalletRequest } from 'src/viewModel/account/info/UnlinkWalletRequest';
 import { AccountInfoService } from './account-info.service';
@@ -28,9 +29,9 @@ export class AccountInfoController {
   @ApiOperation({
     summary: 'search account info for specified account',
   })
-  @ApiOkResponse({ type: AccountInfo })
-  async getSimpleAccountInfo(@Query('accountId') accountId: string, @Query('includeExtraInfo') includeExtraInfo: boolean): Promise<AccountInfo> {
-    return await this.accountInfoService.getAccountInfo(accountId, includeExtraInfo || false);
+  @ApiOkResponse({ type: AccountInfo, isArray: true })
+  async searchAccountInfo(@Body() searchAccountInfo: SearchAccountInfoRequest): Promise<AccountInfo[]> {
+    return await this.accountInfoService.getAccountInfo(searchAccountInfo.accountIds, searchAccountInfo.includeExtraInfo || false);
   }
 
   @Post('/getAccountInfo')
@@ -43,7 +44,11 @@ export class AccountInfoController {
     let validateUser: AuthorizedUser = request.user;
     this.logger.log(`validateUser:${JSON.stringify(validateUser)}`);
     let accountId = validateUser.id;
-    return await this.accountInfoService.getAccountInfo(accountId, true);
+    let accounts = await this.accountInfoService.getAccountInfo([accountId], true);
+    if (accounts && accounts.length > 0) {
+      return accounts[0];
+    }
+    return null;
   }
 
   @Post('/changeName')
