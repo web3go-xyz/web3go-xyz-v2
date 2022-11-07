@@ -21,7 +21,7 @@ export class PolkadotSignHelper implements IWeb3Sign {
         this.logger = new W3Logger(`PolkadotSignHelper`);
     }
     async createChallenge(request: Web3SignNonceRequest): Promise<Web3SignNonceResponse> {
-        let nonce = `[web3_nonce][${new Date().getTime()}][${uuidv4()}]`;
+        let nonce = `web3_nonce-${new Date().getTime()}-${uuidv4()}`;
         // let challenge = `${request.nonce_description}: sign with [${request.chain}][${request.walletSource}][${request.address}]`;
         let challenge = `Welcome to Web3Go! 
         Click to sign in and accept the Web3Go Terms of Service:https://web3go.xyz/tos. 
