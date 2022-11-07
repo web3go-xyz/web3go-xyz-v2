@@ -8,7 +8,7 @@ export class Log4FavoriteDashboardRequest {
     dashboardId: number;
 
     @ApiProperty({
-        description: 'yes for add favorite, false for cancel favorite.', default: false
+        description: '"add" for add favorite, "cancel" for cancel favorite.', default: "add"
     })
-    isCancelFavorite: boolean;
+    operationFlag: string;
 }

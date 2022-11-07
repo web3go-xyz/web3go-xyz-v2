@@ -267,7 +267,7 @@ export class DashboardService {
         });
         if (findRecord) {
             resp.id = findRecord.id;
-            if (request.isCancelFavorite === true) {
+            if (request.operationFlag === "cancel") {
                 await this.dfavlRepo.remove(findRecord);
                 resp.msg = "cancelFavorite";
             } else {
