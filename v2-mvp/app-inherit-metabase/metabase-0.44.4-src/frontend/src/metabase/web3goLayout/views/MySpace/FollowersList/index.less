@@ -1,0 +1,124 @@
+body[arco-theme="dark"] .web3go-layout-myspace-followers-list {}
+
+.web3go-layout-myspace-followers-list {
+    .list {
+        .item {
+            padding: 0 16px;
+            height: 96px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            &:hover {
+                background: #F7F8FA;
+
+                .i-right {
+                    display: none;
+                }
+                .follow-btn{
+                    display: flex;
+                }
+            }
+
+            .i-left {
+                display: flex;
+                align-items: center;
+
+                .ii-right {
+                    margin-left: 8px;
+
+                    .name {
+                        font-weight: 600;
+                        font-size: 14px;
+                        line-height: 22px;
+                        color: var(--4eColor);
+                        margin-bottom: 4px;
+                    }
+
+                    .iir-bottom {
+                        display: flex;
+                        align-items: center;
+                        font-weight: 500;
+                        font-size: 12px;
+                        line-height: 20px;
+                        color: var(--86Color);
+
+                        svg {
+                            margin-right: 4px;
+                        }
+
+                        .value {
+                            margin-left: 8px;
+                            font-weight: 500;
+                            font-size: 12px;
+                            line-height: 20px;
+                            color: var(--4eColor);
+                        }
+                    }
+                }
+            }
+
+            .follow-btn {
+                width: 95px;
+                border: 1px solid #C9CDD4;
+                border-radius: 8px;
+                height: 32px;
+                font-weight: 400;
+                font-size: 14px;
+                line-height: 22px;
+                color: var(--6bColor);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                display: none;
+                
+                &:hover {
+                    background: #E5E6E8;
+                }
+
+                .text {
+                    margin-left: 4px;
+                }
+            }
+
+            .i-right {
+                display: flex;
+                align-items: center;
+
+                .form-item {
+                    text-align: right;
+                    width: 120px;
+
+                    .value {
+                        font-weight: 600;
+                        font-size: 16px;
+                        line-height: 24px;
+                        color: var(--4eColor);
+                    }
+
+                    .label {
+                        margin-top: 2px;
+                        font-weight: 400;
+                        font-size: 14px;
+                        line-height: 22px;
+                        color: var(--6bColor);
+                    }
+                }
+            }
+        }
+    }
+
+    .pagination-wrap {
+        padding: 12px 0;
+        display: flex;
+        justify-content: flex-end;
+
+        ul li {
+            margin-left: 0;
+        }
+
+
+    }
+}

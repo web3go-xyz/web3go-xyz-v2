@@ -33,6 +33,11 @@ export const LayoutLoginApi = {
   unlinkEmail: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/unlinkEmail"),
   unlinkWallet: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/unlinkWallet"),
 };
+export const LayoutDashboardApi = {
+  listAllTags: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/listAllTags"),
+  list: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/list"),
+};
+
 export const ActivityApi = {
   list: GET("/api/activity"),
   recent_views: GET("/api/activity/recent_views"),

@@ -1,0 +1,186 @@
+body[arco-theme="dark"] .web3go-layout-myspace-page {}
+
+.web3go-layout-myspace-page {
+    .bread-wrap {
+        padding-top: 20px;
+        padding-bottom: 18px;
+    }
+
+    .big-bg {
+        height: 180px;
+        background-image: url(../../assets/account/bg.png);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+    }
+
+    .main-wrap {
+        display: flex;
+
+        .side {
+            margin-top: -132px;
+            padding: 32px 24px;
+            width: 234px;
+            height: 568px;
+            background: #FFFFFF;
+            border: 1px solid #E9EDF7;
+            box-shadow: 0px 50px 40px -34px rgba(112, 144, 176, 0.16);
+            border-radius: 12px;
+
+            .headicon-wrap {
+                display: flex;
+                justify-content: center;
+            }
+
+            .nickname {
+                margin-top: 24px;
+                text-align: center;
+                font-weight: 600;
+                font-size: 16px;
+                line-height: 24px;
+                color: var(--4eColor);
+            }
+
+            .join-time {
+                text-align: center;
+                font-weight: 400;
+                font-size: 12px;
+                line-height: 20px;
+                color: var(--86Color);
+                margin-bottom: 12px;
+            }
+
+            .btn-wrap {
+                text-align: center;
+
+                .arco-btn {
+                    border-radius: 8px;
+                }
+            }
+
+            .follow-wrap {
+                margin: 20px 0;
+                padding: 20px 0;
+                border-top: 1px dashed #E5E6E8;
+                border-bottom: 1px dashed #E5E6E8;
+
+                .follow-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+
+                    &+.follow-row {
+                        margin-top: 12px;
+                    }
+
+                    .f-left {
+                        display: flex;
+                        align-items: center;
+
+                        svg {
+                            margin-right: 4px;
+                        }
+
+                        span {
+                            font-weight: 400;
+                            font-size: 14px;
+                            line-height: 22px;
+                            color: var(--86Color);
+                        }
+                    }
+
+                    .f-right {
+                        display: flex;
+                        align-items: center;
+
+                        span {
+                            font-weight: 600;
+                            font-size: 14px;
+                            line-height: 22px;
+                            color: var(--4eColor);
+                        }
+
+                        img {
+                            margin-left: 4px;
+                            width: 16px;
+                        }
+                    }
+                }
+            }
+
+            .info {
+                .item {
+                    display: inline-block;
+                    width: 50%;
+
+                    &:last-child {
+                        margin-top: 12px;
+                    }
+
+                    .value {
+                        font-weight: 600;
+                        font-size: 16px;
+                        line-height: 24px;
+                        color: var(--4eColor);
+                    }
+
+                    .label {
+                        margin-top: 2px;
+                        font-weight: 400;
+                        font-size: 14px;
+                        line-height: 22px;
+                        color: var(--6bColor);
+                    }
+                }
+            }
+
+        }
+
+        .content {
+            position: relative;
+            padding: 20px;
+            padding-top: 22px;
+            padding-right: 0;
+            flex: 1;
+
+            .search-input {
+                position: absolute;
+                right: 0;
+                top: 23px;
+                width: 214px;
+
+                .arco-input-inner-wrapper {
+                    border-radius: 8px;
+
+                }
+
+                .arco-input {
+                    height: 32px;
+                }
+            }
+
+            .list-wrap {
+
+                .l-header {
+                    padding-bottom: 18px;
+                    color: var(--4eColor);
+                    display: flex;
+                    align-items: center;
+                    border-bottom: 1px solid #E5E6E8;
+
+                    .arco-icon {
+                        margin-right: 8px;
+                        font-size: 18px;
+                    }
+
+                    span {
+                        font-weight: 600;
+                        font-size: 16px;
+                        line-height: 24px;
+                    }
+                }
+            }
+        }
+    }
+
+}

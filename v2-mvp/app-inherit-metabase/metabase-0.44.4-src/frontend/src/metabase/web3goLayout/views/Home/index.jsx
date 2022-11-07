@@ -58,7 +58,7 @@ class Component extends React.Component {
                 <div className="home-main common-layout">
                     <div className="section-title">
                         <span>My Space</span>
-                        <svg className="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg onClick={() => { this.props.push('/layout/mySpace') }} className="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M9.24269 3.75667L13.4854 7.99933L9.24269 12.242M1.66669 8H13.0984" strokeWidth="1.5" />
                         </svg>
                     </div>
