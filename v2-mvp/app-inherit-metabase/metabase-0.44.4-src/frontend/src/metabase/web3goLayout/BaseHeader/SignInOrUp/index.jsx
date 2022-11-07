@@ -67,7 +67,7 @@ class Component extends React.Component {
     checkIfEmailExist = (e) => {
         this.formRef.current.validate(['email']).then((form) => {
             LayoutLoginApi.searchAccountsByEmail({
-                filter: form.email,
+                filter: form.email.toLowerCase(),
             }).then(d => {
                 if (d.length) {
                     this.setState({
@@ -107,7 +107,7 @@ class Component extends React.Component {
                 this.setState({
                     loading: true
                 })
-                LayoutLoginApi.signIn(form).then(d => {
+                LayoutLoginApi.signIn({ ...form, email: form.email.toLowerCase() }).then(d => {
                     localStorage.setItem('token', d.token);
                     location.replace(`/auth/sso?jwt=${d.token}&&return_to=/`)
                 }).catch(() => {
@@ -116,10 +116,10 @@ class Component extends React.Component {
                     })
                 })
             } else {
-                if(!this.state.emailVerifyPass){
+                if (!this.state.emailVerifyPass) {
                     return;
                 }
-                LayoutLoginApi.signUp(form).then(d => {
+                LayoutLoginApi.signUp({ ...form, email: form.email.toLowerCase() }).then(d => {
                     this.setState({
                         currentAccount: d.account
                     });

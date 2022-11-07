@@ -50,7 +50,7 @@ class Component extends React.Component {
         this.formRef.current.validate(['email']).then(() => {
             const form = this.formRef.current.getFields();
             LayoutLoginApi.sendVerifyEmail({
-                "email": form.email,
+                "email": form.email.toLowerCase(),
                 "verifyCodePurpose": "resetPassword"
             }).then(d => {
                 this.setState({

@@ -21,6 +21,7 @@ export const LayoutLoginApi = {
   changePassword: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/changePassword"),
   searchAccountsByEmail: WGET(WEB3GO_BASE_URL + "/api/v2/account/auth/searchAccountsByEmail"),
   searchAccountsByWallet: WGET(WEB3GO_BASE_URL + "/api/v2/account/auth/searchAccountsByWallet"),
+  searchAccountInfo: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/searchAccountInfo"),
   getAccountInfo: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/getAccountInfo"),
   web3_nonce: WPOST(WEB3GO_BASE_URL + "/api/v2/account/web3/web3_nonce"),
   web3_challenge: WPOST(WEB3GO_BASE_URL + "/api/v2/account/web3/web3_challenge"),
@@ -32,6 +33,7 @@ export const LayoutLoginApi = {
   linkWallet: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/linkWallet"),
   unlinkEmail: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/unlinkEmail"),
   unlinkWallet: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/unlinkWallet"),
+
 };
 export const LayoutDashboardApi = {
   listAllTags: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/listAllTags"),
