@@ -22,8 +22,16 @@ export class PolkadotSignHelper implements IWeb3Sign {
     }
     async createChallenge(request: Web3SignNonceRequest): Promise<Web3SignNonceResponse> {
         let nonce = `[web3_nonce][${new Date().getTime()}][${uuidv4()}]`;
-        let challenge = `${request.nonce_description}: sign with [${request.chain}][${request.walletSource}][${request.address}]`;
-
+        // let challenge = `${request.nonce_description}: sign with [${request.chain}][${request.walletSource}][${request.address}]`;
+        let challenge = `Welcome to Web3Go! 
+        Click to sign in and accept the Web3Go Terms of Service:https://web3go.xyz/tos. 
+        This request will not trigger any blockchain transaction or cost any gas fees.
+        Your authentication status will reset after 24 hours. 
+        Wallet address:
+        ${request.address} 
+        Nonce:
+        ${nonce} 
+        `
         let resp: Web3SignNonceResponse = {
             chain: request.chain,
             challenge: challenge,
