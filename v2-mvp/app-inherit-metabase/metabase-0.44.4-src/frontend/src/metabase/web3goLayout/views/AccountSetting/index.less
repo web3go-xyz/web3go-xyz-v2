@@ -1,5 +1,5 @@
 body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
-    .nav-list .item {
+    .nav-list .item.active {
         background: #2a2a2c !important;
     }
 
@@ -45,16 +45,22 @@ body[arco-theme="dark"] .web3go-layout-AccountSetting-page {
 
             .nav-list {
                 .item {
+                    cursor: pointer;
                     width: 183px;
                     height: 44px;
                     display: flex;
                     align-items: center;
                     padding: 0 24px;
-                    background: #f2f3f5;
                     border-radius: 12px;
                     font-weight: 600;
                     font-size: 14px;
                     line-height: 22px;
+                    &:hover{
+                        opacity: .8;
+                    }
+                    &.active {
+                        background: #f2f3f5;
+                    }
                 }
             }
         }

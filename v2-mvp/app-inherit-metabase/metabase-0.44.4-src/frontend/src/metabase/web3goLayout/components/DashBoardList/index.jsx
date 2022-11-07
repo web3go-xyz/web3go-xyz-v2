@@ -129,6 +129,14 @@ class Component extends React.Component {
     componentDidMount() {
         this.getTags();
         this.getList();
+        this.getMyFavourites();
+    }
+    getMyFavourites=()=>{
+        LayoutDashboardApi.listMyFavorites().then(d => {
+            // this.setState({
+            //     filterList: d
+            // });
+        });
     }
     getTags = () => {
         LayoutDashboardApi.listAllTags().then(d => {

@@ -23,6 +23,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            emailVerifyPass: true,
             loading: false,
             timer: null,
             visible: false,
@@ -59,6 +60,26 @@ class Component extends React.Component {
         if (this.formRef.current) {
             this.formRef.current.resetFields();
         }
+        this.setState({
+            emailVerifyPass: true
+        });
+    }
+    checkIfEmailExist = (e) => {
+        this.formRef.current.validate(['email']).then((form) => {
+            LayoutLoginApi.searchAccountsByEmail({
+                filter: form.email,
+            }).then(d => {
+                if (d.length) {
+                    this.setState({
+                        emailVerifyPass: false
+                    });
+                } else {
+                    this.setState({
+                        emailVerifyPass: true
+                    });
+                }
+            })
+        });
     }
     verifyEmail = () => {
         const form = this.formRef.current.getFields();
@@ -95,6 +116,9 @@ class Component extends React.Component {
                     })
                 })
             } else {
+                if(!this.state.emailVerifyPass){
+                    return;
+                }
                 LayoutLoginApi.signUp(form).then(d => {
                     this.setState({
                         currentAccount: d.account
@@ -152,9 +176,40 @@ class Component extends React.Component {
                                 </FormItem>
                             )
                             : null}
-                        <FormItem label='Email address' field='email' rules={[{ required: true, message: 'Email address cannot be empty' }, { type: 'email', message: 'Invalid email' }]}>
-                            <Input placeholder='helloworld@gmail.com' />
-                        </FormItem>
+                        <div className='email-item'>
+                            <FormItem label='Email address' field='email' rules={[{ required: true, message: 'Email address cannot be empty' }, { type: 'email', message: 'Invalid email' }]}>
+                                <Input placeholder='helloworld@gmail.com' onBlur={!this.state.isSignIn ? this.checkIfEmailExist : () => { }} onChange={() => { this.setState({ emailVerifyPass: true }) }} />
+                            </FormItem>
+                            {
+                                !this.state.isSignIn && !this.state.emailVerifyPass ? (
+                                    <div className="duplicate">
+                                        <img src={require("@/web3goLayout/assets/layout/waring2.png")} alt="" />
+                                        <span>
+                                            This email has been registered. Go to&nbsp;
+                                        </span>
+                                        <span onClick={() => { this.init(true) }} className="a hover-item">sign in</span>
+                                    </div>
+                                ) : null
+                            }
+                        </div>
+                        {/* <FormItem className='email-item' label='Email address' field='email' rules={[{ required: true, message: 'Email address cannot be empty' }, { type: 'email', message: 'Invalid email' }]}>
+                            <Input placeholder='helloworld@gmail.com' onBlur={!this.state.isSignIn ? this.checkIfEmailExist : () => { }} />
+                            <FormItem noStyle>
+                                {
+                                    !this.state.isSignIn && this.emailVerifyPass ? (
+                                        <div className="duplicate">
+                                            <img src={require("@/web3goLayout/assets/layout/waring2.png")} alt="" />
+                                            <span>
+                                                This email has been registered. Go to&nbsp;
+                                            </span>
+                                            <span onClick={() => { this.init(true) }} className="a hover-item">sign in</span>
+                                        </div>
+                                    ) : null
+                                }
+
+                            </FormItem>
+                        </FormItem> */}
+
                         <FormItem label='Password' field='password' rules={[{ required: true, message: 'Password cannot be empty' }]}>
                             <Input type='password' onPressEnter={this.sure} placeholder='please enter your password...' />
                         </FormItem>

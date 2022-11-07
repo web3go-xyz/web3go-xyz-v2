@@ -76,7 +76,9 @@ class Component extends React.Component {
         }
     }
     clickDropdownIcon = (key) => {
-        if (key == 2) {
+        if (key == 1) {
+            this.props.push('/layout/mySpace');
+        } else if (key == 2) {
             this.props.push('/layout/accountSetting');
         } else if (key == 3) {
             Modal.confirm({

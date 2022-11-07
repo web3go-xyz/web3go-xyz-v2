@@ -57,8 +57,18 @@ class Component extends React.Component {
             main = (
                 <div className="list-wrap">
                     <div className="l-header">
-                        <IconArrowLeft className="hover-item" />
+                        <IconArrowLeft onClick={() => { this.setState({ viewType: 'default' }) }} className="hover-item" />
                         <span>Followers 583</span>
+                    </div>
+                    <FollowersList></FollowersList>
+                </div>
+            )
+        } else if (this.state.viewType == 'following') {
+            main = (
+                <div className="list-wrap">
+                    <div className="l-header">
+                        <IconArrowLeft onClick={() => { this.setState({ viewType: 'default' }) }} className="hover-item" />
+                        <span>Following 583</span>
                     </div>
                     <FollowersList></FollowersList>
                 </div>
@@ -70,7 +80,7 @@ class Component extends React.Component {
                     <div className="common-bread">
                         <div className="item hover-primary" onClick={() => { this.props.push('/') }}>Home</div>
                         <div className="split">/</div>
-                        <div className="item active">Account Setting</div>
+                        <div className="item active">My Space</div>
                     </div>
                 </div>
                 <div className="big-bg"></div>
@@ -96,7 +106,7 @@ class Component extends React.Component {
                                     </svg>
                                     <span>Followers</span>
                                 </div>
-                                <div className="f-right hover-item">
+                                <div onClick={() => { this.setState({ viewType: 'followers' }) }} className="f-right hover-item">
                                     <span>583</span>
                                     <img src={require("@/web3goLayout/assets/account/right_arrow.png")} alt="" />
                                 </div>
@@ -110,7 +120,7 @@ class Component extends React.Component {
 
                                     <span>Following</span>
                                 </div>
-                                <div className="f-right hover-item">
+                                <div onClick={() => { this.setState({ viewType: 'following' }) }} className="f-right hover-item">
                                     <span>1,577</span>
                                     <img src={require("@/web3goLayout/assets/account/right_arrow.png")} alt="" />
                                 </div>

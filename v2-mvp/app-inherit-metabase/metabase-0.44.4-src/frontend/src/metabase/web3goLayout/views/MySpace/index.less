@@ -1,6 +1,15 @@
-body[arco-theme="dark"] .web3go-layout-myspace-page {}
+body[arco-theme="dark"] .web3go-layout-myspace-page {
+    --side-bg: #232324;
+    --side-border: #272E3B;
+    --side-shadow: rgba(0, 0, 0, 0.5);
+
+}
 
 .web3go-layout-myspace-page {
+    --side-bg: #FFFFFF;
+    --side-border: #E9EDF7;
+    --side-shadow: rgba(112, 144, 176, 0.16);
+
     .bread-wrap {
         padding-top: 20px;
         padding-bottom: 18px;
@@ -22,9 +31,9 @@ body[arco-theme="dark"] .web3go-layout-myspace-page {}
             padding: 32px 24px;
             width: 234px;
             height: 568px;
-            background: #FFFFFF;
-            border: 1px solid #E9EDF7;
-            box-shadow: 0px 50px 40px -34px rgba(112, 144, 176, 0.16);
+            background: var(--side-bg);
+            border: 1px solid var(--side-border);
+            box-shadow: 0px 50px 40px -34px var(--side-shadow);
             border-radius: 12px;
 
             .headicon-wrap {
@@ -129,7 +138,7 @@ body[arco-theme="dark"] .web3go-layout-myspace-page {}
                         font-weight: 400;
                         font-size: 14px;
                         line-height: 22px;
-                        color: var(--6bColor);
+                        color: var(--86Color);
                     }
                 }
             }
