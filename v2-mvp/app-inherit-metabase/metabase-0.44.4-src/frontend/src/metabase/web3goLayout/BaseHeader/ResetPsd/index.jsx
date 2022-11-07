@@ -55,11 +55,11 @@ class Component extends React.Component {
     sure = () => {
         this.formRef.current.validate().then((form) => {
             LayoutLoginApi.searchAccountsByEmail({
-                filter: this.state.preForm.email,
+                filter: this.state.preForm.email.toLowerCase(),
             }).then(d => {
                 const accountId = d[0].accountId;
                 LayoutLoginApi.changePassword({
-                    email: this.state.preForm.email,
+                    email: this.state.preForm.email.toLowerCase(),
                     code: this.state.preForm.code,
                     newPassword: form.password,
                     accountId: accountId
