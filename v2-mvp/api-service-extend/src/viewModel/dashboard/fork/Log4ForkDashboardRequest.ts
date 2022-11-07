@@ -1,14 +1,19 @@
+
+
+
+
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
 
-export class RemoveTag4DashboardRequest {
+export class Log4ForkDashboardRequest {
 
     @ApiProperty({ required: true })
     @IsNotEmpty()
-    dashboardId: number;
+    originalDashboardId: number;
 
-    @ApiProperty({ required: true, type: Number, isArray: true })
+    @ApiProperty({ required: true })
     @IsNotEmpty()
-    tagIds: number[];
+    forkedDashboardId: number;
+
 
 }

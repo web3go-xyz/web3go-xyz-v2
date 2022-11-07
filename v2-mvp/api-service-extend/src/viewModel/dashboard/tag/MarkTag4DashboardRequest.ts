@@ -7,7 +7,7 @@ export class MarkTag4DashboardRequest {
     @IsNotEmpty()
     dashboardId: number;
 
-    @ApiProperty({ required: true })
+    @ApiProperty({ required: true, type: Number, isArray: true })
     @IsNotEmpty()
     tagIds: number[];
 

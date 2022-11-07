@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { DashboardFavorite } from 'src/base/entity/metabase/DashboardFavorite';
 import { ReportDashboard } from 'src/base/entity/metabase/ReportDashboard';
 import { ConfigTag } from 'src/base/entity/platform-config/ConfigTag';
 import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
@@ -13,21 +12,13 @@ import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { PageRequest } from 'src/viewModel/base/pageRequest';
 import { DashboardSummary } from 'src/viewModel/dashboard/DashboardSummary';
-import { Log4FavoriteDashboardRequest } from 'src/viewModel/dashboard/interact-log/Log4FavoriteDashboardRequest';
-import { Log4ViewDashboardRequest } from 'src/viewModel/dashboard/interact-log/Log4ViewDashboardRequest';
 import { QueryDashboardDetailRequest } from 'src/viewModel/dashboard/QueryDashboardDetailRequest';
 import { QueryDashboardDetailResponse } from 'src/viewModel/dashboard/QueryDashboardDetailResponse';
 import { QueryDashboardListRequest } from 'src/viewModel/dashboard/QueryDashboardListRequest';
 import { QueryDashboardListResponse } from 'src/viewModel/dashboard/QueryDashboardListResponse';
 import { QueryMyFavoriteDashboardListRequest } from 'src/viewModel/dashboard/QueryMyFavoriteDashboardListRequest';
-import { MarkTag4DashboardRequest } from 'src/viewModel/dashboard/tag/MarkTag4DashboardRequest';
-import { MarkTag4DashboardResponse } from 'src/viewModel/dashboard/tag/MarkTag4DashboardResponse';
-import { RemoveTag4DashboardRequest } from 'src/viewModel/dashboard/tag/RemoveTag4DashboardRequest';
 import { FindManyOptions, FindOptionsWhere, In, Like, Repository } from 'typeorm';
-import { Log4FavoriteDashboardResponse } from '../viewModel/dashboard/interact-log/Log4FavoriteDashboardResponse';
-import { Log4ViewDashboardResponse } from '../viewModel/dashboard/interact-log/Log4ViewDashboardResponse';
 import { QueryMyFavoriteDashboardListResponse } from '../viewModel/dashboard/QueryMyFavoriteDashboardListResponse';
-import { RemoveTag4DashboardResponse } from '../viewModel/dashboard/tag/RemoveTag4DashboardResponse';
 
 @Injectable()
 export class DashboardService {
@@ -257,128 +248,6 @@ export class DashboardService {
         return resp;
 
     }
-
-    async logFavorite(request: Log4FavoriteDashboardRequest): Promise<Log4FavoriteDashboardResponse> {
-
-        let resp: Log4FavoriteDashboardResponse = {
-            id: 0, msg: ''
-        };
-        let findRecord = await this.dfavlRepo.findOne({
-            where: {
-                accountId: request.accountId,
-                dashboardId: request.dashboardId
-            },
-
-        });
-        if (findRecord) {
-            resp.id = findRecord.id;
-            if (request.operationFlag === "cancel") {
-                await this.dfavlRepo.remove(findRecord);
-                resp.msg = "cancelFavorite";
-            } else {
-                resp.msg = "nothing";
-            }
-        }
-        else {
-            findRecord = {
-                id: 0,
-                dashboardId: request.dashboardId,
-                accountId: request.accountId,
-                createdAt: new Date()
-            };
-            await this.dfavlRepo.save(findRecord);
-            resp.id = findRecord.id;
-            resp.msg = "new";
-        }
-
-        this.raiseEvent({
-            topic: 'logFavorite',
-            accountId: request.accountId,
-            dashboardId: request.dashboardId
-        });
-
-        return resp;
-    }
-
-
-    async logView(param: Log4ViewDashboardRequest, accountId: string): Promise<Log4ViewDashboardResponse> {
-        let resp: Log4ViewDashboardResponse = {
-            id: 0, msg: ''
-        };
-        let newRecord: DashboardViewLog = {
-            id: 0,
-            dashboardId: param.dashboardId,
-            viewerAccountId: accountId,
-            createdAt: new Date(),
-            referralCode: param.referralCode
-        };
-        await this.dviewlRepo.save(newRecord);
-        resp.id = newRecord.id;
-        resp.msg = "new";
-
-        this.raiseEvent({
-            topic: 'logView',
-            dashboardId: param.dashboardId
-        });
-
-        return resp;
-    }
-
-    async removeTags(param: RemoveTag4DashboardRequest, accountId: string): Promise<RemoveTag4DashboardResponse> {
-
-        let resp: RemoveTag4DashboardResponse = {
-            msg: ''
-        };
-        let removedTagIds: number[] = [];
-        for (const tagId of param.tagIds) {
-            let record = await this.dtagRepo.findOne({
-                where: {
-                    creator: accountId,
-                    dashboardId: param.dashboardId,
-                    tagId: tagId
-                }
-            });
-            if (record) {
-                await this.dtagRepo.remove(record);
-                removedTagIds.push(tagId);
-            }
-        }
-        resp.msg = removedTagIds.join('');
-        return resp;
-    }
-    async markTags(param: MarkTag4DashboardRequest, accountId: string): Promise<MarkTag4DashboardResponse> {
-        let resp: MarkTag4DashboardResponse = {
-            msg: ''
-        };
-        let newTagIds: number[] = [];
-        for (const tagId of param.tagIds) {
-            let record = await this.dtagRepo.findOne({
-                where: {
-                    creator: accountId,
-                    dashboardId: param.dashboardId,
-                    tagId: tagId
-                }
-            });
-            if (!record) {
-
-                let newTag: DashboardTag = {
-                    dashboardId: param.dashboardId,
-                    tagId: tagId,
-                    createdAt: new Date(),
-                    creator: accountId
-                };
-                await this.dtagRepo.save(newTag);
-                newTagIds.push(tagId);
-
-            }
-        }
-        resp.msg = newTagIds.join('');
-        return resp;
-    }
-
-
-    async raiseEvent(payload: any): Promise<any> {
-        this.logger.debug(`raiseEvent:${JSON.stringify(payload)}`);
-    }
+ 
 }
 

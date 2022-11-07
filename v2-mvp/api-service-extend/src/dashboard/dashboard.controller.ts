@@ -5,13 +5,10 @@ import { AuthorizedUser } from 'src/base/auth/AuthorizedUser';
 import { AllowAnonymous } from 'src/base/auth/decorator/AllowAnonymous';
 import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
 import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
-import { Request } from 'express';
 import { ConfigTag } from 'src/base/entity/platform-config/ConfigTag';
 import { W3Logger } from 'src/base/log/logger.service';
-import { Log4FavoriteDashboardRequest } from 'src/viewModel/dashboard/interact-log/Log4FavoriteDashboardRequest';
-import { Log4FavoriteDashboardResponse } from 'src/viewModel/dashboard/interact-log/Log4FavoriteDashboardResponse';
-import { Log4ViewDashboardRequest } from 'src/viewModel/dashboard/interact-log/Log4ViewDashboardRequest';
-import { Log4ViewDashboardResponse } from 'src/viewModel/dashboard/interact-log/Log4ViewDashboardResponse';
+import { Log4ViewDashboardRequest } from 'src/viewModel/dashboard/view/Log4ViewDashboardRequest';
+import { Log4ViewDashboardResponse } from 'src/viewModel/dashboard/view/Log4ViewDashboardResponse';
 import { QueryDashboardDetailRequest } from 'src/viewModel/dashboard/QueryDashboardDetailRequest';
 import { QueryDashboardDetailResponse } from 'src/viewModel/dashboard/QueryDashboardDetailResponse';
 import { QueryDashboardListRequest } from 'src/viewModel/dashboard/QueryDashboardListRequest';
@@ -23,6 +20,13 @@ import { MarkTag4DashboardRequest } from 'src/viewModel/dashboard/tag/MarkTag4Da
 import { MarkTag4DashboardResponse } from 'src/viewModel/dashboard/tag/MarkTag4DashboardResponse';
 import { RemoveTag4DashboardRequest } from 'src/viewModel/dashboard/tag/RemoveTag4DashboardRequest';
 import { RemoveTag4DashboardResponse } from 'src/viewModel/dashboard/tag/RemoveTag4DashboardResponse';
+import { Log4ForkDashboardRequest } from 'src/viewModel/dashboard/fork/Log4ForkDashboardRequest';
+import { Log4ForkDashboardResponse } from 'src/viewModel/dashboard/fork/Log4ForkDashboardResponse';
+import { Log4ShareDashboardRequest } from 'src/viewModel/dashboard/share/Log4ShareDashboardRequest';
+import { Log4ShareDashboardResponse } from 'src/viewModel/dashboard/share/Log4ShareDashboardResponse';
+import { DashboardOperationService } from './dashboard-operation.service';
+import { Log4FavoriteDashboardRequest } from 'src/viewModel/dashboard/favorite/Log4FavoriteDashboardRequest';
+import { Log4FavoriteDashboardResponse } from 'src/viewModel/dashboard/favorite/Log4FavoriteDashboardResponse';
 
 
 @ApiBearerAuth()
@@ -32,6 +36,7 @@ import { RemoveTag4DashboardResponse } from 'src/viewModel/dashboard/tag/RemoveT
 export class DashboardController {
     logger: W3Logger;
     constructor(private readonly service: DashboardService,
+        private readonly operationService: DashboardOperationService,
         private readonly jwtService: JWTAuthService) {
         this.logger = new W3Logger(`DashboardController`);
     }
@@ -67,9 +72,9 @@ export class DashboardController {
     @Post('/listMyFavorites')
     @ApiOperation({ summary: 'list of my favorite ashboards ' })
     @ApiOkResponse({ type: QueryMyFavoriteDashboardListResponse })
-    async listMyFavorites(@Req() request,
+    async listMyFavorites(@Req() req,
         @Body() param: QueryMyFavoriteDashboardListRequest): Promise<QueryMyFavoriteDashboardListResponse> {
-        let validateUser: AuthorizedUser = request.user;
+        let validateUser: AuthorizedUser = req.user;
         param.accountId = validateUser.id;
         this.logger.debug(`listMyFavorites:${JSON.stringify(param)}`);
         return await this.service.listMyFavorites(param);
@@ -78,69 +83,76 @@ export class DashboardController {
     @Post('/logFavorite')
     @ApiOperation({ summary: 'create a log when the specified dashboard is marked as favorited by user' })
     @ApiOkResponse({ type: Log4FavoriteDashboardResponse })
-    async logFavorite(@Req() request,
+    async logFavorite(@Req() req,
         @Body() param: Log4FavoriteDashboardRequest): Promise<Log4FavoriteDashboardResponse> {
-        let validateUser: AuthorizedUser = request.user;
+        let validateUser: AuthorizedUser = req.user;
         param.accountId = validateUser.id;
 
         this.logger.debug(`logFavorite:${JSON.stringify(param)}`);
-        return await this.service.logFavorite(param);
+        return await this.operationService.logFavorite(param);
     }
 
     @AllowAnonymous()
     @Post('/logView')
     @ApiOperation({ summary: 'create a log when view the specified dashboard' })
     @ApiOkResponse({ type: Log4ViewDashboardResponse })
-    async logView(@Req() request: Request,
+    async logView(@Req() req,
         @Body() param: Log4ViewDashboardRequest): Promise<Log4ViewDashboardResponse> {
 
         let accountId = '';
-        let validateUser: AuthorizedUser = this.jwtService.decodeAuthUserFromHttpRequest(request);
+        let validateUser: AuthorizedUser = this.jwtService.decodeAuthUserFromHttpRequest(req);
         if (validateUser) {
             accountId = validateUser.id;
         }
         this.logger.debug(`logView:accountId=${accountId},${JSON.stringify(param)}`);
-        return await this.service.logView(param, accountId || '');
+        return await this.operationService.logView(param, accountId || '');
     }
 
-    // @Post('/logShare')
-    // @ApiOperation({ summary: 'create a log when share the specified dashboard' })
-    // @ApiOkResponse({ type: Log4ShareDashboardResponse })
-    // async logShare(@Body() request: Log4ShareDashboardRequest): Promise<Log4ShareDashboardResponse> {
-    //     this.logger.debug(`logShare:${JSON.stringify(request)}`);
-    //     return await this.service.logShare(request);
-    // }
+    @Post('/logShare')
+    @ApiOperation({ summary: 'create a log when share the specified dashboard' })
+    @ApiOkResponse({ type: Log4ShareDashboardResponse })
+    async logShare(@Req() req,
+        @Body() param: Log4ShareDashboardRequest): Promise<Log4ShareDashboardResponse> {
+        this.logger.debug(`logShare:${JSON.stringify(param)}`);
+        let validateUser: AuthorizedUser = req.user;
+        let accountId = validateUser.id;
+        return await this.operationService.logShare(param, accountId || '');
+    }
 
-    // @Post('/logFork')
-    // @ApiOperation({ summary: 'create a log when fork the specified dashboard' })
-    // @ApiOkResponse({ type: Log4ForkDashboardResponse })
-    // async logFork(@Body() request: Log4ForkDashboardRequest): Promise<Log4ForkDashboardResponse> {
-    //     this.logger.debug(`logFork:${JSON.stringify(request)}`);
-    //     return await this.service.logFork(request);
-    // }
+    @Post('/logFork')
+    @ApiOperation({ summary: 'create a log when fork the specified dashboard' })
+    @ApiOkResponse({ type: Log4ForkDashboardResponse })
+    async logFork(@Req() req,
+        @Body() param: Log4ForkDashboardRequest): Promise<Log4ForkDashboardResponse> {
+        this.logger.debug(`logFork:${JSON.stringify(param)}`);
+        let validateUser: AuthorizedUser = req.user;
+        let accountId = validateUser.id;
+        return await this.operationService.logFork(param, accountId || '');
+    }
 
 
     @Post('/markTags')
     @ApiOperation({ summary: 'mark tag for specified dashboard' })
     @ApiOkResponse({ type: MarkTag4DashboardResponse })
-    async markTags(@Req() request, @Body() param: MarkTag4DashboardRequest): Promise<MarkTag4DashboardResponse> {
+    async markTags(@Req() req, @Body() param: MarkTag4DashboardRequest): Promise<MarkTag4DashboardResponse> {
+
         this.logger.debug(`markTags:${JSON.stringify(param)}`);
-        let validateUser: AuthorizedUser = request.user;
+        let validateUser: AuthorizedUser = req.user;
         let accountId = validateUser.id;
 
-        return await this.service.markTags(param, accountId);
+        return await this.operationService.markTags(param, accountId);
     }
 
     @Post('/removeTags')
     @ApiOperation({ summary: 'remove tag for specified dashboard' })
     @ApiOkResponse({ type: RemoveTag4DashboardResponse })
-    async removeTags(@Req() request, @Body() param: RemoveTag4DashboardRequest): Promise<RemoveTag4DashboardResponse> {
+    async removeTags(@Req() req, @Body() param: RemoveTag4DashboardRequest): Promise<RemoveTag4DashboardResponse> {
 
         this.logger.debug(`removeTags:${JSON.stringify(param)}`);
-        let validateUser: AuthorizedUser = request.user;
+        let validateUser: AuthorizedUser = req.user;
         let accountId = validateUser.id;
 
-        return await this.service.removeTags(param, accountId);
+        return await this.operationService.removeTags(param, accountId);
     }
 
 }

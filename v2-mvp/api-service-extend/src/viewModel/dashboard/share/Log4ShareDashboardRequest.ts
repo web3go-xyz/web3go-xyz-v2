@@ -1,14 +1,22 @@
+
+
+
+
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
 
-export class RemoveTag4DashboardRequest {
+export class Log4ShareDashboardRequest {
 
     @ApiProperty({ required: true })
     @IsNotEmpty()
     dashboardId: number;
 
-    @ApiProperty({ required: true, type: Number, isArray: true })
+    @ApiProperty({ required: true })
     @IsNotEmpty()
-    tagIds: number[];
+    shareChannel: string;
+
+    @ApiProperty({ required: true })
+    @IsNotEmpty()
+    referralCode: string;
 
 }
