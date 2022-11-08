@@ -13,6 +13,7 @@ import { DashboardForkLog } from "../entity/platform-dashboard/DashboardForkLog"
 import { DashboardShareLog } from "../entity/platform-dashboard/DashboardShareLog";
 import { DashboardViewLog } from "../entity/platform-dashboard/DashboardViewLog";
 import { DashboardTag } from "../entity/platform-dashboard/DashboradTag";
+import { ShareReferralCode } from "../entity/platform-dashboard/ShareReferralCode";
 
 export class RepositoryConsts {
 
@@ -97,6 +98,14 @@ export class RepositoryConsts {
       provide: 'PLATFORM_DASHBOARD_TAG_REPOSITORY',
       connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
       entityTarget: DashboardTag
+    },
+
+
+    //share
+    PLATFORM_SHARE_REFERRAL_CODE_REPOSITORY: {
+      provide: 'PLATFORM_SHARE_REFERRAL_CODE_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: ShareReferralCode
     },
   }
 

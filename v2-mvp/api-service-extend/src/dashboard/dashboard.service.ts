@@ -11,19 +11,17 @@ import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { PageRequest } from 'src/viewModel/base/pageRequest';
-import { DashboardSummary } from 'src/viewModel/dashboard/DashboardSummary';
-import { QueryDashboardDetailRequest } from 'src/viewModel/dashboard/QueryDashboardDetailRequest';
-import { QueryDashboardDetailResponse } from 'src/viewModel/dashboard/QueryDashboardDetailResponse';
-import { QueryDashboardListRequest } from 'src/viewModel/dashboard/QueryDashboardListRequest';
-import { QueryDashboardListResponse } from 'src/viewModel/dashboard/QueryDashboardListResponse';
-import { QueryMyFavoriteDashboardListRequest } from 'src/viewModel/dashboard/QueryMyFavoriteDashboardListRequest';
+import { DashboardSummary } from 'src/dashboard/model/DashboardSummary';
+import { QueryDashboardDetailRequest } from 'src/dashboard/model/QueryDashboardDetailRequest';
+import { QueryDashboardDetailResponse } from 'src/dashboard/model/QueryDashboardDetailResponse';
+import { QueryDashboardListRequest } from 'src/dashboard/model/QueryDashboardListRequest';
+import { QueryDashboardListResponse } from 'src/dashboard/model/QueryDashboardListResponse';
+import { QueryMyFavoriteDashboardListRequest } from 'src/dashboard/model/QueryMyFavoriteDashboardListRequest';
 import { FindManyOptions, FindOptionsWhere, In, Like, Repository } from 'typeorm';
-import { QueryMyFavoriteDashboardListResponse } from '../viewModel/dashboard/QueryMyFavoriteDashboardListResponse';
+import { QueryMyFavoriteDashboardListResponse } from './model/QueryMyFavoriteDashboardListResponse';
 
 @Injectable()
 export class DashboardService {
-
-
     logger: W3Logger;
 
     constructor(
@@ -248,6 +246,6 @@ export class DashboardService {
         return resp;
 
     }
- 
+
 }
 

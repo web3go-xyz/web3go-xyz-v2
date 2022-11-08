@@ -7,26 +7,29 @@ import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
 import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
 import { ConfigTag } from 'src/base/entity/platform-config/ConfigTag';
 import { W3Logger } from 'src/base/log/logger.service';
-import { Log4ViewDashboardRequest } from 'src/viewModel/dashboard/view/Log4ViewDashboardRequest';
-import { Log4ViewDashboardResponse } from 'src/viewModel/dashboard/view/Log4ViewDashboardResponse';
-import { QueryDashboardDetailRequest } from 'src/viewModel/dashboard/QueryDashboardDetailRequest';
-import { QueryDashboardDetailResponse } from 'src/viewModel/dashboard/QueryDashboardDetailResponse';
-import { QueryDashboardListRequest } from 'src/viewModel/dashboard/QueryDashboardListRequest';
-import { QueryDashboardListResponse } from 'src/viewModel/dashboard/QueryDashboardListResponse';
-import { QueryMyFavoriteDashboardListRequest } from 'src/viewModel/dashboard/QueryMyFavoriteDashboardListRequest';
-import { QueryMyFavoriteDashboardListResponse } from 'src/viewModel/dashboard/QueryMyFavoriteDashboardListResponse';
+import { Log4ViewDashboardRequest } from 'src/dashboard/model/view/Log4ViewDashboardRequest';
+import { Log4ViewDashboardResponse } from 'src/dashboard/model/view/Log4ViewDashboardResponse';
+import { QueryDashboardDetailRequest } from 'src/dashboard/model/QueryDashboardDetailRequest';
+import { QueryDashboardDetailResponse } from 'src/dashboard/model/QueryDashboardDetailResponse';
+import { QueryDashboardListRequest } from 'src/dashboard/model/QueryDashboardListRequest';
+import { QueryDashboardListResponse } from 'src/dashboard/model/QueryDashboardListResponse';
+import { QueryMyFavoriteDashboardListRequest } from 'src/dashboard/model/QueryMyFavoriteDashboardListRequest';
+import { QueryMyFavoriteDashboardListResponse } from 'src/dashboard/model/QueryMyFavoriteDashboardListResponse';
 import { DashboardService } from './dashboard.service';
-import { MarkTag4DashboardRequest } from 'src/viewModel/dashboard/tag/MarkTag4DashboardRequest';
-import { MarkTag4DashboardResponse } from 'src/viewModel/dashboard/tag/MarkTag4DashboardResponse';
-import { RemoveTag4DashboardRequest } from 'src/viewModel/dashboard/tag/RemoveTag4DashboardRequest';
-import { RemoveTag4DashboardResponse } from 'src/viewModel/dashboard/tag/RemoveTag4DashboardResponse';
-import { Log4ForkDashboardRequest } from 'src/viewModel/dashboard/fork/Log4ForkDashboardRequest';
-import { Log4ForkDashboardResponse } from 'src/viewModel/dashboard/fork/Log4ForkDashboardResponse';
-import { Log4ShareDashboardRequest } from 'src/viewModel/dashboard/share/Log4ShareDashboardRequest';
-import { Log4ShareDashboardResponse } from 'src/viewModel/dashboard/share/Log4ShareDashboardResponse';
+import { MarkTag4DashboardRequest } from 'src/dashboard/model/tag/MarkTag4DashboardRequest';
+import { MarkTag4DashboardResponse } from 'src/dashboard/model/tag/MarkTag4DashboardResponse';
+import { RemoveTag4DashboardRequest } from 'src/dashboard/model/tag/RemoveTag4DashboardRequest';
+import { RemoveTag4DashboardResponse } from 'src/dashboard/model/tag/RemoveTag4DashboardResponse';
+import { Log4ForkDashboardRequest } from 'src/dashboard/model/fork/Log4ForkDashboardRequest';
+import { Log4ForkDashboardResponse } from 'src/dashboard/model/fork/Log4ForkDashboardResponse';
 import { DashboardOperationService } from './dashboard-operation.service';
-import { Log4FavoriteDashboardRequest } from 'src/viewModel/dashboard/favorite/Log4FavoriteDashboardRequest';
-import { Log4FavoriteDashboardResponse } from 'src/viewModel/dashboard/favorite/Log4FavoriteDashboardResponse';
+import { Log4FavoriteDashboardRequest } from 'src/dashboard/model/favorite/Log4FavoriteDashboardRequest';
+import { Log4FavoriteDashboardResponse } from 'src/dashboard/model/favorite/Log4FavoriteDashboardResponse';
+
+import { GenerateShareLink4DashboardRequest } from 'src/share/model/GenerateShareLink4DashboardRequest';
+import { GenerateShareLink4DashboardResponse } from 'src/share/model/GenerateShareLink4DashboardResponse';
+import { Log4ShareDashboardRequest } from 'src/share/model/Log4ShareDashboardRequest';
+import { Log4ShareDashboardResponse } from 'src/share/model/Log4ShareDashboardResponse';
 
 
 @ApiBearerAuth()
@@ -117,6 +120,17 @@ export class DashboardController {
         let validateUser: AuthorizedUser = req.user;
         let accountId = validateUser.id;
         return await this.operationService.logShare(param, accountId || '');
+    }
+
+    @Post('/generateDashboardShareLink')
+    @ApiOperation({ summary: 'generate share link when share the specified dashboard' })
+    @ApiOkResponse({ type: GenerateShareLink4DashboardResponse })
+    async generateDashboardShareLink(@Req() req,
+        @Body() param: GenerateShareLink4DashboardRequest): Promise<GenerateShareLink4DashboardResponse> {
+        this.logger.debug(`generateDashboardShareLink:${JSON.stringify(param)}`);
+        let validateUser: AuthorizedUser = req.user;
+        let accountId = validateUser.id;
+        return await this.operationService.generateDashboardShareLink(param, accountId || '');
     }
 
     @Post('/logFork')

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { VerifyCodePurpose } from "../VerifyCodeType";
+import { VerifyCodePurpose } from "./VerifyCodeType";
  
 export class VerifyCodeRequest {
     @ApiProperty()

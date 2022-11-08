@@ -4,15 +4,15 @@ import { AuthorizedUser } from 'src/base/auth/AuthorizedUser';
 import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
 
 import { W3Logger } from 'src/base/log/logger.service';
-import { AccountInfo } from 'src/viewModel/account/AccountInfo';
-import { ChangeAvatarRequest } from 'src/viewModel/account/info/ChangeAvatarRequest';
-import { ChangeNickNameRequest } from 'src/viewModel/account/info/ChangeNickNameRequest';
-import { CheckEmailRequest } from 'src/viewModel/account/info/CheckEmailRequest';
-import { LinkEmailRequest } from 'src/viewModel/account/info/LinkEmailRequest';
-import { LinkWalletRequest } from 'src/viewModel/account/info/LinkWalletRequest';
-import { SearchAccountInfoRequest } from 'src/viewModel/account/info/SearchAccountInfoRequest';
-import { UnlinkEmailRequest } from 'src/viewModel/account/info/UnlinkEmailRequest';
-import { UnlinkWalletRequest } from 'src/viewModel/account/info/UnlinkWalletRequest';
+import { AccountInfo } from 'src/account/model/AccountInfo';
+import { ChangeAvatarRequest } from 'src/account/model/info/ChangeAvatarRequest';
+import { ChangeNickNameRequest } from 'src/account/model/info/ChangeNickNameRequest';
+import { CheckEmailRequest } from 'src/account/model/info/CheckEmailRequest';
+import { LinkEmailRequest } from 'src/account/model/info/LinkEmailRequest';
+import { LinkWalletRequest } from 'src/account/model/info/LinkWalletRequest';
+import { SearchAccountInfoRequest } from 'src/account/model/info/SearchAccountInfoRequest';
+import { UnlinkEmailRequest } from 'src/account/model/info/UnlinkEmailRequest';
+import { UnlinkWalletRequest } from 'src/account/model/info/UnlinkWalletRequest';
 import { AccountInfoService } from './account-info.service';
 
 @ApiBearerAuth()

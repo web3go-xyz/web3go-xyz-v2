@@ -10,30 +10,33 @@ import { DashboardTag } from 'src/base/entity/platform-dashboard/DashboradTag';
 import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
-import { Log4ViewDashboardRequest } from 'src/viewModel/dashboard/view/Log4ViewDashboardRequest';
-import { MarkTag4DashboardRequest } from 'src/viewModel/dashboard/tag/MarkTag4DashboardRequest';
-import { MarkTag4DashboardResponse } from 'src/viewModel/dashboard/tag/MarkTag4DashboardResponse';
-import { RemoveTag4DashboardRequest } from 'src/viewModel/dashboard/tag/RemoveTag4DashboardRequest';
+import { Log4ViewDashboardRequest } from 'src/dashboard/model/view/Log4ViewDashboardRequest';
+import { MarkTag4DashboardRequest } from 'src/dashboard/model/tag/MarkTag4DashboardRequest';
+import { MarkTag4DashboardResponse } from 'src/dashboard/model/tag/MarkTag4DashboardResponse';
+import { RemoveTag4DashboardRequest } from 'src/dashboard/model/tag/RemoveTag4DashboardRequest';
 import { Repository } from 'typeorm';
-import { Log4ViewDashboardResponse } from '../viewModel/dashboard/view/Log4ViewDashboardResponse';
-import { RemoveTag4DashboardResponse } from '../viewModel/dashboard/tag/RemoveTag4DashboardResponse';
-import { Log4FavoriteDashboardRequest } from 'src/viewModel/dashboard/favorite/Log4FavoriteDashboardRequest';
-import { Log4FavoriteDashboardResponse } from 'src/viewModel/dashboard/favorite/Log4FavoriteDashboardResponse';
-import { Log4ShareDashboardResponse } from 'src/viewModel/dashboard/share/Log4ShareDashboardResponse';
-import { Log4ForkDashboardResponse } from 'src/viewModel/dashboard/fork/Log4ForkDashboardResponse';
-import { Log4ShareDashboardRequest } from 'src/viewModel/dashboard/share/Log4ShareDashboardRequest';
-import { Log4ForkDashboardRequest } from 'src/viewModel/dashboard/fork/Log4ForkDashboardRequest';
-import { OperationEventPayload } from 'src/viewModel/event/OperationEventPayload';
-import { OperationEventTopic } from 'src/viewModel/event/OperationEventTopic';
+import { Log4ViewDashboardResponse } from './model/view/Log4ViewDashboardResponse';
+import { RemoveTag4DashboardResponse } from './model/tag/RemoveTag4DashboardResponse';
+import { Log4FavoriteDashboardRequest } from 'src/dashboard/model/favorite/Log4FavoriteDashboardRequest';
+import { Log4FavoriteDashboardResponse } from 'src/dashboard/model/favorite/Log4FavoriteDashboardResponse';
+import { Log4ForkDashboardResponse } from 'src/dashboard/model/fork/Log4ForkDashboardResponse';
+import { Log4ForkDashboardRequest } from 'src/dashboard/model/fork/Log4ForkDashboardRequest';
+import { OperationEventPayload } from 'src/event-bus/model/OperationEventPayload';
+import { GenerateShareLink4DashboardRequest } from 'src/share/model/GenerateShareLink4DashboardRequest';
 
+import { ShareService } from 'src/share/share.service';
+import { Log4ShareDashboardRequest } from 'src/share/model/Log4ShareDashboardRequest';
+import { GenerateShareLink4DashboardResponse } from 'src/share/model/GenerateShareLink4DashboardResponse';
+import { Log4ShareDashboardResponse } from 'src/share/model/Log4ShareDashboardResponse';
+import { EventEmitter2 } from '@nestjs/event-emitter'
+import { OperationEventTopic } from 'src/event-bus/model/OperationEventTopic';
 @Injectable()
 export class DashboardOperationService {
-
 
     logger: W3Logger;
 
     constructor(
-
+        private eventEmitter: EventEmitter2,
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_REPOSITORY.provide)
         private accountRepo: Repository<Account>,
 
@@ -49,12 +52,13 @@ export class DashboardOperationService {
         private dfavlRepo: Repository<DashboardFavoriteLog>,
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_FORK_LOG_REPOSITORY.provide)
         private dforklRepo: Repository<DashboardForkLog>,
-        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_SHARE_LOG_REPOSITORY.provide)
-        private dsharelRepo: Repository<DashboardShareLog>,
+
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_VIEW_LOG_REPOSITORY.provide)
         private dviewlRepo: Repository<DashboardViewLog>,
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_TAG_REPOSITORY.provide)
         private dtagRepo: Repository<DashboardTag>,
+
+        private readonly shareService: ShareService
     ) {
         this.logger = new W3Logger(`DashboardOperationService`);
     }
@@ -93,7 +97,7 @@ export class DashboardOperationService {
         }
 
         this.fireEvent({
-            topic: OperationEventTopic.logFavorite,
+            topic: OperationEventTopic.logFavoriteDashboard,
             data: {
                 accountId: request.accountId,
                 dashboardId: request.dashboardId
@@ -120,7 +124,7 @@ export class DashboardOperationService {
         resp.msg = "new";
 
         this.fireEvent({
-            topic: OperationEventTopic.logView,
+            topic: OperationEventTopic.logViewDashboard,
             data: {
                 dashboardId: param.dashboardId
             }
@@ -131,37 +135,10 @@ export class DashboardOperationService {
 
 
     async logShare(param: Log4ShareDashboardRequest, accountId: string): Promise<Log4ShareDashboardResponse> {
-        let resp: Log4ShareDashboardResponse = {
-            id: 0, msg: ''
-        };
-        let findExist = await this.dsharelRepo.findOne({
-            where: {
-                dashboardId: param.dashboardId,
-                shareChannel: param.shareChannel,
-                referralCode: param.referralCode,
-                accountId: accountId,
-            }
-        });
-        if (findExist) {
-            resp.id = findExist.id;
-            resp.msg = "existing";
-        }
-        else {
-            let newRecord: DashboardShareLog = {
-                id: 0,
-                dashboardId: param.dashboardId,
-                accountId: accountId,
-                createdAt: new Date(),
-                shareChannel: param.shareChannel,
-                referralCode: param.referralCode
-            };
-            await this.dsharelRepo.save(newRecord);
-            resp.id = newRecord.id;
-            resp.msg = "new";
-        }
+        let resp = await this.shareService.logShare(param, accountId);
 
         this.fireEvent({
-            topic: OperationEventTopic.logShare,
+            topic: OperationEventTopic.logShareDashboard,
             data: {
                 dashboardId: param.dashboardId
             }
@@ -198,7 +175,7 @@ export class DashboardOperationService {
         }
 
         this.fireEvent({
-            topic: OperationEventTopic.logFork,
+            topic: OperationEventTopic.logForkDashboard,
             data: {
                 dashboardId: param.originalDashboardId
             }
@@ -260,12 +237,17 @@ export class DashboardOperationService {
         return resp;
     }
 
-
+    async generateDashboardShareLink(param: GenerateShareLink4DashboardRequest, accountId: string): Promise<GenerateShareLink4DashboardResponse> {
+        return await this.shareService.generateDashboardShareLink(param, accountId);
+    }
 
     async fireEvent(payload: OperationEventPayload): Promise<any> {
         this.logger.debug(`fireEvent:${JSON.stringify(payload)}`);
-
-        //TODO work with events
+        //emit events
+        this.eventEmitter.emit(
+            payload.topic.toString(),
+            payload
+        );
     }
 }
 

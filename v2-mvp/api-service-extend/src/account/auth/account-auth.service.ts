@@ -7,20 +7,20 @@ import { AccountVerifyCode } from 'src/base/entity/platform-user/AccountVerifyCo
 import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
-import { AccountInfo } from 'src/viewModel/account/AccountInfo';
-import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
+import { AccountInfo } from 'src/account/model/AccountInfo';
+import { AccountSearchResult } from 'src/account/model/AccountSearchResult';
 
-import { AccountSigninRequest } from 'src/viewModel/account/auth/AccountSigninRequest';
-import { AccountSignupRequest } from 'src/viewModel/account/auth/AccountSignupRequest';
-import { ChangePasswordRequest } from 'src/viewModel/account/auth/ChangePasswordRequest';
-import { EmailVerifyRequest } from 'src/viewModel/account/EmailVerifyRequest';
-import { VerifyCodeRequest } from 'src/viewModel/account/VerifyCodeRequest';
+import { AccountSigninRequest } from 'src/account/model/auth/AccountSigninRequest';
+import { AccountSignupRequest } from 'src/account/model/auth/AccountSignupRequest';
+import { ChangePasswordRequest } from 'src/account/model/auth/ChangePasswordRequest';
+import { EmailVerifyRequest } from 'src/account/model/EmailVerifyRequest';
+import { VerifyCodeRequest } from 'src/account/model/VerifyCodeRequest';
 import { Repository } from 'typeorm';
 
 import { AccountBaseService } from '../base/account-base.service';
 import { EmailBaseService } from '../../base/email/email-base.service';
 import { VerifyCodeBaseService } from '../base/verifycode-base.service';
-import { VerifyCodeType, VerifyCodePurpose, VerifyFlag } from 'src/viewModel/VerifyCodeType';
+import { VerifyCodeType, VerifyCodePurpose, VerifyFlag } from 'src/account/model/VerifyCodeType';
 import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
 import { SignTokenPayload } from 'src/base/auth/SignTokenPayload';
 

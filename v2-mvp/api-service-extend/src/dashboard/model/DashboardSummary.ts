@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ConfigTag } from "src/base/entity/platform-config/ConfigTag";
-import { PageResponse } from "../base/pageResponse";
+import { PageResponse } from "../../viewModel/base/pageResponse";
 export class DashboardSummary {
 
     @ApiProperty({
