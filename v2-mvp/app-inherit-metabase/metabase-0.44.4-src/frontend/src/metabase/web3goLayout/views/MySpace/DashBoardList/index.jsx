@@ -5,7 +5,7 @@ import './index.less';
 import { IconDown, IconMoreVertical } from '@arco-design/web-react/icon';
 import { Button, Modal, Form, Input, Upload, Select, Checkbox, Table, TableColumnProps, Dropdown, Menu } from '@arco-design/web-react';
 import { push } from "react-router-redux";
-import "cropperjs/dist/cropper.css";
+import moment from 'moment';
 import { numberSplit } from '@/web3goLayout/utils';
 import ShareModal from "@/web3goLayout/components/ShareModal";
 import { LayoutDashboardApi } from '@/services'
@@ -28,7 +28,9 @@ class Component extends React.Component {
             filterList: [],
             currentFilter: {},
             tableData: [],
+            tableSort: {},
             paramsShow: false,
+            favouriteList: [],
             params: {
                 createBy: '',
                 myFavorite: false
@@ -44,11 +46,11 @@ class Component extends React.Component {
                             <div className="right">
                                 <div className="title hover-primary">{record.name}</div>
                                 <div className="tag-list">
-                                    <div className="item">Label</div>
-                                    <div className="item">Product Design abcefg</div>
-                                    <div className="item">Label</div><div className="item">Label</div>
-                                    <div className="item">Product Design abcefg</div>
-                                    <div className="item">Label</div><div className="item">Label</div>
+                                    {
+                                        record.tagList.map(v => (
+                                            <div key={v.id} title={v.tagDescription} className="item">{v.tagName}</div>
+                                        ))
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -56,17 +58,17 @@ class Component extends React.Component {
                 },
                 {
                     title: 'Views',
-                    dataIndex: 'salary',
+                    dataIndex: 'viewCount',
                     align: 'right',
-                    sorter: (a, b) => a.email - b.email,
+                    sorter: true,
                     render: (col, record, index) => <span>{numberSplit(record.viewCount)}</span>
                 },
 
                 {
                     title: 'Shares',
-                    dataIndex: 'email',
+                    dataIndex: 'shareCount',
                     align: 'right',
-                    sorter: (a, b) => a.email - b.email,
+                    sorter: true,
                     render: (col, record, index) => <span>{numberSplit(record.shareCount)}</span>
                 },
 
@@ -102,18 +104,18 @@ class Component extends React.Component {
             },],
             moreColumn: [{
                 title: 'Favorites',
-                dataIndex: 'address',
+                dataIndex: 'favoriteCount',
                 align: 'right',
-                sorter: (a, b) => a.email - b.email,
+                sorter: true,
                 render: (col, record, index) => <span>{numberSplit(record.favoriteCount)}</span>
 
             },
             {
                 title: 'Updated on',
-                dataIndex: 'address2',
+                dataIndex: 'updatedAt',
                 align: 'right',
-                sorter: (a, b) => a.email - b.email,
-                render: (col, record, index) => <span>{numberSplit(record.favoriteCount)}</span>
+                sorter: true,
+                render: (col, record, index) => <span>{moment(record.createdAt).fromNow()}</span>
 
             },],
             operationList: [{
@@ -152,7 +154,23 @@ class Component extends React.Component {
         this.ShareModalRef = React.createRef();
     }
     componentDidMount() {
-        this.getList();
+        this.props.onRef(this)
+    }
+    getMyFavourites = () => {
+        LayoutDashboardApi.listMyFavorites().then(d => {
+            this.setState({
+                favouriteList: d.list
+            });
+            if (this.props.setMyFavouriteCount) {
+                this.props.setMyFavouriteCount(d.totalCount);
+            }
+        });
+    }
+    componentDidUpdate(prevProps) {
+        if (this.props.accountId !== prevProps.accountId) {
+            this.getList();
+            this.getMyFavourites();
+        }
     }
     openShareModal = () => {
         this.ShareModalRef.init();
@@ -187,32 +205,37 @@ class Component extends React.Component {
                 okText: 'Confirm',
                 cancelText: 'Cancel',
                 onOk: () => {
-                   
+
                 }
             });
         }
     }
-    onChangeTable = (pagination) => {
+    onChangeTable = (pagination, sorter) => {
         const { current } = pagination;
         this.setState((state) => {
             return {
+                tableSort: sorter,
                 pagination: {
                     ...state.pagination,
                     current
                 }
             }
+        }, () => {
+            this.getList();
         });
-        this.getList();
     }
-    getList = () => {
+    getList = (ifFirstPage) => {
         this.setState({ loading: true });
         LayoutDashboardApi.list({
             "pageSize": this.state.pagination.pageSize,
-            "pageIndex": this.state.pagination.current,
-            "orderBys": [],
+            "pageIndex": ifFirstPage ? 1 : this.state.pagination.current,
+            "orderBys": this.state.tableSort.field ? [{
+                sort: this.state.tableSort.field,
+                order: this.state.tableSort.direction === "ascend" ? 'ASC' : 'DESC',
+            }] : [],
             "tagIds": [],
-            "searchName": "",
-            "creator": "",
+            "searchName": this.props.searchValue,
+            "creator": this.props.accountId,
             "dashboardIds": []
         }).then(d => {
             this.setState({
@@ -220,6 +243,7 @@ class Component extends React.Component {
                 tableData: d.list,
                 pagination: { ...this.state.pagination, total: d.totalCount }
             });
+            this.props.setDashboardListCount(d.totalCount);
         });
     }
     render() {

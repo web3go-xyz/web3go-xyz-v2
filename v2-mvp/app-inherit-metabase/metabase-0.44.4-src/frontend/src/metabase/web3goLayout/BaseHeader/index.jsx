@@ -69,11 +69,11 @@ class Component extends React.Component {
             this.props.replace(route.pathname + route.search);
             this.SignInOrUpRef.init(true);
         }
-        if (localStorage.getItem('token')) {
-            LayoutLoginApi.getAccountInfo().then(d => {
-                this.props.changeUserData(d);
-            })
-        }
+        // if (localStorage.getItem('token')) {
+        //     LayoutLoginApi.getAccountInfo().then(d => {
+        //         this.props.changeUserData(d);
+        //     })
+        // }
     }
     clickDropdownIcon = (key) => {
         if (key == 1) {

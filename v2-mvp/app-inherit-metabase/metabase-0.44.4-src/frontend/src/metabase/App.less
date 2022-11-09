@@ -111,6 +111,28 @@ textarea {
     box-shadow: none;
 }
 
+.arco-btn-outline:not(.arco-btn-disabled) {
+    color: var(--6bColor);
+    border-color: #C9CDD4;
+}
+
+.arco-btn-outline:not(.arco-btn-disabled):not(.arco-btn-loading):hover {
+    color: var(--6bColor);
+    border-color: #C9CDD4;
+    background: #E5E6E8;
+}
+
+body[arco-theme="dark"] {
+    .arco-btn-outline:not(.arco-btn-disabled) {
+        border-color: #4E5969;
+    }
+
+    .arco-btn-outline:not(.arco-btn-disabled):not(.arco-btn-loading):hover {
+        border-color: #4E5969;
+        background: #525461;
+    }
+}
+
 .arco-form {
     .arco-form-label-item>label {
         font-weight: 400;
@@ -166,7 +188,7 @@ textarea {
     }
 }
 
-body[arco-theme="dark"] {}
+
 
 .arco-input-group> :first-child {
     border-top-left-radius: 12px;
@@ -244,6 +266,12 @@ body[arco-theme="dark"] {}
 .arco-select-expand-icon,
 .arco-select-clear-icon {
     font-size: 16px;
+}
+
+// tab内的ui li 都被影响了
+.arco-typography ul li,
+.arco-typography ol li {
+    margin-left: inherit;
 }
 
 .arco-checkbox {

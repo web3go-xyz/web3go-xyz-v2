@@ -69,7 +69,6 @@ export const changeGlobalSearchValue = createAction(CHANGE_GLOBAL_SEARCH_VALUE);
 export function getIsNavbarOpen(state) {
   return state.app.isNavbarOpen;
 }
-
 const isNavbarOpen = handleActions(
   {
     [OPEN_NAVBAR]: () => true,

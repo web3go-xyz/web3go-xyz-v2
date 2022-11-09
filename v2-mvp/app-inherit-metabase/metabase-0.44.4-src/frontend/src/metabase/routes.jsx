@@ -97,6 +97,8 @@ import ArchiveApp from "metabase/home/containers/ArchiveApp";
 import SearchApp from "metabase/home/containers/SearchApp";
 import { trackPageView } from "metabase/lib/analytics";
 import { getAdminPaths } from "metabase/admin/app/selectors";
+import { LayoutLoginApi } from '@/services'
+import { changeUserData } from "metabase/redux/app";
 
 const MetabaseIsSetup = UserAuthWrapper({
   predicate: authData => authData.hasUserSetup,
@@ -183,12 +185,16 @@ export const getRoutes = store => (
     <Route path="public">
       <Route path="question/:uuid" component={PublicQuestion} />
       <Route path="dashboard/:uuid" component={PublicDashboard} />
-    </Route>
+    </Route>-
 
     {/* APP */}
     <Route
       onEnter={async (nextState, replace, done) => {
         await store.dispatch(loadCurrentUser());
+        if (localStorage.getItem('token')) {
+          const userData = await LayoutLoginApi.getAccountInfo()
+          await store.dispatch(changeUserData(userData))
+        }
         trackPageView(nextState.location.pathname);
         done();
       }}
