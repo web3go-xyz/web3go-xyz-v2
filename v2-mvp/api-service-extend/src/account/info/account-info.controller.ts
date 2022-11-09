@@ -14,6 +14,7 @@ import { SearchAccountInfoRequest } from 'src/account/model/info/SearchAccountIn
 import { UnlinkEmailRequest } from 'src/account/model/info/UnlinkEmailRequest';
 import { UnlinkWalletRequest } from 'src/account/model/info/UnlinkWalletRequest';
 import { AccountInfoService } from './account-info.service';
+import { AllowAnonymous } from 'src/base/auth/decorator/AllowAnonymous';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -25,6 +26,7 @@ export class AccountInfoController {
     this.logger = new W3Logger('AccountInfoController');
   }
 
+  @AllowAnonymous()
   @Post('/searchAccountInfo')
   @ApiOperation({
     summary: 'search account info for specified account',
