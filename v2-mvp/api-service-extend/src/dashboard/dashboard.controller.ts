@@ -30,6 +30,7 @@ import { GenerateShareLink4DashboardRequest } from 'src/share/model/GenerateShar
 import { GenerateShareLink4DashboardResponse } from 'src/share/model/GenerateShareLink4DashboardResponse';
 import { Log4ShareDashboardRequest } from 'src/share/model/Log4ShareDashboardRequest';
 import { Log4ShareDashboardResponse } from 'src/share/model/Log4ShareDashboardResponse';
+import { AccountInfo } from 'src/account/model/AccountInfo';
 
 
 @ApiBearerAuth()
@@ -50,6 +51,14 @@ export class DashboardController {
     @ApiOkResponse({ type: ConfigTag, isArray: true })
     async listAllTags(@Body() param: Object): Promise<ConfigTag[]> {
         return await this.service.listAllTags(param);
+    }
+
+    @AllowAnonymous()
+    @Post('/listAllCreators')
+    @ApiOperation({ summary: 'list all creators of dashboards' })
+    @ApiOkResponse({ type: String, isArray: true })
+    async listAllCreators(@Body() param: Object): Promise<String[]> {
+        return await this.service.listAllCreators(param);
     }
 
     @AllowAnonymous()

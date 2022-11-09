@@ -22,6 +22,7 @@ import { QueryMyFavoriteDashboardListResponse } from './model/QueryMyFavoriteDas
 
 @Injectable()
 export class DashboardService {
+
     logger: W3Logger;
 
     constructor(
@@ -50,7 +51,18 @@ export class DashboardService {
     ) {
         this.logger = new W3Logger(`DashboardService`);
     }
+    async listAllCreators(param: Object): Promise<string[]> {
+        let records = await this.dextRepo.createQueryBuilder("d")
 
+            .select("creator_account_id", "creatorAccountId")
+            .distinct()
+            .orderBy("creator_account_id")
+            .getRawMany();
+        console.log(records);
+
+        return records.map(t => t.creatorAccountId);
+
+    }
     async listAllTags(request: Object): Promise<ConfigTag[]> {
         let records = await this.ctagRepo.find({
             order: {
