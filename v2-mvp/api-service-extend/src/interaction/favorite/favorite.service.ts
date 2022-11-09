@@ -5,12 +5,12 @@ import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { QueryMyFavoriteDashboardListRequest } from 'src/dashboard/model/QueryMyFavoriteDashboardListRequest';
 import { QueryMyFavoriteDashboardListResponse } from 'src/dashboard/model/QueryMyFavoriteDashboardListResponse';
 import { EventService } from 'src/event-bus/event.service';
-import { OperationEventTopic } from 'src/event-bus/model/OperationEventTopic';
+import { DashboardEventTopic } from 'src/event-bus/model/dashboard/DashboardEventTopic';
 import { PageRequest } from 'src/viewModel/base/pageRequest';
 
 import { Repository } from 'typeorm';
-import { Log4FavoriteDashboardRequest } from './model/favorite/Log4FavoriteDashboardRequest';
-import { Log4FavoriteDashboardResponse } from './model/favorite/Log4FavoriteDashboardResponse';
+import { Log4FavoriteDashboardRequest } from './model/Log4FavoriteDashboardRequest';
+import { Log4FavoriteDashboardResponse } from './model/Log4FavoriteDashboardResponse';
 @Injectable()
 export class FavoriteService {
     logger: W3Logger;
@@ -57,7 +57,7 @@ export class FavoriteService {
         }
 
         this.eventService.fireEvent({
-            topic: OperationEventTopic.logFavoriteDashboard,
+            topic: DashboardEventTopic.logFavoriteDashboard,
             data: {
                 accountId: request.accountId,
                 dashboardId: request.dashboardId

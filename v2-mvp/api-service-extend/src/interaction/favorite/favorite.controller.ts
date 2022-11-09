@@ -7,8 +7,8 @@ import { W3Logger } from 'src/base/log/logger.service';
 import { QueryMyFavoriteDashboardListRequest } from 'src/dashboard/model/QueryMyFavoriteDashboardListRequest';
 import { QueryMyFavoriteDashboardListResponse } from 'src/dashboard/model/QueryMyFavoriteDashboardListResponse';
 import { FavoriteService } from './favorite.service';
-import { Log4FavoriteDashboardRequest } from './model/favorite/Log4FavoriteDashboardRequest';
-import { Log4FavoriteDashboardResponse } from './model/favorite/Log4FavoriteDashboardResponse';
+import { Log4FavoriteDashboardRequest } from './model/Log4FavoriteDashboardRequest';
+import { Log4FavoriteDashboardResponse } from './model/Log4FavoriteDashboardResponse';
 
 
 @ApiBearerAuth()

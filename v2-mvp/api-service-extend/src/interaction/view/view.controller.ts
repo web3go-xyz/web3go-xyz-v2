@@ -7,8 +7,8 @@ import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
 import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
 import { W3Logger } from 'src/base/log/logger.service';
 
-import { Log4ViewDashboardRequest } from './model/view/Log4ViewDashboardRequest';
-import { Log4ViewDashboardResponse } from './model/view/Log4ViewDashboardResponse';
+import { Log4ViewDashboardRequest } from './model/Log4ViewDashboardRequest';
+import { Log4ViewDashboardResponse } from './model/Log4ViewDashboardResponse';
 import { ViewService } from './view.service';
 
 @ApiBearerAuth()

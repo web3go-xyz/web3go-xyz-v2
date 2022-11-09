@@ -6,10 +6,10 @@ import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
 import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
 import { ConfigTag } from 'src/base/entity/platform-config/ConfigTag';
 import { W3Logger } from 'src/base/log/logger.service';
-import { MarkTag4DashboardRequest } from './model/tag/MarkTag4DashboardRequest';
-import { MarkTag4DashboardResponse } from './model/tag/MarkTag4DashboardResponse';
-import { RemoveTag4DashboardRequest } from './model/tag/RemoveTag4DashboardRequest';
-import { RemoveTag4DashboardResponse } from './model/tag/RemoveTag4DashboardResponse';
+import { MarkTag4DashboardRequest } from './model/MarkTag4DashboardRequest';
+import { MarkTag4DashboardResponse } from './model/MarkTag4DashboardResponse';
+import { RemoveTag4DashboardRequest } from './model/RemoveTag4DashboardRequest';
+import { RemoveTag4DashboardResponse } from './model/RemoveTag4DashboardResponse';
 import { TagService } from './tag.service';
 
 @ApiBearerAuth()

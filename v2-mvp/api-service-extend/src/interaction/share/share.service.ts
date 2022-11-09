@@ -8,12 +8,12 @@ import { AppConfig } from 'src/base/setting/appConfig';
 import { Repository } from 'typeorm';
 import { ShareItemType } from './model/ShareItemType';
 import { v4 as uuidv4 } from 'uuid';
-import { OperationEventTopic } from 'src/event-bus/model/OperationEventTopic';
 import { GenerateShareLink4DashboardRequest } from './model/GenerateShareLink4DashboardRequest';
 import { GenerateShareLink4DashboardResponse } from './model/GenerateShareLink4DashboardResponse';
 import { Log4ShareDashboardRequest } from './model/Log4ShareDashboardRequest';
 import { Log4ShareDashboardResponse } from './model/Log4ShareDashboardResponse';
 import { EventService } from 'src/event-bus/event.service';
+import { DashboardEventTopic } from 'src/event-bus/model/dashboard/DashboardEventTopic';
 @Injectable()
 export class ShareService {
     logger: W3Logger;
@@ -112,7 +112,7 @@ export class ShareService {
             resp.msg = "new";
 
             this.eventService.fireEvent({
-                topic: OperationEventTopic.logShareDashboard,
+                topic: DashboardEventTopic.logShareDashboard,
                 data: {
                     dashboardId: param.dashboardId
                 }

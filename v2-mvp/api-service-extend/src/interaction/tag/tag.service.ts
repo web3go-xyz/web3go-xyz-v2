@@ -5,10 +5,11 @@ import { DashboardTag } from 'src/base/entity/platform-dashboard/DashboradTag';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { Repository } from 'typeorm';
-import { MarkTag4DashboardRequest } from './model/tag/MarkTag4DashboardRequest';
-import { MarkTag4DashboardResponse } from './model/tag/MarkTag4DashboardResponse';
-import { RemoveTag4DashboardRequest } from './model/tag/RemoveTag4DashboardRequest';
-import { RemoveTag4DashboardResponse } from './model/tag/RemoveTag4DashboardResponse';
+import { MarkTag4DashboardRequest } from './model/MarkTag4DashboardRequest';
+import { MarkTag4DashboardResponse } from './model/MarkTag4DashboardResponse';
+import { RemoveTag4DashboardRequest } from './model/RemoveTag4DashboardRequest';
+import { RemoveTag4DashboardResponse } from './model/RemoveTag4DashboardResponse';
+
 
 @Injectable()
 export class TagService {

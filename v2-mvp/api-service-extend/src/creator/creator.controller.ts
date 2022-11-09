@@ -28,7 +28,7 @@ export class CreatorController {
     @ApiOperation({ summary: 'list all creators of dashboards' })
     @ApiOkResponse({ type: String, isArray: true })
     async listAllCreators(@Body() param: Object): Promise<String[]> {
-        return await this.service.listAllCreators(param);
+        return await this.service.listAllCreators(param);  //TODO  statistics
     }
 
     @AllowAnonymous()
@@ -36,6 +36,6 @@ export class CreatorController {
     @ApiOperation({ summary: 'list top creators of dashboards' })
     @ApiOkResponse({ type: QueryTopCreatorResponse, isArray: false })
     async topCreators(@Body() param: QueryTopCreatorRequest): Promise<QueryTopCreatorResponse> {
-        return await this.service.listTopCreators(param);
+        return await this.service.listTopCreators(param);  //TODO statistics
     }
 }

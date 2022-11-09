@@ -3,10 +3,10 @@ import { DashboardViewLog } from 'src/base/entity/platform-dashboard/DashboardVi
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { EventService } from 'src/event-bus/event.service';
-import { OperationEventTopic } from 'src/event-bus/model/OperationEventTopic';
+import { DashboardEventTopic } from 'src/event-bus/model/dashboard/DashboardEventTopic';
 import { Repository } from 'typeorm';
-import { Log4ViewDashboardRequest } from './model/view/Log4ViewDashboardRequest';
-import { Log4ViewDashboardResponse } from './model/view/Log4ViewDashboardResponse';
+import { Log4ViewDashboardRequest } from './model/Log4ViewDashboardRequest';
+import { Log4ViewDashboardResponse } from './model/Log4ViewDashboardResponse';
 @Injectable()
 export class ViewService {
     logger: W3Logger;
@@ -36,7 +36,7 @@ export class ViewService {
 
 
         this.eventService.fireEvent({
-            topic: OperationEventTopic.logViewDashboard,
+            topic: DashboardEventTopic.logViewDashboard,
             data: {
                 dashboardId: param.dashboardId
             }

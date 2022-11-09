@@ -4,10 +4,10 @@ import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 
 import { Repository } from 'typeorm';
-import { OperationEventTopic } from 'src/event-bus/model/OperationEventTopic';
-import { Log4ForkDashboardRequest } from './model/fork/Log4ForkDashboardRequest';
-import { Log4ForkDashboardResponse } from './model/fork/Log4ForkDashboardResponse';
+import { Log4ForkDashboardRequest } from './model/Log4ForkDashboardRequest';
+import { Log4ForkDashboardResponse } from './model/Log4ForkDashboardResponse';
 import { EventService } from 'src/event-bus/event.service';
+import { DashboardEventTopic } from 'src/event-bus/model/dashboard/DashboardEventTopic';
 @Injectable()
 export class ForkService {
     logger: W3Logger;
@@ -49,7 +49,7 @@ export class ForkService {
         }
 
         this.eventService.fireEvent({
-            topic: OperationEventTopic.logForkDashboard,
+            topic: DashboardEventTopic.logForkDashboard,
             data: {
                 dashboardId: param.originalDashboardId
             }

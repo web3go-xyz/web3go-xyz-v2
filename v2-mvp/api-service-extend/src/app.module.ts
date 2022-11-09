@@ -14,12 +14,13 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventModule } from './event-bus/event.module';
 import { CreatorModule } from './creator/creator.module';
-import { TagModule } from './tag/tag.module';
+import { TagModule } from './interaction/tag/tag.module';
 import { OrmModule } from './base/orm/orm.module';
 import { ShareModule } from './interaction/share/share.module';
 import { ViewModule } from './interaction/view/view.module';
 import { ForkModule } from './interaction/fork/fork.module';
 import { FavoriteModule } from './interaction/favorite/favorite.module';
+import { FollowModule } from './interaction/follow/follow.module';
 
 @Module({
   imports: [
@@ -46,7 +47,8 @@ import { FavoriteModule } from './interaction/favorite/favorite.module';
     ShareModule,
     ViewModule,
     ForkModule,
-    FavoriteModule
+    FavoriteModule,
+    FollowModule
   ],
   controllers: [AppController],
   providers: [AppService],

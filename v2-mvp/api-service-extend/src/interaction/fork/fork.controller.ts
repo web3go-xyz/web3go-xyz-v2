@@ -5,8 +5,8 @@ import { AuthorizedUser } from 'src/base/auth/AuthorizedUser';
 import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
 import { W3Logger } from 'src/base/log/logger.service';
 import { ForkService } from './fork.service';
-import { Log4ForkDashboardRequest } from './model/fork/Log4ForkDashboardRequest';
-import { Log4ForkDashboardResponse } from './model/fork/Log4ForkDashboardResponse';
+import { Log4ForkDashboardRequest } from './model/Log4ForkDashboardRequest';
+import { Log4ForkDashboardResponse } from './model/Log4ForkDashboardResponse';
 
 
 @ApiBearerAuth()

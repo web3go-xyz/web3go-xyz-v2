@@ -42,7 +42,7 @@ export class Account {
     })
     created_time: Date;
 
- 
+
     @ApiProperty()
     @Column({
         comment: 'user allow login status, default =1 , set to 0 when disabled.',
@@ -55,4 +55,24 @@ export class Account {
     @Column({ comment: '', default: '2022-01-01' })
     last_login_time: Date;
 
+
+    @ApiProperty({
+        description: 'count for how many current account are followed by others',
+    })
+    @Column({
+        name: "followed_account_count",
+        type: "integer",
+        default: 0,
+        comment: 'count for  current account be followed'
+    })
+    followedAccountCount: number;
+
+
+    @Column({
+        name: "following_account_count",
+        type: "integer",
+        default: 0,
+        comment: 'count for how many accounts have been followed by current account'
+    })
+    followingAccountCount: number;
 }

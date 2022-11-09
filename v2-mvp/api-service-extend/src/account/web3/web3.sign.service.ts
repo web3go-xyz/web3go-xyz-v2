@@ -62,7 +62,9 @@ export class Web3SignService {
       avatar: '',
       created_time: new Date(),
       allowLogin: 1,
-      last_login_time: new Date()
+      last_login_time: new Date(),
+      followedAccountCount: 0,
+      followingAccountCount: 0
     }
     let newAccountWallet: AccountWallet = {
       accountId: accountId,
