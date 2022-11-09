@@ -7,6 +7,8 @@ import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
 import { W3Logger } from 'src/base/log/logger.service';
 
 import { CreatorService } from './creator.service';
+import { QueryTopCreatorRequest } from './model/QueryTopCreatorRequest';
+import { QueryTopCreatorResponse } from './model/QueryTopCreatorResponse';
 
 
 @ApiBearerAuth()
@@ -27,5 +29,13 @@ export class CreatorController {
     @ApiOkResponse({ type: String, isArray: true })
     async listAllCreators(@Body() param: Object): Promise<String[]> {
         return await this.service.listAllCreators(param);
+    }
+
+    @AllowAnonymous()
+    @Post('/topCreators')
+    @ApiOperation({ summary: 'list top creators of dashboards' })
+    @ApiOkResponse({ type: QueryTopCreatorResponse, isArray: false })
+    async topCreators(@Body() param: QueryTopCreatorRequest): Promise<QueryTopCreatorResponse> {
+        return await this.service.listTopCreators(param);
     }
 }
