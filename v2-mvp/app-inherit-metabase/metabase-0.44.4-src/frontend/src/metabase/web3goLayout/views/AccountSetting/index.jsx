@@ -40,11 +40,11 @@ class Component extends React.Component {
     componentDidMount() {
 
     }
-    componentDidUpdate(prevProps) {
-        if (JSON.stringify(this.props.userData) !== JSON.stringify(prevProps.userData)) {
-            this.setNickName();
-        }
-    }
+    // componentDidUpdate(prevProps) {
+    //     if (JSON.stringify(this.props.userData) !== JSON.stringify(prevProps.userData)) {
+    //         this.setNickName();
+    //     }
+    // }
     cancelNickname = () => {
         this.setNickName();
         this.setState({

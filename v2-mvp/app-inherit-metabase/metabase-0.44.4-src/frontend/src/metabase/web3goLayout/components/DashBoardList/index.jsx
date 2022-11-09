@@ -15,6 +15,7 @@ import moment from 'moment';
 const Option = Select.Option;
 const mapStateToProps = state => {
     return {
+        route: state.routing.locationBeforeTransitions,
         userData: state.app.userData,
         currentUser: state.currentUser,
         isDark: state.app.isDark
@@ -58,7 +59,7 @@ class Component extends React.Component {
                             <div className="name-col">
                                 <img className="headicon" src={avatar} alt="" />
                                 <div className="right">
-                                    <div className="title hover-primary">{record.name}</div>
+                                    <div className="title hover-primary" onClick={() => { this.props.push }}>{record.name}</div>
                                     <div className="tag-list">
                                         {
                                             record.tagList.map(v => (
@@ -67,7 +68,7 @@ class Component extends React.Component {
                                         }
                                     </div>
                                     <div className="bottom">
-                                        <span className="undeline hover-primary">
+                                        <span className="undeline hover-primary" onClick={() => this.goMySpace(record.creatorAccountId)}>
                                             {nickName}
                                         </span>
                                         <span> - {moment(record.createdAt).fromNow()}</span>
@@ -139,12 +140,16 @@ class Component extends React.Component {
             tableSort: {},
             loading: false,
             pagination: {
-                total: 96,
+                showJumper: this.props.route.pathname == '/layout/home' ? false : true,
+                total: 0,
                 pageSize: 10,
                 current: 1,
             }
         }
         this.ShareModalRef = React.createRef();
+    }
+    goMySpace = (accountId) => {
+        this.props.push(`/layout/mySpace?accountId=${accountId}`);
     }
     componentDidMount() {
         this.getTags();
@@ -183,6 +188,9 @@ class Component extends React.Component {
             this.setState({
                 favouriteList: d.list
             });
+            if (this.props.setMyFavouriteCount) {
+                this.props.setMyFavouriteCount(d.totalCount);
+            }
         });
     }
     getTags = () => {
@@ -238,7 +246,7 @@ class Component extends React.Component {
             "tagIds": this.state.currentTag.id ? [this.state.currentTag.id] : [],
             "searchName": "",
             "creator": "",
-            "dashboardIds": []
+            "dashboardIds": this.state.showMyFavorite ? this.state.favouriteList.map(v => v.dashboardId) : []
         }).then(d => {
             this.getAccountList(d.list.map(v => v.creatorAccountId));
             this.setState({
@@ -246,6 +254,7 @@ class Component extends React.Component {
                 tableData: d.list,
                 pagination: { ...this.state.pagination, total: d.totalCount }
             });
+
         });
     }
     change24h = (str, confirm) => {
@@ -265,9 +274,6 @@ class Component extends React.Component {
                 v.hasFavourite = true;
             }
         });
-        if (this.state.showMyFavorite) {
-            newTableData = newTableData.filter(v => v.hasFavourite == true);
-        }
         return newTableData;
     }
     render() {
@@ -328,6 +334,7 @@ class Component extends React.Component {
 
                 {/* <div className="total-wrap">123 dashboards with selected label on Web3go</div> */}
                 <Table
+                    className={this.props.route.pathname == '/layout/home' ? '' : 'pagination-right'}
                     rowKey="id"
                     borderCell={false}
                     border={false}

@@ -9,9 +9,11 @@ import "cropperjs/dist/cropper.css";
 import event from '@/web3goLayout/event';
 import { IconPlus, IconCheck } from '@arco-design/web-react/icon';
 import { numberSplit } from '@/web3goLayout/utils';
+import { LayoutDashboardApi } from '@/services';
 import DashBoardList from '@/web3goLayout/components/DashBoardList';
 const mapStateToProps = state => {
     return {
+        userData: state.app.userData,
         isDark: state.app.isDark,
         currentUser: state.currentUser,
     }
@@ -25,6 +27,8 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            dashboardListCount: 0,
+            myFavouriteCount: 0,
             slideList: [
                 require("@/web3goLayout/assets/home/banner.png"),
                 require("@/web3goLayout/assets/home/banner.png"),
@@ -34,8 +38,35 @@ class Component extends React.Component {
             creatorList: [{}, {}, {}, {}, {}, {}]
         }
     }
+    componentDidMount() {
+        this.getDashboardListCount();
+    }
+    // componentDidUpdate(prevProps) {
+    //     if (JSON.stringify(this.props.userData) !== JSON.stringify(prevProps.userData)) {
+    //         this.getDashboardListCount();
+    //     }
+    // }
+    getDashboardListCount = () => {
+        if (!this.props.userData.account) {
+            return;
+        }
+        LayoutDashboardApi.list({
+            "pageSize": 10,
+            "pageIndex": 1,
+            "creator": this.props.userData.account.accountId,
+        }).then(d => {
+            this.setState({
+                dashboardListCount: d.totalCount
+            })
+        });
+    }
     goSignIn = () => {
         event.emit('goSignIn');
+    }
+    setMyFavouriteCount = (myFavouriteCount) => {
+        this.setState({
+            myFavouriteCount
+        });
     }
     render() {
         return (
@@ -75,14 +106,14 @@ class Component extends React.Component {
                             </div>
                         ) : (
                             <div className="section-content info">
-                                <div className="info-item hover-item">
+                                <div className="info-item">
                                     <div className="i-left">
                                         <div className="circle">
                                             <img src={require("@/web3goLayout/assets/home/info1.png")} alt="" />
                                         </div>
                                         <div className="text-wrap">
                                             <div className="label">Dashboards</div>
-                                            <div className="value">800,246</div>
+                                            <div className="value">{this.state.dashboardListCount}</div>
                                         </div>
                                     </div>
                                     {
@@ -104,14 +135,14 @@ class Component extends React.Component {
                                     </div>
                                     <img src={require("@/web3goLayout/assets/home/info22.png")} alt="" />
                                 </div> */}
-                                <div className="info-item hover-item">
+                                <div className="info-item">
                                     <div className="i-left">
                                         <div className="circle">
                                             <img src={require("@/web3goLayout/assets/home/info3.png")} alt="" />
                                         </div>
                                         <div className="text-wrap">
                                             <div className="label">My Favorites</div>
-                                            <div className="value">800,246</div>
+                                            <div className="value">{this.state.myFavouriteCount}</div>
                                         </div>
                                     </div>
                                     {
@@ -135,7 +166,7 @@ class Component extends React.Component {
                         </svg>
                     </div>
                     <div className="section-content">
-                        <DashBoardList></DashBoardList>
+                        <DashBoardList setMyFavouriteCount={this.setMyFavouriteCount}></DashBoardList>
                     </div>
                     <div className="section-title">
                         <span>Top Creators</span>

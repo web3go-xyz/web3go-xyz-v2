@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import './index.less';
 import { Button, Modal, Form, Input, Upload, Message, Tabs, Typography } from '@arco-design/web-react';
 import { push } from "react-router-redux";
-import { IconEdit, IconSearch, IconArrowLeft } from '@arco-design/web-react/icon';
+import { IconEdit, IconSearch, IconArrowLeft, IconCheck } from '@arco-design/web-react/icon';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { LayoutLoginApi } from '@/services'
@@ -12,9 +12,12 @@ import event from '@/web3goLayout/event';
 import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 import DashBoardList from './DashBoardList';
 import FollowersList from './FollowersList';
+import moment from 'moment';
 const mapStateToProps = state => {
     return {
-        isDark: state.app.isDark
+        route: state.routing.locationBeforeTransitions,
+        isDark: state.app.isDark,
+        userData: state.app.userData
     }
 };
 const mapDispatchToProps = {
@@ -28,28 +31,86 @@ class Component extends React.Component {
         super(props);
         this.state = {
             // default,followers,following
-            viewType: 'default'
+            viewType: 'default',
+            activeTab: '1',
+            isMyself: true,
+            userInfo: {},
+            searchValue: '',
+            dashboardListCount: 0,
+            myFavouriteCount: 0,
         }
-
+        this.DashboardRef = React.createRef();
     }
     componentDidMount() {
-
+        if (this.props.userData.account) {
+            this.getUserInfo();
+        }
     }
-
+    // componentDidUpdate(prevProps) {
+    //     if (JSON.stringify(this.props.userData) !== JSON.stringify(prevProps.userData)) {
+    //         this.getUserInfo();
+    //     }
+    // }
+    setDashboardListCount = (dashboardListCount) => {
+        this.setState({
+            dashboardListCount
+        });
+    }
+    setMyFavouriteCount = (myFavouriteCount) => {
+        this.setState({
+            myFavouriteCount
+        });
+    }
+    getUserInfo() {
+        const accountId = this.props.route.query.accountId;
+        if (accountId && accountId != this.props.userData.account.accountId) {
+            LayoutLoginApi.searchAccountInfo({
+                accountIds: [accountId],
+                includeExtraInfo: true
+            }).then(d => {
+                this.setState({
+                    isMyself: false,
+                    userInfo: d[0].account
+                })
+            });
+        } else {
+            this.setState({
+                isMyself: true,
+                userInfo: this.props.userData.account
+            })
+        }
+    }
+    setActiveTab = (value) => {
+        this.setState({
+            activeTab: value
+        });
+    }
+    handleSearch = () => {
+        this.DashboardRef.getList(true);
+    }
     render() {
+        const { userInfo, isMyself, dashboardListCount, myFavouriteCount } = this.state;
+
         let main = (<div className="table-header">
-            <Tabs defaultActiveTab="1">
-                <TabPane key='1' title={'Dashboard 40'}>
-                    <DashBoardList></DashBoardList>
+            <Tabs activeTab={this.state.activeTab} onChange={this.setActiveTab}>
+                <TabPane key='1' title={`Dashboard ${dashboardListCount}`}>
                 </TabPane>
-                <TabPane key='2' title={'My Favorites 90'}>
-                    <DashBoardList></DashBoardList>
+                <TabPane key='2' title={`My Favorites ${myFavouriteCount}`}>
                 </TabPane>
             </Tabs>
+            <DashBoardList
+                onRef={(ref) => this.DashboardRef = ref}
+                accountId={userInfo.accountId}
+                searchValue={this.state.searchValue}
+                setDashboardListCount={this.setDashboardListCount}
+                setMyFavouriteCount={this.setMyFavouriteCount}
+            ></DashBoardList>
             <Input
+                onChange={(value) => { this.setState({ searchValue: value }) }}
                 className="search-input"
                 allowClear
-                prefix={<IconSearch />}
+                onPressEnter={this.handleSearch}
+                prefix={<IconSearch className="hover-item" onClick={this.handleSearch} />}
                 placeholder='Search in my space'
             />
         </div>);
@@ -58,7 +119,7 @@ class Component extends React.Component {
                 <div className="list-wrap">
                     <div className="l-header">
                         <IconArrowLeft onClick={() => { this.setState({ viewType: 'default' }) }} className="hover-item" />
-                        <span>Followers 583</span>
+                        <span>Followers 436</span>
                     </div>
                     <FollowersList></FollowersList>
                 </div>
@@ -77,25 +138,46 @@ class Component extends React.Component {
         return (
             <div className="web3go-layout-myspace-page">
                 <div className="common-layout bread-wrap">
-                    <div className="common-bread">
-                        <div className="item hover-primary" onClick={() => { this.props.push('/') }}>Home</div>
-                        <div className="split">/</div>
-                        <div className="item active">My Space</div>
-                    </div>
+                    {
+                        this.state.isMyself ? (
+                            <div className="common-bread">
+                                <div className="item hover-primary" onClick={() => { this.props.push('/') }}>Home</div>
+                                <div className="split">/</div>
+                                <div className="item active">My Space</div>
+                            </div>
+                        ) : (
+                            <div className="common-bread">
+                                <div className="item hover-primary" onClick={() => { this.props.push('/') }}>Home</div>
+                                <div className="split">/</div>
+                                <div className="item hover-primary" onClick={() => { this.props.push('/layout/creatorList') }}>Creators</div>
+                                <div className="split">/</div>
+                                <div className="item active">{userInfo.nickName}</div>
+                            </div>
+                        )
+                    }
                 </div>
-                <div className="big-bg"></div>
+                <div className="big-bg" style={{ backgroundImage: `url(${this.props.isDark ? require("@/web3goLayout/assets/account/bg-b.png") : require("@/web3goLayout/assets/account/bg.png")})` }}></div>
                 <div className="main-wrap common-layout">
                     <div className="side">
                         <div className="headicon-wrap">
                             <UserHeadIcon iconSize={116} fontSize={22} nickName='khuiy'></UserHeadIcon>
                         </div>
-                        <div className="nickname">willie.jennings@exam<br />ple.com</div>
-                        <div className="join-time">Joined on 2017/08/21</div>
+                        <div className="nickname">{userInfo.nickName}</div>
+                        <div className="join-time">Joined on {moment(userInfo.created_time).format('YYYY/MM/DD')}</div>
                         <div className="btn-wrap">
-                            <Button>
-                                <IconEdit />
-                                <span>Edit Profile</span>
-                            </Button>
+                            {
+                                isMyself ? (
+                                    <Button onClick={() => { this.props.push('/layout/accountSetting') }}>
+                                        <IconEdit />
+                                        <span>Edit Profile</span>
+                                    </Button>
+                                ) : (
+                                    <Button type="outline">
+                                        <IconCheck />
+                                        <span>Following</span>
+                                    </Button>
+                                )
+                            }
                         </div>
                         <div className="follow-wrap">
                             <div className="follow-row">
