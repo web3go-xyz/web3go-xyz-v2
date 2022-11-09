@@ -5,7 +5,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
 
-export class Log4ShareDashboardRequest {
+export class GenerateShareLink4DashboardResponse {
 
     @ApiProperty({ required: true })
     @IsNotEmpty()
@@ -18,5 +18,13 @@ export class Log4ShareDashboardRequest {
     @ApiProperty({ required: true })
     @IsNotEmpty()
     referralCode: string;
+
+    @ApiProperty({ required: true })
+    @IsNotEmpty()
+    shareLink: string;
+
+    @ApiProperty({ required: true })
+    @IsNotEmpty()
+    accountId: string;
 
 }

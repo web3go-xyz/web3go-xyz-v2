@@ -4,7 +4,7 @@ import { W3Logger } from 'src/base/log/logger.service';
 import { Mailer } from 'src/base/email/mailer';
 import { join } from 'path';
 import { AppConfig } from 'src/base/setting/appConfig';
-import { VerifyCodePurpose } from 'src/viewModel/VerifyCodeType';
+import { VerifyCodePurpose } from 'src/account/model/VerifyCodeType';
 
 @Injectable()
 export class EmailBaseService {

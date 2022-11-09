@@ -7,10 +7,10 @@ import { W3Logger } from 'src/base/log/logger.service';
 import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { AccountWallet } from 'src/base/entity/platform-user/AccountWallet.entity';
 
-import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
+import { AccountSearchResult } from 'src/account/model/AccountSearchResult';
 
 import { AccountBaseService } from '../base/account-base.service';
-import { AccountInfo } from 'src/viewModel/account/AccountInfo';
+import { AccountInfo } from 'src/account/model/AccountInfo';
 import { KVService } from 'src/base/kv/kv.service';
 import { MetamaskSignHelper } from 'src/base/web3/sign/metamask/metamask.sign.helper';
 import { PolkadotSignHelper } from 'src/base/web3/sign/polkadot/polkadot.sign.helper';

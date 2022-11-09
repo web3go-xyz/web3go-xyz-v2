@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { PageResponse } from "../base/pageResponse";
+import { PageResponse } from "../../viewModel/base/pageResponse";
 import { DashboardSummary } from "./DashboardSummary";
 
 export class QueryDashboardListResponse extends PageResponse {

@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { W3Logger } from 'src/base/log/logger.service';
 import { AccountVerifyCode } from 'src/base/entity/platform-user/AccountVerifyCode.entity'; 
-import { VerifyCodeType, VerifyCodePurpose } from 'src/viewModel/VerifyCodeType';
+import { VerifyCodeType, VerifyCodePurpose } from 'src/account/model/VerifyCodeType';
 
 @Injectable()
 export class VerifyCodeBaseService {

@@ -8,8 +8,8 @@ import { AccountEmail } from 'src/base/entity/platform-user/AccountEmail.entity'
 import { AccountWallet } from 'src/base/entity/platform-user/AccountWallet.entity';
 
 import { v4 as uuidv4 } from 'uuid';
-import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
-import { VerifyFlag } from 'src/viewModel/VerifyCodeType';
+import { AccountSearchResult } from 'src/account/model/AccountSearchResult';
+import { VerifyFlag } from 'src/account/model/VerifyCodeType';
 
 const md5 = require('js-md5');
 

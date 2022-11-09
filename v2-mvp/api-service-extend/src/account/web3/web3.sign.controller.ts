@@ -4,7 +4,7 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { W3Logger } from 'src/base/log/logger.service';
 
 import { Web3SignService } from './web3.sign.service';
-import { AccountSearchResult } from 'src/viewModel/account/AccountSearchResult';
+import { AccountSearchResult } from 'src/account/model/AccountSearchResult';
 import { WalletSupported } from 'src/viewModel/chain/walletSupported';
 import { BlockChainSupported } from 'src/viewModel/chain/blockChainSupported';
 import { Web3SignNonceRequest } from 'src/base/web3/sign/model/Web3SignNonceRequest';

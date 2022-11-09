@@ -11,9 +11,21 @@ import { JWTAuthModule } from './base/auth/jwt-auth.module';
 import { HomepageModule } from './homepage/homepage.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ShareService } from './share/share.service';
+import { ShareModule } from './share/share.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { EventModule } from './event-bus/event.module';
+import { EventService } from './event-bus/event.service';
+
 @Module({
   imports: [
     StatusMonitorModule.forRoot(),
+    EventEmitterModule.forRoot(
+      {
+        wildcard: true,// set this to `true` to use wildcards
+        delimiter: '.',      // the delimiter used to segment namespaces
+      }
+    ),
     ScheduleModule.forRoot(),
     JWTAuthModule,
     KVModule,
@@ -23,6 +35,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     DebugModule,
     HomepageModule,
     DashboardModule,
+    ShareModule,
+    EventModule
   ],
   controllers: [AppController],
   providers: [AppService],
