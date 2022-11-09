@@ -4,17 +4,22 @@ import { ShareReferralCode } from 'src/base/entity/platform-dashboard/ShareRefer
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { AppConfig } from 'src/base/setting/appConfig';
-import { GenerateShareLink4DashboardRequest } from 'src/share/model/GenerateShareLink4DashboardRequest';
-import { GenerateShareLink4DashboardResponse } from 'src/share/model/GenerateShareLink4DashboardResponse';
-import { Log4ShareDashboardRequest } from 'src/share/model/Log4ShareDashboardRequest';
-import { Log4ShareDashboardResponse } from 'src/share/model/Log4ShareDashboardResponse';
+
 import { Repository } from 'typeorm';
 import { ShareItemType } from './model/ShareItemType';
 import { v4 as uuidv4 } from 'uuid';
+import { OperationEventTopic } from 'src/event-bus/model/OperationEventTopic';
+import { GenerateShareLink4DashboardRequest } from './model/GenerateShareLink4DashboardRequest';
+import { GenerateShareLink4DashboardResponse } from './model/GenerateShareLink4DashboardResponse';
+import { Log4ShareDashboardRequest } from './model/Log4ShareDashboardRequest';
+import { Log4ShareDashboardResponse } from './model/Log4ShareDashboardResponse';
+import { EventService } from 'src/event-bus/event.service';
 @Injectable()
 export class ShareService {
     logger: W3Logger;
     constructor(
+        private readonly eventService: EventService,
+
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_SHARE_LOG_REPOSITORY.provide)
         private dsharelRepo: Repository<DashboardShareLog>,
 
@@ -105,9 +110,18 @@ export class ShareService {
             await this.dsharelRepo.save(newRecord);
             resp.id = newRecord.id;
             resp.msg = "new";
+
+            this.eventService.fireEvent({
+                topic: OperationEventTopic.logShareDashboard,
+                data: {
+                    dashboardId: param.dashboardId
+                }
+            });
         }
 
 
         return resp;
     }
+
+
 }

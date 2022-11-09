@@ -16,9 +16,7 @@ import { QueryDashboardDetailRequest } from 'src/dashboard/model/QueryDashboardD
 import { QueryDashboardDetailResponse } from 'src/dashboard/model/QueryDashboardDetailResponse';
 import { QueryDashboardListRequest } from 'src/dashboard/model/QueryDashboardListRequest';
 import { QueryDashboardListResponse } from 'src/dashboard/model/QueryDashboardListResponse';
-import { QueryMyFavoriteDashboardListRequest } from 'src/dashboard/model/QueryMyFavoriteDashboardListRequest';
 import { FindManyOptions, FindOptionsWhere, In, Like, Repository } from 'typeorm';
-import { QueryMyFavoriteDashboardListResponse } from './model/QueryMyFavoriteDashboardListResponse';
 
 @Injectable()
 export class DashboardService {
@@ -27,50 +25,17 @@ export class DashboardService {
 
     constructor(
 
-        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_REPOSITORY.provide)
-        private accountRepo: Repository<Account>,
-
-        @Inject(RepositoryConsts.REPOSITORYS_METABASE.MB_REPORT_DASHBOARD_REPOSITORY.provide)
-        private mb_rdRepo: Repository<ReportDashboard>,
-
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_CONFIG_TAG_REPOSITORY.provide)
         private ctagRepo: Repository<ConfigTag>,
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
         private dextRepo: Repository<DashboardExt>,
-        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_FAVORITE_LOG_REPOSITORY.provide)
-        private dfavlRepo: Repository<DashboardFavoriteLog>,
-        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_FORK_LOG_REPOSITORY.provide)
-        private dforklRepo: Repository<DashboardForkLog>,
-        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_SHARE_LOG_REPOSITORY.provide)
-        private dsharelRepo: Repository<DashboardShareLog>,
-        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_VIEW_LOG_REPOSITORY.provide)
-        private dviewlRepo: Repository<DashboardViewLog>,
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_TAG_REPOSITORY.provide)
         private dtagRepo: Repository<DashboardTag>,
     ) {
         this.logger = new W3Logger(`DashboardService`);
     }
-    async listAllCreators(param: Object): Promise<string[]> {
-        let records = await this.dextRepo.createQueryBuilder("d")
 
-            .select("creator_account_id", "creatorAccountId")
-            .distinct()
-            .orderBy("creator_account_id")
-            .getRawMany();
-        console.log(records);
-
-        return records.map(t => t.creatorAccountId);
-
-    }
-    async listAllTags(request: Object): Promise<ConfigTag[]> {
-        let records = await this.ctagRepo.find({
-            order: {
-                tagName: 'ASC'
-            }
-        });
-        return records;
-    }
 
     async list(request: QueryDashboardListRequest): Promise<QueryDashboardListResponse> {
 
@@ -237,27 +202,6 @@ export class DashboardService {
     }
 
 
-    async listMyFavorites(param: QueryMyFavoriteDashboardListRequest): Promise<QueryMyFavoriteDashboardListResponse> {
-
-        let resp: QueryMyFavoriteDashboardListResponse = {
-            totalCount: 0,
-            list: []
-        }
-        let result = await this.dfavlRepo.findAndCount({
-            where: {
-                accountId: param.accountId
-            },
-            skip: PageRequest.getSkip(param),
-            take: PageRequest.getTake(param)
-        });
-
-        resp.totalCount = result[1];
-        resp.list = result[0];
-
-        this.logger.debug(`listMyFavorites:${JSON.stringify(resp)}`);
-        return resp;
-
-    }
 
 }
 

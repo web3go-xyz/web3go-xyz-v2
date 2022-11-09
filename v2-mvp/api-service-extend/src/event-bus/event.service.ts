@@ -8,13 +8,18 @@ import { DashboardFavoriteLog } from "src/base/entity/platform-dashboard/Dashboa
 import { DashboardForkLog } from "src/base/entity/platform-dashboard/DashboardForkLog";
 import { DashboardShareLog } from "src/base/entity/platform-dashboard/DashboardShareLog";
 import { DashboardViewLog } from "src/base/entity/platform-dashboard/DashboardViewLog";
-import { DashboardTag } from "src/base/entity/platform-dashboard/DashboradTag";
 import { RepositoryConsts } from "src/base/orm/repositoryConsts";
 import { Repository } from "typeorm";
+import { EventEmitter2 } from '@nestjs/event-emitter'
+
 export class EventService {
+
     logger: W3Logger;
-    constructor(@Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
-    private dextRepo: Repository<DashboardExt>,
+    constructor(
+        private eventEmitter: EventEmitter2,
+
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
+        private dextRepo: Repository<DashboardExt>,
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_FAVORITE_LOG_REPOSITORY.provide)
         private dfavlRepo: Repository<DashboardFavoriteLog>,
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_FORK_LOG_REPOSITORY.provide)
@@ -27,6 +32,15 @@ export class EventService {
 
     ) {
         this.logger = new W3Logger(`EventService`);
+    }
+
+    fireEvent(payload: OperationEventPayload) {
+        this.logger.debug(`fireEvent:${JSON.stringify(payload)}`);
+        //emit events
+        this.eventEmitter.emit(
+            payload.topic.toString(),
+            payload
+        );
     }
 
     // @OnEvent('**', { async: true })
