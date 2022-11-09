@@ -99,6 +99,7 @@ class Component extends React.Component {
                 </TabPane>
             </Tabs>
             <DashBoardList
+                isFavourite={this.state.activeTab == '2'}
                 onRef={(ref) => this.DashboardRef = ref}
                 accountId={userInfo.accountId}
                 searchValue={this.state.searchValue}
