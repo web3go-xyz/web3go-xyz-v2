@@ -310,45 +310,57 @@ export class AccountInfoService {
   }
 
 
-  async getAccountStatistic(accountId: string): Promise<AccountStatisticResponse> {
+  async getAccountStatistic(accountIds: string[]): Promise<AccountStatisticResponse[]> {
 
-    let account = await this.accountRepository.findOne({
+    let accounts = await this.accountRepository.find({
       where: {
-        accountId: accountId
-      }
+        accountId: In(accountIds)
+      },
+      select: [
+        "accountId", 'followedAccountCount', 'followingAccountCount'
+      ]
     });
-    if (!account) {
-      throw new Error(`account not found for ${accountId}`);
-    }
-
-    let resp: AccountStatisticResponse = {
-      accountId,
-      followedAccountCount: account.followedAccountCount,
-      followingAccountCount: account.followingAccountCount,
-      dashboard_count: 0,
-      total_share_count: 0,
-      total_view_count: 0,
-      total_favorite_count: 0,
-      total_fork_count: 0
+    if (!accounts || accounts.length == 0) {
+      throw new Error(`accounts not found`);
     }
 
     let query = await this.dextRepo.createQueryBuilder("d")
-      .where("d.creator_account_id=:creator_account_id", { creator_account_id: accountId })
-      .select("count(1)", "dashboard_count")
+      .where("d.creator_account_id IN( :...creator_account_id)", { creator_account_id: accountIds })
+      .select("creator_account_id", "creator_account_id")
+      .addSelect("count(1)", "dashboard_count")
       .addSelect("SUM( d.view_count )", "total_view_count")
       .addSelect("SUM( d.share_count ) ", "total_share_count")
       .addSelect("SUM( d.fork_count )", "total_fork_count")
       .addSelect("SUM( d.favorite_count )", "total_favorite_count")
-    // .groupBy("d.creator_account_id")
-    // .addGroupBy(`a."nickName"`)
+      .groupBy("d.creator_account_id");
 
-    let t = await query.getRawOne();
-    resp.dashboard_count = Number(t.dashboard_count);
-    resp.total_view_count = Number(t.total_view_count);
-    resp.total_share_count = Number(t.total_share_count);
-    resp.total_fork_count = Number(t.total_fork_count);
-    resp.total_favorite_count = Number(t.total_favorite_count);
+    let statisticRecords = await query.getRawMany();
+    let resp: AccountStatisticResponse[] = [];
 
+    if (statisticRecords && statisticRecords.length > 0) {
+
+      for (const d of accounts) {
+        let newItem: AccountStatisticResponse = {
+          accountId: d.accountId,
+          followedAccountCount: d.followedAccountCount,
+          followingAccountCount: d.followingAccountCount,
+          dashboard_count: 0,
+          total_share_count: 0,
+          total_view_count: 0,
+          total_favorite_count: 0,
+          total_fork_count: 0
+        }
+        let findStatistic = statisticRecords.find(t => t.creator_account_id == d.accountId);
+        if (findStatistic) {
+          newItem.dashboard_count = Number(findStatistic.dashboard_count);
+          newItem.total_view_count = Number(findStatistic.total_view_count);
+          newItem.total_share_count = Number(findStatistic.total_share_count);
+          newItem.total_fork_count = Number(findStatistic.total_fork_count);
+          newItem.total_favorite_count = Number(findStatistic.total_favorite_count);
+        }
+        resp.push(newItem);
+      }
+    }
     return resp;
   }
 

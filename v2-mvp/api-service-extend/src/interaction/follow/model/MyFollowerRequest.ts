@@ -6,4 +6,7 @@ export class MyFollowerRequest extends PageRequest {
 
     @ApiProperty()
     account_id: string;
+
+    @ApiProperty({ default: true, description: 'whether inclde detail info of accounts' })
+    includeDetail: boolean = true;
 }

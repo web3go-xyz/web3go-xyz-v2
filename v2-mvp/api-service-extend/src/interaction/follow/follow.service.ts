@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { AccountInfoService } from 'src/account/info/account-info.service';
 import { AccountFollower } from 'src/base/entity/platform-user/AccountFollower';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
@@ -9,7 +10,7 @@ import { Repository } from 'typeorm';
 import { FollowAccountRequest } from './model/FollowAccountRequest';
 import { FollowAccountResponse } from './model/FollowAccountResponse';
 import { MyFollowerRequest } from './model/MyFollowerRequest';
-import { MyFollowerResponse } from './model/MyFollowerResponse';
+import { AccountFollowerDetail, MyFollowerResponse } from './model/MyFollowerResponse';
 import { UnFollowAccountRequest } from './model/UnFollowAccountRequest';
 import { UnFollowAccountResponse } from './model/UnFollowAccountResponse';
 @Injectable()
@@ -17,7 +18,7 @@ export class FollowService {
     logger: W3Logger;
     constructor(
         private readonly eventService: EventService,
-
+        private readonly accountInfoService: AccountInfoService,
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_FOLLOWER_REPOSITORY.provide)
         private afRepo: Repository<AccountFollower>,
     ) {
@@ -37,9 +38,14 @@ export class FollowService {
             skip: PageRequest.getSkip(param)
         });
         let resp: MyFollowerResponse = {
-            list: records[0],
+            list: [],
             totalCount: records[1]
         };
+        let followList = records[0];
+        if (followList && followList.length > 0) {
+            let accountIds = followList.map(t => t.accountId)
+            resp.list = await this.patchDetails(accountIds, param.includeDetail);
+        }
         return resp;
     }
     async listFollowing(param: MyFollowerRequest, accountId: string): Promise<MyFollowerResponse> {
@@ -55,12 +61,72 @@ export class FollowService {
             skip: PageRequest.getSkip(param)
         });
         let resp: MyFollowerResponse = {
-            list: records[0],
+            list: [],
             totalCount: records[1]
         };
+        let followList = records[0];
+        if (followList && followList.length > 0) {
+            let accountIds = followList.map(t => t.followedAccountId);
+            resp.list = await this.patchDetails(accountIds, param.includeDetail);
+        }
         return resp;
     }
+    async patchDetails(accountIds: string[], includeDetail: boolean): Promise<AccountFollowerDetail[]> {
+        let list: AccountFollowerDetail[] = [];
 
+        if (!includeDetail) {
+            for (const aId of accountIds) {
+                list.push({
+                    accountId: aId,
+                    nickName: '',
+                    avatar: '',
+                    followedAccountCount: 0,
+                    followingAccountCount: 0,
+                    dashboard_count: 0,
+                    total_share_count: 0,
+                    total_view_count: 0,
+                    total_favorite_count: 0,
+                    total_fork_count: 0
+                });
+            }
+
+            return list;
+        }
+
+
+        let accountInfos = await this.accountInfoService.getAccountInfo(accountIds, false);
+        let accountStatistics = await this.accountInfoService.getAccountStatistic(accountIds);
+        if (accountInfos && accountInfos.length > 0) {
+
+            for (const ad of accountInfos) {
+                let newItem: AccountFollowerDetail = {
+                    accountId: ad.account.accountId,
+                    nickName: ad.account.nickName,
+                    avatar: ad.account.avatar,
+                    followedAccountCount: 0,
+                    followingAccountCount: 0,
+                    dashboard_count: 0,
+                    total_share_count: 0,
+                    total_view_count: 0,
+                    total_favorite_count: 0,
+                    total_fork_count: 0
+                }
+                let findAccountStatistics = accountStatistics.find(t => t.accountId == ad.account.accountId);
+                if (findAccountStatistics) {
+                    newItem.followedAccountCount = findAccountStatistics.followedAccountCount;
+                    newItem.followingAccountCount = findAccountStatistics.followingAccountCount;
+                    newItem.dashboard_count = findAccountStatistics.dashboard_count;
+                    newItem.total_share_count = findAccountStatistics.total_share_count;
+                    newItem.total_view_count = findAccountStatistics.total_view_count;
+                    newItem.total_favorite_count = findAccountStatistics.total_favorite_count;
+                    newItem.total_fork_count = findAccountStatistics.total_fork_count;
+                }
+                list.push(newItem);
+            }
+        }
+
+        return list;
+    }
 
     async unfollow(param: UnFollowAccountRequest, accountId: string): Promise<UnFollowAccountResponse> {
 
