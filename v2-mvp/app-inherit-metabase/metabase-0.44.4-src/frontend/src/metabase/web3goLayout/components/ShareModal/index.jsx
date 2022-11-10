@@ -25,15 +25,17 @@ class Component extends React.Component {
         super(props);
         this.state = {
             visible: false,
+            url: ''
         }
         this.formRef = React.createRef();
     }
     componentDidMount() {
         this.props.onRef(this)
     }
-    init = () => {
+    init = (url) => {
         this.setState({
-            visible: true
+            url,
+            visible: true,
         });
     }
 
@@ -47,11 +49,11 @@ class Component extends React.Component {
                 onCancel={() => this.setState({ visible: false })}
                 footer={null}
             >
-                <div className="modal-content" onClick={() => { copy('http://www.web3go.xyz/@kelleng/NFT-Projects-Tracking-Kelleng') }}>
+                <div className="modal-content" >
                     <div className="label">Public link</div>
                     <div className="value">
-                        <div className="a">http://www.web3go.xyz/@kelleng/NFT-Projects-Tracking-Kelleng</div>
-                        <Button  className="copy" type="primary">
+                        <div className="a">{this.state.url}</div>
+                        <Button className="copy" type="primary" onClick={() => { copy(this.state.url) }}>
                             <IconCopy />
                             <span className="text">Copy</span>
                         </Button>
@@ -70,9 +72,7 @@ class Component extends React.Component {
                 </div>
             </Modal >
         )
-
     }
-
 }
 
 

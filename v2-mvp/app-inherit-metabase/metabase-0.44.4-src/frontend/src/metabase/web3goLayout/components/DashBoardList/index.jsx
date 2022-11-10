@@ -5,7 +5,7 @@ import './index.less';
 import { IconDown } from '@arco-design/web-react/icon';
 import { Button, Modal, Form, Input, Upload, Select, Checkbox, Table, TableColumnProps } from '@arco-design/web-react';
 import { push } from "react-router-redux";
-import "cropperjs/dist/cropper.css";
+import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 import { numberSplit } from '@/web3goLayout/utils';
 import ShareModal from "@/web3goLayout/components/ShareModal";
 import { LayoutDashboardApi, LayoutLoginApi } from '@/services'
@@ -57,7 +57,7 @@ class Component extends React.Component {
                         }
                         return (
                             <div className="name-col">
-                                <img className="headicon" src={avatar} alt="" />
+                                <UserHeadIcon className="headicon" iconSize={32} avatar={avatar} nickName={nickName}></UserHeadIcon>
                                 <div className="right">
                                     <div className="title hover-primary" onClick={() => { this.props.push }}>{record.name}</div>
                                     <div className="tag-list">
@@ -200,8 +200,8 @@ class Component extends React.Component {
             });
         });
     }
-    openShareModal() {
-        this.ShareModalRef.init();
+    openShareModal(record) {
+        this.ShareModalRef.init('https://dev-v2.web3go.xyz/public/dashboard/c5658684-0281-485d-8dbf-7620435f6553');
     }
     changeCurrentTag = (v) => {
         this.setState({

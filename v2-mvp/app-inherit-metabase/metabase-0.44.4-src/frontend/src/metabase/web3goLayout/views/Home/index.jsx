@@ -8,8 +8,9 @@ import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import event from '@/web3goLayout/event';
 import { IconPlus, IconCheck } from '@arco-design/web-react/icon';
+import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 import { numberSplit } from '@/web3goLayout/utils';
-import { LayoutDashboardApi } from '@/services';
+import { LayoutLoginApi, LayoutDashboardApi, LayoutCreatorApi } from '@/services';
 import DashBoardList from '@/web3goLayout/components/DashBoardList';
 const mapStateToProps = state => {
     return {
@@ -35,17 +36,45 @@ class Component extends React.Component {
                 require("@/web3goLayout/assets/home/banner.png"),
                 require("@/web3goLayout/assets/home/banner.png"),
             ],
-            creatorList: [{}, {}, {}, {}, {}, {}]
+            creatorList: []
         }
     }
     componentDidMount() {
         this.getDashboardListCount();
+        this.getCreatorList();
     }
     // componentDidUpdate(prevProps) {
     //     if (JSON.stringify(this.props.userData) !== JSON.stringify(prevProps.userData)) {
     //         this.getDashboardListCount();
     //     }
     // }
+    getCreatorList = () => {
+        LayoutCreatorApi.listCreators({
+            "pageSize": 6,
+            "pageIndex": 1,
+            "orderBys": [{
+                sort: 'dashboard_count',
+                order: 'DESC'
+            }]
+        }
+        ).then(d => {
+            LayoutLoginApi.searchAccountInfo({
+                accountIds: d.list.map(v => v.creator_account_id),
+                includeExtraInfo: false
+            }).then(data => {
+                this.setState({
+                    creatorList: data.map(v => {
+                        const find = d.list.find(sv => sv.creator_account_id == v.account.accountId)
+                        return {
+                            ...v.account,
+                            ...find
+                        }
+                    })
+                });
+
+            });
+        })
+    }
     getDashboardListCount = () => {
         if (!this.props.userData.account) {
             return;
@@ -89,9 +118,13 @@ class Component extends React.Component {
                 <div className="home-main common-layout">
                     <div className="section-title">
                         <span>My Space</span>
-                        <svg onClick={() => { this.props.push('/layout/mySpace') }} className="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9.24269 3.75667L13.4854 7.99933L9.24269 12.242M1.66669 8H13.0984" strokeWidth="1.5" />
-                        </svg>
+                        {
+                            this.props.currentUser ? (
+                                <svg onClick={() => { this.props.push('/layout/mySpace') }} className="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.24269 3.75667L13.4854 7.99933L9.24269 12.242M1.66669 8H13.0984" strokeWidth="1.5" />
+                                </svg>
+                            ) : null
+                        }
                     </div>
                     {
                         !this.props.currentUser ? (
@@ -180,11 +213,11 @@ class Component extends React.Component {
                                 <div className="i-top">
                                     <div className="headicon-wrap">
                                         <img className="icon" src={require(`@/web3goLayout/assets/home/${i + 1}.png`)} alt="" />
-                                        <span>{i + 1}</span>
-                                        <img className="headicon" src={require("@/web3goLayout/assets/account/Avatar.png")} alt="" />
+                                        <span className="rank">{i + 1}</span>
+                                        <UserHeadIcon className="headicon" iconSize={64} fontSize={18} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
                                     </div>
                                     <div className="it-right">
-                                        <div className="name">Cameron Williamson</div>
+                                        <div className="name">{v.nickName}</div>
                                         {/* <div className="btn">
                                             <IconCheck />
                                             <span className="text">Following</span>
@@ -197,7 +230,7 @@ class Component extends React.Component {
                                 </div>
                                 <div className="i-bottom">
                                     <span className="label">Dashboards</span>
-                                    <span className="value">{numberSplit(85948)}</span>
+                                    <span className="value">{numberSplit(v.dashboard_count)}</span>
                                 </div>
                             </div>
                         ))}
