@@ -1,11 +1,21 @@
 
 
 import { ApiProperty } from "@nestjs/swagger";
-import { Account } from "src/base/entity/platform-user/Account.entity";
-
+ 
 export class AccountStatisticResponse {
     @ApiProperty()
     accountId: string;
+
+    @ApiProperty({
+        description: 'count for how many addresses current account are followed by.  others=>current',
+    })
+    followedAccountCount: number;
+
+
+    @ApiProperty({
+        description: 'count for how many accounts have been followed by current account,  current=>others',
+    })
+    followingAccountCount: number;
 
     @ApiProperty()
     dashboard_count: number;

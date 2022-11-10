@@ -323,6 +323,8 @@ export class AccountInfoService {
 
     let resp: AccountStatisticResponse = {
       accountId,
+      followedAccountCount: account.followedAccountCount,
+      followingAccountCount: account.followingAccountCount,
       dashboard_count: 0,
       total_share_count: 0,
       total_view_count: 0,
