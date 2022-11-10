@@ -22,6 +22,7 @@ export const LayoutLoginApi = {
   searchAccountsByEmail: WGET(WEB3GO_BASE_URL + "/api/v2/account/auth/searchAccountsByEmail"),
   searchAccountsByWallet: WGET(WEB3GO_BASE_URL + "/api/v2/account/auth/searchAccountsByWallet"),
   searchAccountInfo: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/searchAccountInfo"),
+  getAccountStatistic: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/getAccountStatistic"),
   getAccountInfo: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/getAccountInfo"),
   web3_nonce: WPOST(WEB3GO_BASE_URL + "/api/v2/account/web3/web3_nonce"),
   web3_challenge: WPOST(WEB3GO_BASE_URL + "/api/v2/account/web3/web3_challenge"),
@@ -44,10 +45,10 @@ export const LayoutDashboardApi = {
 };
 export const LayoutCreatorApi = {
   listCreators: WPOST(WEB3GO_BASE_URL + "/api/v2/creator/listCreators"),
-  listMyFollows: WPOST(WEB3GO_BASE_URL + "/api/v2/follow/listMyFollows"),
+  listFollowing: WPOST(WEB3GO_BASE_URL + "/api/v2/follow/listFollowing"),
+  listFollowed: WPOST(WEB3GO_BASE_URL + "/api/v2/follow/listFollowed"),
   follow: WPOST(WEB3GO_BASE_URL + "/api/v2/follow/follow"),
   unfollow: WPOST(WEB3GO_BASE_URL + "/api/v2/follow/unfollow"),
-
 };
 
 export const ActivityApi = {

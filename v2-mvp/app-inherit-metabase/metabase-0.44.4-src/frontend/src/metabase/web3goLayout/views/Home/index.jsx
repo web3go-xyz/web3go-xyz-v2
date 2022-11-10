@@ -36,18 +36,44 @@ class Component extends React.Component {
                 require("@/web3goLayout/assets/home/banner.png"),
                 require("@/web3goLayout/assets/home/banner.png"),
             ],
-            creatorList: []
+            creatorList: [],
+            myFollowingList: []
         }
     }
     componentDidMount() {
         this.getDashboardListCount();
         this.getCreatorList();
+        this.listMyFollows();
+    }
+    refreshCreatorListAndMyFollowsList() {
+        this.getCreatorList();
+        this.listMyFollows();
     }
     // componentDidUpdate(prevProps) {
     //     if (JSON.stringify(this.props.userData) !== JSON.stringify(prevProps.userData)) {
     //         this.getDashboardListCount();
     //     }
     // }
+    listMyFollows = () => {
+        if (!this.props.userData.account) {
+            return;
+        }
+        LayoutCreatorApi.listFollowing({
+            "pageSize": 9999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "account_id": this.props.userData.account.accountId,
+        }).then(d => {
+            LayoutLoginApi.searchAccountInfo({
+                accountIds: d.list.map(v => v.followedAccountId),
+                includeExtraInfo: false
+            }).then(data => {
+                this.setState({
+                    myFollowingList: data.map(v => v.account)
+                })
+            });
+        });
+    }
     getCreatorList = () => {
         LayoutCreatorApi.listCreators({
             "pageSize": 6,
@@ -63,11 +89,11 @@ class Component extends React.Component {
                 includeExtraInfo: false
             }).then(data => {
                 this.setState({
-                    creatorList: data.map(v => {
-                        const find = d.list.find(sv => sv.creator_account_id == v.account.accountId)
+                    creatorList: d.list.map(v => {
+                        const find = data.find(sv => sv.account.accountId == v.creator_account_id)
                         return {
-                            ...v.account,
-                            ...find
+                            ...v,
+                            ...find.account
                         }
                     })
                 });
@@ -97,6 +123,25 @@ class Component extends React.Component {
             myFavouriteCount
         });
     }
+    handleFollow = (v) => {
+        if (!this.props.userData.account) {
+            this.goSignIn();
+            return;
+        }
+        LayoutCreatorApi.follow({
+            "targetAccountId": v.accountId
+        }).then(d => {
+            this.refreshCreatorListAndMyFollowsList();
+        });
+    }
+    handleUnfollow = (v) => {
+        LayoutCreatorApi.unfollow({
+            "targetAccountId": v.accountId
+        }).then(d => {
+            this.refreshCreatorListAndMyFollowsList();
+        });
+    }
+
     render() {
         return (
             <div className="web3go-layout-home-page">
@@ -146,7 +191,7 @@ class Component extends React.Component {
                                         </div>
                                         <div className="text-wrap">
                                             <div className="label">Dashboards</div>
-                                            <div className="value">{this.state.dashboardListCount}</div>
+                                            <div className="value">{numberSplit(this.state.dashboardListCount)}</div>
                                         </div>
                                     </div>
                                     {
@@ -175,7 +220,7 @@ class Component extends React.Component {
                                         </div>
                                         <div className="text-wrap">
                                             <div className="label">My Favorites</div>
-                                            <div className="value">{this.state.myFavouriteCount}</div>
+                                            <div className="value">{numberSplit(this.state.myFavouriteCount)}</div>
                                         </div>
                                     </div>
                                     {
@@ -199,7 +244,7 @@ class Component extends React.Component {
                         </svg>
                     </div>
                     <div className="section-content">
-                        <DashBoardList setMyFavouriteCount={this.setMyFavouriteCount}></DashBoardList>
+                        <DashBoardList myFollowingList={this.state.myFollowingList} setMyFavouriteCount={this.setMyFavouriteCount}></DashBoardList>
                     </div>
                     <div className="section-title">
                         <span>Top Creators</span>
@@ -218,14 +263,19 @@ class Component extends React.Component {
                                     </div>
                                     <div className="it-right">
                                         <div className="name">{v.nickName}</div>
-                                        {/* <div className="btn">
-                                            <IconCheck />
-                                            <span className="text">Following</span>
-                                        </div> */}
-                                        <div className="btn hover-item">
-                                            <IconPlus />
-                                            <span className="text">Follow</span>
-                                        </div>
+                                        {
+                                            this.state.myFollowingList.find(sv => sv.accountId == v.creator_account_id) ? (
+                                                <div className="btn hover-item" onClick={() => { this.handleUnfollow(v) }}>
+                                                    <IconCheck />
+                                                    <span className="text">Following</span>
+                                                </div>
+                                            ) : (
+                                                <div className="btn hover-item" onClick={() => { this.handleFollow(v) }}>
+                                                    <IconPlus />
+                                                    <span className="text">Follow</span>
+                                                </div>
+                                            )
+                                        }
                                     </div>
                                 </div>
                                 <div className="i-bottom">

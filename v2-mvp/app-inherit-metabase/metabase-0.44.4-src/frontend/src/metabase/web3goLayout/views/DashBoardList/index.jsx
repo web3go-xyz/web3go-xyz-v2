@@ -6,7 +6,7 @@ import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typogr
 import { push } from "react-router-redux";
 import { changeUserData } from "metabase/redux/app";
 import { changeGlobalSearchValue } from "metabase/redux/app";
-import { LayoutLoginApi } from '@/services'
+import { LayoutLoginApi, LayoutCreatorApi } from '@/services'
 import DashBoardList from '@/web3goLayout/components/DashBoardList';
 import CreatorList from '@/web3goLayout/components/CreatorList';
 import event from '@/web3goLayout/event';
@@ -30,11 +30,34 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            autoCompleteList: []
+            autoCompleteList: [],
+            myFollowingList: []
         }
     }
-    handleSearch = () => {
 
+    componentDidMount() {
+        this.listMyFollows();
+    }
+
+    listMyFollows = () => {
+        if (!this.props.userData.account) {
+            return;
+        }
+        LayoutCreatorApi.listFollowing({
+            "pageSize": 9999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "account_id": this.props.userData.account.accountId,
+        }).then(d => {
+            LayoutLoginApi.searchAccountInfo({
+                accountIds: d.list.map(v => v.followedAccountId),
+                includeExtraInfo: false
+            }).then(data => {
+                this.setState({
+                    myFollowingList: data.map(v => v.account)
+                })
+            });
+        });
     }
     render() {
         return (
@@ -51,7 +74,7 @@ class Component extends React.Component {
                         <TabPane key='1' title={'Dashboard'}>
                             <Typography.Paragraph>
                                 <div className="dashboardlist-wrap">
-                                    <DashBoardList></DashBoardList>
+                                    <DashBoardList myFollowingList={this.state.myFollowingList}></DashBoardList>
                                 </div>
                             </Typography.Paragraph>
                         </TabPane>

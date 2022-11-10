@@ -167,11 +167,9 @@ class Component extends React.Component {
     }
     componentDidMount() {
         this.props.onRef(this)
+        this.getMyFavourites();
     }
     componentDidUpdate(prevProps) {
-        if (this.props.accountId !== prevProps.accountId) {
-            this.getMyFavourites();
-        }
         if (this.props.isFavourite !== prevProps.isFavourite) {
             this.getList();
         }
@@ -271,7 +269,9 @@ class Component extends React.Component {
                 tableData: d.list,
                 pagination: { ...this.state.pagination, total: d.totalCount }
             });
-            this.props.setDashboardListCount(d.totalCount);
+            if (!this.props.isFavourite) {
+                this.props.setDashboardListCount(d.totalCount);
+            }
         });
     }
     render() {

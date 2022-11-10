@@ -8,12 +8,14 @@ export const AppContainer = styled.div`
 
 export const AppContentContainer = styled.div<{
   isAdminApp: boolean;
+  isLayout: boolean
+
 }>`
   flex-grow: 1;
   display: flex;
   flex-direction: ${props => (props.isAdminApp ? "column" : "row")};
   position: relative;
-  overflow: hidden;
+  overflow: ${props => (props.isLayout ? 'normal' : 'hidden')};
   background-color: ${props =>
     color(props.isAdminApp ? "bg-white" : "content")};
 
@@ -23,10 +25,13 @@ export const AppContentContainer = styled.div<{
   }
 `;
 
-export const AppContent = styled.main`
+export const AppContent = styled.main<{
+  isLayout: boolean
+
+}>`
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow: ${props => (props.isLayout ? 'normal' : 'auto')};
 
   @media print {
     overflow: visible !important;

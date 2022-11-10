@@ -52,13 +52,13 @@ class Component extends React.Component {
                     <path d="M8.89454 10.9319L8.89445 10.932C8.57514 11.2515 8.57501 11.7694 8.89454 12.089L10.1673 13.3617C10.4867 13.6812 11.0048 13.6813 11.3243 13.3617C11.3244 13.3617 11.3244 13.3616 11.3244 13.3616L13.8697 10.8163C14.0243 10.6618 14.1041 10.4608 14.1092 10.2583C14.2845 10.6394 14.3822 11.0635 14.3822 11.5105C14.3822 13.1673 13.039 14.5105 11.3822 14.5105C9.72533 14.5105 8.3822 13.1673 8.3822 11.5105C8.3822 9.85359 9.72533 8.51047 11.3822 8.51047C12.2529 8.51047 13.0369 8.88138 13.5849 9.47381C13.2925 9.36154 12.9485 9.42339 12.7127 9.65917L10.7458 11.6261L10.0517 10.932C10.0517 10.932 10.0516 10.9319 10.0516 10.9319C9.73205 10.6123 9.214 10.6124 8.89454 10.9319Z" fill="#6B7785" stroke="#6B7785" />
                 </svg>,
                 name: 'Followers',
-                key: 'following_account_count'
+                key: 'followed_account_count'
             }],
             currentFilter: { name: '' },
             tableData: [],
             loading: false,
             pagination: {
-                total: 96,
+                total: 0,
                 pageSize: 10,
                 current: 1,
             }
@@ -107,6 +107,7 @@ class Component extends React.Component {
             }).then(data => {
                 this.setState({
                     loading: false,
+                    pagination: { ...this.state.pagination, total: d.totalCount },
                     tableData: data.map(v => {
                         const find = d.list.find(sv => sv.creator_account_id == v.account.accountId)
                         return {
@@ -171,7 +172,7 @@ class Component extends React.Component {
                                                 <path d="M11.3822 8.01047C13.3152 8.01047 14.8822 9.57745 14.8822 11.5105C14.8822 13.4434 13.3152 15.0105 11.3822 15.0105C9.44918 15.0105 7.8822 13.4434 7.8822 11.5105C7.8822 9.57745 9.44918 8.01047 11.3822 8.01047ZM9.69807 11.2854C9.57385 11.1612 9.37238 11.1612 9.24809 11.2854C9.12388 11.4097 9.12388 11.6112 9.24809 11.7354L10.5208 13.0081C10.6451 13.1324 10.8466 13.1324 10.9708 13.0081L13.5162 10.4627C13.6405 10.3385 13.6405 10.137 13.5162 10.0127C13.392 9.88844 13.1906 9.88844 13.0663 10.0127L10.7458 12.3332L9.69807 11.2854Z" fill="#86909C" />
                                             </svg>
                                         </div>
-                                        <span className="num">{v.following_account_count}</span>
+                                        <span className="num">{v.followed_account_count}</span>
                                     </div>
                                 </div>
                             </div>
@@ -213,7 +214,7 @@ class Component extends React.Component {
                     ))}
                 </div>
                 <div className="pagination-wrap">
-                    <Pagination total={200} showJumper />
+                    <Pagination {...this.state.pagination} showJumper />
                 </div>
             </div >
         )

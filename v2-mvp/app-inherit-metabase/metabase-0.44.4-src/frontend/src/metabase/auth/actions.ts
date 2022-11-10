@@ -85,7 +85,7 @@ export const logout = createThunkAction(
       dispatch(push('/'));
 
       // dispatch(push(loginUrl));
-      // window.location.reload(); // clears redux state and browser caches
+      window.location.reload(); // clears redux state and browser caches
     };
   },
 );

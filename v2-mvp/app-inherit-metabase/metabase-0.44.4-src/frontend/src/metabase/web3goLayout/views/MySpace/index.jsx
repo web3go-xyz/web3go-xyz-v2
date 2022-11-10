@@ -13,6 +13,8 @@ import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 import DashBoardList from './DashBoardList';
 import FollowersList from './FollowersList';
 import moment from 'moment';
+import { numberSplit } from '@/web3goLayout/utils';
+
 const mapStateToProps = state => {
     return {
         route: state.routing.locationBeforeTransitions,
@@ -31,7 +33,7 @@ class Component extends React.Component {
         super(props);
         this.state = {
             // default,followers,following
-            viewType: 'default',
+            viewType: 'following',
             activeTab: '1',
             isMyself: true,
             userInfo: {},
@@ -42,9 +44,7 @@ class Component extends React.Component {
         this.DashboardRef = React.createRef();
     }
     componentDidMount() {
-        if (this.props.userData.account) {
-            this.getUserInfo();
-        }
+        this.getUserInfo();
     }
     // componentDidUpdate(prevProps) {
     //     if (JSON.stringify(this.props.userData) !== JSON.stringify(prevProps.userData)) {
@@ -61,22 +61,36 @@ class Component extends React.Component {
             myFavouriteCount
         });
     }
-    getUserInfo() {
+    getUserInfo = () => {
+        if (!this.props.userData.account) {
+            return;
+        }
         const accountId = this.props.route.query.accountId;
+
         if (accountId && accountId != this.props.userData.account.accountId) {
             LayoutLoginApi.searchAccountInfo({
                 accountIds: [accountId],
-                includeExtraInfo: true
+                includeExtraInfo: false
             }).then(d => {
-                this.setState({
-                    isMyself: false,
-                    userInfo: d[0].account
+                LayoutLoginApi.getAccountStatistic({ accountId: accountId }).then(data => {
+                    this.setState({
+                        isMyself: false,
+                        userInfo: {
+                            ...d[0].account,
+                            ...data
+                        }
+                    })
                 })
             });
         } else {
-            this.setState({
-                isMyself: true,
-                userInfo: this.props.userData.account
+            LayoutLoginApi.getAccountStatistic({ accountId: this.props.userData.account.accountId }).then(data => {
+                this.setState({
+                    isMyself: true,
+                    userInfo: {
+                        ...this.props.userData.account,
+                        ...data
+                    }
+                })
             })
         }
     }
@@ -99,6 +113,7 @@ class Component extends React.Component {
                 </TabPane>
             </Tabs>
             <DashBoardList
+                viewType={this.state.viewType}
                 isFavourite={this.state.activeTab == '2'}
                 onRef={(ref) => this.DashboardRef = ref}
                 accountId={userInfo.accountId}
@@ -120,9 +135,9 @@ class Component extends React.Component {
                 <div className="list-wrap">
                     <div className="l-header">
                         <IconArrowLeft onClick={() => { this.setState({ viewType: 'default' }) }} className="hover-item" />
-                        <span>Followers 436</span>
+                        <span>Followers {numberSplit(userInfo.followedAccountCount)}</span>
                     </div>
-                    <FollowersList></FollowersList>
+                    <FollowersList getUserInfo={this.getUserInfo} viewType={this.state.viewType} accountId={userInfo.accountId}></FollowersList>
                 </div>
             )
         } else if (this.state.viewType == 'following') {
@@ -130,9 +145,9 @@ class Component extends React.Component {
                 <div className="list-wrap">
                     <div className="l-header">
                         <IconArrowLeft onClick={() => { this.setState({ viewType: 'default' }) }} className="hover-item" />
-                        <span>Following 583</span>
+                        <span>Following {numberSplit(userInfo.followingAccountCount)}</span>
                     </div>
-                    <FollowersList></FollowersList>
+                    <FollowersList getUserInfo={this.getUserInfo} viewType={this.state.viewType} accountId={userInfo.accountId}></FollowersList>
                 </div>
             )
         }
@@ -190,7 +205,7 @@ class Component extends React.Component {
                                     <span>Followers</span>
                                 </div>
                                 <div onClick={() => { this.setState({ viewType: 'followers' }) }} className="f-right hover-item">
-                                    <span>583</span>
+                                    <span>{numberSplit(userInfo.followedAccountCount)}</span>
                                     <img src={require("@/web3goLayout/assets/account/right_arrow.png")} alt="" />
                                 </div>
                             </div>
@@ -204,28 +219,28 @@ class Component extends React.Component {
                                     <span>Following</span>
                                 </div>
                                 <div onClick={() => { this.setState({ viewType: 'following' }) }} className="f-right hover-item">
-                                    <span>1,577</span>
+                                    <span>{numberSplit(userInfo.followingAccountCount)}</span>
                                     <img src={require("@/web3goLayout/assets/account/right_arrow.png")} alt="" />
                                 </div>
                             </div>
                         </div>
                         <div className="info">
                             <div className="item">
-                                <div className="value">78,588</div>
+                                <div className="value">{numberSplit(userInfo.total_view_count)}</div>
                                 <div className="label">Views</div>
                             </div>
                             <div className="item">
-                                <div className="value">9,628,577</div>
+                                <div className="value">{numberSplit(userInfo.total_favorite_count)}</div>
                                 <div className="label">Favorites</div>
                             </div>
                             <div className="item">
-                                <div className="value">83,400</div>
+                                <div className="value">{numberSplit(userInfo.total_share_count)}</div>
                                 <div className="label">Shares</div>
                             </div>
                         </div>
                     </div>
                     <div className="content">
-                        {main}
+                        {userInfo.accountId ? main : null}
                     </div>
                 </div>
             </div >
