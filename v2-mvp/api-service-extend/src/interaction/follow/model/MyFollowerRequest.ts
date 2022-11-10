@@ -4,5 +4,6 @@ import { PageRequest } from "src/viewModel/base/pageRequest";
 
 export class MyFollowerRequest extends PageRequest {
 
-
+    @ApiProperty()
+    account_id: string;
 }

@@ -7,6 +7,7 @@ export class AccountFollower {
     @PrimaryColumn({
         type: "text",
         name: "account_id",
+        comment: 'yourself account_id'
     })
     accountId: string;
 
@@ -14,6 +15,7 @@ export class AccountFollower {
     @PrimaryColumn({
         type: "text",
         name: "followed_account_id",
+        comment: 'account_id you are interested and followed'
     })
     followedAccountId: string;
 

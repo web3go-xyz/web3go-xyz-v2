@@ -2,7 +2,9 @@ import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 import { AuthorizedUser } from 'src/base/auth/AuthorizedUser';
+import { AllowAnonymous } from 'src/base/auth/decorator/AllowAnonymous';
 import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
+import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
 import { W3Logger } from 'src/base/log/logger.service';
 import { FollowService } from './follow.service';
 import { FollowAccountRequest } from './model/FollowAccountRequest';
@@ -19,22 +21,51 @@ import { UnFollowAccountResponse } from './model/UnFollowAccountResponse';
 @ApiTags('/api/v2/follow')
 export class FollowController {
     logger: W3Logger;
-    constructor(private readonly service: FollowService,
+    constructor(
+        private readonly service: FollowService,
+        private readonly jwtService: JWTAuthService
     ) {
         this.logger = new W3Logger(`FollowController`);
     }
 
-    @Post('/listMyFollows')
-    @ApiOperation({ summary: 'list all tags' })
+    @AllowAnonymous()
+    @Post('/listFollowing')
+    @ApiOperation({ summary: 'list all others you are following, you=>others' })
     @ApiOkResponse({ type: MyFollowerResponse })
-    async listMyFollows(@Req() req, @Body() param: MyFollowerRequest): Promise<MyFollowerResponse> {
+    async listFollowing(@Req() req, @Body() param: MyFollowerRequest): Promise<MyFollowerResponse> {
 
-        this.logger.debug(`listMyFollows:${JSON.stringify(param)}`);
-        let validateUser: AuthorizedUser = req.user;
-        let accountId = validateUser.id;
+        let accountId = param.account_id;
+        if (!accountId) {
+            let validateUser: AuthorizedUser = this.jwtService.decodeAuthUserFromHttpRequest(req);
+            if (validateUser) {
+                accountId = validateUser.id;
+            }
+        }
+        this.logger.debug(`listFollowing:accountId=${accountId},${JSON.stringify(param)}`);
 
-        return await this.service.listMyFollows(param, accountId);
+
+        return await this.service.listFollowing(param, accountId);
     }
+
+    @AllowAnonymous()
+    @Post('/listFollowed')
+    @ApiOperation({ summary: 'list all others you are followed,  others=>you' })
+    @ApiOkResponse({ type: MyFollowerResponse })
+    async listFollowed(@Req() req, @Body() param: MyFollowerRequest): Promise<MyFollowerResponse> {
+
+        let accountId = param.account_id;
+        if (!accountId) {
+            let validateUser: AuthorizedUser = this.jwtService.decodeAuthUserFromHttpRequest(req);
+            if (validateUser) {
+                accountId = validateUser.id;
+            }
+        }
+        this.logger.debug(`listFollowed: accountId=${accountId},${JSON.stringify(param)}`);
+
+
+        return await this.service.listFollowed(param, accountId);
+    }
+
 
     @Post('/follow')
     @ApiOperation({ summary: 'follow the account' })

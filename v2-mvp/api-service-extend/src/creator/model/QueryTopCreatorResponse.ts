@@ -25,7 +25,7 @@ export class CreatorStatistic {
     total_fork_count: number;
 
     @ApiProperty()
-    following_account_count: number;
+    followed_account_count: number;
 }
 export class QueryTopCreatorResponse extends PageResponse {
     @ApiProperty()

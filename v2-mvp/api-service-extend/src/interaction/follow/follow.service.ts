@@ -24,7 +24,25 @@ export class FollowService {
         this.logger = new W3Logger(`FollowService`);
     }
 
-    async listMyFollows(param: MyFollowerRequest, accountId: string): Promise<MyFollowerResponse> {
+    async listFollowed(param: MyFollowerRequest, accountId: string): Promise<MyFollowerResponse> {
+        let records = await this.afRepo.findAndCount({
+            where: {
+                followedAccountId: accountId
+            },
+            select: ['accountId', 'createdAt'],
+            order: {
+                createdAt: 'DESC'
+            },
+            take: PageRequest.getTake(param),
+            skip: PageRequest.getSkip(param)
+        });
+        let resp: MyFollowerResponse = {
+            list: records[0],
+            totalCount: records[1]
+        };
+        return resp;
+    }
+    async listFollowing(param: MyFollowerRequest, accountId: string): Promise<MyFollowerResponse> {
         let records = await this.afRepo.findAndCount({
             where: {
                 accountId: accountId
