@@ -36,7 +36,6 @@ export const getDashboardActions = (
   const isEmbeddingEnabled = MetabaseSettings.get("enable-embedding");
 
   const buttons = [];
-
   const isLoaded = !!dashboard;
   const hasCards = isLoaded && dashboard.ordered_cards.length > 0;
 
@@ -64,6 +63,40 @@ export const getDashboardActions = (
     }
 
     if (canShareDashboard) {
+      // buttons.push(
+      //   <DashboardSharingEmbeddingModal
+      //     key="dashboard-embed"
+      //     additionalClickActions={() => self.refs.popover.close()}
+      //     dashboard={dashboard}
+      //     enabled={
+      //       !isEditing &&
+      //       !isFullscreen &&
+      //       ((isPublicLinksEnabled && (isAdmin || dashboard.public_uuid)) ||
+      //         (isEmbeddingEnabled && isAdmin))
+      //     }
+      //     isLinkEnabled={canShareDashboard}
+      //     linkText={
+      //       <Tooltip
+      //         isLinkEnabled={canShareDashboard}
+      //         tooltip={
+      //           canShareDashboard
+      //             ? t`Sharing`
+      //             : t`Add data to share this dashboard`
+      //         }
+      //       >
+      //         <DashboardHeaderButton
+      //           icon="share"
+      //           className={cx({
+      //             "text-brand-hover": canShareDashboard,
+      //             "text-light": !canShareDashboard,
+      //           })}
+      //         />
+      //       </Tooltip>
+      //     }
+      //   />,
+      // );
+
+      // fix:commonUser also can share
       buttons.push(
         <DashboardSharingEmbeddingModal
           key="dashboard-embed"
@@ -72,8 +105,8 @@ export const getDashboardActions = (
           enabled={
             !isEditing &&
             !isFullscreen &&
-            ((isPublicLinksEnabled && (isAdmin || dashboard.public_uuid)) ||
-              (isEmbeddingEnabled && isAdmin))
+            isPublicLinksEnabled &&
+            isEmbeddingEnabled
           }
           isLinkEnabled={canShareDashboard}
           linkText={

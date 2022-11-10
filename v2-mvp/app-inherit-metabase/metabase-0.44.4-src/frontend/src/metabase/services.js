@@ -33,15 +33,17 @@ export const LayoutLoginApi = {
   linkWallet: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/linkWallet"),
   unlinkEmail: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/unlinkEmail"),
   unlinkWallet: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/unlinkWallet"),
-
 };
 export const LayoutDashboardApi = {
-  listAllTags: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/listAllTags"),
+  listAllTags: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/listAllTags"),
   list: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/list"),
-  listMyFavorites: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/listMyFavorites"),
+  listMyFavorites: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/listMyFavorites"),
   detail: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/detail"),
-  logFavorite: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/logFavorite"),
-  logView: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/logView"),
+  logFavorite: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/logFavorite"),
+  logView: WPOST(WEB3GO_BASE_URL + "/api/v2/view/logView"),
+};
+export const LayoutCreatorApi = {
+  listCreators: WPOST(WEB3GO_BASE_URL + "/api/v2/creator/listCreators"),
 };
 
 export const ActivityApi = {

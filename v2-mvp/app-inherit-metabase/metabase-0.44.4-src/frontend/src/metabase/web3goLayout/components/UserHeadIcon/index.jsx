@@ -30,7 +30,7 @@ class Component extends React.Component {
 
     render() {
         if (this.props.avatar) {
-            return < img className="head-icon-component" style={{
+            return < img className={"head-icon-component" + (this.props.className ? ' ' + this.props.className : '')} style={{
                 width: (this.props.iconSize || 44) + 'px',
                 height: (this.props.iconSize || 44) + 'px',
                 borderRadius: '50%',
@@ -53,7 +53,7 @@ class Component extends React.Component {
         } else if ('STUVWXYZ'.includes(firstWord.toUpperCase())) {
             bgColor = '#FFC225'
         }
-        return <div className="head-icon-component" style={{
+        return <div className={"head-icon-component" + (this.props.className ? ' ' + this.props.className : '')} style={{
             width: (this.props.iconSize || 44) + 'px',
             height: (this.props.iconSize || 44) + 'px',
             background: bgColor,

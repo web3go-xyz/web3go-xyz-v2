@@ -161,7 +161,7 @@ class Component extends React.Component {
                 <div className="main-wrap common-layout">
                     <div className="side">
                         <div className="headicon-wrap">
-                            <UserHeadIcon iconSize={116} fontSize={22} nickName='khuiy'></UserHeadIcon>
+                            <UserHeadIcon iconSize={116} fontSize={22} avatar={this.state.userInfo.avatar} nickName={this.state.userInfo.nickName}></UserHeadIcon>
                         </div>
                         <div className="nickname">{userInfo.nickName}</div>
                         <div className="join-time">Joined on {moment(userInfo.created_time).format('YYYY/MM/DD')}</div>

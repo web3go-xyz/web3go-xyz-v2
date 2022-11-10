@@ -193,7 +193,6 @@ class DashboardHeader extends Component {
 
     const buttons = [];
     const extraButtons = [];
-
     if (isFullscreen && parametersWidget) {
       buttons.push(parametersWidget);
     }
@@ -352,7 +351,6 @@ class DashboardHeader extends Component {
         ],
       );
     }
-
     return buttons;
   }
 

@@ -37,6 +37,7 @@ export function shorterAddress(address, lengthThresold = 20, subLength = 5) {
 
 export function copy(text) {
     navigator.clipboard.writeText(text);
+    Message.success('Copy success');
 }
 
 // 数字千分位分隔显示
