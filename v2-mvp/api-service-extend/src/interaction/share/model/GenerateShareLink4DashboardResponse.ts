@@ -11,7 +11,7 @@ export class GenerateShareLink4DashboardResponse {
     @IsNotEmpty()
     dashboardId: number;
 
-    @ApiProperty({ required: true })
+    @ApiProperty({ required: true,description:'eg: twitter, discord, link'  })
     @IsNotEmpty()
     shareChannel: string;
 

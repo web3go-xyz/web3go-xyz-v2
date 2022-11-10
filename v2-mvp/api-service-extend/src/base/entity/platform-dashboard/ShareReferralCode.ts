@@ -16,7 +16,7 @@ export class ShareReferralCode {
     })
     referralCode: string;
 
-    @Column({ type: "text", name: "category", comment: 'support dashboard,dataset,etc.' })
+    @Column({ type: "text", name: "category", comment: 'support: dashboard,dataset' })
     category: string;
 
 
@@ -39,6 +39,7 @@ export class ShareReferralCode {
     @Column({
         type: "text",
         name: "share_channel",
+        comment:'eg: twitter, discord, link'
     })
     shareChannel: string;
 

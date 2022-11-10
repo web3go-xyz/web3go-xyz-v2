@@ -7,7 +7,7 @@ export class Log4ShareDashboardRequest {
     @IsNotEmpty()
     dashboardId: number;
 
-    @ApiProperty({ required: true })
+    @ApiProperty({ required: true, description: 'eg: twitter, discord, link' })
     @IsNotEmpty()
     shareChannel: string;
 
