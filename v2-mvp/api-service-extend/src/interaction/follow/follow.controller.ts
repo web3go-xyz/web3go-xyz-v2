@@ -43,7 +43,9 @@ export class FollowController {
         }
         this.logger.debug(`listFollowing:accountId=${accountId},${JSON.stringify(param)}`);
 
-
+        if (!accountId) {
+            throw new Error("accountId required");
+        }
         return await this.service.listFollowing(param, accountId);
     }
 
@@ -61,7 +63,9 @@ export class FollowController {
             }
         }
         this.logger.debug(`listFollowed: accountId=${accountId},${JSON.stringify(param)}`);
-
+        if (!accountId) {
+            throw new Error("accountId required");
+        }
 
         return await this.service.listFollowed(param, accountId);
     }
@@ -75,7 +79,9 @@ export class FollowController {
         this.logger.debug(`follow:${JSON.stringify(param)}`);
         let validateUser: AuthorizedUser = req.user;
         let accountId = validateUser.id;
-
+        if(!accountId){
+            throw new Error("accountId required");           
+        }
         return await this.service.follow(param, accountId);
     }
 
@@ -87,7 +93,9 @@ export class FollowController {
         this.logger.debug(`unfollow:${JSON.stringify(param)}`);
         let validateUser: AuthorizedUser = req.user;
         let accountId = validateUser.id;
-
+        if(!accountId){
+            throw new Error("accountId required");           
+        }
         return await this.service.unfollow(param, accountId);
     }
 

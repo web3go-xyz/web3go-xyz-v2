@@ -20,6 +20,8 @@ import { EmailBaseService } from 'src/base/email/email-base.service';
 import { VerifyCodeBaseService } from '../base/verifycode-base.service';
 import { VerifyCodePurpose, VerifyCodeType, VerifyFlag } from 'src/account/model/VerifyCodeType';
 import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
+import { AccountStatisticResponse, } from '../model/info/AccountStatisticResponse';
+import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
 
 
 
@@ -43,6 +45,9 @@ export class AccountInfoService {
 
     @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_VERIFYCODE_REPOSITORY.provide)
     private accountVerifyCodeRepository: Repository<AccountVerifyCode>,
+
+    @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
+    private dextRepo: Repository<DashboardExt>,
 
 
   ) {
@@ -304,6 +309,46 @@ export class AccountInfoService {
 
   }
 
+
+  async getAccountStatistic(accountId: string): Promise<AccountStatisticResponse> {
+
+    let account = await this.accountRepository.findOne({
+      where: {
+        accountId: accountId
+      }
+    });
+    if (!account) {
+      throw new Error(`account not found for ${accountId}`);
+    }
+
+    let resp: AccountStatisticResponse = {
+      accountId,
+      dashboard_count: 0,
+      total_share_count: 0,
+      total_view_count: 0,
+      total_favorite_count: 0,
+      total_fork_count: 0
+    }
+
+    let query = await this.dextRepo.createQueryBuilder("d")
+      .where("d.creator_account_id=:creator_account_id", { creator_account_id: accountId })
+      .select("count(1)", "dashboard_count")
+      .addSelect("SUM( d.view_count )", "total_view_count")
+      .addSelect("SUM( d.share_count ) ", "total_share_count")
+      .addSelect("SUM( d.fork_count )", "total_fork_count")
+      .addSelect("SUM( d.favorite_count )", "total_favorite_count")
+    // .groupBy("d.creator_account_id")
+    // .addGroupBy(`a."nickName"`)
+
+    let t = await query.getRawOne();
+    resp.dashboard_count = Number(t.dashboard_count);
+    resp.total_view_count = Number(t.total_view_count);
+    resp.total_share_count = Number(t.total_share_count);
+    resp.total_fork_count = Number(t.total_fork_count);
+    resp.total_favorite_count = Number(t.total_favorite_count);
+
+    return resp;
+  }
 
 
 }
