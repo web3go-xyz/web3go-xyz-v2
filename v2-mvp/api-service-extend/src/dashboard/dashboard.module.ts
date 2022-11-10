@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { OrmModule } from 'src/base/orm/orm.module';
+import { Module } from '@nestjs/common'; 
+import { PlatformOrmModule } from 'src/base/orm/platoform.orm.module';
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
 
 @Module({
     imports: [
-        OrmModule
+        PlatformOrmModule
     ],
     controllers: [DashboardController],
     providers: [

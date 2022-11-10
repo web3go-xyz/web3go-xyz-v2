@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { OrmModule } from 'src/base/orm/orm.module';
+import { PlatformOrmModule } from 'src/base/orm/platoform.orm.module';
 import { EventModule } from 'src/event-bus/event.module';
 import { ForkController } from './fork.controller';
 import { ForkService } from './fork.service';
@@ -7,7 +7,7 @@ import { ForkService } from './fork.service';
 
 @Module({
     imports: [
-        OrmModule,
+        PlatformOrmModule,
         EventModule
     ],
     controllers: [ForkController],

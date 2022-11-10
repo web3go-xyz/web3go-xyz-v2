@@ -15,12 +15,14 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventModule } from './event-bus/event.module';
 import { CreatorModule } from './creator/creator.module';
 import { TagModule } from './interaction/tag/tag.module';
-import { OrmModule } from './base/orm/orm.module';
+import { PlatformOrmModule } from './base/orm/platoform.orm.module';
 import { ShareModule } from './interaction/share/share.module';
 import { ViewModule } from './interaction/view/view.module';
 import { ForkModule } from './interaction/fork/fork.module';
 import { FavoriteModule } from './interaction/favorite/favorite.module';
 import { FollowModule } from './interaction/follow/follow.module';
+import { MBConnectModule } from './mb-connect/mb-connect.module';
+import { MBOrmModule } from './base/orm/mb.orm.module';
 
 @Module({
   imports: [
@@ -32,10 +34,12 @@ import { FollowModule } from './interaction/follow/follow.module';
       }
     ),
     ScheduleModule.forRoot(),
-    OrmModule,
+    PlatformOrmModule,
+    MBOrmModule,
     JWTAuthModule,
     KVModule,
     EventModule,
+    MBConnectModule,
     AccountInfoModule,
     AccountAuthModule,
     Web3SignModule,

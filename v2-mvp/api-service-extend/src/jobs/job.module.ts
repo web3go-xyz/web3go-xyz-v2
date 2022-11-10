@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { Job_SyncDashboardFromMB } from './job.syncDashboardFromMB';
-import { OrmModule } from 'src/base/orm/orm.module';
+import { MBConnectModule } from 'src/mb-connect/mb-connect.module';
+import { PlatformOrmModule } from 'src/base/orm/platoform.orm.module';
 @Module({
-  imports: [OrmModule],
+  imports: [PlatformOrmModule, MBConnectModule],
   providers: [
-
     Job_SyncDashboardFromMB],
   exports: [Job_SyncDashboardFromMB]
 

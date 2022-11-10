@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TagService } from './tag.service';
-import { TagController } from './tag.controller';
-import { OrmModule } from 'src/base/orm/orm.module';
+import { TagController } from './tag.controller'; 
+import { PlatformOrmModule } from 'src/base/orm/platoform.orm.module';
 
 @Module({
   imports: [
-    OrmModule
+    PlatformOrmModule
   ],
   providers: [TagService],
   controllers: [TagController],
