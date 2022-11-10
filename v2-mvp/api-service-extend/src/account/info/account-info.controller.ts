@@ -15,6 +15,8 @@ import { UnlinkEmailRequest } from 'src/account/model/info/UnlinkEmailRequest';
 import { UnlinkWalletRequest } from 'src/account/model/info/UnlinkWalletRequest';
 import { AccountInfoService } from './account-info.service';
 import { AllowAnonymous } from 'src/base/auth/decorator/AllowAnonymous';
+import { AccountStatisticResponse, } from '../model/info/AccountStatisticResponse';
+import { AccountStatisticRequest } from '../model/info/AccountStatisticRequest';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -34,6 +36,16 @@ export class AccountInfoController {
   @ApiOkResponse({ type: AccountInfo, isArray: true })
   async searchAccountInfo(@Body() searchAccountInfo: SearchAccountInfoRequest): Promise<AccountInfo[]> {
     return await this.accountInfoService.getAccountInfo(searchAccountInfo.accountIds, searchAccountInfo.includeExtraInfo || false);
+  }
+
+  @AllowAnonymous()
+  @Post('/getAccountStatistic')
+  @ApiOperation({
+    summary: 'get statistic info for account',
+  })
+  @ApiOkResponse({ type: AccountStatisticResponse })
+  async getAccountStatistic(@Body() param: AccountStatisticRequest): Promise<AccountStatisticResponse> {
+    return await this.accountInfoService.getAccountStatistic(param.accountId);
   }
 
   @Post('/getAccountInfo')

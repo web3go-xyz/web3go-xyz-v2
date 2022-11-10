@@ -5,6 +5,7 @@ import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { CronConstants } from 'src/cron.constants';
+import { MBConnectService } from 'src/mb-connect/mb-connect.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -13,9 +14,7 @@ export class Job_SyncDashboardFromMB {
     logger: W3Logger;
 
     constructor(
-
-        @Inject(RepositoryConsts.REPOSITORYS_METABASE.MB_REPORT_DASHBOARD_REPOSITORY.provide)
-        private mb_rdRepo: Repository<ReportDashboard>,
+        private readonly mbConnectService: MBConnectService,
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
         private dextRepo: Repository<DashboardExt>,
@@ -40,16 +39,8 @@ export class Job_SyncDashboardFromMB {
                 new: [],
                 update: []
             };
-            let mb_dashboard_list: ReportDashboard[] = [];
-            if (dashboard_id > 0) {
-                mb_dashboard_list = await this.mb_rdRepo.find({
-                    where: {
-                        id: dashboard_id
-                    }
-                });
-            } else {
-                mb_dashboard_list = await this.mb_rdRepo.find();
-            }
+            let mb_dashboard_list: ReportDashboard[] = await this.mbConnectService.findDashboards(dashboard_id);
+
 
             if (mb_dashboard_list && mb_dashboard_list.length > 0) {
 
@@ -69,21 +60,7 @@ export class Job_SyncDashboardFromMB {
                     }
                     else {
 
-                        let creatorAccountId = '';
-                        let query = `
-                            SELECT
-                                d."id", 
-                                d.creator_id,
-                                u.login_attributes :: json ->> 'id' AS "creatorAccountId" 
-                            FROM
-                                report_dashboard d
-                                LEFT JOIN core_user u ON d.creator_id = u."id"
-                            WHERE d."id"=${mb_d.id}`;
-
-                        let findCreatorResult = await this.mb_rdRepo.query(query);
-                        if (findCreatorResult && findCreatorResult.length > 0) {
-                            creatorAccountId = findCreatorResult[0].creatorAccountId
-                        }
+                        let creatorAccountId = await this.mbConnectService.findDashboardCreator(mb_d.id);
 
                         let newDashboard: DashboardExt = {
                             id: mb_d.id,

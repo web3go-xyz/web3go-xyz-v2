@@ -57,22 +57,25 @@ export class Account {
 
 
     @ApiProperty({
-        description: 'count for how many current account are followed by others',
+        description: 'count for how many addresses current account are followed by.  others=>current',
     })
     @Column({
         name: "followed_account_count",
         type: "integer",
         default: 0,
-        comment: 'count for  current account be followed'
+        comment: 'count for how many addresses current account are followed by.  others=>current'
     })
     followedAccountCount: number;
 
 
+    @ApiProperty({
+        description: 'count for how many accounts have been followed by current account,  current=>others',
+    })
     @Column({
         name: "following_account_count",
         type: "integer",
         default: 0,
-        comment: 'count for how many accounts have been followed by current account'
+        comment: 'count for how many accounts have been followed by current account,  current=>others'
     })
     followingAccountCount: number;
 }

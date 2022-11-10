@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-
-import { OrmModule } from 'src/base/orm/orm.module';
+ 
+import { PlatformOrmModule } from 'src/base/orm/platoform.orm.module';
 import { AccountBaseService } from './account-base.service';
 import { VerifyCodeBaseService } from './verifycode-base.service';
 
 
 @Module({
   imports: [
-    OrmModule
+    PlatformOrmModule
   ],
   controllers: [],
   providers: [

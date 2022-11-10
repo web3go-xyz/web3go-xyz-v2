@@ -16,11 +16,19 @@ export class ShareReferralCode {
     })
     referralCode: string;
 
-    @Column({ type: "text", name: "item_type", comment: 'support dashboard,dataset,etc.' })
-    itemType: string;
+    @Column({ type: "text", name: "category", comment: 'support: dashboard,dataset' })
+    category: string;
 
-    @Column({ type: "text", name: "item_id", comment: 'it would be dashboard_id, dataset_id,etc.' })
-    itemId: string;
+
+    @Column({ type: "text", name: "refer_item_id", comment: 'refer to the actual dashboard_id, dataset_id,etc.' })
+    referItemID: string;
+
+
+    @Column({ type: "text", name: "public_uuid", comment: 'it would be uuid, comes from metabase tables. eg: report_dashboard.public_uuid' })
+    publicUUID: string;
+
+    @Column({ type: "text", name: "public_link", comment: 'link when share public' })
+    public_link: string;
 
     @Column({
         type: "text",
@@ -31,6 +39,7 @@ export class ShareReferralCode {
     @Column({
         type: "text",
         name: "share_channel",
+        comment:'eg: twitter, discord, link'
     })
     shareChannel: string;
 

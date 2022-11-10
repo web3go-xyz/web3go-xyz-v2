@@ -21,20 +21,14 @@ export class CreatorService {
 
     async listCreators(param: QueryTopCreatorRequest): Promise<QueryTopCreatorResponse> {
 
-        //         SELECT
-        // 	d.creator_account_id,
-        // 	COUNT ( 1 ) AS dashboard_count,
-        // 	SUM ( d.view_count ) AS total_view_count,
-        // 	SUM ( d.share_count ) AS total_share_count,
-        // 	SUM ( d.fork_count ) AS total_fork_count,
-        // 	SUM ( d.favorite_count ) AS total_favorite_count ,
-        //   COALESCE(	max(a.following_account_count),0) as following_account_count
-        // FROM
-        // 	dashboard_ext d 
-        // 	left JOIN account a on d.creator_account_id=a."accountId"
-        // GROUP BY
-        // 	d.creator_account_id
-        // 	order by total_fork_count desc
+        let resp: QueryTopCreatorResponse = {
+            list: [],
+            totalCount: 0
+        }
+        let query_count = await this.dextRepo.createQueryBuilder("d")
+            .select("COUNT(DISTINCT(creator_account_id))", "creator_account_id_count")
+            .getRawOne();
+        resp.totalCount = await query_count.creator_account_id_count;
 
         let query = await this.dextRepo.createQueryBuilder("d")
             .leftJoinAndSelect(Account, "a", "a.accountId = d.creator_account_id")
@@ -45,9 +39,10 @@ export class CreatorService {
             .addSelect("SUM( d.share_count ) ", "total_share_count")
             .addSelect("SUM( d.fork_count )", "total_fork_count")
             .addSelect("SUM( d.favorite_count )", "total_favorite_count")
-            .addSelect("COALESCE( max(a.following_account_count),0)", "following_account_count")
+            .addSelect("COALESCE( max(a.followed_account_count),0)", "followed_account_count")
             .groupBy("d.creator_account_id")
             .addGroupBy(`a."nickName"`)
+
 
         if (param.orderBys && param.orderBys.length > 0) {
             query = query.orderBy(param.orderBys[0].sort, param.orderBys[0].order);
@@ -59,11 +54,6 @@ export class CreatorService {
             .skip(PageRequest.getSkip(param))
 
 
-        let resp: QueryTopCreatorResponse = {
-            list: [],
-            totalCount: 0
-        }
-        resp.totalCount = await query.getCount();
 
         let records = await query.getRawMany();
         this.logger.log(records);
@@ -77,7 +67,7 @@ export class CreatorService {
                 total_share_count: t.total_share_count,
                 total_fork_count: t.total_fork_count,
                 total_favorite_count: t.total_favorite_count,
-                following_account_count: t.following_account_count,
+                followed_account_count: t.followed_account_count,
             })
         }
 

@@ -27,6 +27,7 @@ export class DatasetFavoriteLog {
     @Column({
         type: "text",
         name: "share_channel",
+        comment:'eg: twitter, discord, link'
     })
     shareChannel: string;
 

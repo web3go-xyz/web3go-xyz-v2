@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CreatorService } from './creator.service';
-import { CreatorController } from './creator.controller';
-import { OrmModule } from 'src/base/orm/orm.module';
+import { CreatorController } from './creator.controller'; 
+import { PlatformOrmModule } from 'src/base/orm/platoform.orm.module';
 
 @Module({
   imports: [
-    OrmModule
+    PlatformOrmModule
   ],
   providers: [CreatorService],
   controllers: [CreatorController],

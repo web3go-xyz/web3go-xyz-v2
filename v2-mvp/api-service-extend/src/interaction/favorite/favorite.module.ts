@@ -1,12 +1,12 @@
-import { Module } from '@nestjs/common';
-import { OrmModule } from 'src/base/orm/orm.module';
+import { Module } from '@nestjs/common'; 
+import { PlatformOrmModule } from 'src/base/orm/platoform.orm.module';
 import { EventModule } from 'src/event-bus/event.module';
 import { FavoriteController } from './favorite.controller';
 import { FavoriteService } from './favorite.service';
 
 @Module({
     imports: [
-        OrmModule,
+        PlatformOrmModule,
         EventModule
     ],
     controllers: [FavoriteController],
