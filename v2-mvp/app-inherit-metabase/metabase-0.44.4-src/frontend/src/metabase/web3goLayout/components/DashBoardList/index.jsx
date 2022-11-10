@@ -42,7 +42,6 @@ class Component extends React.Component {
                 createBy: '',
                 myFavorite: false
             },
-            createByList: [{ name: 1 }, { name: 2 }],
             columns: [
                 {
                     title: 'Name',
@@ -224,6 +223,13 @@ class Component extends React.Component {
             this.getList();
         });
     }
+    clickFilter = () => {
+        if (!this.props.userData.account) {
+            event.emit('goSignIn');
+            return;
+        }
+        this.setState({ paramsShow: !this.state.paramsShow })
+    }
     getAccountList = (accountIdList) => {
         LayoutLoginApi.searchAccountInfo({
             accountIds: accountIdList,
@@ -245,7 +251,7 @@ class Component extends React.Component {
             }] : [],
             "tagIds": this.state.currentTag.id ? [this.state.currentTag.id] : [],
             "searchName": "",
-            "creator": "",
+            "creator": this.state.params.createBy,
             "dashboardIds": this.state.showMyFavorite ? this.state.favouriteList.map(v => v.dashboardId) : []
         }).then(d => {
             this.getAccountList(d.list.map(v => v.creatorAccountId));
@@ -277,11 +283,10 @@ class Component extends React.Component {
         return newTableData;
     }
     render() {
-        const tableData = this.filter
         return (
             <div className="web3go-layout-home-dashbaoard-list">
                 <div className="filter-wrap">
-                    <div className="filter-btn" onClick={() => { this.setState({ paramsShow: !this.state.paramsShow }) }}>
+                    <div className="filter-btn" onClick={() => { this.clickFilter(); }}>
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2.5 4.5H13.5M11.5 11.5H4.71052M12.5 8H3.5" stroke="#6B7785" strokeWidth="1.5" />
                         </svg>
@@ -317,14 +322,15 @@ class Component extends React.Component {
                                         ...this.state.params,
                                         createBy: value
                                     }
+                                }, () => {
+                                    this.getList();
                                 });
-                                this.getList();
                             }
                             }
                         >
-                            {this.state.createByList.map((v, i) => (
-                                <Option key={i} value={v.name}>
-                                    {v.name}
+                            {this.props.myFollowingList.map((v, i) => (
+                                <Option key={i} value={v.accountId}>
+                                    {v.nickName}
                                 </Option>
                             ))}
                         </Select>
