@@ -34,7 +34,7 @@ export class AccountBaseService {
   }
 
   generateAccountId() {
-    return uuidv4();
+    return uuidv4().toString().replace(/-/g, '');
   }
 
   async searchAccountGroups(accountId: string): Promise<string[]> {

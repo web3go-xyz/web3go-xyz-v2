@@ -44,6 +44,10 @@ export const LayoutDashboardApi = {
 };
 export const LayoutCreatorApi = {
   listCreators: WPOST(WEB3GO_BASE_URL + "/api/v2/creator/listCreators"),
+  listMyFollows: WPOST(WEB3GO_BASE_URL + "/api/v2/follow/listMyFollows"),
+  follow: WPOST(WEB3GO_BASE_URL + "/api/v2/follow/follow"),
+  unfollow: WPOST(WEB3GO_BASE_URL + "/api/v2/follow/unfollow"),
+
 };
 
 export const ActivityApi = {

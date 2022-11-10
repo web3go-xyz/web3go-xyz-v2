@@ -75,7 +75,7 @@ export class DashboardExt {
         description: 'favorite count',
     })
     @Column({
-        name: "favorite_ount",
+        name: "favorite_count",
         type: "integer",
         default: 0
     })

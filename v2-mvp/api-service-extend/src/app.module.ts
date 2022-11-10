@@ -11,11 +11,16 @@ import { JWTAuthModule } from './base/auth/jwt-auth.module';
 import { HomepageModule } from './homepage/homepage.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ShareService } from './share/share.service';
-import { ShareModule } from './share/share.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventModule } from './event-bus/event.module';
-import { EventService } from './event-bus/event.service';
+import { CreatorModule } from './creator/creator.module';
+import { TagModule } from './interaction/tag/tag.module';
+import { OrmModule } from './base/orm/orm.module';
+import { ShareModule } from './interaction/share/share.module';
+import { ViewModule } from './interaction/view/view.module';
+import { ForkModule } from './interaction/fork/fork.module';
+import { FavoriteModule } from './interaction/favorite/favorite.module';
+import { FollowModule } from './interaction/follow/follow.module';
 
 @Module({
   imports: [
@@ -27,16 +32,23 @@ import { EventService } from './event-bus/event.service';
       }
     ),
     ScheduleModule.forRoot(),
+    OrmModule,
     JWTAuthModule,
     KVModule,
+    EventModule,
     AccountInfoModule,
     AccountAuthModule,
     Web3SignModule,
     DebugModule,
     HomepageModule,
     DashboardModule,
+    CreatorModule,
+    TagModule,
     ShareModule,
-    EventModule
+    ViewModule,
+    ForkModule,
+    FavoriteModule,
+    FollowModule
   ],
   controllers: [AppController],
   providers: [AppService],
