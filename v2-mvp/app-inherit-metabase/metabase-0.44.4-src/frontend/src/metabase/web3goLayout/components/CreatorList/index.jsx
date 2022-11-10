@@ -14,7 +14,8 @@ import { LayoutLoginApi, LayoutDashboardApi, LayoutCreatorApi } from '@/services
 const Option = Select.Option;
 const mapStateToProps = state => {
     return {
-        isDark: state.app.isDark
+        isDark: state.app.isDark,
+        userData: state.app.userData,
     }
 };
 const mapDispatchToProps = {
@@ -56,6 +57,7 @@ class Component extends React.Component {
             }],
             currentFilter: { name: '' },
             tableData: [],
+            myFollowingList: [],
             loading: false,
             pagination: {
                 total: 0,
@@ -67,16 +69,24 @@ class Component extends React.Component {
     componentDidMount() {
         this.getList();
     }
+    refreshCreatorListAndMyFollowsList() {
+        this.getList();
+        this.listMyFollows();
+    }
     changeFilter = (v) => {
         const find = this.state.filterList.find(sv => sv.name == v)
         this.setState({
             currentFilter: find || { name: '' }
+        },()=>{
+            this.getList();
         });
     }
     clearFilter = (e) => {
         e.stopPropagation();
         this.setState({
             currentFilter: { name: '' }
+        },()=>{
+            this.getList();
         });
     }
     onChangeTable = (pagination) => {
@@ -97,7 +107,7 @@ class Component extends React.Component {
             "pageSize": this.state.pageSize,
             "pageIndex": this.state.pageIndex,
             "orderBys": this.state.currentFilter.name ? [{
-                sort: this.state.currentFilter.name.key,
+                sort: this.state.currentFilter.key,
                 order: 'DESC'
             }] : []
         }).then(d => {
@@ -108,18 +118,51 @@ class Component extends React.Component {
                 this.setState({
                     loading: false,
                     pagination: { ...this.state.pagination, total: d.totalCount },
-                    tableData: data.map(v => {
-                        const find = d.list.find(sv => sv.creator_account_id == v.account.accountId)
+                    tableData: d.list.map(v => {
+                        const find = data.find(sv => sv.account.accountId == v.creator_account_id)
                         return {
-                            ...v.account,
-                            ...find
+                            ...v,
+                            ...find.account
                         }
                     })
                 });
             });
         })
     }
-
+    listMyFollows = () => {
+        if (!this.props.userData.account) {
+            return;
+        }
+        LayoutCreatorApi.listFollowing({
+            "pageSize": 9999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "account_id": this.props.userData.account.accountId,
+            "includeDetail": true
+        }).then(d => {
+            this.setState({
+                myFollowingList: d.list
+            })
+        });
+    }
+    handleFollow = (v) => {
+        if (!this.props.userData.account) {
+            this.goSignIn();
+            return;
+        }
+        LayoutCreatorApi.follow({
+            "targetAccountId": v.creator_account_id
+        }).then(d => {
+            this.refreshCreatorListAndMyFollowsList();
+        });
+    }
+    handleUnfollow = (v) => {
+        LayoutCreatorApi.unfollow({
+            "targetAccountId": v.creator_account_id
+        }).then(d => {
+            this.refreshCreatorListAndMyFollowsList();
+        });
+    }
     render() {
         return (
             <div className="web3go-layout-home-creator-list">
@@ -201,14 +244,19 @@ class Component extends React.Component {
                                         <div className="value">{v.total_share_count}</div>
                                     </div>
                                 </div>
-                                {/* <div className="btn hover-item">
+                                {
+                                    this.state.myFollowingList.find(sv => sv.accountId == v.creator_account_id) ? (
+                                        <div className="btn hover-item" onClick={() => { this.handleUnfollow(v) }}>
                                             <IconCheck />
                                             <span className="text">Following</span>
-                                        </div> */}
-                                <div className="btn hover-item">
-                                    <IconPlus />
-                                    <span className="text">Follow</span>
-                                </div>
+                                        </div>
+                                    ) : (
+                                        <div className="btn hover-item" onClick={() => { this.handleFollow(v) }}>
+                                            <IconPlus />
+                                            <span className="text">Follow</span>
+                                        </div>
+                                    )
+                                }
                             </div>
                         </div>
                     ))}

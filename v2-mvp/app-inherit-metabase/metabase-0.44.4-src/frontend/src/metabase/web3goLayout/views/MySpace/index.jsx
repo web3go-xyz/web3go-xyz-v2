@@ -66,29 +66,28 @@ class Component extends React.Component {
             return;
         }
         const accountId = this.props.route.query.accountId;
-
         if (accountId && accountId != this.props.userData.account.accountId) {
             LayoutLoginApi.searchAccountInfo({
                 accountIds: [accountId],
                 includeExtraInfo: false
             }).then(d => {
-                LayoutLoginApi.getAccountStatistic({ accountId: accountId }).then(data => {
+                LayoutLoginApi.getAccountStatistic({ accountIds: [accountId] }).then(data => {
                     this.setState({
                         isMyself: false,
                         userInfo: {
                             ...d[0].account,
-                            ...data
+                            ...data[0]
                         }
                     })
                 })
             });
         } else {
-            LayoutLoginApi.getAccountStatistic({ accountId: this.props.userData.account.accountId }).then(data => {
+            LayoutLoginApi.getAccountStatistic({ accountIds: [this.props.userData.account.accountId] }).then(data => {
                 this.setState({
                     isMyself: true,
                     userInfo: {
                         ...this.props.userData.account,
-                        ...data
+                        ...data[0]
                     }
                 })
             })
@@ -104,7 +103,7 @@ class Component extends React.Component {
     }
     render() {
         const { userInfo, isMyself, dashboardListCount, myFavouriteCount } = this.state;
-
+        console.log('111', userInfo);
         let main = (<div className="table-header">
             <Tabs activeTab={this.state.activeTab} onChange={this.setActiveTab}>
                 <TabPane key='1' title={`Dashboard ${dashboardListCount}`}>

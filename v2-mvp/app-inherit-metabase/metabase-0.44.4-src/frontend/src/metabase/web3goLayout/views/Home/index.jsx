@@ -63,15 +63,11 @@ class Component extends React.Component {
             "pageIndex": 1,
             "orderBys": [],
             "account_id": this.props.userData.account.accountId,
+            "includeDetail": true
         }).then(d => {
-            LayoutLoginApi.searchAccountInfo({
-                accountIds: d.list.map(v => v.followedAccountId),
-                includeExtraInfo: false
-            }).then(data => {
-                this.setState({
-                    myFollowingList: data.map(v => v.account)
-                })
-            });
+            this.setState({
+                myFollowingList: d.list
+            })
         });
     }
     getCreatorList = () => {

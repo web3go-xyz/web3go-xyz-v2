@@ -30,6 +30,7 @@ class Component extends React.Component {
             filterList: [],
             currentFilter: {},
             tableData: [],
+            allFollowingList: [],
             paramsShow: false,
             params: {
                 createBy: '',
@@ -79,17 +80,24 @@ class Component extends React.Component {
                 order: this.state.tableSort.direction === "ascend" ? 'ASC' : 'DESC',
             }] : [],
             "account_id": this.props.accountId,
+            "includeDetail": true
         }).then(d => {
-            LayoutLoginApi.searchAccountInfo({
-                accountIds: d.list.map(v => this.props.viewType == 'following' ? v.followedAccountId : v.accountId),
-                includeExtraInfo: false
-            }).then(data => {
-                this.setState({
-                    loading: false,
-                    tableData: data.map(v => v.account),
-                    pagination: { ...this.state.pagination, total: d.totalCount }
-                })
-            });
+            this.setState({
+                loading: false,
+                tableData: d.list,
+                pagination: { ...this.state.pagination, total: d.totalCount }
+            })
+        });
+        // 获取所有followingList（用来判断当前人员是否已关注）
+        LayoutCreatorApi.listFollowing({
+            "pageSize": 99999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "account_id": this.props.accountId,
+        }).then(d => {
+            this.setState({
+                allFollowingList: d.list,
+            })
         });
     }
     handleFollow = (v) => {
@@ -134,10 +142,17 @@ class Component extends React.Component {
                                         <span className="text">Following</span>
                                     </div>
                                 ) : (
-                                    <div className="follow-btn" onClick={() => { this.handleFollow(v) }}>
-                                        <IconPlus />
-                                        <span className="text">Follow</span>
-                                    </div>
+                                    this.state.allFollowingList.find(sv => sv.accountId == v.accountId) ? (
+                                        <div className="follow-btn" onClick={() => { this.handleUnfollow(v) }}>
+                                            <IconCheck />
+                                            <span className="text">Following</span>
+                                        </div>
+                                    ) : (
+                                        <div className="follow-btn" onClick={() => { this.handleFollow(v) }}>
+                                            <IconPlus />
+                                            <span className="text">Follow</span>
+                                        </div>
+                                    )
                                 )
                             }
                             <div className="i-right">
