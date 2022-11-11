@@ -33,7 +33,7 @@ class Component extends React.Component {
         super(props);
         this.state = {
             // default,followers,following
-            viewType: 'following',
+            viewType: 'default',
             activeTab: '1',
             isMyself: true,
             userInfo: {},
