@@ -183,6 +183,9 @@ class Component extends React.Component {
         });
     }
     getMyFavourites = () => {
+        if (!this.props.currentUser) {
+            return;
+        }
         LayoutDashboardApi.listMyFavorites().then(d => {
             this.setState({
                 favouriteList: d.list
