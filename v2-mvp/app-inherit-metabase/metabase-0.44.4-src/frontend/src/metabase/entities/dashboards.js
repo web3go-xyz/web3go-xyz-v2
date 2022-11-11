@@ -12,6 +12,8 @@ import { assocIn } from "icepick";
 import { t } from "ttag";
 
 import { addUndo } from "metabase/redux/undo";
+import { WEB3GO_BASE_URL } from '@/services';
+import { GET as WGET, PUT as WPUT, POST as WPOST, DELETE as WDELETE } from "metabase/lib/web3goApi";
 
 import { POST, DELETE } from "metabase/lib/api";
 import {
@@ -39,6 +41,8 @@ const Dashboards = createEntity({
     unfavorite: DELETE("/api/dashboard/:id/favorite"),
     save: POST("/api/dashboard/save"),
     copy: POST("/api/dashboard/:id/copy"),
+    createPublicLink: POST("/api/dashboard/:id/public_link"),
+    externalEvent: WPOST(WEB3GO_BASE_URL + "/api/dashboard/:id/externalEvent"),
   },
 
   objectActions: {

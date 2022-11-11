@@ -91,7 +91,6 @@ import { createSelector } from "reselect";
 import { normalize, denormalize, schema } from "normalizr";
 import { getIn, merge } from "icepick";
 import _ from "underscore";
-
 export function createEntity(def) {
   const entity = { ...def };
 
@@ -231,8 +230,13 @@ export function createEntity(def) {
       withEntityRequestState(() => ["create"]),
       withEntityActionDecorators("create"),
     )(entityObject => async (dispatch, getState) => {
+      const result = await entity.api.create(getWritableProperties(entityObject))
+      if (entity.name == "dashboards") {
+        await entity.api.createPublicLink({ id: result.id })
+        // await entity.api.externalEvent()
+      }
       return entity.normalize(
-        await entity.api.create(getWritableProperties(entityObject)),
+        result
       );
     }),
 
@@ -446,10 +450,10 @@ export function createEntity(def) {
     entityQuery,
     requestType = "fetch",
   } = {}) => [
-    "requests",
-    ...getStatePath({ entityId, entityQuery }),
-    requestType,
-  ];
+      "requests",
+      ...getStatePath({ entityId, entityQuery }),
+      requestType,
+    ];
 
   const getRequestState = (state, props) =>
     getIn(state, getRequestStatePath(props)) || {};
