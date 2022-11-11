@@ -44,7 +44,7 @@ class Component extends React.Component {
                     render: (col, record, index) => (
                         <div className="name-col">
                             <div className="right">
-                                <div className="title hover-primary">{record.name}</div>
+                                <div className="title hover-primary" onClick={() => { record.publicLink && window.open(record.publicLink) }}>{record.name}</div>
                                 <div className="tag-list">
                                     {
                                         record.tagList.map(v => (

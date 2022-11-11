@@ -233,7 +233,10 @@ export function createEntity(def) {
       const result = await entity.api.create(getWritableProperties(entityObject))
       if (entity.name == "dashboards") {
         await entity.api.createPublicLink({ id: result.id })
-        // await entity.api.externalEvent()
+        await entity.api.externalEvent({
+          "topic": "dashboard.changed",
+          "data": result.id
+        })
       }
       return entity.normalize(
         result
@@ -263,7 +266,12 @@ export function createEntity(def) {
           const result = entity.normalize(
             await entity.api.update(getWritableProperties(entityObject)),
           );
-
+          if (entity.name == "dashboards") {
+            await entity.api.externalEvent({
+              "topic": "dashboard.changed",
+              "data": entityObject.id
+            })
+          }
           if (notify) {
             if (notify.undo) {
               // pick only the attributes that were updated
@@ -299,6 +307,12 @@ export function createEntity(def) {
       withEntityActionDecorators("delete"),
     )(entityObject => async (dispatch, getState) => {
       await entity.api.delete(entityObject);
+      if (entity.name == "dashboards") {
+        await entity.api.externalEvent({
+          "topic": "dashboard.changed",
+          "data": entityObject.id
+        })
+      }
       return {
         entities: { [entity.name]: { [entityObject.id]: null } },
         result: entityObject.id,

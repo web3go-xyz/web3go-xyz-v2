@@ -42,7 +42,7 @@ const Dashboards = createEntity({
     save: POST("/api/dashboard/save"),
     copy: POST("/api/dashboard/:id/copy"),
     createPublicLink: POST("/api/dashboard/:id/public_link"),
-    externalEvent: WPOST(WEB3GO_BASE_URL + "/api/dashboard/:id/externalEvent"),
+    externalEvent: WPOST(WEB3GO_BASE_URL + "/api/v2/event/externalEvent"),
   },
 
   objectActions: {
@@ -94,16 +94,23 @@ const Dashboards = createEntity({
     )(
       (entityObject, overrides, { notify } = {}) =>
         async (dispatch, getState) => {
+          const copyResult = await Dashboards.api.copy({
+            id: entityObject.id,
+            ...overrides,
+          });
           const result = Dashboards.normalize(
-            await Dashboards.api.copy({
-              id: entityObject.id,
-              ...overrides,
-            }),
+            copyResult
           );
+          await Dashboards.api.createPublicLink({ id: copyResult.id })
+          await Dashboards.api.externalEvent({
+            "topic": "dashboard.changed",
+            "data": copyResult.id
+          })
           if (notify) {
             dispatch(addUndo(notify));
           }
           dispatch({ type: Dashboards.actionTypes.INVALIDATE_LISTS_ACTION });
+
           return result;
         },
     ),
@@ -112,6 +119,10 @@ const Dashboards = createEntity({
   actions: {
     save: dashboard => async dispatch => {
       const savedDashboard = await Dashboards.api.save(dashboard);
+      await Dashboards.api.externalEvent({
+        "topic": "dashboard.changed",
+        "data": savedDashboard.id
+      })
       dispatch({ type: Dashboards.actionTypes.INVALIDATE_LISTS_ACTION });
       return {
         type: "metabase/entities/dashboards/SAVE_DASHBOARD",
