@@ -17,7 +17,12 @@ export class EventController {
     @ApiOperation({ summary: 'some events happened from external system' })
     @ApiOkResponse({ type: Object })
     async externalEventFired(@Body() param: ExternalEventPayload): Promise<any> {
+        if (!param || !param.topic || !param.data) {
+            throw new Error("parameter for externalEvent is required");
+        }
+
         this.logger.log(`externalEventFired:${JSON.stringify(param)}`);
+
         return await this.eventService.externalEventFired(param);
     }
 }

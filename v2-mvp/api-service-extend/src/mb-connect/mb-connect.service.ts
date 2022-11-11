@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ReportDashboard } from 'src/base/entity/metabase/ReportDashboard';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class MBConnectService {
@@ -18,17 +18,24 @@ export class MBConnectService {
         this.logger = new W3Logger(`MBConnectService`);
     }
 
-
-    async findDashboards(dashboard_id?: number): Promise<ReportDashboard[]> {
-        if (dashboard_id && dashboard_id > 0) {
+    async findDashboards(dashboard_ids: number[], excludeArchived: boolean): Promise<ReportDashboard[]> {
+        if (dashboard_ids && dashboard_ids.length > 0) {
             return await this.mb_rdRepo.find({
                 where: {
-                    id: dashboard_id
+                    id: In(dashboard_ids),
+                    archived: !excludeArchived
                 }
             });
         } else {
-            return await this.mb_rdRepo.find();
+            return [];
         }
+    }
+    async findAllDashboards(excludeArchived: boolean): Promise<ReportDashboard[]> {
+        return await this.mb_rdRepo.find({
+            where: {
+                archived: !excludeArchived
+            }
+        });
     }
 
     async findDashboardCreator(dashboard_id: number): Promise<string> {

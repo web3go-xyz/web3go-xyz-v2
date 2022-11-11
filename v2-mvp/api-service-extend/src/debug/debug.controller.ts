@@ -21,9 +21,11 @@ export class DebugController {
 
     @Get('/debug_syncDashboardFromMB')
     @ApiOperation({ summary: 'DEBUG sync dashboard from metabase' })
-    @ApiParam({ required: false, name: 'dashboard_id', type: Number })
     @ApiOkResponse({ type: Object })
     async debug_syncDashboardFromMB(@Query('dashboard_id') dashboard_id: number): Promise<any> {
-        return await this.debugService.debug_syncDashboardFromMB(dashboard_id || -1);
+        this.logger.debug(`debug_syncDashboardFromMB:${dashboard_id}`);
+        let result = await this.debugService.debug_syncDashboardFromMB(dashboard_id || -1);
+        this.logger.debug(`debug_syncDashboardFromMB result:${JSON.stringify(result)}`);
+        return result;
     }
 }

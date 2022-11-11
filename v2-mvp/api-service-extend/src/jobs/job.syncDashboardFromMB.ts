@@ -8,7 +8,7 @@ import { AppConfig } from 'src/base/setting/appConfig';
 import { CronConstants } from 'src/cron.constants';
 import { ShareItemType } from 'src/interaction/share/model/ShareItemType';
 import { MBConnectService } from 'src/mb-connect/mb-connect.service';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class Job_SyncDashboardFromMB {
@@ -53,49 +53,78 @@ export class Job_SyncDashboardFromMB {
         try {
             let dashboard_id_synced = {
                 new: [],
-                update: []
+                update: [],
+                remove: []
             };
-            let mb_dashboard_list: ReportDashboard[] = await this.mbConnectService.findDashboards(dashboard_id);
+            let mb_dashboard_list: ReportDashboard[] = [];
+            let existing_dashboardExt_list: DashboardExt[] = [];
+            let excludeArchived = true;
+            if (dashboard_id && dashboard_id > 0) {
+                mb_dashboard_list = await this.mbConnectService.findDashboards([dashboard_id], excludeArchived);
+                existing_dashboardExt_list = await this.dextRepo.find({
+                    where: {
+                        id: In([dashboard_id])
+                    }
+                });
+            }
+            else {
+                mb_dashboard_list = await this.mbConnectService.findAllDashboards(excludeArchived);
+                existing_dashboardExt_list = await this.dextRepo.find();
+            }
 
-            if (mb_dashboard_list && mb_dashboard_list.length > 0) {
+            let newDashboards = mb_dashboard_list.filter(v => {
+                return existing_dashboardExt_list.findIndex(t => t.id == v.id) == -1;
+            });
+            let updateDashboards = mb_dashboard_list.filter(v => {
+                return existing_dashboardExt_list.findIndex(t => t.id == v.id) > -1;
+            });
+            let removedDashboards = existing_dashboardExt_list.filter(v => {
+                return mb_dashboard_list.findIndex(t => t.id == v.id) == -1;
+            });
 
-                for (const mb_d of mb_dashboard_list) {
 
-                    let findDashboard = await this.dextRepo.findOne({
-                        where: {
-                            id: mb_d.id
-                        }
+            if (newDashboards) {
+                for (const newD of newDashboards) {
+                    let creatorAccountId = await this.mbConnectService.findDashboardCreator(newD.id);
+
+                    let newDashboard: DashboardExt = {
+                        id: newD.id,
+                        name: newD.name,
+                        description: newD.description,
+                        creatorAccountId: creatorAccountId,
+                        createdAt: newD.createdAt,
+                        updatedAt: newD.updatedAt,
+                        publicUUID: newD.publicUuid,
+                        publicLink: await this.formatlink(ShareItemType.Dashboard.toString(), newD.publicUuid),
+                        viewCount: 0,
+                        shareCount: 0,
+                        forkCount: 0,
+                        favoriteCount: 0
+                    };
+                    await this.dextRepo.insert(newDashboard);
+                    dashboard_id_synced.new.push(newD.id);
+                }
+            }
+
+            if (updateDashboards) {
+                for (const updateD of updateDashboards) {
+
+                    let findDashboard = existing_dashboardExt_list.find(t => t.id == updateD.id);
+                    await this.dextRepo.update(findDashboard.id, {
+                        name: updateD.name,
+                        description: updateD.description,
+                        publicUUID: updateD.publicUuid,
+                        publicLink: await this.formatlink(ShareItemType.Dashboard.toString(), updateD.publicUuid)
                     });
+                    dashboard_id_synced.update.push(updateD.id);
+                }
+            }
 
-                    if (findDashboard) {
-                        findDashboard.name = mb_d.name;
-                        findDashboard.description = mb_d.description;
-                        findDashboard.publicUUID = mb_d.publicUuid;
-                        findDashboard.publicLink = await this.formatlink(ShareItemType.Dashboard.toString(), mb_d.publicUuid);
-                        await this.dextRepo.save(findDashboard);
-                        dashboard_id_synced.update.push(mb_d.id);
-                    }
-                    else {
-
-                        let creatorAccountId = await this.mbConnectService.findDashboardCreator(mb_d.id);
-
-                        let newDashboard: DashboardExt = {
-                            id: mb_d.id,
-                            name: mb_d.name,
-                            description: mb_d.description,
-                            creatorAccountId: creatorAccountId,
-                            createdAt: mb_d.createdAt,
-                            updatedAt: mb_d.updatedAt,
-                            publicUUID: mb_d.publicUuid,
-                            publicLink: await this.formatlink(ShareItemType.Dashboard.toString(), mb_d.publicUuid),
-                            viewCount: 0,
-                            shareCount: 0,
-                            forkCount: 0,
-                            favoriteCount: 0
-                        };
-                        await this.dextRepo.save(newDashboard);
-                        dashboard_id_synced.new.push(mb_d.id);
-                    }
+            if (removedDashboards) {
+                for (const removedD of removedDashboards) {
+                    let findDashboard = existing_dashboardExt_list.find(t => t.id == removedD.id);
+                    await this.dextRepo.delete(findDashboard);
+                    dashboard_id_synced.remove.push(removedD.id);
                 }
             }
 
