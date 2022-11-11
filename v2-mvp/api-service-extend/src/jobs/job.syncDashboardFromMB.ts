@@ -12,7 +12,7 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class Job_SyncDashboardFromMB {
-    private isRunning = false;
+    private isJobRunning = false;
     logger: W3Logger;
 
     constructor(
@@ -24,17 +24,31 @@ export class Job_SyncDashboardFromMB {
     ) {
         this.logger = new W3Logger(`Job_SyncDashboardFromMB`);
     }
-
     @Cron(CronConstants.DEBUG_SYNC_DASHBOARD_FROM_MB_INTERVAL)
-    async syncDashboardFromMB(dashboard_id: number): Promise<any> {
+    async cron_syncDashboardFromMB(): Promise<any> {
 
-        if (this.isRunning) {
-            this.logger.warn("syncDashboardFromMB is running, aborting new job...");
+        if (this.isJobRunning) {
+            this.logger.warn("cron job [Job_SyncDashboardFromMB] is running, aborting new job...");
             return;
         } else {
-            this.isRunning = true;
-            this.logger.log("syncDashboardFromMB start to run");
+            this.isJobRunning = true;
+            this.logger.log("cron job [Job_SyncDashboardFromMB] start to run");
         }
+
+        try {
+            await this.syncDashboardFromMB();
+        } catch (error) {
+            console.log(error);
+            this.logger.error(error);
+
+        }
+        finally {
+            this.isJobRunning = false;
+            this.logger.log("cron job [Job_SyncDashboardFromMB] finished");
+        }
+    }
+
+    async syncDashboardFromMB(dashboard_id?: number): Promise<any> {
 
         try {
             let dashboard_id_synced = {
@@ -42,7 +56,6 @@ export class Job_SyncDashboardFromMB {
                 update: []
             };
             let mb_dashboard_list: ReportDashboard[] = await this.mbConnectService.findDashboards(dashboard_id);
-
 
             if (mb_dashboard_list && mb_dashboard_list.length > 0) {
 
@@ -90,15 +103,13 @@ export class Job_SyncDashboardFromMB {
         } catch (error) {
             console.log(error);
             this.logger.error(error);
-
         }
         finally {
-            this.isRunning = false;
-            this.logger.log("debug_syncDashboardFromMB finished");
+            this.logger.log("syncDashboardFromMB finished");
         }
     }
 
-    async formatlink(category: string, publicUUID: string): Promise<string> {
+    private async formatlink(category: string, publicUUID: string): Promise<string> {
         //eg: https://dev-v2.web3go.xyz/public/dashboard/dfc5d3a9-1d64-422b-b26f-0367e0fb1170
 
         if (category && publicUUID) {
