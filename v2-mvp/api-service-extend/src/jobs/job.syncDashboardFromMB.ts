@@ -4,7 +4,9 @@ import { ReportDashboard } from 'src/base/entity/metabase/ReportDashboard';
 import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
+import { AppConfig } from 'src/base/setting/appConfig';
 import { CronConstants } from 'src/cron.constants';
+import { ShareItemType } from 'src/interaction/share/model/ShareItemType';
 import { MBConnectService } from 'src/mb-connect/mb-connect.service';
 import { Repository } from 'typeorm';
 
@@ -55,6 +57,8 @@ export class Job_SyncDashboardFromMB {
                     if (findDashboard) {
                         findDashboard.name = mb_d.name;
                         findDashboard.description = mb_d.description;
+                        findDashboard.publicUUID = mb_d.publicUuid;
+                        findDashboard.publicLink = await this.formatlink(ShareItemType.Dashboard.toString(), mb_d.publicUuid);
                         await this.dextRepo.save(findDashboard);
                         dashboard_id_synced.update.push(mb_d.id);
                     }
@@ -69,6 +73,8 @@ export class Job_SyncDashboardFromMB {
                             creatorAccountId: creatorAccountId,
                             createdAt: mb_d.createdAt,
                             updatedAt: mb_d.updatedAt,
+                            publicUUID: mb_d.publicUuid,
+                            publicLink: await this.formatlink(ShareItemType.Dashboard.toString(), mb_d.publicUuid),
                             viewCount: 0,
                             shareCount: 0,
                             forkCount: 0,
@@ -90,6 +96,18 @@ export class Job_SyncDashboardFromMB {
             this.isRunning = false;
             this.logger.log("debug_syncDashboardFromMB finished");
         }
+    }
 
+    async formatlink(category: string, publicUUID: string): Promise<string> {
+        //eg: https://dev-v2.web3go.xyz/public/dashboard/dfc5d3a9-1d64-422b-b26f-0367e0fb1170
+
+        if (category && publicUUID) {
+            let link = `${AppConfig.BASE_WEB_URL}/public/${category.toLowerCase()}/${publicUUID.toLowerCase()}`;
+
+            return link;
+        }
+        else {
+            return '';
+        }
     }
 }
