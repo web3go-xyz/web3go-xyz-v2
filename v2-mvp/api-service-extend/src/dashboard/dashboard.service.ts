@@ -75,7 +75,7 @@ export class DashboardService {
             }
         }
 
-        if (request.dashboardIds && request.dashboardIds.length > 0) {
+        if (filterDashboardIds.length == 0 && request.dashboardIds && request.dashboardIds.length > 0) {
             for (const d of request.dashboardIds) {
                 if (filterDashboardIds.indexOf(d) == -1) {
                     filterDashboardIds.push(d);
