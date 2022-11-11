@@ -123,7 +123,7 @@ export class Job_SyncDashboardFromMB {
             if (removedDashboards) {
                 for (const removedD of removedDashboards) {
                     let findDashboard = existing_dashboardExt_list.find(t => t.id == removedD.id);
-                    await this.dextRepo.delete(findDashboard);
+                    await this.dextRepo.delete(findDashboard.id);
                     dashboard_id_synced.remove.push(removedD.id);
                 }
             }
