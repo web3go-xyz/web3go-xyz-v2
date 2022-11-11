@@ -80,4 +80,24 @@ export class DashboardExt {
         default: 0
     })
     favoriteCount: number;
+
+
+
+    @Column({
+        type: "text",
+        name: "public_uuid",
+        comment: "public_uuid, refer to metatbase.report_dashboard.public_uuid",
+        default: '',
+        nullable: true
+    })
+    publicUUID: string;
+
+    @Column({
+        type: "text",
+        name: "public_link",
+        comment: "publick link, formatted with public_uuid",
+        default: '',
+        nullable: true
+    })
+    publicLink: string;
 }

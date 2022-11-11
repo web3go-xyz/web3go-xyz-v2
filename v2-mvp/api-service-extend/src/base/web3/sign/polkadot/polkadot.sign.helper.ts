@@ -26,7 +26,7 @@ export class PolkadotSignHelper implements IWeb3Sign {
         let challenge = `Welcome to Web3Go! 
         Click to sign in and accept the Web3Go Terms of Service:https://web3go.xyz/tos. 
         This request will not trigger any blockchain transaction or cost any gas fees.
-        Your authentication status will reset after 24 hours. 
+        Your authentication status will reset after 7 days. 
         Wallet address:
         ${request.address} 
         Nonce:

@@ -28,7 +28,7 @@ export class ShareReferralCode {
     publicUUID: string;
 
     @Column({ type: "text", name: "public_link", comment: 'link when share public' })
-    public_link: string;
+    shareLink: string;
 
     @Column({
         type: "text",
@@ -39,7 +39,7 @@ export class ShareReferralCode {
     @Column({
         type: "text",
         name: "share_channel",
-        comment:'eg: twitter, discord, link'
+        comment: 'eg: twitter, discord, link'
     })
     shareChannel: string;
 

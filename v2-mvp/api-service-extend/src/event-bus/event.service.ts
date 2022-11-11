@@ -15,11 +15,15 @@ import { DashboardEventTopic } from "./model/dashboard/DashboardEventTopic";
 import { AccountEventTopic } from "./model/account/AccountEventTopic";
 import { Account } from "src/base/entity/platform-user/Account.entity";
 import { AccountFollower } from "src/base/entity/platform-user/AccountFollower";
+import { Job_SyncDashboardFromMB } from "src/jobs/job.syncDashboardFromMB";
+import { ExternalEventPayload } from "./model/external-notify/ExternalEventPayload";
+import { ExternalEventTopic } from "./model/external-notify/ExternalEventTopic";
 
 export class EventService {
 
     logger: W3Logger;
     constructor(
+        private job_SyncDashboardFromMB: Job_SyncDashboardFromMB,
         private eventEmitter: EventEmitter2,
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
@@ -42,6 +46,41 @@ export class EventService {
     ) {
         this.logger = new W3Logger(`EventService`);
     }
+    async externalEventFired(param: ExternalEventPayload): Promise<any> {
+        let resp: any = 'noMatchedTopic';
+        if (param.topic) {
+            switch (param.topic) {
+                case ExternalEventTopic.DashboardChanged:
+                    let dashboard_id = Number(param.data.toString());
+                    this.logger.debug(`emit syncDashboard events:${dashboard_id}`);
+                    //emit sync events
+                    this.eventEmitter.emit(
+                        'sync.dashboard',
+                        dashboard_id
+                    );
+                    resp = 'sync.dashboard';
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        return resp;
+    }
+    @OnEvent('sync.dashboard', { async: true })
+    async syncDashboard(dashboard_id: number) {
+        this.logger.debug(`process event[syncDashboard]:${dashboard_id}`);
+        await this.job_SyncDashboardFromMB.syncDashboardFromMB(dashboard_id);
+    }
+
+
+
+
+
+
+
+
+
 
     fireEvent(payload: DashboardEventPayload | AccountEventPayload) {
         this.logger.debug(`fireEvent:${JSON.stringify(payload)}`);

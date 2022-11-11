@@ -14,13 +14,15 @@ import { Log4ShareDashboardRequest } from './model/Log4ShareDashboardRequest';
 import { Log4ShareDashboardResponse } from './model/Log4ShareDashboardResponse';
 import { EventService } from 'src/event-bus/event.service';
 import { DashboardEventTopic } from 'src/event-bus/model/dashboard/DashboardEventTopic';
-import { MBConnectService } from 'src/mb-connect/mb-connect.service';
+import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
 @Injectable()
 export class ShareService {
     logger: W3Logger;
     constructor(
         private readonly eventService: EventService,
-        private readonly mbConnectService: MBConnectService,
+
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
+        private dextRepo: Repository<DashboardExt>,
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_SHARE_LOG_REPOSITORY.provide)
         private dsharelRepo: Repository<DashboardShareLog>,
@@ -42,7 +44,7 @@ export class ShareService {
         };
         let referralCodeResult: ShareReferralCode = await this.buildLink(ShareItemType.Dashboard, param.dashboardId.toString(), param.shareChannel, accountId);
         resp.referralCode = referralCodeResult.referralCode;
-        resp.shareLink = referralCodeResult.public_link;
+        resp.shareLink = referralCodeResult.shareLink;
         this.logger.debug(`generateDashboardShareLink: ${JSON.stringify(resp)}`);
 
         return resp;
@@ -71,31 +73,43 @@ export class ShareService {
                 shareChannel,
                 createdAt: new Date(),
                 publicUUID: '',
-                public_link: ''
+                shareLink: ''
             };
-            findExising.publicUUID = await this.getPublicUUID(findExising);
-            findExising.public_link = await this.formatlink(findExising);
+            let publicShare = await this.buildSharePublicLink(findExising);
+            findExising.publicUUID = publicShare.publicUUID;
+            findExising.shareLink = publicShare.shareLink;
             await this.srcRepo.save(findExising);
             return findExising;
         }
     }
-    async getPublicUUID(param: ShareReferralCode): Promise<string> {
-        let public_uuid = '';
 
-        let findDashboards = await this.mbConnectService.findDashboards(Number(param.referItemID.trim()));
-        if (findDashboards && findDashboards.length > 0) {
-            public_uuid = findDashboards[0].publicUuid;
-        }
-        if (!public_uuid) {
-            throw new Error('cannot find valid public_uuid');
-        }
-        return public_uuid;
-    }
-    async formatlink(param: ShareReferralCode): Promise<string> {
-        //eg: https://dev-v2.web3go.xyz/public/dashboard/dfc5d3a9-1d64-422b-b26f-0367e0fb1170
-        let link = `${AppConfig.BASE_WEB_URL}/public/${param.category.toLowerCase()}/${param.publicUUID.toLowerCase()}?shareChannel=${param.shareChannel}&referralCode=${param.referralCode}`;
+    async buildSharePublicLink(param: ShareReferralCode): Promise<any> {
+        let publicLink = '';
+        let publicUUID = '';
 
-        return link;
+        let dashboard_id = Number(param.referItemID.trim());
+        let findDashboard = await this.dextRepo.findOne({
+            where: {
+                id: dashboard_id
+            }
+        });
+        if (findDashboard) {
+            publicLink = findDashboard.publicLink;
+            publicUUID = findDashboard.publicUUID;
+        }
+        if (!publicLink) {
+            throw new Error(`cannot find valid publicLink for dashboard ${dashboard_id}`);
+        }
+
+        //eg: https://dev-v2.web3go.xyz/public/dashboard/dfc5d3a9-1d64-422b-b26f-0367e0fb1170？shareChannel=xxxx&referralCode=xxxxx
+        //  <publicLink>shareChannel=xxxx&referralCode=xxxxx
+        let shareLink = `${publicLink}?shareChannel=${param.shareChannel}&referralCode=${param.referralCode}`;
+
+        return {
+            shareLink: shareLink,
+            publicUUID: publicUUID,
+            publicLink: publicLink
+        };
     }
 
     async logShare(param: Log4ShareDashboardRequest, accountId: string): Promise<Log4ShareDashboardResponse> {

@@ -19,7 +19,7 @@ export class MetamaskSignHelper implements IWeb3Sign {
         let nonce = `${generateNonce()}`;
         // let challenge = `${request.nonce_description}: sign with [${request.chain}][${request.walletSource}][${request.address}]`;
 
-        let challenge = `Welcome to Web3Go! Click to sign in and accept the Web3Go Terms of Service. This request will not trigger any blockchain transaction or cost any gas fees. Your authentication status will reset after 24 hours. Wallet address: ${request.address} Nonce: ${nonce}`;
+        let challenge = `Welcome to Web3Go! Click to sign in and accept the Web3Go Terms of Service. This request will not trigger any blockchain transaction or cost any gas fees. Your authentication status will reset after 7 days. Wallet address: ${request.address} Nonce: ${nonce}`;
         let resp: Web3SignNonceResponse = {
             chain: request.chain,
             challenge: challenge,

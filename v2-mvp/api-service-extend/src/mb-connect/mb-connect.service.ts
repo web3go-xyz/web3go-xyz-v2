@@ -19,7 +19,7 @@ export class MBConnectService {
     }
 
 
-    async findDashboards(dashboard_id: number): Promise<ReportDashboard[]> {
+    async findDashboards(dashboard_id?: number): Promise<ReportDashboard[]> {
         if (dashboard_id && dashboard_id > 0) {
             return await this.mb_rdRepo.find({
                 where: {
