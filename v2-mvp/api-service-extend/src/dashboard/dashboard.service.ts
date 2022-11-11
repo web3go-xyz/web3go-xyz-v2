@@ -43,11 +43,24 @@ export class DashboardService {
 
         let filterDashboardIds: number[] = [];
         if (request.tagIds && request.tagIds.length > 0) {
-            let filter_dashboard_tags = await this.dtagRepo.createQueryBuilder('t')
-                .where("t.tag_id IN (:...tagIds)", { tagIds: request.tagIds })
-                .addGroupBy("t.dashboard_id")
-                .select("dashboard_id", "dashboardId")
-                .getRawMany();
+
+            let filter_dashboard_tags: any[];
+            if (request.dashboardIds && request.dashboardIds.length > 0) {
+                filter_dashboard_tags = await this.dtagRepo.createQueryBuilder('t')
+                    .where("t.tag_id IN (:...tagIds)", { tagIds: request.tagIds })
+                    .andWhere("t.dashboard_id IN (:...dashboardIds)", { dashboardIds: request.dashboardIds })
+                    .addGroupBy("t.dashboard_id")
+                    .select("dashboard_id", "dashboardId")
+                    .getRawMany();
+            }
+            else {
+                filter_dashboard_tags = await this.dtagRepo.createQueryBuilder('t')
+                    .where("t.tag_id IN (:...tagIds)", { tagIds: request.tagIds })
+                    .addGroupBy("t.dashboard_id")
+                    .select("dashboard_id", "dashboardId")
+                    .getRawMany();
+            }
+
 
             // this.logger.debug(`filter_dashboard_tags:${JSON.stringify(filter_dashboard_tags)}`);
             if (filter_dashboard_tags) {
