@@ -10,9 +10,7 @@ import { FieldDimension } from "metabase-lib/lib/Dimension";
 const embedBase = IS_EMBED_PREVIEW ? "/api/preview_embed" : "/api/embed";
 
 import getGAMetadata from "promise-loader?global!metabase/lib/ga-metadata"; // eslint-disable-line import/default
-// export const WEB3GO_BASE_URL = 'http://192.168.50.188:12350';
 export const WEB3GO_BASE_URL = 'https://dev-v2.web3go.xyz/api-ext';
-
 export const LayoutLoginApi = {
   signIn: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/signin"),
   signUp: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/signup"),
@@ -42,6 +40,8 @@ export const LayoutDashboardApi = {
   detail: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/detail"),
   logFavorite: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/logFavorite"),
   logView: WPOST(WEB3GO_BASE_URL + "/api/v2/view/logView"),
+  externalEvent: WPOST(WEB3GO_BASE_URL + "/api/v2/event/externalEvent"),
+
 };
 export const LayoutCreatorApi = {
   listCreators: WPOST(WEB3GO_BASE_URL + "/api/v2/creator/listCreators"),

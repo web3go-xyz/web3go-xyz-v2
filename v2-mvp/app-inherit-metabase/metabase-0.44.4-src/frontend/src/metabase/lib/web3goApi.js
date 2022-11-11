@@ -89,7 +89,10 @@ export class Api extends EventEmitter {
         if (IFRAMED) {
           headers["X-Metabase-Embedded"] = "true";
         }
-        headers['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+        const token = localStorage.getItem('token');
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`
+        }
         if (ANTI_CSRF_TOKEN) {
           headers[ANTI_CSRF_HEADER] = ANTI_CSRF_TOKEN;
         }

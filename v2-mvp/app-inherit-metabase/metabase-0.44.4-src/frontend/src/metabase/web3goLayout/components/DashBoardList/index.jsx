@@ -8,7 +8,7 @@ import { push } from "react-router-redux";
 import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 import { numberSplit } from '@/web3goLayout/utils';
 import ShareModal from "@/web3goLayout/components/ShareModal";
-import { LayoutDashboardApi, LayoutLoginApi } from '@/services'
+import { LayoutDashboardApi, LayoutLoginApi, WEB3GO_BASE_URL } from '@/services'
 import event from '@/web3goLayout/event';
 
 import moment from 'moment';
@@ -58,7 +58,7 @@ class Component extends React.Component {
                             <div className="name-col">
                                 <UserHeadIcon className="headicon" iconSize={32} avatar={avatar} nickName={nickName}></UserHeadIcon>
                                 <div className="right">
-                                    <div className="title hover-primary" onClick={() => { this.props.push }}>{record.name}</div>
+                                    <div className="title hover-primary" onClick={() => { record.publicLink && window.open(record.publicLink) }}>{record.name}</div>
                                     <div className="tag-list">
                                         {
                                             record.tagList.map(v => (
@@ -183,6 +183,9 @@ class Component extends React.Component {
         });
     }
     getMyFavourites = () => {
+        if (!this.props.currentUser) {
+            return;
+        }
         LayoutDashboardApi.listMyFavorites().then(d => {
             this.setState({
                 favouriteList: d.list
