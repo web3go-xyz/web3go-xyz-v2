@@ -94,7 +94,7 @@ export class DashboardExt {
 
     @Column({
         type: "text",
-        name: "creator_account_id",
+        name: "public_link",
         comment: "publick link, formatted with public_uuid",
         default: '',
         nullable: true
