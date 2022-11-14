@@ -191,7 +191,9 @@ export class Api extends EventEmitter {
             }
             resolve(body);
           } else {
-            Message.error((body && body.message) || 'request error');
+            if (status != 401) {
+              Message.error((body && body.message) || 'request error');
+            }
             reject({
               status: status,
               data: body,
