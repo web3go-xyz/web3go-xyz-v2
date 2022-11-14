@@ -15,6 +15,7 @@ import { Log4ShareDashboardResponse } from './model/Log4ShareDashboardResponse';
 import { EventService } from 'src/event-bus/event.service';
 import { DashboardEventTopic } from 'src/event-bus/model/dashboard/DashboardEventTopic';
 import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
+import e from 'express';
 @Injectable()
 export class ShareService {
     logger: W3Logger;
@@ -32,7 +33,7 @@ export class ShareService {
     ) {
         this.logger = new W3Logger(`ShareService`);
     }
-    async generateDashboardShareLink(param: GenerateShareLink4DashboardRequest, accountId: string): Promise<GenerateShareLink4DashboardResponse> {
+    async generateDashboardShareLink(param: GenerateShareLink4DashboardRequest, accountId?: string): Promise<GenerateShareLink4DashboardResponse> {
 
         this.logger.debug(`generateDashboardShareLink: ${JSON.stringify(param)}, accountId:${accountId}`);
         let resp: GenerateShareLink4DashboardResponse = {
@@ -50,16 +51,21 @@ export class ShareService {
         return resp;
     }
 
-    async buildLink(shareItemType: ShareItemType, shareItemId: string, shareChannel: string, accountId: string): Promise<ShareReferralCode> {
+    async buildLink(shareItemType: ShareItemType, shareItemId: string, shareChannel: string, accountId?: string): Promise<ShareReferralCode> {
+        let findExising: ShareReferralCode = null;
+        if (accountId) {
+            findExising = await this.srcRepo.findOne({
+                where: {
+                    shareChannel: shareChannel,
+                    accountId: accountId,
+                    category: shareItemType.toString().toLowerCase(),
+                    referItemID: shareItemId,
+                }
+            });
+        } else {
+            findExising = null;
+        }
 
-        let findExising = await this.srcRepo.findOne({
-            where: {
-                shareChannel: shareChannel,
-                accountId: accountId,
-                category: shareItemType.toString().toLowerCase(),
-                referItemID: shareItemId,
-            }
-        });
         if (findExising) {
             return findExising;
         }
