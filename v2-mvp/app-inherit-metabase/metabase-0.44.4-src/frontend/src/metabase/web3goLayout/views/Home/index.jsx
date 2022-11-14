@@ -258,7 +258,7 @@ class Component extends React.Component {
                                         <UserHeadIcon className="headicon" iconSize={64} fontSize={18} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
                                     </div>
                                     <div className="it-right">
-                                        <div className="name">{v.nickName}</div>
+                                        <div className="name" title={v.nickName}>{v.nickName}</div>
                                         {
                                             this.state.myFollowingList.find(sv => sv.accountId == v.creator_account_id) ? (
                                                 <div className="btn hover-item" onClick={() => { this.handleUnfollow(v) }}>

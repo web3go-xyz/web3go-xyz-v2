@@ -238,31 +238,31 @@ function isNewAdditionalSeriesCard(card, dashcard) {
 
 export const addCardToDashboard =
   ({ dashId, cardId }) =>
-  async (dispatch, getState) => {
-    await dispatch(Questions.actions.fetch({ id: cardId }));
-    const card = Questions.selectors.getObject(getState(), {
-      entityId: cardId,
-    });
-    const { dashboards, dashcards } = getState().dashboard;
-    const dashboard = dashboards[dashId];
-    const existingCards = dashboard.ordered_cards
-      .map(id => dashcards[id])
-      .filter(dc => !dc.isRemoved);
-    const dashcard = {
-      id: generateTemporaryDashcardId(),
-      dashboard_id: dashId,
-      card_id: card.id,
-      card: card,
-      series: [],
-      ...getPositionForNewDashCard(existingCards),
-      parameter_mappings: [],
-      visualization_settings: {},
-    };
-    dispatch(createAction(ADD_CARD_TO_DASH)(dashcard));
-    dispatch(fetchCardData(card, dashcard, { reload: true, clear: true }));
+    async (dispatch, getState) => {
+      await dispatch(Questions.actions.fetch({ id: cardId }));
+      const card = Questions.selectors.getObject(getState(), {
+        entityId: cardId,
+      });
+      const { dashboards, dashcards } = getState().dashboard;
+      const dashboard = dashboards[dashId];
+      const existingCards = dashboard.ordered_cards
+        .map(id => dashcards[id])
+        .filter(dc => !dc.isRemoved);
+      const dashcard = {
+        id: generateTemporaryDashcardId(),
+        dashboard_id: dashId,
+        card_id: card.id,
+        card: card,
+        series: [],
+        ...getPositionForNewDashCard(existingCards),
+        parameter_mappings: [],
+        visualization_settings: {},
+      };
+      dispatch(createAction(ADD_CARD_TO_DASH)(dashcard));
+      dispatch(fetchCardData(card, dashcard, { reload: true, clear: true }));
 
-    dispatch(loadMetadataForDashboard([dashcard]));
-  };
+      dispatch(loadMetadataForDashboard([dashcard]));
+    };
 
 export const addDashCardToDashboard = function ({ dashId, dashcardOverrides }) {
   return function (dispatch, getState) {
@@ -719,6 +719,7 @@ export const fetchDashboard = createThunkAction(
         result = await PublicApi.dashboard({ uuid: dashId });
         result = {
           ...result,
+          originDashboardId: result.id,
           id: dashId,
           ordered_cards: result.ordered_cards.map(dc => ({
             ...dc,
@@ -729,6 +730,7 @@ export const fetchDashboard = createThunkAction(
         result = await EmbedApi.dashboard({ token: dashId });
         result = {
           ...result,
+          originDashboardId: result.id,
           id: dashId,
           ordered_cards: result.ordered_cards.map(dc => ({
             ...dc,
@@ -783,17 +785,18 @@ export const fetchDashboard = createThunkAction(
       const parameterValuesById = preserveParameters
         ? getParameterValues(getState())
         : getParameterValuesByIdFromQueryParams(
-            parameters,
-            queryParams,
-            metadata,
-            {
-              forcefullyUnsetDefaultedParametersWithEmptyStringValue: true,
-            },
-          );
+          parameters,
+          queryParams,
+          metadata,
+          {
+            forcefullyUnsetDefaultedParametersWithEmptyStringValue: true,
+          },
+        );
 
       return {
         ...normalize(result, dashboard), // includes `result` and `entities`
         dashboardId: dashId,
+        originDashboardId: result.originDashboardId,
         parameterValues: parameterValuesById,
       };
     };

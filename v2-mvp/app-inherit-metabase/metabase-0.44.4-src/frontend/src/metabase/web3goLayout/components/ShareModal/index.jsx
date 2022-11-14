@@ -5,9 +5,9 @@ import './index.less';
 import { Button, Modal, Form, Input, Message } from '@arco-design/web-react';
 import { toggleDark } from "metabase/redux/app";
 import { push } from "react-router-redux";
-import { IconCopy } from '@arco-design/web-react/icon';
+import { IconCopy, IconRecord } from '@arco-design/web-react/icon';
 import { position } from "tether";
-import { LayoutLoginApi } from '@/services'
+import { LayoutLoginApi, LayoutDashboardApi } from '@/services'
 import { copy } from '@/web3goLayout/utils'
 
 const mapStateToProps = state => {
@@ -25,20 +25,56 @@ class Component extends React.Component {
         super(props);
         this.state = {
             visible: false,
-            url: ''
+            record: {},
+            publicUrlOfLinkObj: {}
         }
         this.formRef = React.createRef();
     }
     componentDidMount() {
         this.props.onRef(this)
     }
-    init = (url) => {
+    init = (record) => {
         this.setState({
-            url,
+            record,
             visible: true,
         });
+        LayoutDashboardApi.generateDashboardShareLink({
+            "dashboardId": record.id,
+            "shareChannel": "link"
+        }).then(d => {
+            this.setState({
+                publicUrlOfLinkObj: d
+            });
+        })
     }
-
+    handleShare = (shareChannel) => {
+        LayoutDashboardApi.generateDashboardShareLink({
+            "dashboardId": this.state.record.id,
+            "shareChannel": shareChannel
+        }).then(d => {
+            if (shareChannel == 'twitter') {
+                const title = `Check out ${this.state.record.name} on Web3go! Here is the link:`;
+                const url = `https://twitter.com/intent/tweet?text=${title}&url=${encodeURIComponent(d.shareLink)}&via=web3go&hashtags=blockChain%2Cweb3go`;
+                window.open(url);
+            }
+            if (shareChannel == 'telegram') {
+                const title = `Check out ${this.state.record.name} on Web3go!`;
+                const url = `https://t.me/share/url?url=${encodeURIComponent(d.shareLink)}&text=${title}`;
+                window.open(url);
+            }
+        })
+    }
+    handleCopy = () => {
+        copy(this.state.publicUrlOfLinkObj.shareLink);
+        this.addShareLog('link');
+    }
+    addShareLog = (shareChannel) => {
+        LayoutDashboardApi.logShare({
+            "dashboardId": this.state.record.id,
+            "shareChannel": shareChannel,
+            "referralCode": this.state.publicUrlOfLinkObj.referralCode
+        });
+    }
     render() {
         return (
             <Modal
@@ -52,8 +88,8 @@ class Component extends React.Component {
                 <div className="modal-content" >
                     <div className="label">Public link</div>
                     <div className="value">
-                        <div className="a">{this.state.url}</div>
-                        <Button className="copy" type="primary" onClick={() => { copy(this.state.url) }}>
+                        <Input readOnly className="a" value={this.state.publicUrlOfLinkObj.shareLink}></Input>
+                        <Button className="copy" type="primary" onClick={() => { this.handleCopy() }}>
                             <IconCopy />
                             <span className="text">Copy</span>
                         </Button>
@@ -65,9 +101,9 @@ class Component extends React.Component {
                         <div className="line"></div>
                     </div>
                     <div className="icon-wrap">
-                        <img title="Discord" className="hover-item" src={require("@/web3goLayout/assets/home/discord.png")} alt="" />
-                        <img title="Twitter" className="hover-item" src={require("@/web3goLayout/assets/home/telegram.png")} alt="" />
-                        <img title="Telegram" className="hover-item" src={require("@/web3goLayout/assets/home/twitter.png")} alt="" />
+                        <img onClick={() => { this.handleShare('discord') }} title="Discord" className="hover-item" src={require("@/web3goLayout/assets/home/discord.png")} alt="" />
+                        <img onClick={() => { this.handleShare('telegram') }} title="Telegram" className="hover-item" src={require("@/web3goLayout/assets/home/telegram.png")} alt="" />
+                        <img onClick={() => { this.handleShare('twitter') }} title="Twitter" className="hover-item" src={require("@/web3goLayout/assets/home/twitter.png")} alt="" />
                     </div>
                 </div>
             </Modal >

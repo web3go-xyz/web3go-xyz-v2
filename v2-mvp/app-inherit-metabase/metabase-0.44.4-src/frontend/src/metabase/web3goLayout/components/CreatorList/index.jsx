@@ -200,7 +200,7 @@ class Component extends React.Component {
                             <div className="i-top">
                                 <UserHeadIcon className="headicon" iconSize={48} fontSize={16} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
                                 <div className="it-right">
-                                    <div className="title">{v.nickName}</div>
+                                    <div className="title" title={v.nickName}>{v.nickName}</div>
                                     <div className="info">
                                         <div className="svg-wrap" title="dashboards">
                                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

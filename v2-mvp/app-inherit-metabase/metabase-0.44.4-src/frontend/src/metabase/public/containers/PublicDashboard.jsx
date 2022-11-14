@@ -16,6 +16,7 @@ import title from "metabase/hoc/Title";
 import { fetchDatabaseMetadata } from "metabase/redux/metadata";
 import { setErrorPage } from "metabase/redux/app";
 import { getMetadata } from "metabase/selectors/metadata";
+import { LayoutDashboardApi } from '@/services'
 
 import PublicMode from "metabase/modes/components/modes/PublicMode";
 
@@ -38,6 +39,7 @@ import _ from "underscore";
 
 const mapStateToProps = (state, props) => {
   return {
+    route: state.routing.locationBeforeTransitions,
     metadata: getMetadata(state, props),
     dashboardId:
       props.params.dashboardId || props.params.uuid || props.params.token,
@@ -73,10 +75,13 @@ class PublicDashboard extends Component {
     } else if (token) {
       setEmbedDashboardEndpoints();
     }
-
     initialize();
     try {
-      await fetchDashboard(uuid || token, location.query);
+      const dashboardData = await fetchDashboard(uuid || token, location.query);
+      await LayoutDashboardApi.logView({
+        dashboardId: dashboardData.payload.originDashboardId,
+        referralCode: this.props.route.query.referralCode || ''
+      });
       await fetchDashboardCardData({ reload: false, clear: true });
     } catch (error) {
       console.error(error);
@@ -139,7 +144,7 @@ class PublicDashboard extends Component {
               className="spread"
               mode={PublicMode}
               metadata={this.props.metadata}
-              navigateToNewCardFromDashboard={() => {}}
+              navigateToNewCardFromDashboard={() => { }}
             />
           )}
         </LoadingAndErrorWrapper>
