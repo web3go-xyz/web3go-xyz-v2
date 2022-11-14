@@ -337,19 +337,20 @@ export class AccountInfoService {
     let statisticRecords = await query.getRawMany();
     let resp: AccountStatisticResponse[] = [];
 
-    if (statisticRecords && statisticRecords.length > 0) {
 
-      for (const d of accounts) {
-        let newItem: AccountStatisticResponse = {
-          accountId: d.accountId,
-          followedAccountCount: d.followedAccountCount,
-          followingAccountCount: d.followingAccountCount,
-          dashboard_count: 0,
-          total_share_count: 0,
-          total_view_count: 0,
-          total_favorite_count: 0,
-          total_fork_count: 0
-        }
+    for (const d of accounts) {
+      let newItem: AccountStatisticResponse = {
+        accountId: d.accountId,
+        followedAccountCount: d.followedAccountCount,
+        followingAccountCount: d.followingAccountCount,
+        dashboard_count: 0,
+        total_share_count: 0,
+        total_view_count: 0,
+        total_favorite_count: 0,
+        total_fork_count: 0
+      }
+      if (statisticRecords && statisticRecords.length > 0) {
+
         let findStatistic = statisticRecords.find(t => t.creator_account_id == d.accountId);
         if (findStatistic) {
           newItem.dashboard_count = Number(findStatistic.dashboard_count);
@@ -358,11 +359,10 @@ export class AccountInfoService {
           newItem.total_fork_count = Number(findStatistic.total_fork_count);
           newItem.total_favorite_count = Number(findStatistic.total_favorite_count);
         }
-        resp.push(newItem);
       }
+      resp.push(newItem);
     }
     return resp;
   }
-
 
 }
