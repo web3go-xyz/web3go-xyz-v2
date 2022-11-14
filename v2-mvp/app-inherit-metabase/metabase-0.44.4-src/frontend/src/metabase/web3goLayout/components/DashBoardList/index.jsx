@@ -203,7 +203,7 @@ class Component extends React.Component {
         });
     }
     openShareModal(record) {
-        this.ShareModalRef.init('https://dev-v2.web3go.xyz/public/dashboard/c5658684-0281-485d-8dbf-7620435f6553');
+        this.ShareModalRef.init(record);
     }
     changeCurrentTag = (v) => {
         this.setState({
