@@ -249,7 +249,7 @@ class Component extends React.Component {
                         </svg>
                     </div>
                     <div className="section-content creator-list">
-                        {this.state.creatorList.map((v, i) => (
+                        {this.state.creatorList.slice(0, 6).map((v, i) => (
                             <div key={i} className={"item" + (i == 0 ? ' active' : '')}>
                                 <div className="i-top">
                                     <div className="headicon-wrap">
