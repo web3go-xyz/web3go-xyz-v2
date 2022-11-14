@@ -161,7 +161,7 @@ class Component extends React.Component {
         this.setState({
             showMyFavorite: checked
         }, () => {
-            this.getList();
+            this.getList(true);
         });
     }
     refreshTableAndFavourites = () => {
@@ -209,7 +209,7 @@ class Component extends React.Component {
         this.setState({
             currentTag: v
         }, () => {
-            this.getList();
+            this.getList(true);
         });
     }
     onChangeTable = (pagination, sorter) => {
@@ -243,11 +243,16 @@ class Component extends React.Component {
             });
         });
     }
-    getList = () => {
+    getList = (turnFirstPage) => {
         this.setState({ loading: true });
+        if (turnFirstPage) {
+            this.setState({
+                pagination: { ...this.state.pagination, current: 1 }
+            });
+        }
         LayoutDashboardApi.list({
             "pageSize": this.state.pagination.pageSize,
-            "pageIndex": this.state.pagination.current,
+            "pageIndex": turnFirstPage ? 1 : this.state.pagination.current,
             "orderBys": this.state.tableSort.field ? [{
                 sort: this.state.tableSort.field,
                 order: this.state.tableSort.direction === "ascend" ? 'ASC' : 'DESC',
@@ -326,7 +331,7 @@ class Component extends React.Component {
                                         createBy: value
                                     }
                                 }, () => {
-                                    this.getList();
+                                    this.getList(true);
                                 });
                             }
                             }

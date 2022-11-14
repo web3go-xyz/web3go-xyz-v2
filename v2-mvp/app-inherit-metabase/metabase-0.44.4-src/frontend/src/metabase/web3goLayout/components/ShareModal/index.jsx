@@ -93,7 +93,6 @@ class Component extends React.Component {
                             <IconCopy />
                             <span className="text">Copy</span>
                         </Button>
-
                     </div>
                     <div className="split-wrap">
                         <div className="line"></div>
@@ -101,7 +100,7 @@ class Component extends React.Component {
                         <div className="line"></div>
                     </div>
                     <div className="icon-wrap">
-                        <img onClick={() => { this.handleShare('discord') }} title="Discord" className="hover-item" src={require("@/web3goLayout/assets/home/discord.png")} alt="" />
+                        {/* <img onClick={() => { this.handleShare('discord') }} title="Discord" className="hover-item" src={require("@/web3goLayout/assets/home/discord.png")} alt="" /> */}
                         <img onClick={() => { this.handleShare('telegram') }} title="Telegram" className="hover-item" src={require("@/web3goLayout/assets/home/telegram.png")} alt="" />
                         <img onClick={() => { this.handleShare('twitter') }} title="Twitter" className="hover-item" src={require("@/web3goLayout/assets/home/twitter.png")} alt="" />
                     </div>

@@ -186,8 +186,8 @@ class Component extends React.Component {
             }
         });
     }
-    openShareModal = () => {
-        this.ShareModalRef.init();
+    openShareModal = (record) => {
+        this.ShareModalRef.init(record);
     }
     toggleShowParams = () => {
         this.setState({
@@ -216,24 +216,25 @@ class Component extends React.Component {
             });
         }
         else if (key == 'Share') {
-
+            this.openShareModal(record);
         }
         else if (key == 'Edit') {
-
+            this.props.push('/home');
         }
         else if (key == 'Delete') {
-            Modal.confirm({
-                wrapClassName: 'common-confirm-modal',
-                closable: true,
-                title: 'Delete Dashboard',
-                content:
-                    'Are you sure you want to delete this dashboard?',
-                okText: 'Confirm',
-                cancelText: 'Cancel',
-                onOk: () => {
+            this.props.push('/home');
+            // Modal.confirm({
+            //     wrapClassName: 'common-confirm-modal',
+            //     closable: true,
+            //     title: 'Delete Dashboard',
+            //     content:
+            //         'Are you sure you want to delete this dashboard?',
+            //     okText: 'Confirm',
+            //     cancelText: 'Cancel',
+            //     onOk: () => {
 
-                }
-            });
+            //     }
+            // });
         }
     }
     onChangeTable = (pagination, sorter) => {
@@ -250,11 +251,16 @@ class Component extends React.Component {
             this.getList();
         });
     }
-    getList = (ifFirstPage) => {
+    getList = (turnFirstPage) => {
         this.setState({ loading: true });
+        if (turnFirstPage) {
+            this.setState({
+                pagination: { ...this.state.pagination, current: 1 }
+            });
+        }
         LayoutDashboardApi.list({
             "pageSize": this.state.pagination.pageSize,
-            "pageIndex": ifFirstPage ? 1 : this.state.pagination.current,
+            "pageIndex": turnFirstPage ? 1 : this.state.pagination.current,
             "orderBys": this.state.tableSort.field ? [{
                 sort: this.state.tableSort.field,
                 order: this.state.tableSort.direction === "ascend" ? 'ASC' : 'DESC',

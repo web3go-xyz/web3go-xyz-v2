@@ -103,7 +103,6 @@ class Component extends React.Component {
     }
     render() {
         const { userInfo, isMyself, dashboardListCount, myFavouriteCount } = this.state;
-        console.log('111', userInfo);
         let main = (<div className="table-header">
             <Tabs activeTab={this.state.activeTab} onChange={this.setActiveTab}>
                 <TabPane key='1' title={`Dashboard ${dashboardListCount}`}>

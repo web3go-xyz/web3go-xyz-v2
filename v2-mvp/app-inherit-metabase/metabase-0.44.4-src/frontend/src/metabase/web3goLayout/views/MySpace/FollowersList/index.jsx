@@ -43,6 +43,18 @@ class Component extends React.Component {
                 total: 0,
                 pageSize: 10,
                 current: 1,
+                onChange: (current) => {
+                    this.setState((state) => {
+                        return {
+                            pagination: {
+                                ...state.pagination,
+                                current
+                            }
+                        }
+                    }, () => {
+                        this.getList();
+                    });
+                }
             }
         }
         this.ShareModalRef = React.createRef();
@@ -55,26 +67,12 @@ class Component extends React.Component {
             this.getList();
         }
     }
-    onChangeTable = (pagination, sorter) => {
-        const { current } = pagination;
-        this.setState((state) => {
-            return {
-                tableSort: sorter,
-                pagination: {
-                    ...state.pagination,
-                    current
-                }
-            }
-        }, () => {
-            this.getList();
-        });
-    }
     getList = () => {
         this.setState({ loading: true });
         const request = this.props.viewType == 'following' ? LayoutCreatorApi.listFollowing : LayoutCreatorApi.listFollowed
         request({
-            "pageSize": this.state.pageSize,
-            "pageIndex": this.state.pageIndex,
+            "pageSize": this.state.pagination.pageSize,
+            "pageIndex": this.state.pagination.current,
             "orderBys": this.state.tableSort.field ? [{
                 sort: this.state.tableSort.field,
                 order: this.state.tableSort.direction === "ascend" ? 'ASC' : 'DESC',

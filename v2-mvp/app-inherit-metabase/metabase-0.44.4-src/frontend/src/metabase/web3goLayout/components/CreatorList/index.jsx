@@ -63,11 +63,24 @@ class Component extends React.Component {
                 total: 0,
                 pageSize: 10,
                 current: 1,
+                onChange: (current) => {
+                    this.setState((state) => {
+                        return {
+                            pagination: {
+                                ...state.pagination,
+                                current
+                            }
+                        }
+                    }, () => {
+                        this.getList();
+                    });
+                }
             }
         }
     }
     componentDidMount() {
         this.getList();
+        this.listMyFollows();
     }
     refreshCreatorListAndMyFollowsList() {
         this.getList();
@@ -77,35 +90,30 @@ class Component extends React.Component {
         const find = this.state.filterList.find(sv => sv.name == v)
         this.setState({
             currentFilter: find || { name: '' }
-        },()=>{
-            this.getList();
+        }, () => {
+            this.getList(true);
         });
     }
     clearFilter = (e) => {
         e.stopPropagation();
         this.setState({
             currentFilter: { name: '' }
-        },()=>{
-            this.getList();
+        }, () => {
+            this.getList(true);
         });
     }
-    onChangeTable = (pagination) => {
-        const { current } = pagination;
-        this.setState((state) => {
-            return {
-                pagination: {
-                    ...state.pagination,
-                    current
-                }
-            }
+    getList = (turnFirstPage) => {
+        this.setState({
+            loading: true,
         });
-        this.getList();
-    }
-    getList = () => {
-        this.setState({ loading: true });
+        if (turnFirstPage) {
+            this.setState({
+                pagination: { ...this.state.pagination, current: 1 }
+            });
+        }
         LayoutCreatorApi.listCreators({
-            "pageSize": this.state.pageSize,
-            "pageIndex": this.state.pageIndex,
+            "pageSize": this.state.pagination.pageSize,
+            "pageIndex": turnFirstPage ? 1 : this.state.pagination.current,
             "orderBys": this.state.currentFilter.name ? [{
                 sort: this.state.currentFilter.key,
                 order: 'DESC'
