@@ -31,8 +31,8 @@ export class CreatorService {
         resp.totalCount = await query_count.creator_account_id_count;
 
         let query = await this.dextRepo.createQueryBuilder("d")
-            .leftJoinAndSelect(Account, "a", "a.accountId = d.creator_account_id")
-            .select(`a."nickName"`, `creator_account_name`)
+            .leftJoinAndSelect(Account, "a", "a.account_id = d.creator_account_id")
+            .select(`a."nick_name"`, `creator_account_name`)
             .addSelect("creator_account_id", "creator_account_id")
             .addSelect("count(1)", "dashboard_count")
             .addSelect("SUM( d.view_count )", "total_view_count")
@@ -41,7 +41,7 @@ export class CreatorService {
             .addSelect("SUM( d.favorite_count )", "total_favorite_count")
             .addSelect("COALESCE( max(a.followed_account_count),0)", "followed_account_count")
             .groupBy("d.creator_account_id")
-            .addGroupBy(`a."nickName"`)
+            .addGroupBy(`a."nick_name"`)
 
 
         if (param.orderBys && param.orderBys.length > 0) {
