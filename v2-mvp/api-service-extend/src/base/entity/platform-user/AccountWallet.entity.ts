@@ -7,7 +7,8 @@ export class AccountWallet {
     @PrimaryColumn({
         type: 'text',
         comment: '',
-        nullable: false
+        nullable: false,
+        name: 'account_id'
     })
     accountId: string;
 

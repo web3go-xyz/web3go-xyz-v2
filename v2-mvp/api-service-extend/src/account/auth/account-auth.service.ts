@@ -84,6 +84,8 @@ export class AccountAuthService implements IAuthService {
         groups: await this.accountBaseService.searchAccountGroups(accountId),
       };
       authUser.token = await this.jwtAuthService.grantToken(payload);
+
+      this.accountBaseService.updateLastLoginTime(searchAccount.accountId);
     }
     return authUser;
   }
@@ -221,7 +223,7 @@ export class AccountAuthService implements IAuthService {
       avatar: '',
       created_time: new Date(),
       allowLogin: 1,
-      last_login_time: new Date(),
+      lastLoginTime: new Date(),
       followedAccountCount: 0,
       followingAccountCount: 0
     }

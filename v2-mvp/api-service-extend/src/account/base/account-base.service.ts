@@ -17,6 +17,7 @@ const md5 = require('js-md5');
 @Injectable()
 export class AccountBaseService {
 
+
   logger: W3Logger;
 
   constructor(
@@ -32,7 +33,15 @@ export class AccountBaseService {
   ) {
     this.logger = new W3Logger(`AccountBaseService`);
   }
-
+  async updateLastLoginTime(accountId: string) {
+    let account = await this.accountRepository.findOne({
+      where: { accountId: accountId }
+    });
+    if (account) {
+      account.lastLoginTime = new Date();
+      await this.accountRepository.save(account);
+    }
+  }
   generateAccountId() {
     return uuidv4().toString().replace(/-/g, '');
   }
