@@ -214,12 +214,12 @@ class Component extends React.Component {
                     <div className="item active">Account Setting</div>
                 </div>
                 <div className="page-main">
-                    <div className="nav">
+                    {/* <div className="nav">
                         <div className="nav-list">
                             <div className="item" onClick={()=>{this.props.push('/layout/mySpace')}}>My Space</div>
                             <div className="item active">Account Setting</div>
                         </div>
-                    </div>
+                    </div> */}
                     <div className="pm-right">
                         <div className="banner">
                             <div className="avatar">

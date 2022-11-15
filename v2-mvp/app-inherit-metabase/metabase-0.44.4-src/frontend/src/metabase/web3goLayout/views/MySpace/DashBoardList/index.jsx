@@ -95,22 +95,22 @@ class Component extends React.Component {
                         });
                     }
                     return (
-                        <div className="operation-wrap">
-                            <Dropdown trigger='click' position="bottom" droplist={
-                                <Menu className="web3go-layout-myspace-dashboardlist-menu" onClickMenuItem={(key) => { this.clickDropdownIcon(key, record) }}>
-                                    {operationList.map((v) => (
-                                        <Menu.Item key={v.name}>
-                                            {v.icon}
-                                            <span>
-                                                {v.name}
-                                            </span>
-                                        </Menu.Item>
-                                    ))}
-                                </Menu>
-                            }>
+                        <Dropdown trigger='click' position="bottom" droplist={
+                            <Menu className="web3go-layout-myspace-dashboardlist-menu" onClickMenuItem={(key) => { this.clickDropdownIcon(key, record) }}>
+                                {operationList.map((v) => (
+                                    <Menu.Item key={v.name}>
+                                        {v.icon}
+                                        <span>
+                                            {v.name}
+                                        </span>
+                                    </Menu.Item>
+                                ))}
+                            </Menu>
+                        }>
+                            <div className="operation-wrap">
                                 <IconMoreVertical></IconMoreVertical>
-                            </Dropdown>
-                        </div>
+                            </div>
+                        </Dropdown>
                     )
                 }
             },],
