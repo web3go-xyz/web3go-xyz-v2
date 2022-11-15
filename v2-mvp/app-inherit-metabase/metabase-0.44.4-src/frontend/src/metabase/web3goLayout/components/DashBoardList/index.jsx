@@ -321,7 +321,7 @@ class Component extends React.Component {
                     <div className="createby">
                         <div className="label">Created by</div>
                         <Select
-                            placeholder='Please select created by my following creators  '
+                            placeholder='Please select creators'
                             style={{ width: 386 }}
                             allowClear
                             onChange={(value) => {
@@ -336,11 +336,17 @@ class Component extends React.Component {
                             }
                             }
                         >
-                            {this.props.myFollowingList.map((v, i) => (
+                            {/* {this.props.myFollowingList.map((v, i) => (
                                 <Option key={i} value={v.accountId}>
                                     {v.nickName}
                                 </Option>
-                            ))}
+                            ))} */}
+                            <Option value="1">
+                                My following creators
+                            </Option>
+                            <Option value="2">
+                                created by my self
+                            </Option>
                         </Select>
                     </div>
                     <Checkbox onChange={this.changeMyFavoriteCheckbox}>My favorite</Checkbox>

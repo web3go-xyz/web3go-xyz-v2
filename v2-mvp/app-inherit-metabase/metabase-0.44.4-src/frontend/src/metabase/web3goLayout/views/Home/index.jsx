@@ -146,6 +146,7 @@ class Component extends React.Component {
                         <Carousel
                             showArrow='never'
                             autoPlay={true}
+                            moveSpeed={1500}
                             style={{ height: 350 }}
                             indicatorType="line"
                         >
