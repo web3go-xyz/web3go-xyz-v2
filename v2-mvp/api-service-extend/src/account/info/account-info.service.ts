@@ -135,7 +135,7 @@ export class AccountInfoService {
     this.logger.debug(`start to linkEmail ${JSON.stringify(payload)}`);
 
     await this.verifyCodeWhenLinkEmail(payload);
-    await this.checkDuplicateEmail(payload.accountId, payload.email);
+    await this.checkExistingEmail(payload.email);
 
     let newEmailLink: AccountEmail = {
       accountId: payload.accountId,
@@ -149,7 +149,7 @@ export class AccountInfoService {
     return true;
   }
   async checkEmailBeforeLink(payload: CheckEmailRequest): Promise<Boolean> {
-    await this.checkDuplicateEmail(payload.accountId, payload.email);
+    await this.checkExistingEmail(payload.email);
 
     //send email with code
     let newCode: AccountVerifyCode = await this.verifyCodeBaseService.newCode(payload.accountId, payload.email, VerifyCodeType.Email, VerifyCodePurpose.LinkEmail);
@@ -165,16 +165,15 @@ export class AccountInfoService {
 
 
   }
-  async checkDuplicateEmail(accountId: string, email: string) {
+  async checkExistingEmail(email: string) {
     let findEmail = await this.accountEmailRepository.findOne({
       where: {
-        accountId: accountId,
         email: email
       }
     });
     if (findEmail) {
-      this.logger.error(`duplicate email for ${accountId} ${email}`);
-      throw new Error(`duplicate email for ${email}`);
+      this.logger.error(`existing email for ${email}`);
+      throw new Error(`existing email for ${email}`);
     }
 
     return true;
@@ -198,7 +197,6 @@ export class AccountInfoService {
     throw new Error(`verify code failed when link email`);
 
   }
-
 
   async unlinkEmail(payload: UnlinkEmailRequest): Promise<Boolean> {
     this.logger.debug(`start to unlinkEmail ${JSON.stringify(payload)}`);
@@ -224,7 +222,7 @@ export class AccountInfoService {
     this.logger.debug(`start to linkWallet ${JSON.stringify(payload)}`);
 
     await this.verifySignatureWhenLinkWallet(payload);
-    await this.checkDuplicateWallet(payload);
+    await this.checkExistingWallet(payload);
 
     let newWalletLink: AccountWallet = {
       accountId: payload.accountId,
@@ -238,17 +236,15 @@ export class AccountInfoService {
     this.logger.warn(`success linkWallet ${JSON.stringify(payload)}`);
     return true;
   }
-  async checkDuplicateWallet(payload: LinkWalletRequest) {
+  async checkExistingWallet(payload: LinkWalletRequest) {
     let findWallet = await this.accountWalletRepository.findOne({
       where: {
-        accountId: payload.accountId,
-        address: payload.address.toLowerCase(),
-        chain: payload.chain
+        address: payload.address.toLowerCase()
       }
     });
     if (findWallet) {
-      this.logger.error(`duplicate wallet for ${JSON.stringify(payload)}`);
-      throw new Error(`duplicate wallet`);
+      this.logger.error(`existing wallet for ${JSON.stringify(payload)}`);
+      throw new Error(`existing wallet`);
     }
     return true;
   }
