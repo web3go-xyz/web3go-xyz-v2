@@ -62,7 +62,7 @@ export class Web3SignService {
       avatar: '',
       created_time: new Date(),
       allowLogin: 1,
-      last_login_time: new Date(),
+      lastLoginTime: new Date(),
       followedAccountCount: 0,
       followingAccountCount: 0
     }
@@ -109,6 +109,8 @@ export class Web3SignService {
         throw new BadRequestException("wallet address for account does not verified");
       }
       accountId = searchAccount.accountId;
+
+      this.accountBaseService.updateLastLoginTime(searchAccount.accountId);
     }
 
     let findAccount = await this.accountBaseService.searchAccount(accountId);

@@ -200,7 +200,7 @@ export class AccountInfoService {
 
   async unlinkEmail(payload: UnlinkEmailRequest): Promise<Boolean> {
     this.logger.debug(`start to unlinkEmail ${JSON.stringify(payload)}`);
-    await this.requireAtLeastOneLink(payload.accountId);
+    await this.requireAtLeastOneLink(payload.accountId, false);
 
     let findEmail = await this.accountEmailRepository.findOne({
       where: {
@@ -211,11 +211,45 @@ export class AccountInfoService {
     if (findEmail) {
       await this.accountEmailRepository.remove(findEmail);
       this.logger.warn(`success unlinkEmail ${JSON.stringify(payload)}`);
+
+      await this.checkAccountShouldBeDestoryed(payload.accountId);
       return true;
     }
 
     return false;
 
+  }
+  async checkAccountShouldBeDestoryed(accountId: string, destroyFlag: boolean = true) {
+    if(!accountId){
+      return;
+    }
+    let findEmailsCount = await this.accountEmailRepository.count({
+      where: {
+        accountId: accountId,
+      }
+    });
+    let findWalletsCount = await this.accountWalletRepository.count({
+      where: {
+        accountId: accountId,
+      }
+    });
+    this.logger.debug(`check accountId ${accountId} links, emailLinkCount=${findEmailsCount},walletLinkCount=${findWalletsCount}`);
+
+    if ((findEmailsCount + findWalletsCount) <= 0) {
+      this.logger.warn(`current account ${accountId} has no related emails or wallets.`);
+
+      if (destroyFlag) {
+        this.logger.warn(`current account ${accountId} will be destoryed`);
+
+        let account = await this.accountRepository.findOne({
+          where: { accountId: accountId }
+        });
+        if (account) {
+          await this.accountRepository.delete(account);
+          this.logger.warn(`current account ${accountId} has been destoryed`);
+        }
+      }
+    }
   }
 
   async linkWallet(payload: LinkWalletRequest): Promise<Boolean> {
@@ -264,7 +298,7 @@ export class AccountInfoService {
 
   async unlinkWallet(payload: UnlinkWalletRequest): Promise<Boolean> {
     this.logger.debug(`start to unlinkWallet ${JSON.stringify(payload)}`);
-    await this.requireAtLeastOneLink(payload.accountId);
+    await this.requireAtLeastOneLink(payload.accountId, false);
 
     let findWallet = await this.accountWalletRepository.findOne({
       where: {
@@ -276,30 +310,36 @@ export class AccountInfoService {
     if (findWallet) {
       await this.accountWalletRepository.remove(findWallet);
       this.logger.warn(`success unlinkWallet ${JSON.stringify(payload)}`);
+
+      await this.checkAccountShouldBeDestoryed(payload.accountId);
       return true;
     }
 
     return false;
 
   }
-  async requireAtLeastOneLink(accountId: string): Promise<Boolean> {
+  async requireAtLeastOneLink(accountId: string, throwErrorFlag: boolean): Promise<Boolean> {
 
     let emailLinkCount = await this.accountEmailRepository.count({
       where: {
         accountId: accountId,
-        verified: VerifyFlag.Verified
       }
     });
 
     let walletLinkCount = await this.accountWalletRepository.count({
       where: {
         accountId: accountId,
-        verified: VerifyFlag.Verified
       }
     });
     this.logger.debug(`check accountId links, emailLinkCount=${emailLinkCount},walletLinkCount=${walletLinkCount}`);
     if ((emailLinkCount + walletLinkCount) <= 1) {
-      throw new Error('Must keep at least one email/wallet to signin');
+      if (throwErrorFlag) {
+        throw new Error('Must keep at least one email/wallet to signin');
+      }
+      else {
+        this.logger.warn(`check accountId only has one link, emailLinkCount=${emailLinkCount},walletLinkCount=${walletLinkCount}`);
+
+      }
     }
     return true;
 

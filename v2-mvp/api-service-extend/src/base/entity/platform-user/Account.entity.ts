@@ -7,7 +7,8 @@ export class Account {
     @PrimaryColumn({
         type: 'text',
         comment: 'unique identity id for user',
-        nullable: false
+        nullable: false,
+        name: 'account_id'
     })
     accountId: string;
 
@@ -22,7 +23,8 @@ export class Account {
     @ApiProperty()
     @Column({
         comment: 'user friendly name for display',
-        nullable: true
+        nullable: true,
+        name: 'nick_name'
     })
     nickName: string;
 
@@ -47,13 +49,14 @@ export class Account {
     @Column({
         comment: 'user allow login status, default =1 , set to 0 when disabled.',
         type: 'int',
-        default: 1
+        default: 1,
+        name: 'allow_login'
     })
     allowLogin: number = 1;
 
     @ApiProperty()
-    @Column({ comment: '', default: '2022-01-01' })
-    last_login_time: Date;
+    @Column({ comment: '', name: 'last_login_time', default: '2022-01-01' })
+    lastLoginTime: Date;
 
 
     @ApiProperty({

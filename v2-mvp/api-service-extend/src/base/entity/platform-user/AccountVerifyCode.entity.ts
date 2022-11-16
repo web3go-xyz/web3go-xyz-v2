@@ -12,7 +12,8 @@ export class AccountVerifyCode {
     @ApiProperty()
     @Column({
         comment: 'verify type, support: email,discord,telegram,etc.',
-        nullable: false
+        nullable: false,
+        name: 'verify_type'
     })
     verifyType: string;
 
@@ -26,7 +27,8 @@ export class AccountVerifyCode {
     @ApiProperty()
     @Column({
         comment: 'key, the value can be: email, discord name, telegram name,etc.',
-        nullable: false
+        nullable: false,
+        name: 'verify_key'
     })
     verifyKey: string;
 
@@ -42,7 +44,8 @@ export class AccountVerifyCode {
     @Column({
         type: 'text',
         comment: '',
-        nullable: true
+        nullable: true,
+        name: 'account_id'
     })
     accountId: string;
 
