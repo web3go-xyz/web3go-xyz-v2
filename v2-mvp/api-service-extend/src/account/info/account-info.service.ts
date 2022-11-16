@@ -211,11 +211,40 @@ export class AccountInfoService {
     if (findEmail) {
       await this.accountEmailRepository.remove(findEmail);
       this.logger.warn(`success unlinkEmail ${JSON.stringify(payload)}`);
+
+      await this.checkAccountShouldBeDestoryed(findEmail.accountId);
       return true;
     }
 
     return false;
 
+  }
+  async checkAccountShouldBeDestoryed(accountId: string, destroyFlag: boolean = true) {
+    let findEmailsCount = await this.accountEmailRepository.count({
+      where: {
+        accountId: accountId,
+      }
+    });
+    let findWalletsCount = await this.accountWalletRepository.count({
+      where: {
+        accountId: accountId,
+      }
+    });
+    if (findEmailsCount + findWalletsCount <= 0) {
+      this.logger.warn(`current account ${accountId} has no related emails or wallets.`);
+
+      if (destroyFlag) {
+        this.logger.warn(`current account ${accountId} will be destoryed`);
+
+        let account = await this.accountRepository.findOne({
+          where: { accountId: accountId }
+        });
+        if (account) {
+          await this.accountRepository.delete(account);
+          this.logger.warn(`current account ${accountId} has been destoryed`);
+        }
+      }
+    }
   }
 
   async linkWallet(payload: LinkWalletRequest): Promise<Boolean> {
@@ -276,6 +305,8 @@ export class AccountInfoService {
     if (findWallet) {
       await this.accountWalletRepository.remove(findWallet);
       this.logger.warn(`success unlinkWallet ${JSON.stringify(payload)}`);
+
+      await this.checkAccountShouldBeDestoryed(findWallet.accountId);
       return true;
     }
 
