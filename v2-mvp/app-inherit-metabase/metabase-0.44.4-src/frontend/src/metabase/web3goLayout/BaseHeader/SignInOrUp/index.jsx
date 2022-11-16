@@ -69,13 +69,13 @@ class Component extends React.Component {
             LayoutLoginApi.searchAccountsByEmail({
                 filter: form.email.toLowerCase(),
             }).then(d => {
-                if (d.length) {
+                if (this.state.isSignIn) {
                     this.setState({
-                        emailVerifyPass: false
+                        emailVerifyPass: d.length ? true : false
                     });
                 } else {
                     this.setState({
-                        emailVerifyPass: true
+                        emailVerifyPass: d.length ? false : true
                     });
                 }
             })
@@ -135,7 +135,7 @@ class Component extends React.Component {
     listenCookie = () => {
         clearInterval(this.state.timer);
         const timer = setInterval(() => {
-            if (this.props.currentUser) {
+            if (localStorage.getItem('token')) {
                 this.setState({
                     visible: false,
                     verifyModalVisible: false
@@ -178,17 +178,27 @@ class Component extends React.Component {
                             : null}
                         <div className='email-item'>
                             <FormItem label='Email address' field='email' rules={[{ required: true, message: 'Email address cannot be empty' }, { type: 'email', message: 'Invalid email' }]}>
-                                <Input placeholder='helloworld@gmail.com' onBlur={!this.state.isSignIn ? this.checkIfEmailExist : () => { }} onChange={() => { this.setState({ emailVerifyPass: true }) }} />
+                                <Input placeholder='helloworld@gmail.com' onBlur={this.checkIfEmailExist} onChange={() => { this.setState({ emailVerifyPass: true }) }} />
                             </FormItem>
                             {
-                                !this.state.isSignIn && !this.state.emailVerifyPass ? (
-                                    <div className="duplicate">
-                                        <img src={require("@/web3goLayout/assets/layout/waring2.png")} alt="" />
-                                        <span>
-                                            This email has been registered. Go to&nbsp;
-                                        </span>
-                                        <span onClick={() => { this.init(true) }} className="a hover-item">sign in</span>
-                                    </div>
+                                !this.state.emailVerifyPass ? (
+                                    this.state.isSignIn ? (
+                                        <div className="duplicate">
+                                            <img src={require("@/web3goLayout/assets/layout/waring2.png")} alt="" />
+                                            <span>
+                                                This email is not registered, please&nbsp;
+                                            </span>
+                                            <span onClick={() => { this.init() }} className="a hover-item">sign up</span>
+                                        </div>
+                                    ) : (
+                                        <div className="duplicate">
+                                            <img src={require("@/web3goLayout/assets/layout/waring2.png")} alt="" />
+                                            <span>
+                                                This email has been registered. Go to&nbsp;
+                                            </span>
+                                            <span onClick={() => { this.init(true) }} className="a hover-item">sign in</span>
+                                        </div>
+                                    )
                                 ) : null
                             }
                         </div>

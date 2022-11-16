@@ -219,7 +219,10 @@ body[arco-theme="dark"] .web3go-layout-home-page {
         .creator-list {
             margin: -10px;
             margin-bottom: 40px;
-
+            &.spin{
+                text-align: center;
+                padding-top: 20px;
+            }
             .item {
                 display: inline-block;
                 padding: 24px;
@@ -276,6 +279,10 @@ body[arco-theme="dark"] .web3go-layout-home-page {
                     .i-top .it-right .btn .text {
                         color: white;
                     }
+
+                    .headicon {
+                        border-color: white !important;
+                    }
                 }
 
                 .i-top {
@@ -307,6 +314,7 @@ body[arco-theme="dark"] .web3go-layout-home-page {
                             display: block;
                             width: 64px;
                             height: 64px;
+                            border: 2px solid transparent;
                         }
                     }
 
@@ -321,28 +329,41 @@ body[arco-theme="dark"] .web3go-layout-home-page {
                             white-space: nowrap;
                             width: 260px;
                         }
-
+                        .btn-wrap{
+                            display: flex;
+                        }
                         .btn {
                             padding: 2px 6px;
                             border: 1px solid var(--creator-follow-border);
                             border-radius: 4px;
                             background: var(--creator-follow-bg);
-                            display: inline-block;
+                            display: flex;
+                            align-items: center;
                             margin-top: 8px;
                             cursor: pointer;
 
                             .arco-icon {
-                                vertical-align: middle;
                                 stroke: var(--6bColor);
                             }
 
                             .text {
-                                vertical-align: middle;
                                 margin-left: 2px;
                                 font-weight: 500;
                                 font-size: 12px;
                                 line-height: 20px;
                                 color: var(--6bColor);
+                            }
+                        }
+
+                        .spin {
+                            .arco-spin {
+                                display: inline-block;
+                                vertical-align: middle;
+                            }
+
+                            .arco-spin-icon {
+                                display: block;
+                                font-size: 12px;
                             }
                         }
                     }

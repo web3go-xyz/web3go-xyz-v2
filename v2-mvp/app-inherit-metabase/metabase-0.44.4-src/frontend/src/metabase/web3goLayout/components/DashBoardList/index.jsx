@@ -82,14 +82,14 @@ class Component extends React.Component {
                     dataIndex: 'viewCount',
                     align: 'right',
                     sorter: true,
-                    render: (col, record, index) => <span>{numberSplit(record.viewCount)}</span>
+                    render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.viewCount)}</span>
                 },
                 {
                     title: 'Favorites',
                     dataIndex: 'favoriteCount',
                     align: 'right',
                     sorter: true,
-                    render: (col, record, index) => <span>{numberSplit(record.favoriteCount)}</span>
+                    render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.favoriteCount)}</span>
 
                 },
                 {
@@ -97,7 +97,7 @@ class Component extends React.Component {
                     dataIndex: 'shareCount',
                     align: 'right',
                     sorter: true,
-                    render: (col, record, index) => <span>{numberSplit(record.shareCount)}</span>
+                    render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.shareCount)}</span>
                 },
                 {
                     title: '24h',
@@ -244,12 +244,20 @@ class Component extends React.Component {
         });
     }
     getList = (turnFirstPage) => {
-        this.setState({ loading: true });
         if (turnFirstPage) {
             this.setState({
                 pagination: { ...this.state.pagination, current: 1 }
             });
         }
+        if (this.state.showMyFavorite && !this.state.favouriteList.length) {
+            this.setState({
+                loading: false,
+                tableData: [],
+                pagination: { ...this.state.pagination, total: 0 }
+            });
+            return;
+        }
+        this.setState({ loading: true });
         LayoutDashboardApi.list({
             "pageSize": this.state.pagination.pageSize,
             "pageIndex": turnFirstPage ? 1 : this.state.pagination.current,

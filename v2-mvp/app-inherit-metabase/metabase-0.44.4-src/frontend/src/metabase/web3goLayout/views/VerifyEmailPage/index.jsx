@@ -2,7 +2,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Upload, Message } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Upload, Message, Spin } from '@arco-design/web-react';
 import { replace } from "react-router-redux";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
@@ -45,7 +45,8 @@ class Component extends React.Component {
     }
     render() {
         return (
-            <div>
+            <div style={{ position: 'fixed', left: '50%', top: '50%', transform: 'translate(-50%,-50%)' }}>
+                <Spin dot />
             </div>
         )
     }

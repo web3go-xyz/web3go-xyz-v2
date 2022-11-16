@@ -10,6 +10,7 @@ import { changeUserData } from "metabase/redux/app";
 import { LayoutLoginApi } from '@/services'
 import event from '@/web3goLayout/event';
 import MyHeadIcon from '@/web3goLayout/components/MyHeadIcon';
+import { logout } from "@/auth/actions";
 
 const mapStateToProps = state => {
     return {
@@ -18,6 +19,7 @@ const mapStateToProps = state => {
     }
 };
 const mapDispatchToProps = {
+    onLogout: logout,
     push,
     changeUserData
 };
@@ -94,12 +96,19 @@ class Component extends React.Component {
         event.emit('openAddWalletModal');
     }
     unlinkEmail = (v) => {
+        let allAccountCount = 0;
+        if (this.props.userData.accountEmails) {
+            allAccountCount += this.props.userData.accountEmails.length;
+        }
+        if (this.props.userData.accountWallets) {
+            allAccountCount += this.props.userData.accountWallets.length;
+        }
         Modal.confirm({
-            wrapClassName: 'common-confirm-modal',
+            wrapClassName: allAccountCount > 1 ? 'common-confirm-modal' : 'common-confirm-modal account-settiong-error-icon-confirm-modal',
             closable: true,
-            title: 'Are you sure to unlink Email Address ?',
+            title: allAccountCount > 1 ? 'Are you sure to unlink Email Address ?' : 'Are you sure to delete Web3go Account?',
             content:
-                'After you click ok, your Web3go account will be deleted. Your will lose all your data.',
+                allAccountCount > 1 ? 'After you unlink this email, you won’t be able to access data under this account.' : "You’re deleting your last log-in method. After you confirm, your Web3go account will be deleted. ",
             okText: 'Confirm',
             cancelText: 'Cancel',
             onOk: () => {
@@ -115,12 +124,20 @@ class Component extends React.Component {
         });
     }
     unlinkWallet = (v) => {
+        let allAccountCount = 0;
+        if (this.props.userData.accountEmails) {
+            allAccountCount += this.props.userData.accountEmails.length;
+        }
+        if (this.props.userData.accountWallets) {
+            allAccountCount += this.props.userData.accountWallets.length;
+        }
+
         Modal.confirm({
-            wrapClassName: 'common-confirm-modal',
+            wrapClassName: allAccountCount > 1 ? 'common-confirm-modal' : 'common-confirm-modal account-settiong-error-icon-confirm-modal',
             closable: true,
-            title: 'Are you sure to unlink Wallet ?',
+            title: allAccountCount > 1 ? 'Are you sure to unlink Wallet ?' : 'Are you sure to delete Web3go Account?',
             content:
-                'After you click ok, your Web3go account will be deleted. Your will lose all your data.',
+                allAccountCount > 1 ? "After you unlink this wallet address , you won't be able to access data under this account." : "You’re deleting your last log-in method. After you confirm, your Web3go account will be deleted. ",
             okText: 'Confirm',
             cancelText: 'Cancel',
             onOk: () => {
@@ -138,6 +155,10 @@ class Component extends React.Component {
     }
     refreshAccountInfo() {
         LayoutLoginApi.getAccountInfo().then(d => {
+            if(!d){
+                this.props.onLogout();
+                return;
+            }
             this.props.changeUserData(d);
         })
     }
@@ -164,7 +185,7 @@ class Component extends React.Component {
         });
     }
     fileChange = (files) => {
-        const isLt1M = files[files.length-1].originFile.size / 1024 / 1024 < 1;
+        const isLt1M = files[files.length - 1].originFile.size / 1024 / 1024 < 1;
         if (!isLt1M) {
             Message.error('Max size is 1MB');
             return;

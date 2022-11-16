@@ -2,7 +2,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Upload, Carousel } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Upload, Carousel, Spin } from '@arco-design/web-react';
 import { push } from "react-router-redux";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
@@ -37,15 +37,12 @@ class Component extends React.Component {
                 require("@/web3goLayout/assets/home/banner.png"),
             ],
             creatorList: [],
-            myFollowingList: []
+            myFollowingList: [],
+            creatorListLoading: false
         }
     }
     componentDidMount() {
         this.getDashboardListCount();
-        this.getCreatorList();
-        this.listMyFollows();
-    }
-    refreshCreatorListAndMyFollowsList() {
         this.getCreatorList();
         this.listMyFollows();
     }
@@ -65,12 +62,16 @@ class Component extends React.Component {
             "account_id": this.props.userData.account.accountId,
             "includeDetail": true
         }).then(d => {
+            this.followUnLoading();
             this.setState({
                 myFollowingList: d.list
             })
         });
     }
     getCreatorList = () => {
+        this.setState({
+            creatorListLoading: true
+        });
         LayoutCreatorApi.listCreators({
             "pageSize": 6,
             "pageIndex": 1,
@@ -85,6 +86,7 @@ class Component extends React.Component {
                 includeExtraInfo: false
             }).then(data => {
                 this.setState({
+                    creatorListLoading: false,
                     creatorList: d.list.map(v => {
                         const find = data.find(sv => sv.account.accountId == v.creator_account_id)
                         return {
@@ -119,22 +121,45 @@ class Component extends React.Component {
             myFavouriteCount
         });
     }
+    followLoading = (v) => {
+        const newCreatorList = JSON.parse(JSON.stringify(this.state.creatorList));
+        newCreatorList.forEach(sv => {
+            if (sv.accountId == v.accountId) {
+                sv.loading = true;
+            }
+        });
+        this.setState({
+            creatorList: newCreatorList
+        });
+    }
+    followUnLoading = () => {
+        const newCreatorList = JSON.parse(JSON.stringify(this.state.creatorList));
+        newCreatorList.forEach(sv => {
+            sv.loading = false;
+        });
+        this.setState({
+            creatorList: newCreatorList
+        });
+    }
     handleFollow = (v) => {
         if (!this.props.userData.account) {
             this.goSignIn();
             return;
         }
+        this.followLoading(v);
         LayoutCreatorApi.follow({
             "targetAccountId": v.accountId
         }).then(d => {
-            this.refreshCreatorListAndMyFollowsList();
+            this.listMyFollows();
         });
     }
     handleUnfollow = (v) => {
+        const newCreatorList = JSON.parse(JSON.stringify(this.state.creatorList));
+        this.followLoading(v);
         LayoutCreatorApi.unfollow({
             "targetAccountId": v.accountId
         }).then(d => {
-            this.refreshCreatorListAndMyFollowsList();
+            this.listMyFollows();
         });
     }
 
@@ -249,39 +274,57 @@ class Component extends React.Component {
                             <path d="M9.24269 3.75667L13.4854 7.99933L9.24269 12.242M1.66669 8H13.0984" strokeWidth="1.5" />
                         </svg>
                     </div>
-                    <div className="section-content creator-list">
-                        {this.state.creatorList.slice(0, 6).map((v, i) => (
-                            <div key={i} className={"item" + (i == 0 ? ' active' : '')}>
-                                <div className="i-top">
-                                    <div className="headicon-wrap">
-                                        <img className="icon" src={require(`@/web3goLayout/assets/home/${i + 1}.png`)} alt="" />
-                                        <span className="rank">{i + 1}</span>
-                                        <UserHeadIcon className="headicon" iconSize={64} fontSize={18} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
-                                    </div>
-                                    <div className="it-right">
-                                        <div className="name" title={v.nickName}>{v.nickName}</div>
-                                        {
-                                            this.state.myFollowingList.find(sv => sv.accountId == v.creator_account_id) ? (
-                                                <div className="btn hover-item" onClick={() => { this.handleUnfollow(v) }}>
-                                                    <IconCheck />
-                                                    <span className="text">Following</span>
-                                                </div>
-                                            ) : (
-                                                <div className="btn hover-item" onClick={() => { this.handleFollow(v) }}>
-                                                    <IconPlus />
-                                                    <span className="text">Follow</span>
-                                                </div>
-                                            )
-                                        }
-                                    </div>
-                                </div>
-                                <div className="i-bottom">
-                                    <span className="label">Dashboards</span>
-                                    <span className="value">{numberSplit(v.dashboard_count)}</span>
-                                </div>
+                    {
+                        this.state.creatorListLoading ? (
+                            <div className="section-content creator-list spin">
+                                <Spin></Spin>
                             </div>
-                        ))}
-                    </div>
+                        ) : (
+                            <div className="section-content creator-list">
+                                {this.state.creatorList.slice(0, 6).map((v, i) => (
+                                    <div key={i} className={"item" + (i == 0 ? ' active' : '')}>
+                                        <div className="i-top">
+                                            <div className="headicon-wrap">
+                                                <img className="icon" src={require(`@/web3goLayout/assets/home/${i + 1}.png`)} alt="" />
+                                                <span className="rank">{i + 1}</span>
+                                                <UserHeadIcon className="headicon" iconSize={64} fontSize={18} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
+                                            </div>
+                                            <div className="it-right">
+                                                <div className="name" title={v.nickName}>{v.nickName}</div>
+                                                <div className="btn-wrap">
+                                                    {
+                                                        v.loading ? (
+                                                            <div className="btn hover-item spin" >
+                                                                <Spin />
+                                                                <span className="text">loading</span>
+                                                            </div>
+                                                        ) :
+                                                            (
+                                                                this.state.myFollowingList.find(sv => sv.accountId == v.creator_account_id) ? (
+                                                                    <div className="btn hover-item" onClick={() => { this.handleUnfollow(v) }}>
+                                                                        <IconCheck />
+                                                                        <span className="text">Following</span>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="btn hover-item" onClick={() => { this.handleFollow(v) }}>
+                                                                        <IconPlus />
+                                                                        <span className="text">Follow</span>
+                                                                    </div>
+                                                                )
+                                                            )
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="i-bottom">
+                                            <span className="label">Dashboards</span>
+                                            <span className="value">{numberSplit(v.dashboard_count)}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )
+                    }
                 </div >
             </div >
         )

@@ -3,7 +3,7 @@ import React from "react";
 import { connect } from "react-redux";
 import './index.less';
 import { IconDown, IconClose } from '@arco-design/web-react/icon';
-import { Button, Modal, Form, Input, Upload, Select, Pagination } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Upload, Select, Pagination, Spin } from '@arco-design/web-react';
 import { push } from "react-router-redux";
 import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 import { IconPlus, IconCheck } from '@arco-design/web-react/icon';
@@ -203,71 +203,74 @@ class Component extends React.Component {
                     <span className="total">{this.state.tableData.length} creators on Web3go</span>
                 </div>
                 <div className="table-list">
-                    {this.state.tableData.map((v, i) => (
-                        <div className="item" key={i}>
-                            <div className="i-top">
-                                <UserHeadIcon className="headicon" iconSize={48} fontSize={16} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
-                                <div className="it-right">
-                                    <div className="title" title={v.nickName}>{v.nickName}</div>
-                                    <div className="info">
-                                        <div className="svg-wrap" title="dashboards">
-                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fillRule="evenodd" clipRule="evenodd" d="M13.1 2.83H2.9C2.86134 2.83 2.83 2.86134 2.83 2.9V11.2415C2.83 11.2801 2.86134 11.3115 2.9 11.3115H13.1C13.1387 11.3115 13.17 11.2801 13.17 11.2415V2.9C13.17 2.86134 13.1387 2.83 13.1 2.83ZM2.9 1.5C2.1268 1.5 1.5 2.1268 1.5 2.9V11.2415C1.5 12.0147 2.1268 12.6415 2.9 12.6415H13.1C13.8732 12.6415 14.5 12.0147 14.5 11.2415V2.9C14.5 2.1268 13.8732 1.5 13.1 1.5H2.9ZM12.3313 5.84573C12.4964 6.06708 12.4508 6.38036 12.2294 6.54547L10.0245 8.19014C9.66304 8.4598 9.17356 8.48147 8.78965 8.24481L6.4326 6.79189C6.39666 6.76974 6.35068 6.77254 6.3177 6.79889L4.61666 8.158C4.40092 8.33037 4.0863 8.29521 3.91393 8.07947C3.74155 7.86374 3.77671 7.54911 3.99245 7.37674L5.69349 6.01763C6.05628 5.72777 6.56203 5.69695 6.95733 5.94062L9.31438 7.39355C9.34928 7.41506 9.39378 7.41309 9.42664 7.38858L11.6315 5.7439C11.8529 5.57879 12.1662 5.62438 12.3313 5.84573ZM3.82111 13.5816C3.5675 13.5816 3.36191 13.7872 3.36191 14.0408C3.36191 14.2944 3.5675 14.5 3.82111 14.5H12.1923C12.4459 14.5 12.6515 14.2944 12.6515 14.0408C12.6515 13.7872 12.4459 13.5816 12.1923 13.5816H3.82111Z" fill="#86909C" />
-                                            </svg>
+                    <Spin style={{ display: 'block' }} loading={this.state.loading}>
+                        {
+                            this.state.tableData.map((v, i) => (
+                                <div className="item" key={i}>
+                                    <div className="i-top">
+                                        <UserHeadIcon className="headicon" iconSize={48} fontSize={16} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
+                                        <div className="it-right">
+                                            <div className="title" title={v.nickName}>{v.nickName}</div>
+                                            <div className="info">
+                                                <div className="svg-wrap" title="dashboards">
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fillRule="evenodd" clipRule="evenodd" d="M13.1 2.83H2.9C2.86134 2.83 2.83 2.86134 2.83 2.9V11.2415C2.83 11.2801 2.86134 11.3115 2.9 11.3115H13.1C13.1387 11.3115 13.17 11.2801 13.17 11.2415V2.9C13.17 2.86134 13.1387 2.83 13.1 2.83ZM2.9 1.5C2.1268 1.5 1.5 2.1268 1.5 2.9V11.2415C1.5 12.0147 2.1268 12.6415 2.9 12.6415H13.1C13.8732 12.6415 14.5 12.0147 14.5 11.2415V2.9C14.5 2.1268 13.8732 1.5 13.1 1.5H2.9ZM12.3313 5.84573C12.4964 6.06708 12.4508 6.38036 12.2294 6.54547L10.0245 8.19014C9.66304 8.4598 9.17356 8.48147 8.78965 8.24481L6.4326 6.79189C6.39666 6.76974 6.35068 6.77254 6.3177 6.79889L4.61666 8.158C4.40092 8.33037 4.0863 8.29521 3.91393 8.07947C3.74155 7.86374 3.77671 7.54911 3.99245 7.37674L5.69349 6.01763C6.05628 5.72777 6.56203 5.69695 6.95733 5.94062L9.31438 7.39355C9.34928 7.41506 9.39378 7.41309 9.42664 7.38858L11.6315 5.7439C11.8529 5.57879 12.1662 5.62438 12.3313 5.84573ZM3.82111 13.5816C3.5675 13.5816 3.36191 13.7872 3.36191 14.0408C3.36191 14.2944 3.5675 14.5 3.82111 14.5H12.1923C12.4459 14.5 12.6515 14.2944 12.6515 14.0408C12.6515 13.7872 12.4459 13.5816 12.1923 13.5816H3.82111Z" fill="#86909C" />
+                                                    </svg>
+                                                </div>
+                                                <span className="num">{v.dashboard_count}</span>
+                                                <div className="split"></div>
+                                                <div className="svg-wrap" title="followers">
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path fillRule="evenodd" clipRule="evenodd" d="M6.54877 0.989532C4.65259 0.989532 3.11544 2.52669 3.11544 4.42287C3.11544 6.31905 4.65259 7.85621 6.54877 7.85621C8.44495 7.85621 9.98212 6.31905 9.98212 4.42287C9.98212 2.52669 8.44495 0.989532 6.54877 0.989532ZM4.31544 4.42287C4.31544 3.18943 5.31533 2.18953 6.54877 2.18953C7.78222 2.18953 8.78212 3.18943 8.78212 4.42287C8.78212 5.6563 7.78222 6.65621 6.54877 6.65621C5.31533 6.65621 4.31544 5.6563 4.31544 4.42287ZM7.98113 9.13994L8.07972 8.986L2.71704 8.98641C1.8338 8.98641 1.1178 9.70238 1.1178 10.5857V10.9707C1.1178 11.5898 1.33864 12.1884 1.74061 12.6592C2.80957 13.911 4.4325 14.5205 6.54877 14.5205C7.17525 14.5205 7.75856 14.4671 8.29633 14.3588L8.46478 14.3249L8.35207 14.1952C8.11835 13.9263 7.91814 13.6276 7.75852 13.3055L7.72668 13.2412L7.65558 13.2508C7.31123 13.2971 6.94246 13.3205 6.54877 13.3205C4.74067 13.3205 3.46316 12.8284 2.65315 11.8799C2.43671 11.6264 2.3178 11.3041 2.3178 10.9707V10.5857C2.3178 10.3652 2.49655 10.1864 2.71705 10.1864L7.4973 10.1862L7.51967 10.117C7.63193 9.7695 7.78789 9.44169 7.98113 9.13994Z" fill="#86909C" />
+                                                        <path d="M11.3822 8.01047C13.3152 8.01047 14.8822 9.57745 14.8822 11.5105C14.8822 13.4434 13.3152 15.0105 11.3822 15.0105C9.44918 15.0105 7.8822 13.4434 7.8822 11.5105C7.8822 9.57745 9.44918 8.01047 11.3822 8.01047ZM9.69807 11.2854C9.57385 11.1612 9.37238 11.1612 9.24809 11.2854C9.12388 11.4097 9.12388 11.6112 9.24809 11.7354L10.5208 13.0081C10.6451 13.1324 10.8466 13.1324 10.9708 13.0081L13.5162 10.4627C13.6405 10.3385 13.6405 10.137 13.5162 10.0127C13.392 9.88844 13.1906 9.88844 13.0663 10.0127L10.7458 12.3332L9.69807 11.2854Z" fill="#86909C" />
+                                                    </svg>
+                                                </div>
+                                                <span className="num">{v.followed_account_count}</span>
+                                            </div>
                                         </div>
-                                        <span className="num">{v.dashboard_count}</span>
-                                        <div className="split"></div>
-                                        <div className="svg-wrap" title="followers">
-                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path fillRule="evenodd" clipRule="evenodd" d="M6.54877 0.989532C4.65259 0.989532 3.11544 2.52669 3.11544 4.42287C3.11544 6.31905 4.65259 7.85621 6.54877 7.85621C8.44495 7.85621 9.98212 6.31905 9.98212 4.42287C9.98212 2.52669 8.44495 0.989532 6.54877 0.989532ZM4.31544 4.42287C4.31544 3.18943 5.31533 2.18953 6.54877 2.18953C7.78222 2.18953 8.78212 3.18943 8.78212 4.42287C8.78212 5.6563 7.78222 6.65621 6.54877 6.65621C5.31533 6.65621 4.31544 5.6563 4.31544 4.42287ZM7.98113 9.13994L8.07972 8.986L2.71704 8.98641C1.8338 8.98641 1.1178 9.70238 1.1178 10.5857V10.9707C1.1178 11.5898 1.33864 12.1884 1.74061 12.6592C2.80957 13.911 4.4325 14.5205 6.54877 14.5205C7.17525 14.5205 7.75856 14.4671 8.29633 14.3588L8.46478 14.3249L8.35207 14.1952C8.11835 13.9263 7.91814 13.6276 7.75852 13.3055L7.72668 13.2412L7.65558 13.2508C7.31123 13.2971 6.94246 13.3205 6.54877 13.3205C4.74067 13.3205 3.46316 12.8284 2.65315 11.8799C2.43671 11.6264 2.3178 11.3041 2.3178 10.9707V10.5857C2.3178 10.3652 2.49655 10.1864 2.71705 10.1864L7.4973 10.1862L7.51967 10.117C7.63193 9.7695 7.78789 9.44169 7.98113 9.13994Z" fill="#86909C" />
-                                                <path d="M11.3822 8.01047C13.3152 8.01047 14.8822 9.57745 14.8822 11.5105C14.8822 13.4434 13.3152 15.0105 11.3822 15.0105C9.44918 15.0105 7.8822 13.4434 7.8822 11.5105C7.8822 9.57745 9.44918 8.01047 11.3822 8.01047ZM9.69807 11.2854C9.57385 11.1612 9.37238 11.1612 9.24809 11.2854C9.12388 11.4097 9.12388 11.6112 9.24809 11.7354L10.5208 13.0081C10.6451 13.1324 10.8466 13.1324 10.9708 13.0081L13.5162 10.4627C13.6405 10.3385 13.6405 10.137 13.5162 10.0127C13.392 9.88844 13.1906 9.88844 13.0663 10.0127L10.7458 12.3332L9.69807 11.2854Z" fill="#86909C" />
-                                            </svg>
+                                    </div>
+                                    <div className="i-bottom">
+                                        <div className="form-item">
+                                            <div className="inner">
+                                                <div className="label">
+                                                    Views
+                                                </div>
+                                                <div className="value">{v.total_view_count}</div>
+                                            </div>
                                         </div>
-                                        <span className="num">{v.followed_account_count}</span>
+                                        <div className="form-item">
+                                            <div className="inner">
+                                                <div className="label">
+                                                    Favorites
+                                                </div>
+                                                <div className="value">{v.total_favorite_count}</div>
+                                            </div>
+                                        </div>
+                                        <div className="form-item">
+                                            <div className="inner">
+                                                <div className="label">
+                                                    Shares
+                                                </div>
+                                                <div className="value">{v.total_share_count}</div>
+                                            </div>
+                                        </div>
+                                        {
+                                            this.state.myFollowingList.find(sv => sv.accountId == v.creator_account_id) ? (
+                                                <div className="btn hover-item" onClick={() => { this.handleUnfollow(v) }}>
+                                                    <IconCheck />
+                                                    <span className="text">Following</span>
+                                                </div>
+                                            ) : (
+                                                <div className="btn hover-item" onClick={() => { this.handleFollow(v) }}>
+                                                    <IconPlus />
+                                                    <span className="text">Follow</span>
+                                                </div>
+                                            )
+                                        }
                                     </div>
                                 </div>
-                            </div>
-                            <div className="i-bottom">
-                                <div className="form-item">
-                                    <div className="inner">
-                                        <div className="label">
-                                            Views
-                                        </div>
-                                        <div className="value">{v.total_view_count}</div>
-                                    </div>
-                                </div>
-                                <div className="form-item">
-                                    <div className="inner">
-                                        <div className="label">
-                                            Favorites
-                                        </div>
-                                        <div className="value">{v.total_favorite_count}</div>
-                                    </div>
-                                </div>
-                                <div className="form-item">
-                                    <div className="inner">
-                                        <div className="label">
-                                            Shares
-                                        </div>
-                                        <div className="value">{v.total_share_count}</div>
-                                    </div>
-                                </div>
-                                {
-                                    this.state.myFollowingList.find(sv => sv.accountId == v.creator_account_id) ? (
-                                        <div className="btn hover-item" onClick={() => { this.handleUnfollow(v) }}>
-                                            <IconCheck />
-                                            <span className="text">Following</span>
-                                        </div>
-                                    ) : (
-                                        <div className="btn hover-item" onClick={() => { this.handleFollow(v) }}>
-                                            <IconPlus />
-                                            <span className="text">Follow</span>
-                                        </div>
-                                    )
-                                }
-                            </div>
-                        </div>
-                    ))}
+                            ))}
+                    </Spin>
                 </div>
                 <div className="pagination-wrap">
                     <Pagination {...this.state.pagination} showJumper />

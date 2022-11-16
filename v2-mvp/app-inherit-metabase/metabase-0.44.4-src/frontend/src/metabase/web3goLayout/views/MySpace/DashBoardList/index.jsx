@@ -12,7 +12,8 @@ import { LayoutDashboardApi } from '@/services'
 const Option = Select.Option;
 const mapStateToProps = state => {
     return {
-        isDark: state.app.isDark
+        isDark: state.app.isDark,
+        userData: state.app.userData
     }
 };
 const mapDispatchToProps = {
@@ -61,7 +62,7 @@ class Component extends React.Component {
                     dataIndex: 'viewCount',
                     align: 'right',
                     sorter: true,
-                    render: (col, record, index) => <span>{numberSplit(record.viewCount)}</span>
+                    render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.viewCount)}</span>
                 },
 
                 {
@@ -69,7 +70,7 @@ class Component extends React.Component {
                     dataIndex: 'shareCount',
                     align: 'right',
                     sorter: true,
-                    render: (col, record, index) => <span>{numberSplit(record.shareCount)}</span>
+                    render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.shareCount)}</span>
                 },
 
             ],
@@ -93,6 +94,10 @@ class Component extends React.Component {
                             </svg>,
                             name: 'Unfavorite'
                         });
+                    }
+                    if (record.creatorAccountId !== this.props.userData.account.accountId) {
+                        operationList.pop();
+                        operationList.pop();
                     }
                     return (
                         <Dropdown trigger='click' position="bottom" droplist={
@@ -119,7 +124,7 @@ class Component extends React.Component {
                 dataIndex: 'favoriteCount',
                 align: 'right',
                 sorter: true,
-                render: (col, record, index) => <span>{numberSplit(record.favoriteCount)}</span>
+                render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.favoriteCount)}</span>
 
             },
             {
@@ -127,7 +132,7 @@ class Component extends React.Component {
                 dataIndex: 'updatedAt',
                 align: 'right',
                 sorter: true,
-                render: (col, record, index) => <span>{moment(record.createdAt).fromNow()}</span>
+                render: (col, record, index) => <span className="common-sort-td">{moment(record.createdAt).fromNow()}</span>
 
             },],
             operationList: [{
@@ -179,6 +184,9 @@ class Component extends React.Component {
             this.setState({
                 favouriteList: d.list
             }, () => {
+                if (!d.list.length) {
+                    return;
+                }
                 this.getList();
             });
             if (this.props.setMyFavouriteCount) {
@@ -252,12 +260,20 @@ class Component extends React.Component {
         });
     }
     getList = (turnFirstPage) => {
-        this.setState({ loading: true });
         if (turnFirstPage) {
             this.setState({
                 pagination: { ...this.state.pagination, current: 1 }
             });
         }
+        if (this.props.isFavourite && !this.state.favouriteList.length) {
+            this.setState({
+                loading: false,
+                tableData: [],
+                pagination: { ...this.state.pagination, total: 0 }
+            });
+            return;
+        }
+        this.setState({ loading: true });
         LayoutDashboardApi.list({
             "pageSize": this.state.pagination.pageSize,
             "pageIndex": turnFirstPage ? 1 : this.state.pagination.current,
@@ -288,7 +304,7 @@ class Component extends React.Component {
         return (
             <div className="web3go-layout-myspace-dashbaoard-list">
                 <Table
-                    className={this.state.ifShowMore ? 'show-more' : ''}
+                    className={'pagination-right' + (this.state.ifShowMore ? 'show-more' : '')}
                     rowKey="id"
                     borderCell={false}
                     border={false}

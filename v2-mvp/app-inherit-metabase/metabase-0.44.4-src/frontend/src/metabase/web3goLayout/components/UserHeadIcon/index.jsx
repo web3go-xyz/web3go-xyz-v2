@@ -2,7 +2,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Message } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Message, Avatar } from '@arco-design/web-react';
 import { toggleDark } from "metabase/redux/app";
 import { push } from "react-router-redux";
 import makeBlockie from "ethereum-blockies-base64";
@@ -42,7 +42,7 @@ class Component extends React.Component {
             firstWord = this.props.nickName.slice(0, 1)
         }
         if (!firstWord) {
-            return <div></div>
+            return <Avatar className={"head-icon-component" + (this.props.className ? ' ' + this.props.className : '')} size={this.props.iconSize}></Avatar>
         }
 
         let bgColor = "#615CF6";

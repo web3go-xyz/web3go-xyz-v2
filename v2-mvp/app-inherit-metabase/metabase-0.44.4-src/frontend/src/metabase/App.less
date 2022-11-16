@@ -12,18 +12,18 @@ html body[arco-theme="dark"] {
     --global-common-form-modal-header-bg: #2A2A2B;
     --global-common-form-modal-content-bg: #232324;
 
-    // input:-webkit-autofill,
-    // input:-webkit-autofill:active {
-    //     box-shadow: 0 0 0 1000px var(--color-fill-2) inset;
-    // }
+    input:-webkit-autofill,
+    input:-webkit-autofill:active {
+        box-shadow: 0 0 0 1000px rgba(59, 59, 60) inset;
+    }
 
-    // input:-webkit-autofill:hover {
-    //     box-shadow: 0 0 0 1000px var(--color-fill-3) inset;
-    // }
+    input:-webkit-autofill:hover {
+        box-shadow: 0 0 0 1000px rgba(68, 68, 69) inset;
+    }
 
-    // input:-webkit-autofill:focus {
-    //     box-shadow: 0 0 0 1000px var(--color-bg-2) inset !important;
-    // }
+    input:-webkit-autofill:focus {
+        box-shadow: 0 0 0 1000px var(--color-bg-2) inset !important;
+    }
 }
 
 html body {
@@ -50,22 +50,27 @@ html body {
     -moz-osx-font-smoothing: grayscale;
     margin: 0;
 
-    // input:-webkit-autofill {
-    //     -webkit-box-shadow: 0 0 0px 1000px rgb(242, 243, 245) inset!important;
-    // }
+    input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0px 1000px rgb(242, 243, 245) inset;
+    }
 
-    // input:-webkit-autofill,
-    // input:-webkit-autofill:active {
-    //     box-shadow: 0 0 0 1000px var(--color-fill-2) inset;
-    // }
+    input:-webkit-autofill,
+    input:-webkit-autofill:active {
+        box-shadow: 0 0 0 1000px var(--color-fill-2) inset;
+    }
 
-    // input:-webkit-autofill:hover {
-    //     box-shadow: 0 0 0 1000px var(--color-fill-3) inset;
-    // }
+    input:-webkit-autofill:hover {
+        box-shadow: 0 0 0 1000px var(--color-fill-3) inset;
+    }
 
-    // input:-webkit-autofill:focus {
-    //     box-shadow: 0 0 0 1000px var(--color-bg-2) inset !important;
-    // }
+    input:-webkit-autofill:focus {
+        box-shadow: 0 0 0 1000px var(--color-bg-2) inset !important;
+    }
+
+    input:-webkit-autofill {
+        -webkit-transition-delay: 99999s;
+        -webkit-transition: color 99999s ease-out, background-color 99999s ease-out;
+    }
 
 }
 
@@ -307,10 +312,10 @@ body[arco-theme="dark"] {
 
 .arco-checkbox {
     .arco-checkbox-mask {
-        width: 20px;
-        height: 20px;
-        border: 1px solid #C9CDD4;
-        border-radius: 4px;
+        width: 14px;
+        height: 14px;
+        border: 2px solid #C9CDD4;
+        border-radius: 2px;
     }
 
     .arco-checkbox-text {
@@ -321,11 +326,18 @@ body[arco-theme="dark"] {
 
 .arco-checkbox-checked .arco-checkbox-mask-icon {
     transform-origin: center;
-    transform: scale(1.4);
+    transform: scale(1.2);
+}
+
+.arco-checkbox-checked .arco-checkbox-mask {
+    border-color: transparent;
 }
 
 .arco-checkbox:hover .arco-checkbox-icon-hover::before {
-    background: transparent;
+    background: var(--color-fill-2) !important;
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
 }
 
 .arco-checkbox:not(.arco-checkbox-checked):hover {
@@ -416,6 +428,16 @@ thead>.arco-table-tr>.arco-table-th {
     }
 }
 
+.arco-spin-loading .arco-spin-children::after {
+    opacity: .5;
+}
+
+.arco-spin {
+    .arco-spin-icon {
+        font-size: 32px;
+    }
+}
+
 .common-layout {
     width: 1200px;
     margin: 0 auto;
@@ -483,7 +505,9 @@ thead>.arco-table-tr>.arco-table-th {
     font-size: 16px;
     line-height: 24px;
 }
-
+.arco-tabs-header-nav-line .arco-tabs-header-title-text::before{
+    border-radius: 0;
+}
 .common-form-modal {
     .arco-modal {
         border-radius: 16px;
@@ -524,4 +548,8 @@ thead>.arco-table-tr>.arco-table-th {
             }
         }
     }
+}
+
+.common-sort-td {
+    padding-right: 20px;
 }
