@@ -185,7 +185,7 @@ export const getRoutes = store => (
     <Route path="public">
       <Route path="question/:uuid" component={PublicQuestion} />
       <Route path="dashboard/:uuid" component={PublicDashboard} />
-    </Route>-
+    </Route>
 
     {/* APP */}
     <Route
@@ -215,6 +215,11 @@ export const getRoutes = store => (
           <Route
             path="home"
             component={Home}
+          >
+          </Route>
+          <Route
+            path="dashboardDetail/:uuid"
+            component={PublicDashboard}
           >
           </Route>
           <Route
