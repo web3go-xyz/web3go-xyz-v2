@@ -9,6 +9,7 @@ import { QueryDashboardDetailResponse } from 'src/dashboard/model/QueryDashboard
 import { QueryDashboardListRequest } from 'src/dashboard/model/QueryDashboardListRequest';
 import { QueryDashboardListResponse } from 'src/dashboard/model/QueryDashboardListResponse';
 import { DashboardService } from './dashboard.service';
+import { QueryRelatedDashboardsRequest } from './model/QueryRelatedDashboardsRequest';
 
 
 
@@ -51,5 +52,15 @@ export class DashboardController {
 
         this.logger.debug(`refresh:${JSON.stringify(param)}`);
         return await this.service.refresh(param);
-    } 
+    }
+
+    @AllowAnonymous()
+    @Post('/searchRelatedDashboards')
+    @ApiOperation({ summary: 'search related dashboards which has similar tags' })
+    @ApiOkResponse({ type: QueryDashboardListResponse })
+    async searchRelatedDashboards(@Body() param: QueryRelatedDashboardsRequest): Promise<QueryDashboardListResponse> {
+
+        this.logger.debug(`searchRelatedDashboards:${JSON.stringify(param)}`);
+        return await this.service.searchRelatedDashboards(param);
+    }
 }
