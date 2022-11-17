@@ -21,6 +21,7 @@ import { FindManyOptions, FindOptionsWhere, In, Like, Repository } from 'typeorm
 @Injectable()
 export class DashboardService {
 
+
     logger: W3Logger;
 
     constructor(
@@ -215,6 +216,19 @@ export class DashboardService {
     }
 
 
-
+    async refresh(param: QueryDashboardDetailRequest): Promise<any> {
+        let dashboards = await this.dextRepo.find({
+            where: {
+                id: In(param.dashboardIds)
+            }
+        });
+        if (dashboards) {
+            for (const d of dashboards) {
+                d.latestRefreshTime = new Date();
+                //TODO refresh for what??
+                await this.dextRepo.save(d);
+            }
+        }
+    }
 }
 

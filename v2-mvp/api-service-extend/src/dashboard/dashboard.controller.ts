@@ -43,5 +43,13 @@ export class DashboardController {
     }
 
 
+    @AllowAnonymous()
+    @Post('/refresh')
+    @ApiOperation({ summary: 'refresh the specified dashboards' })
+    @ApiOkResponse({ type: Object })
+    async refresh(@Body() param: QueryDashboardDetailRequest): Promise<any> {
 
+        this.logger.debug(`refresh:${JSON.stringify(param)}`);
+        return await this.service.refresh(param);
+    } 
 }
