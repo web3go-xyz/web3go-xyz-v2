@@ -65,7 +65,6 @@ export class ForkService {
     }
 
     async forkDashboard(request: Request, param: ForkDashboardRequest, accountId: string): Promise<ForkDashboardResponse> {
-        let forkedDashboardId = 0;
         let resp: ForkDashboardResponse = {
             forkedDashboardId: 0,
             msg: ''
@@ -88,13 +87,41 @@ export class ForkService {
                 name: param.new_dashboard_name
             }
         };
-        let response_copy = await axios.request(options);
-        console.log(`response_copy:`, response_copy);
+        const { data, status } = await axios.request(options);
+        // console.log(`response_copy:`, data);
+        if (status == 200 && data) {
 
-        resp.forkedDashboardId = 0;
+            //sample response data:
+            // description: '52-fork',
+            // archived: false,
+            // collection_position: null,
+            // enable_embedding: false,
+            // collection_id: 40,
+            // show_in_getting_started: false,
+            // name: '52-fork',
+            // caveats: null,
+            // creator_id: 35,
+            // updated_at: '2022-11-18T06:29:46.903815Z',
+            // made_public_by_id: null,
+            // embedding_params: null,
+            // cache_ttl: null,
+            // id: 61,
+            // position: null,
+            // entity_id: 'jNzAfviS0iFd9cRiDCsUG',
+            // parameters: [],
+            // created_at: '2022-11-18T06:29:46.903815Z',
+            // public_uuid: null,
+            // points_of_interest: null
+            resp.forkedDashboardId = data.id || 0;
+            this.logger.log(`new fork dashboard ${resp.forkedDashboardId}`);
+        }
+        else {
+            throw new Error(`copy dashboard ${param.originalDashboardId} failed`);
+        }
 
         if (resp.forkedDashboardId) {
-            let api_enable_public_link = `${AppConfig.BASE_METABASE_API_URL}/dashboard/${forkedDashboardId}/public_link`;
+            //update dashboard as public
+            let api_enable_public_link = `${AppConfig.BASE_METABASE_API_URL}/dashboard/${resp.forkedDashboardId}/public_link`;
             let options_public_link = {
                 method: 'POST',
                 url: api_enable_public_link,
@@ -102,15 +129,31 @@ export class ForkService {
                     Cookie: cookie
                 }
             };
-            let response_public_link = await axios.request(options_public_link);
-            console.log(`response_public_link:`, response_public_link);
+            const { data: data_pl, status: status_pl } = await axios.request(options_public_link);
+            console.log(`response_public_link:`, data_pl);
+            if (status_pl === 200 && data_pl) {
+                //sample response data
+                // {
+                //     "uuid": "0098cb46-53b0-4fa7-b1ec-c054dc28d3c4"
+                // }
+                let uuid = data_pl.uuid || '';
+                this.logger.log(`public uuid for dashboard ${resp.forkedDashboardId}: ${uuid}`);
+            }
+            else {
+                throw new Error(`update public uuid dashboard ${resp.forkedDashboardId} failed`);
+            }
 
-            let api_event = `${AppConfig.BASE_API_URL}/api/v2/event/externalEvent`;
+            //sync dashboard
+            await this.eventService.syncDashboard(resp.forkedDashboardId);
+            this.logger.log(`syncDashboard ${resp.forkedDashboardId} finished.`);
 
             await this.logFork({
                 originalDashboardId: param.originalDashboardId,
-                forkedDashboardId: forkedDashboardId
+                forkedDashboardId: resp.forkedDashboardId
             }, accountId);
+            this.logger.log(`logFork for dashboard ${resp.forkedDashboardId} finished.`)
+
+            resp.msg = 'success';
         }
         return resp;
     }
