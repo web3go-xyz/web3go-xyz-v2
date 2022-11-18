@@ -1,13 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ReportDashboard } from 'src/base/entity/metabase/ReportDashboard';
 import { ConfigTag } from 'src/base/entity/platform-config/ConfigTag';
 import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
-import { DashboardFavoriteLog } from 'src/base/entity/platform-dashboard/DashboardFavoriteLog';
-import { DashboardForkLog } from 'src/base/entity/platform-dashboard/DashboardForkLog';
-import { DashboardShareLog } from 'src/base/entity/platform-dashboard/DashboardShareLog';
-import { DashboardViewLog } from 'src/base/entity/platform-dashboard/DashboardViewLog';
 import { DashboardTag } from 'src/base/entity/platform-dashboard/DashboradTag';
-import { Account } from 'src/base/entity/platform-user/Account.entity';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { PageRequest } from 'src/viewModel/base/pageRequest';
@@ -17,6 +11,7 @@ import { QueryDashboardDetailResponse } from 'src/dashboard/model/QueryDashboard
 import { QueryDashboardListRequest } from 'src/dashboard/model/QueryDashboardListRequest';
 import { QueryDashboardListResponse } from 'src/dashboard/model/QueryDashboardListResponse';
 import { FindManyOptions, FindOptionsWhere, In, Like, Repository } from 'typeorm';
+import { QueryRelatedDashboardsRequest } from './model/QueryRelatedDashboardsRequest';
 
 @Injectable()
 export class DashboardService {
@@ -215,6 +210,36 @@ export class DashboardService {
     }
 
 
+    async refresh(param: QueryDashboardDetailRequest): Promise<any> {
+        let dashboards = await this.dextRepo.find({
+            where: {
+                id: In(param.dashboardIds)
+            },
+            select: ["id"]
+        });
+        if (dashboards) {
+            for (const d of dashboards) {
+                d.latestRefreshTime = new Date();
+                //TODO refresh for what??
+                await this.dextRepo.update(d.id, { latestRefreshTime: d.latestRefreshTime });
+            }
+        }
+    }
 
+
+    async searchRelatedDashboards(param: QueryRelatedDashboardsRequest): Promise<QueryDashboardListResponse> {
+
+        let resp = await this.list({
+            tagIds: param.tagIds,
+            searchName: '',
+            creator: '',
+            dashboardIds: [],
+            pageSize: param.pageSize,
+            pageIndex: param.pageIndex,
+            orderBys: param.orderBys
+        });
+
+        return resp;
+    }
 }
 

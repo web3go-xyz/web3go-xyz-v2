@@ -100,4 +100,11 @@ export class DashboardExt {
         nullable: true
     })
     publicLink: string;
+
+    @Column("timestamp with time zone", {
+        name: "latest_refresh_time",
+        nullable: true,
+        comment: 'latest refresh time for the dashboard, not used yet.'
+    })
+    latestRefreshTime?: Date;
 }
