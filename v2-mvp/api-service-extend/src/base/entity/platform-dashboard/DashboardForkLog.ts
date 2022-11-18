@@ -19,7 +19,7 @@ export class DashboardForkLog {
     originalDashboardId: number;
 
 
-    @Column({ type: "bigint", name: "forked_dashboard_id", })
+    @Column({ type: "bigint", name: "forked_dashboard_id", comment: 'new dashboard id created' })
     forkedDashboardId: number;
 
     @Column("timestamp with time zone", {
