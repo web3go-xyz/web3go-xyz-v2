@@ -78,6 +78,9 @@ class PublicDashboard extends Component {
     initialize();
     try {
       const dashboardData = await fetchDashboard(uuid || token, location.query);
+      if (this.props.getDashboardOriginId) {
+        this.props.getDashboardOriginId(dashboardData.payload.originDashboardId)
+      }
       await LayoutDashboardApi.logView({
         dashboardId: dashboardData.payload.originDashboardId,
         referralCode: this.props.route.query.referralCode || ''

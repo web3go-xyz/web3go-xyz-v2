@@ -20,6 +20,8 @@ import AccountSetting from "metabase/web3goLayout/views/AccountSetting";
 import MySpace from "metabase/web3goLayout/views/MySpace";
 import GlobalSearch from "metabase/web3goLayout/views/GlobalSearch";
 import DashBoardList from "metabase/web3goLayout/views/DashBoardList";
+import DashBoardDetail from "metabase/web3goLayout/views/DashBoardDetail";
+
 import CreatorList from "metabase/web3goLayout/views/CreatorList";
 import Home from "metabase/web3goLayout/views/Home";
 import VerifyEmailPage from "metabase/web3goLayout/views/VerifyEmailPage";
@@ -219,7 +221,7 @@ export const getRoutes = store => (
           </Route>
           <Route
             path="dashboardDetail/:uuid"
-            component={PublicDashboard}
+            component={DashBoardDetail}
           >
           </Route>
           <Route

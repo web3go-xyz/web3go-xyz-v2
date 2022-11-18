@@ -48,8 +48,8 @@ class Component extends React.Component {
         event.on('goSignIn', (text) => {
             this.goSignIn();
         })
-        const mainEl = document.querySelector('main');
-        mainEl.addEventListener("scroll", (e) => {
+        const mainEl = document.documentElement;
+        window.addEventListener("scroll", (e) => {
             let ifScroll;
             if (mainEl.scrollTop > 10) {
                 ifScroll = true;
