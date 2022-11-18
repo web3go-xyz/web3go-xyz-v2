@@ -70,4 +70,12 @@ export class JWTAuthService {
     return null;
 
   }
+
+  extractCookieFromHttpRequest(request: Request): string {
+    let cookie = '';
+    if (request && request.headers && request.headers.cookie) {
+      cookie = request.headers.cookie.trim();
+    }
+    return cookie;
+  }
 }
