@@ -139,10 +139,10 @@ export class Job_SyncDashboardFromMB {
     }
 
     private async formatlink(category: string, publicUUID: string): Promise<string> {
-        //eg: https://dev-v2.web3go.xyz/public/dashboard/dfc5d3a9-1d64-422b-b26f-0367e0fb1170
-
+        //V1 eg: https://dev-v2.web3go.xyz/public/dashboard/dfc5d3a9-1d64-422b-b26f-0367e0fb1170
+        //V2 eg: http://dev-v2.web3go.xyz/layout/dashboardDetail/1a7901e5-c9f4-4c24-ab71-8c70af1e6e0b
         if (category && publicUUID) {
-            let link = `${AppConfig.BASE_WEB_URL}/public/${category.toLowerCase()}/${publicUUID.toLowerCase()}`;
+            let link = `${AppConfig.BASE_WEB_URL}/layout/dashboardDetail/${publicUUID.toLowerCase()}`;
 
             return link;
         }
