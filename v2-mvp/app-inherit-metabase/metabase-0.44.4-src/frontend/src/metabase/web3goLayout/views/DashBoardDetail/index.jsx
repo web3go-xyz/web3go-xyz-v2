@@ -14,10 +14,12 @@ import event from '@/web3goLayout/event';
 import PublicDashboard from "metabase/public/containers/PublicDashboard";
 import moment from 'moment';
 import ShareModal from "@/web3goLayout/components/ShareModal";
+import domtoimage from 'dom-to-image';
 
 const { Text } = Typography;
 const mapStateToProps = state => {
     return {
+        currentUser: state.currentUser,
         isDark: state.app.isDark,
         userData: state.app.userData,
         globalSearchValue: state.app.globalSearchValue,
@@ -36,6 +38,7 @@ class Component extends React.Component {
         super(props);
         this.state = {
             myFollowingList: [],
+            favouriteList: [],
             detailData: {
                 name: '',
                 tagList: [],
@@ -48,6 +51,16 @@ class Component extends React.Component {
     }
     openShareModal() {
         this.ShareModalRef.init(this.state.detailData);
+    }
+    getMyFavourites = () => {
+        if (!this.props.currentUser) {
+            return;
+        }
+        LayoutDashboardApi.listMyFavorites().then(d => {
+            this.setState({
+                favouriteList: d.list
+            });
+        });
     }
     getAccountList = (accountIdList) => {
         LayoutLoginApi.searchAccountInfo({
@@ -69,17 +82,35 @@ class Component extends React.Component {
     goMySpace = (accountId) => {
         this.props.push(`/layout/mySpace?accountId=${accountId}`);
     }
+    toggleFavourite = () => {
+        if (!this.props.currentUser) {
+            event.emit('goSignIn');
+            return;
+        }
+        const find = this.state.favouriteList.find(v => v.dashboardId == this.state.detailData.id);
+        LayoutDashboardApi.logFavorite({
+            "dashboardId": this.state.detailData.id,
+            "operationFlag": find ? 'cancel' : 'add'
+        }).then(d => {
+            this.getMyFavourites();
+        });
+    }
+    handleScreenshot = () => {
+        domtoimage.toJpeg(document.getElementById('dashboard-detail-screenshort'), { bgcolor: 'rgb(250,251,252)' })
+            .then(function (dataUrl) {
+                var link = document.createElement('a');
+                link.download = this.state.detailData.name + '.jpeg';
+                link.href = dataUrl;
+                link.click();
+            });
+    }
+
     getDashboardOriginId = (id) => {
         this.setState({
             dashboardId: id
         });
-        LayoutDashboardApi.list({
-            "pageSize": 10,
-            "pageIndex": 1,
-            "orderBys": [],
-            "tagIds": [],
-            "searchName": "",
-            "creator": '',
+        this.getMyFavourites();
+        LayoutDashboardApi.detail({
             "dashboardIds": [id]
         }).then(d => {
             LayoutLoginApi.searchAccountInfo({
@@ -109,7 +140,7 @@ class Component extends React.Component {
                             </div>
                             <div className="info-wrap">
                                 <div className="circle">
-                                    <img src={require("@/web3goLayout/assets/dashboard/datasets.png")} alt="" />
+                                    <img src={require("@/web3goLayout/assets/dashboard/Dashboard-line.png")} alt="" />
                                 </div>
                                 <div className="info">
                                     <div className="title">{detailData.name}</div>
@@ -151,8 +182,8 @@ class Component extends React.Component {
                                         </svg>
                                         <span>Fork</span>
                                     </Button>
-                                    <Button>
-                                        <IconStar style={{ fontSize: 16 }} />
+                                    <Button onClick={() => { this.toggleFavourite() }}>
+                                        <IconStar style={{ fontSize: 16 }} className={this.state.favouriteList.find(v => v.dashboardId == this.state.detailData.id) ? 'star active' : 'star'} />
                                         <span>Favorite</span>
                                     </Button>
                                 </div>
@@ -168,14 +199,14 @@ class Component extends React.Component {
                                 <IconSync style={{ fontSize: 16 }} />
                                 <span>Refresh</span>
                             </Button>
-                            <Button type="secondary">
+                            <Button type="secondary" onClick={this.handleScreenshot}>
                                 <IconCamera style={{ fontSize: 16 }} />
                                 <span>Screenshot</span>
                             </Button>
                         </div>
                         <span className="time">Last run time:  2022-12-08 17:23</span>
                     </div>
-                    <div className="dashboard-wrap">
+                    <div id="dashboard-detail-screenshort" className="dashboard-wrap">
                         <PublicDashboard getDashboardOriginId={this.getDashboardOriginId} {...this.props}></PublicDashboard>
                     </div>
                     <div className="relatedDashboardList-wrap">
@@ -188,7 +219,10 @@ class Component extends React.Component {
                                 <IconInfoCircle />
                             </Tooltip>
                         </div>
-                        <RelatedDashboardList myFollowingList={this.state.myFollowingList}></RelatedDashboardList>
+                        {
+                            detailData.id ? <RelatedDashboardList detailData={detailData} myFollowingList={this.state.myFollowingList}></RelatedDashboardList> : null
+                        }
+
                     </div>
 
                 </div>
