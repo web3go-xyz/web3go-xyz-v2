@@ -70,7 +70,7 @@ export class ForkService {
             msg: ''
         };
         const axios = require('axios').default;
-        let cookie = this.jwtService.extractCookieFromHttpRequest(request);
+        let cookie = this.jwtService.extractXCookieFromHttpRequest(request);
 
         //call api to copy dashboard
         let public_collection_id = AppConfig.DASHBOARD_PUBLIC_COLLECTION_ID;
