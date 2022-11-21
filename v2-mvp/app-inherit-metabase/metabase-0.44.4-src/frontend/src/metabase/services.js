@@ -44,6 +44,9 @@ export const LayoutDashboardApi = {
   externalEvent: WPOST(WEB3GO_BASE_URL + "/api/v2/event/externalEvent"),
   logShare: WPOST(WEB3GO_BASE_URL + "/api/v2/share/logShare"),
   generateDashboardShareLink: WPOST(WEB3GO_BASE_URL + "/api/v2/share/generateDashboardShareLink"),
+  forkDashboard: WPOST(WEB3GO_BASE_URL + "/api/v2/fork/forkDashboard"),
+  refresh: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/refresh"),
+
 };
 export const LayoutCreatorApi = {
   listCreators: WPOST(WEB3GO_BASE_URL + "/api/v2/creator/listCreators"),
