@@ -104,6 +104,9 @@ class Component extends React.Component {
     sure = () => {
         this.formRef.current.validate().then((form) => {
             if (this.state.isSignIn) {
+                if (!this.state.emailVerifyPass) {
+                    return;
+                }
                 this.setState({
                     loading: true
                 })

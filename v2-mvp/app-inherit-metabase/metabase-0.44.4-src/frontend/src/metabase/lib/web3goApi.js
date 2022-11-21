@@ -193,6 +193,10 @@ export class Api extends EventEmitter {
           } else {
             if (status != 401) {
               Message.error((body && body.message) || 'request error');
+            } else {
+              if (url.includes('/api/v2/account/auth/signin')) {
+                Message.error((body && body.message) || 'request error');
+              }
             }
             reject({
               status: status,

@@ -258,17 +258,15 @@ class Component extends React.Component {
             return;
         }
         this.setState({ loading: true });
-        LayoutDashboardApi.list({
+        LayoutDashboardApi.searchRelatedDashboards({
             "pageSize": this.state.pagination.pageSize,
             "pageIndex": turnFirstPage ? 1 : this.state.pagination.current,
             "orderBys": this.state.tableSort.field ? [{
                 sort: this.state.tableSort.field,
                 order: this.state.tableSort.direction === "ascend" ? 'ASC' : 'DESC',
             }] : [],
-            "tagIds": this.state.currentTag.id ? [this.state.currentTag.id] : [],
-            "searchName": "",
-            "creator": this.state.params.createBy,
-            "dashboardIds": this.state.showMyFavorite ? this.state.favouriteList.map(v => v.dashboardId) : []
+            "tagIds": this.props.detailData.tagList.map(v => v.id),
+            "dashboardId": [this.props.detailData.id]
         }).then(d => {
             this.getAccountList(d.list.map(v => v.creatorAccountId));
             this.setState({
