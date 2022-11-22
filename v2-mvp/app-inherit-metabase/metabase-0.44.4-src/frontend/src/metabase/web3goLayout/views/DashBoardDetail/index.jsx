@@ -16,7 +16,6 @@ import event from '@/web3goLayout/event';
 import PublicDashboard from "metabase/public/containers/PublicDashboard";
 import moment from 'moment';
 import ShareModal from "@/web3goLayout/components/ShareModal";
-import ChartInfoModal from "./ChartInfoModal";
 import domtoimage from 'dom-to-image';
 
 const { Text } = Typography;
@@ -53,7 +52,6 @@ class Component extends React.Component {
             dashboardId: ''
         }
         this.ShareModalRef = React.createRef();
-        this.ChartInfoModalRef = React.createRef();
     }
     openShareModal() {
         this.ShareModalRef.init(this.state.detailData);
@@ -260,7 +258,6 @@ class Component extends React.Component {
 
                 </div>
                 <ShareModal onRef={(ref) => this.ShareModalRef = ref}></ShareModal>
-                <ChartInfoModal onRef={(ref) => this.ChartInfoModalRef = ref}></ChartInfoModal>
             </div >
         )
     }

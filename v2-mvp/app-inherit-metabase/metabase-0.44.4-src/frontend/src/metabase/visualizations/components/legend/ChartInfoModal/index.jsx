@@ -25,34 +25,31 @@ class Component extends React.Component {
         super(props);
         this.state = {
             visible: false,
-            record: {},
-            publicUrlOfLinkObj: {}
+            info: ''
         }
-        this.formRef = React.createRef();
     }
     componentDidMount() {
         this.props.onRef(this)
     }
-    init = (record) => {
+    init = (info) => {
         this.setState({
-            record,
-            visible: true,
-        });
-       
+            info,
+            visible: true
+        })
     }
 
     render() {
         return (
             <Modal
                 style={{ width: '640px' }}
-                wrapClassName="common-form-modal home-share-modal"
-                title='Share'
+                wrapClassName="common-form-modal dashboard-detail-chart-info-modal"
+                title='Chart Info'
                 visible={this.state.visible}
                 onCancel={() => this.setState({ visible: false })}
-                footer={null}
+                onOk={() => this.setState({ visible: false })}
             >
-                <div className="modal-content" >
-                    fgd fdg fdd dfg fd
+                <div className="modal-content">
+                    {this.state.info}
                 </div>
             </Modal >
         )
