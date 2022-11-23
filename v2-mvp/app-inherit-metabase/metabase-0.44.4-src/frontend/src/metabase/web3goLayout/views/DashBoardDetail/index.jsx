@@ -4,7 +4,7 @@ import slugg from "slugg";
 import { connect } from "react-redux";
 import './index.less';
 import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip } from '@arco-design/web-react';
-import { IconLaunch, IconStar, IconSync, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
+import { IconLaunch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
 import { push } from "react-router-redux";
 import { changeUserData } from "metabase/redux/app";
 import { changeGlobalSearchValue } from "metabase/redux/app";
@@ -17,7 +17,6 @@ import PublicDashboard from "metabase/public/containers/PublicDashboard";
 import moment from 'moment';
 import ShareModal from "@/web3goLayout/components/ShareModal";
 import domtoimage from 'dom-to-image';
-
 const { Text } = Typography;
 const mapStateToProps = state => {
     return {
@@ -41,6 +40,7 @@ class Component extends React.Component {
         this.state = {
             // 用来刷新
             showPublicDashboard: true,
+            screenShortLoading: false,
             myFollowingList: [],
             favouriteList: [],
             detailData: {
@@ -112,12 +112,54 @@ class Component extends React.Component {
         });
     }
     handleScreenshot = () => {
-        domtoimage.toJpeg(document.getElementById('dashboard-detail-screenshort'), { bgcolor: 'rgb(250,251,252)' })
+        this.setState({
+            screenShortLoading: true
+        });
+        const el = document.getElementById('dashboard-detail-screenshort');
+        domtoimage.toPng(el, {
+            bgcolor: 'rgb(250,251,252)',
+        })
             .then((dataUrl) => {
-                var link = document.createElement('a');
-                link.download = this.state.detailData.name + '.jpeg';
-                link.href = dataUrl;
-                link.click();
+                const canvas1 = document.createElement("canvas");
+                // const canvas1 = document.getElementById("myCanvas");
+                // 设置宽高
+                canvas1.width = el.offsetWidth; //注意：没有单位
+                canvas1.height = el.offsetHeight; //注意：没有单位
+                const initalImg = new Image();
+                initalImg.crossOrigin="anonymous"
+                initalImg.src = dataUrl; //由于图片异步加载，一定要等initalImg加载好，再设置src属性
+                initalImg.onload = () => {
+                    const iconImg = new Image();
+                    iconImg.crossOrigin="anonymous"
+                    iconImg.src = require("@/web3goLayout/assets/layout/logo-white.png");
+                    iconImg.onload = () => {
+                        const ctx = canvas1.getContext("2d");
+                        // 绘制图片
+                        ctx.drawImage(initalImg, 0, 0);
+                        //水印文字添加
+                        // ctx.font = "14px Calibri";
+                        // ctx.fillStyle = "rgba(0,0,0,0.8)";
+                        // ctx.fillText("水印文字", 0, 14);
+                        // 绘制水印
+                        ctx.globalAlpha = 0.2;
+                        ctx.drawImage(iconImg, 0, el.offsetHeight - 68, 255, 68);
+                        const url = canvas1.toDataURL();
+                        var link = document.createElement('a');
+                        link.download = this.state.detailData.name + '.png';
+                        link.href = url;
+                        link.click();
+                        this.setState({
+                            screenShortLoading: false
+                        });
+                    };
+                };
+                // var link = document.createElement('a');
+                // link.download = this.state.detailData.name + '.jpeg';
+                // link.href = dataUrl;
+                // link.click();
+                // this.setState({
+                //     screenShortLoading: false
+                // });
             });
     }
     handleRefresh = () => {
@@ -257,6 +299,17 @@ class Component extends React.Component {
                     </div>
 
                 </div>
+                {
+                    this.state.screenShortLoading ? (<div className="loading-wrap">
+                        <div className="box">
+                            <IconSync spin style={{ fontSize: 16 }} />
+                            <span>
+                                Taking screenshot…
+                            </span>
+                        </div>
+                    </div>) : null
+                }
+
                 <ShareModal onRef={(ref) => this.ShareModalRef = ref}></ShareModal>
             </div >
         )

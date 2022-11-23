@@ -8,6 +8,35 @@ body[arco-theme="dark"] .web3go-dashboardDetail-page {
     --tag-item-color: #4E5969;
     --tag-item-bg: #F2F3F5;
 
+    .loading-wrap {
+        z-index: 9999;
+        background-color: var(--color-mask-bg);
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .box {
+            width: 221px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--color-bg-3);
+            border: 0 solid var(--color-neutral-3);
+            border-radius: 8px;
+            color: var(--6bColor);
+
+            svg {
+                margin-right: 8px;
+            }
+        }
+    }
+
     .white-bg {
         background: white;
         padding-bottom: 24px;

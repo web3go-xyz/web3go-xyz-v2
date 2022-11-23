@@ -23,7 +23,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            visible: true,
+            visible: false,
             info: ''
         }
         this.formRef = React.createRef();
