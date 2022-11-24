@@ -99,7 +99,7 @@ const LegendCaption = ({
     } else if (key == 'Duplicate') {
       DuplicateModalRef.init(description);
     } else if (key == 'Download') {
-      DownloadModalRef.init(cardData);
+      DownloadModalRef.init({ ...cardData, card_id: dashcard.card_id });
     }
   }
   let titleOperation = null;

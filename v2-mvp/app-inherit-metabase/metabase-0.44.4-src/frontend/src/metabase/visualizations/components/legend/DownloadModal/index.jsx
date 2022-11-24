@@ -25,6 +25,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading: false,
             visible: false,
             cardData: {},
             columns: [],
@@ -40,10 +41,53 @@ class Component extends React.Component {
             cardData,
             visible: true
         })
+        if (this.formRef.current) {
+            this.formRef.current.resetFields();
+        }
     }
     sure = () => {
         this.formRef.current.validate().then((form) => {
+            this.setState({
+                loading: true
+            });
+            const type = form.type;
+            const retrieveFilename = ({ res, type }) => {
+                const contentDispositionHeader = res.headers.get("Content-Disposition") || "";
+                const contentDisposition = decodeURIComponent(contentDispositionHeader);
+                const match = contentDisposition.match(/filename="(?<fileName>.+)"/);
+                const fileName =
+                    match?.groups?.fileName ||
+                    `query_result_${new Date().toISOString()}.${type}`;
 
+                return fileName;
+            };
+            fetch(`api/card/${this.state.cardData.card_id}/query/${type}`, {
+                method: "POST"
+            })
+                .then(async res => {
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+
+                    // retrieves the filename from the response header and parses it into query_result[DATE TIME].extension
+                    const fileName = retrieveFilename({ res, type });
+
+                    // create a pseudo-link to trigger the download
+                    const link = document.createElement(`a`);
+                    link.href = url;
+                    link.setAttribute(`download`, fileName);
+                    document.body.appendChild(link);
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    link.remove();
+                    this.setState({
+                        loading: false
+                    });
+                })
+                .catch(() => {
+                    this.setState({
+                        loading: false
+                    });
+                });
         })
     }
     get columns() {
@@ -80,6 +124,7 @@ class Component extends React.Component {
                 visible={this.state.visible}
                 onCancel={() => this.setState({ visible: false })}
                 onOk={this.sure}
+                okButtonProps={{ loading: this.state.loading }}
             >
                 <div className="modal-content">
                     <Form
