@@ -9,9 +9,11 @@ import { IconPlus } from '@arco-design/web-react/icon';
 import { position } from "tether";
 import { LayoutLoginApi, LayoutDashboardApi } from '@/services'
 import { copy } from '@/web3goLayout/utils'
+const Option = Select.Option;
 const mapStateToProps = state => {
     return {
-        isDark: state.app.isDark
+        isDark: state.app.isDark,
+        myDashboardList: state.app.myDashboardList,
     }
 };
 const mapDispatchToProps = {
@@ -69,7 +71,13 @@ class Component extends React.Component {
                                 </Grid.Col>
                                 <Grid.Col span={12}>
                                     <Form.Item field='dashboardId' rules={[{ required: true }]}>
-                                        <Select placeholder='please select' options={['My Dashboard-Posted']}></Select>
+                                        <Select placeholder='please select'>
+                                            {this.props.myDashboardList.map((v, i) => (
+                                                <Option key={v.id} value={v.id}>
+                                                    {v.name}
+                                                </Option>
+                                            ))}
+                                        </Select>
                                     </Form.Item>
                                 </Grid.Col>
                             </Grid.Row>

@@ -119,7 +119,7 @@ class Component extends React.Component {
         return (
             <Modal
                 style={{ width: '60%' }}
-                wrapClassName={"common-form-modal dashboard-detail-chart-download-modal" + columns.length}
+                wrapClassName="common-form-modal dashboard-detail-chart-download-modal"
                 title='Download full results'
                 visible={this.state.visible}
                 onCancel={() => this.setState({ visible: false })}

@@ -37,6 +37,7 @@ const mapDispatchToProps = {
 };
 
 const propTypes = {
+  currentUser: PropTypes.object,
   dashcard: PropTypes.object,
   className: PropTypes.string,
   title: PropTypes.string,
@@ -50,6 +51,7 @@ let ChartInfoModalRef;
 let DuplicateModalRef;
 let DownloadModalRef;
 const LegendCaption = ({
+  currentUser,
   dashcardData,
   dashcard,
   route,
@@ -97,7 +99,11 @@ const LegendCaption = ({
     if (key == 'Chart Info') {
       ChartInfoModalRef.init(description);
     } else if (key == 'Duplicate') {
-      DuplicateModalRef.init(description);
+      if (!currentUser) {
+        event.emit('goSignIn');
+        return;
+      }
+      DuplicateModalRef.init({ ...cardData, card_id: dashcard.card_id });
     } else if (key == 'Download') {
       DownloadModalRef.init({ ...cardData, card_id: dashcard.card_id });
     }

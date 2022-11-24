@@ -2,6 +2,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
+import slugg from "slugg";
 import { IconDown, IconMoreVertical } from '@arco-design/web-react/icon';
 import { Button, Modal, Form, Input, Upload, Select, Checkbox, Table, TableColumnProps, Dropdown, Menu } from '@arco-design/web-react';
 import { push } from "react-router-redux";
@@ -227,10 +228,14 @@ class Component extends React.Component {
             this.openShareModal(record);
         }
         else if (key == 'Edit') {
-            this.props.push('/home');
+            const slug = slugg(record.name);
+            const suffix = slug ? `${record.id}-${slug}` : record.id;
+            this.props.push(`/dashboard/${suffix}`);
         }
         else if (key == 'Delete') {
-            this.props.push('/home');
+            const slug = slugg(record.name);
+            const suffix = slug ? `${record.id}-${slug}` : record.id;
+            this.props.push(`/dashboard/${suffix}`);
             // Modal.confirm({
             //     wrapClassName: 'common-confirm-modal',
             //     closable: true,

@@ -6,13 +6,12 @@ import './index.less';
 import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip } from '@arco-design/web-react';
 import { IconLaunch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
 import { push } from "react-router-redux";
-import { changeUserData } from "metabase/redux/app";
+import { changeUserData, changeMyDashboardList } from "metabase/redux/app";
 import { changeGlobalSearchValue } from "metabase/redux/app";
 import { LayoutDashboardApi, LayoutLoginApi } from '@/services'
 import RelatedDashboardList from './RelatedDashboardList';
 import CreatorList from '@/web3goLayout/components/CreatorList';
 import event from '@/web3goLayout/event';
-
 import PublicDashboard from "metabase/public/containers/PublicDashboard";
 import moment from 'moment';
 import ShareModal from "@/web3goLayout/components/ShareModal";
@@ -30,6 +29,7 @@ const mapDispatchToProps = {
     push,
     changeUserData,
     changeGlobalSearchValue,
+    changeMyDashboardList
 };
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
@@ -82,11 +82,33 @@ class Component extends React.Component {
         });
     }
     componentDidMount() {
+        this.getMyDashboards();
+    }
+    getMyDashboards = () => {
+        if (!this.props.userData.account) {
+            this.props.changeMyDashboardList([]);
+            return;
+        }
+        LayoutDashboardApi.list({
+            "pageSize": 999999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "tagIds": [],
+            "searchName": '',
+            "creator": this.props.userData.account.accountId,
+            "dashboardIds": []
+        }).then(d => {
+            this.props.changeMyDashboardList(d.list);
+        });
     }
     goMySpace = (accountId) => {
         this.props.push(`/layout/mySpace?accountId=${accountId}`);
     }
     fork = () => {
+        if (!this.props.currentUser) {
+            event.emit('goSignIn');
+            return;
+        }
         const newName = this.state.detailData.name + '-fork';
         LayoutDashboardApi.forkDashboard({
             originalDashboardId: this.state.detailData.id,
@@ -126,11 +148,11 @@ class Component extends React.Component {
                 canvas1.width = el.offsetWidth; //注意：没有单位
                 canvas1.height = el.offsetHeight; //注意：没有单位
                 const initalImg = new Image();
-                initalImg.crossOrigin="anonymous"
+                initalImg.crossOrigin = "anonymous"
                 initalImg.src = dataUrl; //由于图片异步加载，一定要等initalImg加载好，再设置src属性
                 initalImg.onload = () => {
                     const iconImg = new Image();
-                    iconImg.crossOrigin="anonymous"
+                    iconImg.crossOrigin = "anonymous"
                     iconImg.src = require("@/web3goLayout/assets/layout/logo-white.png");
                     iconImg.onload = () => {
                         const ctx = canvas1.getContext("2d");
