@@ -215,8 +215,8 @@ export default class LineAreaBarChart extends Component {
         hovered.axisIndex === 0
           ? "mute-yr"
           : hovered.axisIndex === 1
-          ? "mute-yl"
-          : null;
+            ? "mute-yl"
+            : null;
       return seriesClasses.concat(axisClasses);
     } else {
       return null;
@@ -373,7 +373,6 @@ export default class LineAreaBarChart extends Component {
       hasBreakout,
       canSelectTitle,
     } = this.getLegendSettings();
-
     return (
       <LineAreaBarChartRoot
         className={cx(
@@ -385,6 +384,7 @@ export default class LineAreaBarChart extends Component {
       >
         {hasTitle && (
           <ChartLegendCaption
+            {...this.props}
             title={title}
             description={description}
             icon={headerIcon}
@@ -526,8 +526,8 @@ function transformSingleSeries(s, series, seriesIndex) {
         series.length > 1 && card.name,
         // show column name if there are multiple metrics or sigle series
         (metricColumnIndexes.length > 1 || series.length === 1) &&
-          col &&
-          getFriendlyName(col),
+        col &&
+        getFriendlyName(col),
       ]
         .filter(n => n)
         .join(": ");

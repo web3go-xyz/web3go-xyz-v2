@@ -118,7 +118,6 @@ export default class DashCard extends Component {
       headerIcon,
       isNightMode,
     } = this.props;
-
     const mainCard = {
       ...dashcard.card,
       visualization_settings: mergeSettings(

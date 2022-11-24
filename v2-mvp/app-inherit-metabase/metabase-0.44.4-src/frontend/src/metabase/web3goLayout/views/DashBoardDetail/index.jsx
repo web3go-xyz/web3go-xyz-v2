@@ -153,13 +153,6 @@ class Component extends React.Component {
                         });
                     };
                 };
-                // var link = document.createElement('a');
-                // link.download = this.state.detailData.name + '.jpeg';
-                // link.href = dataUrl;
-                // link.click();
-                // this.setState({
-                //     screenShortLoading: false
-                // });
             });
     }
     handleRefresh = () => {

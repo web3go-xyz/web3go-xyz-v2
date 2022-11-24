@@ -455,6 +455,7 @@ class Visualization extends React.PureComponent {
         {!!hasHeader && (
           <div className="p1 flex-no-shrink">
             <ChartCaption
+              dashcard={dashcard}
               titleOperation={titleOperation}
               series={series}
               settings={settings}

@@ -4,6 +4,7 @@ import { iconPropTypes } from "metabase/components/Icon";
 import { ChartCaptionRoot } from "./ChartCaption.styled";
 
 const propTypes = {
+  dashcard: PropTypes.object,
   series: PropTypes.array.isRequired,
   settings: PropTypes.object.isRequired,
   icon: PropTypes.shape(iconPropTypes),
@@ -12,6 +13,7 @@ const propTypes = {
 };
 
 const ChartCaption = ({
+  dashcard,
   series,
   settings,
   icon,
@@ -38,6 +40,7 @@ const ChartCaption = ({
 
   return (
     <ChartCaptionRoot
+      dashcard={dashcard}
       title={title}
       description={description}
       icon={icon}

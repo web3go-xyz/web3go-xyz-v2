@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import { IconDown, IconMoreVertical } from '@arco-design/web-react/icon';
 import { Button, AutoComplete, Menu, Dropdown, Modal } from '@arco-design/web-react';
@@ -12,6 +12,9 @@ import ChartInfoModal from "./ChartInfoModal";
 import DownloadModal from "./DownloadModal";
 import DuplicateModal from "./DuplicateModal";
 import event from '@/web3goLayout/event';
+import {
+  getCardData,
+} from "metabase/dashboard/selectors";
 
 import {
   LegendCaptionRoot,
@@ -20,8 +23,10 @@ import {
   LegendLabelIcon,
   OperationWrap
 } from "./LegendCaption.styled";
-const mapStateToProps = state => {
+import { relativeTimeRounding } from "moment";
+const mapStateToProps = (state, props) => {
   return {
+    dashcardData: getCardData(state, props),
     currentUser: state.currentUser,
     isDark: state.app.isDark,
     route: state.routing.locationBeforeTransitions,
@@ -32,6 +37,7 @@ const mapDispatchToProps = {
 };
 
 const propTypes = {
+  dashcard: PropTypes.object,
   className: PropTypes.string,
   title: PropTypes.string,
   description: PropTypes.string,
@@ -44,6 +50,8 @@ let ChartInfoModalRef;
 let DuplicateModalRef;
 let DownloadModalRef;
 const LegendCaption = ({
+  dashcardData,
+  dashcard,
   route,
   className,
   title,
@@ -52,6 +60,12 @@ const LegendCaption = ({
   actionButtons,
   onSelectTitle,
 }) => {
+  const cardData = useMemo(() => {
+    if (!dashcardData[dashcard.id] || !dashcardData[dashcard.id][dashcard.card_id]) {
+      return {}
+    }
+    return dashcardData[dashcard.id][dashcard.card_id].data;
+  }, [dashcard, dashcardData])
   const operationList = [{
     icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M11.024 7.35696L8.00066 10.3806L4.97666 7.35696M13.3333 11.6666V13.6666H2.66666V11.6666M8 1.66663V10.3333" stroke="#6B7785" strokeWidth="1.33333" />
@@ -85,7 +99,7 @@ const LegendCaption = ({
     } else if (key == 'Duplicate') {
       DuplicateModalRef.init(description);
     } else if (key == 'Download') {
-      DownloadModalRef.init(description);
+      DownloadModalRef.init(cardData);
     }
   }
   let titleOperation = null;
@@ -128,9 +142,9 @@ const LegendCaption = ({
         </Tooltip>
       )} */}
       {actionButtons && <LegendActions>{actionButtons}</LegendActions>}
-      <ChartInfoModal onRef={(ref) => ChartInfoModalRef = ref}></ChartInfoModal>
-      <DuplicateModal onRef={(ref) => DuplicateModalRef = ref}></DuplicateModal>
-      <DownloadModal onRef={(ref) => DownloadModalRef = ref}></DownloadModal>
+      <ChartInfoModal onRef={(ref) => ChartInfoModalRef = ref} ></ChartInfoModal>
+      <DuplicateModal onRef={(ref) => DuplicateModalRef = ref} ></DuplicateModal>
+      <DownloadModal onRef={(ref) => DownloadModalRef = ref} ></DownloadModal>
 
     </LegendCaptionRoot>
   );

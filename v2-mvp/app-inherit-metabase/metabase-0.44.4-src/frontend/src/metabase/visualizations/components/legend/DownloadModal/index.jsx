@@ -26,67 +26,18 @@ class Component extends React.Component {
         super(props);
         this.state = {
             visible: false,
-            info: '',
-            columns: [{
-                title: 'Name',
-                dataIndex: 'name',
-            },
-            {
-                title: 'Salary',
-                dataIndex: 'salary',
-            },
-            {
-                title: 'Address',
-                dataIndex: 'salary',
-            },
-            {
-                title: 'Email',
-                dataIndex: 'salary',
-            }],
-            data: [{
-                key: '1',
-                name: 'Jane Doe',
-                salary: 23000,
-                address: '32 Park Road, London',
-                email: 'jane.doe@example.com',
-            },
-            {
-                key: '2',
-                name: 'Alisa Ross',
-                salary: 25000,
-                address: '35 Park Road, London',
-                email: 'alisa.ross@example.com',
-            },
-            {
-                key: '3',
-                name: 'Kevin Sandra',
-                salary: 22000,
-                address: '31 Park Road, London',
-                email: 'kevin.sandra@example.com',
-            },
-            {
-                key: '4',
-                name: 'Ed Hellen',
-                salary: 17000,
-                address: '42 Park Road, London',
-                email: 'ed.hellen@example.com',
-            },
-            {
-                key: '5',
-                name: 'William Smith',
-                salary: 27000,
-                address: '62 Park Road, London',
-                email: 'william.smith@example.com',
-            }]
+            cardData: {},
+            columns: [],
+            data: []
         }
         this.formRef = React.createRef();
     }
     componentDidMount() {
         this.props.onRef(this)
     }
-    init = (info) => {
+    init = (cardData) => {
         this.setState({
-            info,
+            cardData,
             visible: true
         })
     }
@@ -95,12 +46,36 @@ class Component extends React.Component {
 
         })
     }
+    get columns() {
+        if (!this.state.cardData.cols) {
+            return []
+        }
+        return this.state.cardData.cols.map((v, i) => {
+            return {
+                title: v.display_name,
+                dataIndex: i,
+            }
+        })
+    }
+    get data() {
+        if (!this.state.cardData.rows) {
+            return []
+        }
+        return this.state.cardData.rows.map((v, i) => {
+            const obj = {}
+            obj.key = i;
+            v.forEach((sv, si) => {
+                obj[si] = sv;
+            });
+            return obj
+        });
+    }
     render() {
-        const { columns, data } = this.state;
+        const { columns, data } = this;
         return (
             <Modal
-                style={{ width: '640px' }}
-                wrapClassName="common-form-modal dashboard-detail-chart-download-modal"
+                style={{ width: '60%' }}
+                wrapClassName={"common-form-modal dashboard-detail-chart-download-modal" + columns.length}
                 title='Download full results'
                 visible={this.state.visible}
                 onCancel={() => this.setState({ visible: false })}
@@ -123,7 +98,7 @@ class Component extends React.Component {
                         </Form.Item>
                     </Form>
                     <div className="split"></div>
-                    <Table className='modal-table' borderCell columns={columns} data={data} />
+                    <Table scroll={{ x: 'max-content' }} className='modal-table' borderCell columns={columns} data={data} />
                 </div>
             </Modal >
         )
