@@ -10,6 +10,7 @@ import { numberSplit } from '@/web3goLayout/utils';
 import ShareModal from "@/web3goLayout/components/ShareModal";
 import { LayoutDashboardApi, LayoutLoginApi, WEB3GO_BASE_URL } from '@/services'
 import event from '@/web3goLayout/event';
+import slugg from "slugg";
 
 import moment from 'moment';
 const Option = Select.Option;
@@ -125,9 +126,9 @@ class Component extends React.Component {
                                 <svg onClick={() => { this.openShareModal(record) }} className="hover-item" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M13.5626 8.65446V13.2354C13.5626 13.3222 13.5281 13.4054 13.4667 13.4667C13.4054 13.5281 13.3221 13.5626 13.2353 13.5626H2.76468C2.6779 13.5626 2.59467 13.5281 2.53331 13.4667C2.47194 13.4054 2.43747 13.3222 2.43747 13.2354V2.76471C2.43747 2.67793 2.47194 2.5947 2.53331 2.53334C2.59467 2.47197 2.6779 2.4375 2.76468 2.4375H7.34559M6.63293 9.36712L13.2023 2.79743M13.5626 6.69121V2.4375H9.30884" strokeWidth="1.33333" />
                                 </svg>
-                                {/* <svg className="hover-item" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg onClick={() => { this.fork(record) }} className="hover-item" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M4.99999 5V10M4.99999 11.1667V10M4.99999 10C4.99999 8.33333 11.3333 7.66667 11.3333 5M6.33332 3.33333C6.33332 3.68696 6.19285 4.02609 5.9428 4.27614C5.69275 4.52619 5.35361 4.66667 4.99999 4.66667C4.64637 4.66667 4.30723 4.52619 4.05718 4.27614C3.80713 4.02609 3.66666 3.68696 3.66666 3.33333C3.66666 2.97971 3.80713 2.64057 4.05718 2.39052C4.30723 2.14048 4.64637 2 4.99999 2C5.35361 2 5.69275 2.14048 5.9428 2.39052C6.19285 2.64057 6.33332 2.97971 6.33332 3.33333V3.33333ZM12.6667 3.33333C12.6667 3.68696 12.5262 4.02609 12.2761 4.27614C12.0261 4.52619 11.6869 4.66667 11.3333 4.66667C10.9797 4.66667 10.6406 4.52619 10.3905 4.27614C10.1405 4.02609 9.99999 3.68696 9.99999 3.33333C9.99999 2.97971 10.1405 2.64057 10.3905 2.39052C10.6406 2.14048 10.9797 2 11.3333 2C11.6869 2 12.0261 2.14048 12.2761 2.39052C12.5262 2.64057 12.6667 2.97971 12.6667 3.33333V3.33333ZM6.33332 12.6667C6.33332 13.0203 6.19285 13.3594 5.9428 13.6095C5.69275 13.8595 5.35361 14 4.99999 14C4.64637 14 4.30723 13.8595 4.05718 13.6095C3.80713 13.3594 3.66666 13.0203 3.66666 12.6667C3.66666 12.313 3.80713 11.9739 4.05718 11.7239C4.30723 11.4738 4.64637 11.3333 4.99999 11.3333C5.35361 11.3333 5.69275 11.4738 5.9428 11.7239C6.19285 11.9739 6.33332 12.313 6.33332 12.6667V12.6667Z" strokeWidth="1.33333" />
-                                </svg> */}
+                                </svg>
                             </div>
                         )
                     }
@@ -146,6 +147,22 @@ class Component extends React.Component {
             }
         }
         this.ShareModalRef = React.createRef();
+    }
+    fork = (record) => {
+        if (!this.props.currentUser) {
+            event.emit('goSignIn');
+            return;
+        }
+        const newName = record.name + '-fork';
+        LayoutDashboardApi.forkDashboard({
+            originalDashboardId: record.id,
+            description: newName,
+            new_dashboard_name: newName
+        }).then(d => {
+            const slug = slugg(newName);
+            const suffix = slug ? `${d.forkedDashboardId}-${slug}` : d.forkedDashboardId;
+            this.props.push(`/dashboard/${suffix}`);
+        })
     }
     goMySpace = (accountId) => {
         this.props.push(`/layout/mySpace?accountId=${accountId}`);

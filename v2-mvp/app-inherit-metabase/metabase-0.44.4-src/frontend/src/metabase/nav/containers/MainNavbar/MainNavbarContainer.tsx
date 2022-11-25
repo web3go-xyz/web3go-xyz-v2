@@ -193,7 +193,7 @@ function MainNavbarContainer({
       nonPersonalOrArchivedCollection,
     );
 
-    preparedCollections.push(...userPersonalCollections);
+    // preparedCollections.push(...userPersonalCollections);
     preparedCollections.push(...nonPersonalOrArchivedCollections);
 
     const tree = buildCollectionTree(preparedCollections);
@@ -281,11 +281,11 @@ export default _.compose(
   Bookmarks.loadList({
     loadingAndErrorWrapper: false,
   }),
-  Collections.load({
-    id: ROOT_COLLECTION.id,
-    entityAlias: "rootCollection",
-    loadingAndErrorWrapper: false,
-  }),
+  // Collections.load({
+  //   id: ROOT_COLLECTION.id,
+  //   entityAlias: "rootCollection",
+  //   loadingAndErrorWrapper: false,
+  // }),
   Collections.loadList({
     query: () => ({ tree: true, "exclude-archived": true }),
     loadingAndErrorWrapper: false,

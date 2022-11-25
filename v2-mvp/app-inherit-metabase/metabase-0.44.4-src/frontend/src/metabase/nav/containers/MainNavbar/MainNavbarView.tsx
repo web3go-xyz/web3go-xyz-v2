@@ -103,7 +103,7 @@ function MainNavbarView({
           </ul>
         </SidebarSection>
 
-        {bookmarks.length > 0 && (
+        {/* {bookmarks.length > 0 && (
           <SidebarSection>
             <BookmarkList
               bookmarks={bookmarks}
@@ -112,7 +112,7 @@ function MainNavbarView({
               reorderBookmarks={reorderBookmarks}
             />
           </SidebarSection>
-        )}
+        )} */}
 
         <SidebarSection>
           <CollectionSectionHeading
@@ -208,14 +208,14 @@ function CollectionSectionHeading({
   return (
     <SidebarHeadingWrapper>
       <SidebarHeading>{t`Collections`}</SidebarHeading>
-      <CollectionsMoreIconContainer>
+      {/* <CollectionsMoreIconContainer>
         <TippyPopoverWithTrigger
           renderTrigger={({ onClick }) => (
             <CollectionsMoreIcon name="ellipsis" onClick={onClick} size={12} />
           )}
           popoverContent={renderMenu}
         />
-      </CollectionsMoreIconContainer>
+      </CollectionsMoreIconContainer> */}
     </SidebarHeadingWrapper>
   );
 }
