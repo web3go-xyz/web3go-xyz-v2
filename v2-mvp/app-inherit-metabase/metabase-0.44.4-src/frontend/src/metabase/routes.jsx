@@ -215,6 +215,11 @@ export const getRoutes = store => (
         >
           <IndexRedirect to="home" />
           <Route
+            path="blank"
+            component={() => <div></div>}
+          >
+          </Route>
+          <Route
             path="home"
             component={Home}
           >

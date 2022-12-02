@@ -46,11 +46,6 @@ class Component extends React.Component {
     componentDidMount() {
         this.getUserInfo();
     }
-    // componentDidUpdate(prevProps) {
-    //     if (JSON.stringify(this.props.userData) !== JSON.stringify(prevProps.userData)) {
-    //         this.getUserInfo();
-    //     }
-    // }
     setDashboardListCount = (dashboardListCount) => {
         this.setState({
             dashboardListCount

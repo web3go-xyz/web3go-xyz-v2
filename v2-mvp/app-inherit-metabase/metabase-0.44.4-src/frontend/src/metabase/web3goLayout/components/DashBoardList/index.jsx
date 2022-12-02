@@ -370,7 +370,7 @@ class Component extends React.Component {
                                 My following creators
                             </Option>
                             <Option value="2">
-                                created by my self
+                                Created by myself
                             </Option>
                         </Select>
                     </div>

@@ -153,6 +153,9 @@ class Component extends React.Component {
             this.listMyFollows();
         });
     }
+    goMySpace = (accountId) => {
+        this.props.push(`/layout/mySpace?accountId=${accountId}`);
+    }
     handleUnfollow = (v) => {
         const newCreatorList = JSON.parse(JSON.stringify(this.state.creatorList));
         this.followLoading(v);
@@ -290,7 +293,7 @@ class Component extends React.Component {
                                                 <UserHeadIcon className="headicon" iconSize={64} fontSize={18} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
                                             </div>
                                             <div className="it-right">
-                                                <div className="name" title={v.nickName}>{v.nickName}</div>
+                                                <div className="name hover-primary" onClick={() => this.goMySpace(v.accountId)} title={v.nickName}>{v.nickName}</div>
                                                 <div className="btn-wrap">
                                                     {
                                                         v.loading ? (
