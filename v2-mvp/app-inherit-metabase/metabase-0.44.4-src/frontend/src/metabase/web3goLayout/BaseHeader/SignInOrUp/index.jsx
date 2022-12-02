@@ -23,6 +23,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            passwordError: false,
             emailVerifyPass: true,
             loading: false,
             timer: null,
@@ -115,6 +116,7 @@ class Component extends React.Component {
                     location.replace(`/auth/sso?jwt=${d.token}&&return_to=/`)
                 }).catch(() => {
                     this.setState({
+                        passwordError: true,
                         loading: false
                     })
                 })
@@ -179,14 +181,14 @@ class Component extends React.Component {
                                 </FormItem>
                             )
                             : null}
-                        <div className='email-item'>
+                        <div className='form-item'>
                             <FormItem label='Email address' field='email' rules={[{ required: true, message: 'Email address cannot be empty' }, { type: 'email', message: 'Invalid email' }]}>
                                 <Input placeholder='helloworld@gmail.com' onBlur={this.checkIfEmailExist} onChange={() => { this.setState({ emailVerifyPass: true }) }} />
                             </FormItem>
                             {
                                 !this.state.emailVerifyPass ? (
                                     this.state.isSignIn ? (
-                                        <div className="duplicate">
+                                        <div className="error-wrap">
                                             <img src={require("@/web3goLayout/assets/layout/waring2.png")} alt="" />
                                             <span>
                                                 This email is not registered, please&nbsp;
@@ -194,7 +196,7 @@ class Component extends React.Component {
                                             <span onClick={() => { this.init() }} className="a hover-item">sign up</span>
                                         </div>
                                     ) : (
-                                        <div className="duplicate">
+                                        <div className="error-wrap">
                                             <img src={require("@/web3goLayout/assets/layout/waring2.png")} alt="" />
                                             <span>
                                                 This email has been registered. Go to&nbsp;
@@ -205,27 +207,21 @@ class Component extends React.Component {
                                 ) : null
                             }
                         </div>
-                        {/* <FormItem className='email-item' label='Email address' field='email' rules={[{ required: true, message: 'Email address cannot be empty' }, { type: 'email', message: 'Invalid email' }]}>
-                            <Input placeholder='helloworld@gmail.com' onBlur={!this.state.isSignIn ? this.checkIfEmailExist : () => { }} />
-                            <FormItem noStyle>
-                                {
-                                    !this.state.isSignIn && this.emailVerifyPass ? (
-                                        <div className="duplicate">
-                                            <img src={require("@/web3goLayout/assets/layout/waring2.png")} alt="" />
-                                            <span>
-                                                This email has been registered. Go to&nbsp;
-                                            </span>
-                                            <span onClick={() => { this.init(true) }} className="a hover-item">sign in</span>
-                                        </div>
-                                    ) : null
-                                }
-
+                        <div className='form-item'>
+                            <FormItem label='Password' field='password' rules={[{ required: true, message: 'Password cannot be empty' }]}>
+                                <Input type='password' onChange={() => { this.setState({ passwordError: false }) }} onPressEnter={this.sure} placeholder='please enter your password...' />
                             </FormItem>
-                        </FormItem> */}
-
-                        <FormItem label='Password' field='password' rules={[{ required: true, message: 'Password cannot be empty' }]}>
-                            <Input type='password' onPressEnter={this.sure} placeholder='please enter your password...' />
-                        </FormItem>
+                            {
+                                this.state.passwordError ? (
+                                    <div className="error-wrap">
+                                        <img src={require("@/web3goLayout/assets/layout/waring2.png")} alt="" />
+                                        <span>
+                                            Your password is incorrect
+                                        </span>
+                                    </div>
+                                ) : null
+                            }
+                        </div>
                     </Form>
 
                     {this.state.isSignIn ? (<div className="link-wrap">

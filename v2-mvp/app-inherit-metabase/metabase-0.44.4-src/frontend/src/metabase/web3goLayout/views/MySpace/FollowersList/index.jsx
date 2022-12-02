@@ -14,7 +14,8 @@ import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 const Option = Select.Option;
 const mapStateToProps = state => {
     return {
-        isDark: state.app.isDark
+        isDark: state.app.isDark,
+        userData: state.app.userData
     }
 };
 const mapDispatchToProps = {
@@ -31,7 +32,6 @@ class Component extends React.Component {
             filterList: [],
             currentFilter: {},
             tableData: [],
-            allFollowingList: [],
             paramsShow: false,
             params: {
                 createBy: '',
@@ -87,23 +87,14 @@ class Component extends React.Component {
                 pagination: { ...this.state.pagination, total: d.totalCount }
             })
         });
-        // 获取所有followingList（用来判断当前人员是否已关注）
-        LayoutCreatorApi.listFollowing({
-            "pageSize": 99999999,
-            "pageIndex": 1,
-            "orderBys": [],
-            "account_id": this.props.accountId,
-        }).then(d => {
-            this.setState({
-                allFollowingList: d.list,
-            })
-        });
+
     }
     handleFollow = (v) => {
         LayoutCreatorApi.follow({
             "targetAccountId": v.accountId
         }).then(d => {
             this.props.getUserInfo();
+            this.props.getAllFollowingList();
             this.getList();
         });
     }
@@ -119,6 +110,7 @@ class Component extends React.Component {
             "targetAccountId": v.accountId
         }).then(d => {
             this.props.getUserInfo();
+            this.props.getAllFollowingList();
             this.getList();
         });
     }
@@ -143,23 +135,16 @@ class Component extends React.Component {
                                     </div>
                                 </div>
                                 {
-                                    this.props.viewType == 'following' ? (
+                                    this.props.allFollowingList.find(sv => sv.accountId == v.accountId) ? (
                                         <div className="follow-btn" onClick={() => { this.handleUnfollow(v) }}>
                                             <IconCheck />
                                             <span className="text">Following</span>
                                         </div>
                                     ) : (
-                                        this.state.allFollowingList.find(sv => sv.accountId == v.accountId) ? (
-                                            <div className="follow-btn" onClick={() => { this.handleUnfollow(v) }}>
-                                                <IconCheck />
-                                                <span className="text">Following</span>
-                                            </div>
-                                        ) : (
-                                            <div className="follow-btn" onClick={() => { this.handleFollow(v) }}>
-                                                <IconPlus />
-                                                <span className="text">Follow</span>
-                                            </div>
-                                        )
+                                        <div className="follow-btn" onClick={() => { this.handleFollow(v) }}>
+                                            <IconPlus />
+                                            <span className="text">Follow</span>
+                                        </div>
                                     )
                                 }
                                 <div className="i-right">

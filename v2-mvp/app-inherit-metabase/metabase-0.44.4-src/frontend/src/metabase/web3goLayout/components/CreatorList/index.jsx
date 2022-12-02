@@ -10,6 +10,7 @@ import { IconPlus, IconCheck } from '@arco-design/web-react/icon';
 import { numberSplit } from '@/web3goLayout/utils';
 import ShareModal from "@/web3goLayout/components/ShareModal";
 import { LayoutLoginApi, LayoutDashboardApi, LayoutCreatorApi } from '@/services';
+import event from '@/web3goLayout/event';
 
 const Option = Select.Option;
 const mapStateToProps = state => {
@@ -152,6 +153,9 @@ class Component extends React.Component {
                 myFollowingList: d.list
             })
         });
+    }
+    goSignIn = () => {
+        event.emit('goSignIn');
     }
     handleFollow = (v) => {
         if (!this.props.userData.account) {

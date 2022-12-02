@@ -96,7 +96,7 @@ class Component extends React.Component {
                             name: 'Unfavorite'
                         });
                     }
-                    if (record.creatorAccountId !== this.props.userData.account.accountId) {
+                    if (!this.props.userData.account || (record.creatorAccountId !== this.props.userData.account.accountId)) {
                         operationList.pop();
                         operationList.pop();
                     }
@@ -187,13 +187,17 @@ class Component extends React.Component {
         }
     }
     getMyFavourites = () => {
+        if (!this.props.userData.account) {
+            this.getList();
+            return;
+        }
         LayoutDashboardApi.listMyFavorites().then(d => {
             this.setState({
                 favouriteList: d.list
             }, () => {
-                if (!d.list.length) {
-                    return;
-                }
+                // if (!d.list.length) {
+                //     return;
+                // }
                 this.getList();
             });
             if (this.props.setMyFavouriteCount) {

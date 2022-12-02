@@ -4,10 +4,10 @@ import { connect } from "react-redux";
 import './index.less';
 import { Button, Modal, Form, Input, Upload, Message, Tabs, Typography } from '@arco-design/web-react';
 import { push } from "react-router-redux";
-import { IconEdit, IconSearch, IconArrowLeft, IconCheck } from '@arco-design/web-react/icon';
+import { IconEdit, IconSearch, IconArrowLeft, IconPlus, IconCheck } from '@arco-design/web-react/icon';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import { LayoutLoginApi } from '@/services'
+import { LayoutLoginApi, LayoutCreatorApi } from '@/services'
 import event from '@/web3goLayout/event';
 import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 import DashBoardList from './DashBoardList';
@@ -40,11 +40,28 @@ class Component extends React.Component {
             searchValue: '',
             dashboardListCount: 0,
             myFavouriteCount: 0,
+            allFollowingList: []
         }
         this.DashboardRef = React.createRef();
     }
     componentDidMount() {
         this.getUserInfo();
+        this.getAllFollowingList();
+    }
+    getAllFollowingList = () => {
+        if (this.props.userData.account) {
+            // 获取所有followingList（用来判断当前人员是否已关注）
+            LayoutCreatorApi.listFollowing({
+                "pageSize": 99999999,
+                "pageIndex": 1,
+                "orderBys": [],
+                "account_id": this.props.userData.account.accountId,
+            }).then(d => {
+                this.setState({
+                    allFollowingList: d.list,
+                })
+            });
+        }
     }
     setDashboardListCount = (dashboardListCount) => {
         this.setState({
@@ -57,11 +74,19 @@ class Component extends React.Component {
         });
     }
     getUserInfo = () => {
-        if (!this.props.userData.account) {
-            return;
-        }
         const accountId = this.props.route.query.accountId;
-        if (accountId && accountId != this.props.userData.account.accountId) {
+        let ifOtherUser = false;
+        if (!this.props.userData.account) {
+            if (!accountId) {
+                return;
+            }
+            ifOtherUser = true;
+        } else {
+            if (accountId && accountId != this.props.userData.account.accountId) {
+                ifOtherUser = true;
+            }
+        }
+        if (ifOtherUser) {
             LayoutLoginApi.searchAccountInfo({
                 accountIds: [accountId],
                 includeExtraInfo: false
@@ -91,6 +116,22 @@ class Component extends React.Component {
     setActiveTab = (value) => {
         this.setState({
             activeTab: value
+        });
+    }
+    handleFollow = () => {
+        LayoutCreatorApi.follow({
+            "targetAccountId": this.state.userInfo.accountId
+        }).then(d => {
+            this.getUserInfo();
+            this.getAllFollowingList();
+        });
+    }
+    handleUnfollow = () => {
+        LayoutCreatorApi.unfollow({
+            "targetAccountId": this.state.userInfo.accountId
+        }).then(d => {
+            this.getUserInfo();
+            this.getAllFollowingList();
         });
     }
     handleSearch = () => {
@@ -130,7 +171,7 @@ class Component extends React.Component {
                         <IconArrowLeft onClick={() => { this.setState({ viewType: 'default' }) }} className="hover-item" />
                         <span>Followers {numberSplit(userInfo.followedAccountCount)}</span>
                     </div>
-                    <FollowersList getUserInfo={this.getUserInfo} viewType={this.state.viewType} accountId={userInfo.accountId}></FollowersList>
+                    <FollowersList getUserInfo={this.getUserInfo} allFollowingList={this.state.allFollowingList} getAllFollowingList={this.getAllFollowingList} viewType={this.state.viewType} accountId={userInfo.accountId}></FollowersList>
                 </div>
             )
         } else if (this.state.viewType == 'following') {
@@ -140,7 +181,7 @@ class Component extends React.Component {
                         <IconArrowLeft onClick={() => { this.setState({ viewType: 'default' }) }} className="hover-item" />
                         <span>Following {numberSplit(userInfo.followingAccountCount)}</span>
                     </div>
-                    <FollowersList getUserInfo={this.getUserInfo} viewType={this.state.viewType} accountId={userInfo.accountId}></FollowersList>
+                    <FollowersList getUserInfo={this.getUserInfo} allFollowingList={this.state.allFollowingList} getAllFollowingList={this.getAllFollowingList} viewType={this.state.viewType} accountId={userInfo.accountId}></FollowersList>
                 </div>
             )
         }
@@ -181,10 +222,19 @@ class Component extends React.Component {
                                         <span>Edit Profile</span>
                                     </Button>
                                 ) : (
-                                    <Button type="outline">
-                                        <IconCheck />
-                                        <span>Following</span>
-                                    </Button>
+                                    (
+                                        this.state.allFollowingList.find(v => v.accountId == userInfo.accountId) ? (
+                                            <Button type="outline" className="follow-btn" onClick={() => { this.handleUnfollow() }}>
+                                                <IconCheck />
+                                                <span className="text">Following</span>
+                                            </Button>
+                                        ) : (
+                                            <Button type="outline" className="follow-btn" onClick={() => { this.handleFollow() }}>
+                                                <IconPlus />
+                                                <span className="text">Follow</span>
+                                            </Button>
+                                        )
+                                    )
                                 )
                             }
                         </div>

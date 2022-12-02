@@ -12,6 +12,9 @@ import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 import { numberSplit } from '@/web3goLayout/utils';
 import { LayoutLoginApi, LayoutDashboardApi, LayoutCreatorApi } from '@/services';
 import DashBoardList from '@/web3goLayout/components/DashBoardList';
+import { Link } from "react-router";
+
+
 const mapStateToProps = state => {
     return {
         userData: state.app.userData,
@@ -255,10 +258,14 @@ class Component extends React.Component {
                                             <img src={require("@/web3goLayout/assets/home/info33.png")} alt="" />
                                     }
                                 </div>
-                                <div className="btn hover-item" onClick={() => { this.props.push('/home'); }}>
-                                    <img src={require("@/web3goLayout/assets/home/add.png")} alt="" />
-                                    <span>New Dashboard</span>
-                                </div>
+                                <Link
+                                    to="/home"
+                                >
+                                    <div className="btn hover-item">
+                                        <img src={require("@/web3goLayout/assets/home/add.png")} alt="" />
+                                        <span>New Dashboard</span>
+                                    </div>
+                                </Link>
                             </div >
                         )
                     }
