@@ -22,7 +22,7 @@ const HomeRecentSection = ({
 
   return (
     <div>
-      <HomeCaption>{t`Pick up where you left off`}</HomeCaption>
+      <HomeCaption>{t`What you have viewed recently`}</HomeCaption>
       <SectionBody>
         {recentItems.map((item, index) => (
           <HomeModelCard
