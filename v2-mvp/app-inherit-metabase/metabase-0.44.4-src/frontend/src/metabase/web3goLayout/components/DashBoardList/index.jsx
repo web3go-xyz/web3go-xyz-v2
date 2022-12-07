@@ -57,7 +57,7 @@ class Component extends React.Component {
                         }
                         return (
                             <div className="name-col">
-                                <UserHeadIcon className="headicon" iconSize={32} avatar={avatar} nickName={nickName}></UserHeadIcon>
+                                <UserHeadIcon onClick={() => this.goMySpace(record.creatorAccountId)} className="headicon hover-item" iconSize={32} avatar={avatar} nickName={nickName}></UserHeadIcon>
                                 <div className="right">
                                     <div className="title hover-primary" onClick={() => { record.publicLink && window.open(record.publicLink) }}>{record.name}</div>
                                     <div className="tag-list">
