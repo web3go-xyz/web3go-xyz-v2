@@ -215,7 +215,7 @@ class Component extends React.Component {
                             this.state.tableData.map((v, i) => (
                                 <div className="item" key={i}>
                                     <div className="i-top">
-                                        <UserHeadIcon className="headicon" iconSize={48} fontSize={16} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
+                                        <UserHeadIcon onClick={() => this.goMySpace(v.accountId)} className="headicon hover-item" iconSize={48} fontSize={16} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
                                         <div className="it-right">
                                             <div className="title hover-primary" onClick={() => this.goMySpace(v.accountId)} title={v.nickName}>{v.nickName}</div>
                                             <div className="info">

@@ -294,7 +294,7 @@ class Component extends React.Component {
                                 {this.state.creatorList.slice(0, 6).map((v, i) => (
                                     <div key={i} className={"item" + (i == 0 ? ' active' : '')}>
                                         <div className="i-top">
-                                            <div className="headicon-wrap">
+                                            <div className="headicon-wrap hover-item" onClick={() => this.goMySpace(v.accountId)}>
                                                 <img className="icon" src={require(`@/web3goLayout/assets/home/${i + 1}.png`)} alt="" />
                                                 <span className="rank">{i + 1}</span>
                                                 <UserHeadIcon className="headicon" iconSize={64} fontSize={18} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
