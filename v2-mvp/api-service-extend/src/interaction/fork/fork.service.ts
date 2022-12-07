@@ -13,8 +13,11 @@ import { ForkDashboardResponse } from './model/ForkDashboardResponse';
 import { AppConfig } from 'src/base/setting/appConfig';
 import { Request } from 'express';
 import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
+import { ForkQuestionRequest } from './model/ForkQuestionRequest';
+import { ForkQuestionResponse } from './model/ForkQuestionResponse';
 @Injectable()
 export class ForkService {
+
 
     logger: W3Logger;
     constructor(
@@ -64,6 +67,7 @@ export class ForkService {
         return resp;
     }
 
+    //TODO  duplicate dashboard + all questions
     async forkDashboard(request: Request, param: ForkDashboardRequest, accountId: string): Promise<ForkDashboardResponse> {
         let resp: ForkDashboardResponse = {
             forkedDashboardId: 0,
@@ -156,6 +160,11 @@ export class ForkService {
             resp.msg = 'success';
         }
         return resp;
+    }
+
+    //TODO  duplicate question
+    async forkQuestion(request: Request, param: ForkQuestionRequest, accountId: string): Promise<ForkQuestionResponse> {
+        throw new Error('Method not implemented.');
     }
 
 }
