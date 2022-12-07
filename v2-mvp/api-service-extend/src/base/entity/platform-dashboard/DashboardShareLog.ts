@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, Index } from 'typeorm';
 
 @Entity("dashboard_share_log", { schema: "public" })
+@Index("idx_dashboard_share_log_dashboardId", ["dashboardId"], { unique: false })
+@Index("idx_dashboard_share_log_accountId", ["accountId"], { unique: false })
+@Index("idx_dashboard_share_log_shareChannel", ["shareChannel"], { unique: false })
 export class DashboardShareLog {
     @PrimaryGeneratedColumn({
         type: "bigint",

@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, Index } from 'typeorm';
 
 @Entity("dashboard_fork_log", { schema: "public" })
+@Index("idx_dashboard_fork_log_accountId", ["accountId"], { unique: false })
+@Index("idx_dashboard_fork_log_originalDashboardId", ["originalDashboardId"], { unique: false }) 
 export class DashboardForkLog {
     @PrimaryGeneratedColumn({
         type: "bigint",

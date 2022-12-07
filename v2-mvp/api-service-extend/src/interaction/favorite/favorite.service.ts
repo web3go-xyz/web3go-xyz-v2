@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DashboardFavoriteLog } from 'src/base/entity/platform-dashboard/DashboardFavoriteLog';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
-import { QueryMyFavoriteDashboardListRequest } from 'src/dashboard/model/QueryMyFavoriteDashboardListRequest';
-import { QueryMyFavoriteDashboardListResponse } from 'src/dashboard/model/QueryMyFavoriteDashboardListResponse';
+import { QueryFavoriteDashboardListRequest } from 'src/dashboard/model/QueryFavoriteDashboardListRequest';
+import { QueryFavoriteDashboardListResponse } from 'src/dashboard/model/QueryFavoriteDashboardListResponse';
 import { EventService } from 'src/event-bus/event.service';
 import { DashboardEventTopic } from 'src/event-bus/model/dashboard/DashboardEventTopic';
 import { PageRequest } from 'src/viewModel/base/pageRequest';
@@ -66,9 +66,9 @@ export class FavoriteService {
 
         return resp;
     }
-    async listMyFavorites(param: QueryMyFavoriteDashboardListRequest): Promise<QueryMyFavoriteDashboardListResponse> {
+    async listFavorites(param: QueryFavoriteDashboardListRequest): Promise<QueryFavoriteDashboardListResponse> {
 
-        let resp: QueryMyFavoriteDashboardListResponse = {
+        let resp: QueryFavoriteDashboardListResponse = {
             totalCount: 0,
             list: []
         }
@@ -83,7 +83,7 @@ export class FavoriteService {
         resp.totalCount = result[1];
         resp.list = result[0];
 
-        this.logger.debug(`listMyFavorites:${JSON.stringify(resp)}`);
+        // this.logger.debug(`listFavorites:${JSON.stringify(resp)}`);
         return resp;
 
     }
