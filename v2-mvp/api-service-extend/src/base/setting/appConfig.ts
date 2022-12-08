@@ -1,5 +1,4 @@
-import { RedisModuleOptions } from '@liaoliaots/nestjs-redis';
-export class AppConfig {
+ export class AppConfig {
 
   public static dbConnection = {
     type: process.env.DB_TYPE || 'postgres',
