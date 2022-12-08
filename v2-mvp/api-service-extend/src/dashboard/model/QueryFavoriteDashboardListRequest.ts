@@ -8,4 +8,12 @@ export class QueryFavoriteDashboardListRequest extends PageRequest {
     })
     @IsNotEmpty()
     accountId: string;
+
+
+
+    @ApiProperty({
+        description: 'search name to match dashboard name',
+        default: ''
+    })
+    searchName: string;
 }

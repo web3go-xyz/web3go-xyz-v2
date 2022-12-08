@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
 import { DashboardFavoriteLog } from 'src/base/entity/platform-dashboard/DashboardFavoriteLog';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
@@ -72,16 +73,32 @@ export class FavoriteService {
             totalCount: 0,
             list: []
         }
-        let result = await this.dfavlRepo.findAndCount({
-            where: {
-                accountId: param.accountId
-            },
-            skip: PageRequest.getSkip(param),
-            take: PageRequest.getTake(param)
-        });
+        let builder = this.dfavlRepo.createQueryBuilder("f")
+            .where("1=1");
+        if (param.searchName) {
+            builder =
+                builder.innerJoinAndSelect(DashboardExt, "d", "f.dashboard_id = d.id")
+                    .andWhere("d.name like :searchName", { searchName: '%' + param.searchName + '%' });
+        }
+        builder =
+            builder.andWhere("f.account_id=:account_id", { account_id: param.accountId })
+                .offset(PageRequest.getSkip(param))
+                .limit(PageRequest.getTake(param));
+        builder = builder.select("f.*");
 
-        resp.totalCount = result[1];
-        resp.list = result[0];
+        resp.totalCount = await builder.getCount();
+        let rawList = await builder.getRawMany();
+        if (rawList) {
+            rawList.forEach(t => {
+                let item: DashboardFavoriteLog = {
+                    id: t.id,
+                    dashboardId: t.dashboard_id,
+                    accountId: t.account_id,
+                    createdAt: t.created_at
+                };
+                resp.list.push(item)
+            });
+        }
 
         // this.logger.debug(`listFavorites:${JSON.stringify(resp)}`);
         return resp;
