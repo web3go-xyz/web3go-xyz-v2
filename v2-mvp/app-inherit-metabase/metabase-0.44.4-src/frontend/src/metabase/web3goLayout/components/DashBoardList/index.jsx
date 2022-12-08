@@ -203,7 +203,13 @@ class Component extends React.Component {
         if (!this.props.currentUser) {
             return;
         }
-        LayoutDashboardApi.listMyFavorites().then(d => {
+        LayoutDashboardApi.listMyFavorites({
+            "pageSize": 9999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "accountId": this.props.userData.account.accountId,
+            "searchName": ""
+        }).then(d => {
             this.setState({
                 favouriteList: d.list
             });

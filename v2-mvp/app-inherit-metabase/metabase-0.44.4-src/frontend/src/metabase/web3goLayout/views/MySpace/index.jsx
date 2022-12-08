@@ -143,7 +143,7 @@ class Component extends React.Component {
             <Tabs activeTab={this.state.activeTab} onChange={this.setActiveTab}>
                 <TabPane key='1' title={`Dashboard ${dashboardListCount}`}>
                 </TabPane>
-                <TabPane key='2' title={`My Favorites ${myFavouriteCount}`}>
+                <TabPane key='2' title={`${this.state.isMyself?'My Favorites':'Favorites'} ${myFavouriteCount}`}>
                 </TabPane>
             </Tabs>
             <DashBoardList

@@ -32,7 +32,7 @@ import _ from "underscore";
 import { getIn } from "icepick";
 import { getParameterValuesBySlug } from "metabase/parameters/utils/parameter-values";
 import Utils from "metabase/lib/utils";
-import { DashCardRoot } from "./DashCard.styled";
+import { DashCardRoot, WaterMark } from "./DashCard.styled";
 
 const DATASET_USUALLY_FAST_THRESHOLD = 15 * 1000;
 
@@ -200,6 +200,7 @@ export default class DashCard extends Component {
         }
         isNightMode={isNightMode}
       >
+        <WaterMark></WaterMark>
         {isEditingDashboardLayout ? (
           <DashboardCardActionsPanel onMouseDown={this.preventDragging}>
             <DashCardActionButtons

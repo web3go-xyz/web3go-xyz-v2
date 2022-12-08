@@ -62,7 +62,7 @@ class Component extends React.Component {
             loading: false,
             pagination: {
                 total: 0,
-                pageSize: 10,
+                pageSize: 12,
                 current: 1,
                 onChange: (current) => {
                     this.setState((state) => {
