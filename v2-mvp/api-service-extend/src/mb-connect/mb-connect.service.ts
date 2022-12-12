@@ -7,11 +7,15 @@ import { ReportDashboardcard } from 'src/base/entity/metabase/ReportDashboardcar
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { AppConfig } from 'src/base/setting/appConfig';
+import { ForkDashboardRequest } from 'src/interaction/fork/model/ForkDashboardRequest';
+import { ForkDashboardResponse } from 'src/interaction/fork/model/ForkDashboardResponse';
+import { ForkQuestionRequest } from 'src/interaction/fork/model/ForkQuestionRequest';
 import { ForkQuestionResponse } from 'src/interaction/fork/model/ForkQuestionResponse';
 import { In, Like, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class MBConnectService {
+
 
 
     logger: W3Logger;
@@ -81,9 +85,15 @@ export class MBConnectService {
     }
 
     generateRandomEntityId() {
-        return ((new Date()).getTime() + uuidv4().toString().replace(/-/g, '') + '').substring(0, 20);
+        return ('eid-' + (new Date()).getTime() + '-' + uuidv4().toString().replace(/-/g, '') + '').substring(0, 20);
     }
-    async copyQuestion(originalQuestionId: number, targetDashboardId: number, accountId: string): Promise<ForkQuestionResponse> {
+    generateRandomPublicId() {
+        return (uuidv4().toString());
+    }
+    async copyQuestion(param: ForkQuestionRequest, targetCollectionId: number, accountId: string,): Promise<ForkQuestionResponse> {
+        let originalQuestionId = param.originalQuestionId;
+        let targetDashboardId = param.targetDashboardId;
+
         let resp: ForkQuestionResponse = { newQuestionId: null, msg: null };
         let originalCard = await this.mb_rcRepo.findOne({
             where: {
@@ -116,10 +126,6 @@ export class MBConnectService {
         }
         this.logger.log(`copyQuestion  originalQuestionId=${originalQuestionId}, targetDashboardId=${targetDashboardId}, accountId=${accountId}`);
         //update
-        // --entity_id
-        // --created_at
-        // --updated_at
-        // --creator_id
         let time = new Date();
         await this.mb_rcRepo.manager.transaction(async transactionalEntityManager => {
 
@@ -128,11 +134,11 @@ export class MBConnectService {
                 ...originalCard,
                 id: 0,
                 entityId: this.generateRandomEntityId(),
-                publicUuid: this.generateRandomEntityId(),
+                publicUuid: this.generateRandomPublicId(),
                 createdAt: time,
                 updatedAt: time,
                 creatorId: account.id,
-                collectionId: AppConfig.DASHBOARD_PUBLIC_COLLECTION_ID
+                collectionId: targetCollectionId
             });
 
 
@@ -167,4 +173,109 @@ export class MBConnectService {
 
     }
 
+
+    async copyDashboard(param: ForkDashboardRequest, targetCollectionId: number, accountId: string): Promise<ForkDashboardResponse> {
+        let resp: ForkDashboardResponse = { newDashboardId: null, newCardIds: [], msg: null };
+
+        let originalDashboardId = param.originalDashboardId;
+        let originalDashboard = await this.mb_rdRepo.findOne({
+            where: {
+                id: originalDashboardId
+            }
+        });
+        if (!originalDashboard) {
+            resp.msg = `not find original dashboard for id=${originalDashboardId}`;
+            return resp;
+        }
+        let account = await this.mb_cuRepo.findOne({
+            where: {
+                loginAttributes: Like(`{"id":"${accountId}"%`)
+            }
+        });
+        if (!account) {
+            resp.msg = `not find related account for accountId=${accountId}`;
+            return resp;
+        }
+
+        let originalDashboardCards = await this.mb_rdcRepo.find({
+            where: {
+                dashboardId: originalDashboardId
+            }
+        });
+        let originalCards: ReportCard[] = [];
+        if (originalDashboardCards) {
+            originalCards = await this.mb_rcRepo.find({
+                where: {
+                    id: In(originalDashboardCards.map(t => t.cardId))
+                }
+            });
+        }
+
+        this.logger.log(`copyDashboard  originalDashboardId=${originalDashboardId}, accountId=${accountId}, originalDashboardCards=${originalDashboardCards.length} cards`);
+
+
+        let time = new Date();
+        await this.mb_rdRepo.manager.transaction(async transactionalEntityManager => {
+
+            let newDashboard: ReportDashboard = new ReportDashboard();
+            Object.assign(newDashboard, {
+                ...originalDashboard,
+                id: 0,
+                entityId: this.generateRandomEntityId(),
+                createdAt: time,
+                updatedAt: time,
+                creatorId: account.id,
+                collectionId: targetCollectionId,
+                name: param.new_dashboard_name,
+                description: param.description,
+                publicUuid: this.generateRandomPublicId()
+            });
+          
+            this.logger.warn(newDashboard);
+            await transactionalEntityManager.save<ReportDashboard>(newDashboard);
+            resp.newDashboardId = newDashboard.id;
+
+            if (originalCards && originalCards.length > 0) {
+                for (const oc of originalCards) {
+
+                    let newCard: ReportCard = new ReportCard();
+                    Object.assign(newCard, {
+                        ...oc,
+                        id: 0,
+                        entityId: this.generateRandomEntityId(),
+                        publicUuid: this.generateRandomPublicId(),
+                        createdAt: time,
+                        updatedAt: time,
+                        creatorId: account.id,
+                        collectionId: targetCollectionId
+                    });
+
+                    //this.logger.warn(newCard);
+                    await transactionalEntityManager.save<ReportCard>(newCard);
+                    let newCardId = newCard.id;
+                    resp.newCardIds.push(newCardId);
+
+                    let findOriginalDashboardCard = originalDashboardCards.find(t => t.cardId == oc.id);
+                    if (findOriginalDashboardCard) {
+                        let newReportDashboardCard: ReportDashboardcard = new ReportDashboardcard();
+                        Object.assign(newReportDashboardCard, {
+                            ...findOriginalDashboardCard,
+                            id: 0,
+                            createdAt: time,
+                            updatedAt: time,
+                            cardId: newCardId,
+                            dashboardId: resp.newDashboardId,
+                            entityId: this.generateRandomEntityId(),
+                        });
+                        await transactionalEntityManager.save<ReportDashboardcard>(newReportDashboardCard);
+                    }
+                }
+            }
+
+            resp.msg = 'success';
+            this.logger.log(`copyDashboard success: newQuestionId=${resp.newDashboardId}, originalDashboardId=${originalDashboardId}, accountId=${accountId}, originalDashboardCards=${originalDashboardCards.length} cards`);
+        });
+
+        return resp;
+    }
 }

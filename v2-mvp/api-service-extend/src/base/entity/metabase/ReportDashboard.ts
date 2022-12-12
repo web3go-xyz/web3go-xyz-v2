@@ -112,23 +112,20 @@ export class ReportDashboard {
   @OneToMany(() => Pulse, (pulse) => pulse.dashboard)
   pulses: Pulse[];
 
-  @ManyToOne(() => Collection, (collection) => collection.reportDashboards, {
-    onDelete: "SET NULL",
-  })
-  @JoinColumn([{ name: "collection_id", referencedColumnName: "id" }])
-  collection: Collection;
+  // @ManyToOne(() => Collection, (collection) => collection.reportDashboards, {
+  //   onDelete: "SET NULL",
+  // })
+  // @JoinColumn([{ name: "collection_id", referencedColumnName: "id" }])
+  // collection: Collection;
 
-  @ManyToOne(() => CoreUser, (coreUser) => coreUser.reportDashboards, {
-    onDelete: "CASCADE",
-  })
-  @JoinColumn([{ name: "creator_id", referencedColumnName: "id" }])
-  creator: CoreUser;
+  // @ManyToOne(() => CoreUser, (coreUser) => coreUser.reportDashboards, {
+  //   onDelete: "CASCADE",
+  // })
+  // @JoinColumn([{ name: "creator_id", referencedColumnName: "id" }])
+  // creator: CoreUser;
 
-  @ManyToOne(() => CoreUser, (coreUser) => coreUser.reportDashboards2, {
-    onDelete: "CASCADE",
-  })
-  @JoinColumn([{ name: "made_public_by_id", referencedColumnName: "id" }])
-  madePublicBy: CoreUser;
+  @Column("integer", { name: "made_public_by_id", nullable: true })
+  made_public_by_id: CoreUser;
 
   @OneToMany(
     () => ReportDashboardcard,

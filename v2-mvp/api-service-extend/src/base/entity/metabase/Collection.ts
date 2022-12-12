@@ -104,7 +104,7 @@ export class Collection {
 
   @OneToMany(
     () => ReportDashboard,
-    (reportDashboard) => reportDashboard.collection
+    (reportDashboard) => reportDashboard.collectionId
   )
   reportDashboards: ReportDashboard[];
 

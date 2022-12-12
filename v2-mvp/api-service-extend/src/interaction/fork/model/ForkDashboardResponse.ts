@@ -5,9 +5,13 @@ import { IsNotEmpty } from "class-validator";
 
 export class ForkDashboardResponse {
 
-    @ApiProperty({ required: true })
+    @ApiProperty({})
     @IsNotEmpty()
-    forkedDashboardId: number;
+    newDashboardId: number;
+
+    @ApiProperty({})
+    @IsNotEmpty()
+    newCardIds: number[];
 
 
     @ApiProperty()

@@ -236,13 +236,13 @@ export class CoreUser {
 
   @OneToMany(
     () => ReportDashboard,
-    (reportDashboard) => reportDashboard.creator
+    (reportDashboard) => reportDashboard.creatorId
   )
   reportDashboards: ReportDashboard[];
 
   @OneToMany(
     () => ReportDashboard,
-    (reportDashboard) => reportDashboard.madePublicBy
+    (reportDashboard) => reportDashboard.made_public_by_id
   )
   reportDashboards2: ReportDashboard[];
 

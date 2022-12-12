@@ -70,10 +70,11 @@ export class ForkService {
         return resp;
     }
 
-    //TODO  duplicate dashboard + all questions
-    async forkDashboard(request: Request, param: ForkDashboardRequest, accountId: string): Promise<ForkDashboardResponse> {
+    //
+    async forkDashboard_old(request: Request, param: ForkDashboardRequest, accountId: string): Promise<ForkDashboardResponse> {
         let resp: ForkDashboardResponse = {
-            forkedDashboardId: 0,
+            newDashboardId: 0,
+            newCardIds: [],
             msg: ''
         };
         const axios = require('axios').default;
@@ -119,16 +120,16 @@ export class ForkService {
             // created_at: '2022-11-18T06:29:46.903815Z',
             // public_uuid: null,
             // points_of_interest: null
-            resp.forkedDashboardId = data.id || 0;
-            this.logger.log(`new fork dashboard ${resp.forkedDashboardId}`);
+            resp.newDashboardId = data.id || 0;
+            this.logger.log(`new fork dashboard ${resp.newDashboardId}`);
         }
         else {
             throw new Error(`copy dashboard ${param.originalDashboardId} failed`);
         }
 
-        if (resp.forkedDashboardId) {
+        if (resp.newDashboardId) {
             //update dashboard as public
-            let api_enable_public_link = `${AppConfig.BASE_METABASE_API_URL}/dashboard/${resp.forkedDashboardId}/public_link`;
+            let api_enable_public_link = `${AppConfig.BASE_METABASE_API_URL}/dashboard/${resp.newDashboardId}/public_link`;
             let options_public_link = {
                 method: 'POST',
                 url: api_enable_public_link,
@@ -144,21 +145,70 @@ export class ForkService {
                 //     "uuid": "0098cb46-53b0-4fa7-b1ec-c054dc28d3c4"
                 // }
                 let uuid = data_pl.uuid || '';
-                this.logger.log(`public uuid for dashboard ${resp.forkedDashboardId}: ${uuid}`);
+                this.logger.log(`public uuid for dashboard ${resp.newDashboardId}: ${uuid}`);
             }
             else {
-                throw new Error(`update public uuid dashboard ${resp.forkedDashboardId} failed`);
+                throw new Error(`update public uuid dashboard ${resp.newDashboardId} failed`);
             }
 
             //sync dashboard
-            await this.eventService.syncDashboard(resp.forkedDashboardId);
-            this.logger.log(`syncDashboard ${resp.forkedDashboardId} finished.`);
+            await this.eventService.syncDashboard(resp.newDashboardId);
+            this.logger.log(`syncDashboard ${resp.newDashboardId} finished.`);
 
             await this.logFork({
                 originalDashboardId: param.originalDashboardId,
-                forkedDashboardId: resp.forkedDashboardId
+                forkedDashboardId: resp.newDashboardId
             }, accountId);
-            this.logger.log(`logFork for dashboard ${resp.forkedDashboardId} finished.`)
+            this.logger.log(`logFork for dashboard ${resp.newDashboardId} finished.`)
+
+            resp.msg = 'success';
+        }
+        return resp;
+    }
+
+    //TODO  duplicate dashboard + all questions
+    async forkDashboard(request: Request, param: ForkDashboardRequest, accountId: string): Promise<ForkDashboardResponse> {
+
+        let targetCollectionId = AppConfig.DASHBOARD_PUBLIC_COLLECTION_ID;
+
+        let resp: ForkDashboardResponse = await this.mbConnectService.copyDashboard(param, targetCollectionId, accountId);
+
+        if (resp.newDashboardId) {
+            const axios = require('axios').default;
+            let cookie = this.jwtService.extractXCookieFromHttpRequest(request);
+
+            //update dashboard as public
+            let api_enable_public_link = `${AppConfig.BASE_METABASE_API_URL}/dashboard/${resp.newDashboardId}/public_link`;
+            let options_public_link = {
+                method: 'POST',
+                url: api_enable_public_link,
+                headers: {
+                    Cookie: cookie
+                }
+            };
+            const { data: data_pl, status: status_pl } = await axios.request(options_public_link);
+            console.log(`response_public_link:`, data_pl);
+            if (status_pl === 200 && data_pl) {
+                //sample response data
+                // {
+                //     "uuid": "0098cb46-53b0-4fa7-b1ec-c054dc28d3c4"
+                // }
+                let uuid = data_pl.uuid || '';
+                this.logger.log(`public uuid for dashboard ${resp.newDashboardId}: ${uuid}`);
+            }
+            else {
+                throw new Error(`update public uuid dashboard ${resp.newDashboardId} failed`);
+            }
+
+            //sync dashboard
+            await this.eventService.syncDashboard(resp.newDashboardId);
+            this.logger.log(`syncDashboard ${resp.newDashboardId} finished.`);
+
+            await this.logFork({
+                originalDashboardId: param.originalDashboardId,
+                forkedDashboardId: resp.newDashboardId
+            }, accountId);
+            this.logger.log(`logFork for dashboard ${resp.newDashboardId} finished.`)
 
             resp.msg = 'success';
         }
@@ -167,10 +217,9 @@ export class ForkService {
 
     //duplicate question
     async forkQuestion(request: Request, param: ForkQuestionRequest, accountId: string): Promise<ForkQuestionResponse> {
-        let originalQuestionId = param.originalQuestionId;
-        let targetDashboardId = param.targetDashboardId;
+        let targetCollectionId = AppConfig.DASHBOARD_PUBLIC_COLLECTION_ID;
 
-        let resp: ForkQuestionResponse = await this.mbConnectService.copyQuestion(originalQuestionId, targetDashboardId, accountId);
+        let resp: ForkQuestionResponse = await this.mbConnectService.copyQuestion(param, targetCollectionId, accountId);
 
         return resp;
     }
