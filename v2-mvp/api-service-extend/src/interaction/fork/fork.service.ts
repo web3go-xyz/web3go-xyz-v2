@@ -15,12 +15,15 @@ import { Request } from 'express';
 import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
 import { ForkQuestionRequest } from './model/ForkQuestionRequest';
 import { ForkQuestionResponse } from './model/ForkQuestionResponse';
+import { AccountBaseService } from 'src/account/base/account-base.service';
+import { MBConnectService } from 'src/mb-connect/mb-connect.service';
 @Injectable()
 export class ForkService {
 
 
     logger: W3Logger;
     constructor(
+        private readonly mbConnectService: MBConnectService,
         private readonly eventService: EventService,
         private readonly jwtService: JWTAuthService,
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_FORK_LOG_REPOSITORY.provide)
@@ -162,9 +165,14 @@ export class ForkService {
         return resp;
     }
 
-    //TODO  duplicate question
+    //duplicate question
     async forkQuestion(request: Request, param: ForkQuestionRequest, accountId: string): Promise<ForkQuestionResponse> {
-        throw new Error('Method not implemented.');
+        let originalQuestionId = param.originalQuestionId;
+        let targetDashboardId = param.targetDashboardId;
+
+        let resp: ForkQuestionResponse = await this.mbConnectService.copyQuestion(originalQuestionId, targetDashboardId, accountId);
+
+        return resp;
     }
 
 }
