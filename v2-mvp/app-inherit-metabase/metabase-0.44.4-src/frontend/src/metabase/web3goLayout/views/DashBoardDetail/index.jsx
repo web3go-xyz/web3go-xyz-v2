@@ -60,7 +60,13 @@ class Component extends React.Component {
         if (!this.props.currentUser) {
             return;
         }
-        LayoutDashboardApi.listMyFavorites().then(d => {
+        LayoutDashboardApi.listMyFavorites({
+            "pageSize": 9999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "accountId": this.props.userData.account.accountId,
+            "searchName": ""
+        }).then(d => {
             this.setState({
                 favouriteList: d.list
             });
@@ -142,39 +148,46 @@ class Component extends React.Component {
             bgcolor: 'rgb(250,251,252)',
         })
             .then((dataUrl) => {
-                const canvas1 = document.createElement("canvas");
-                // const canvas1 = document.getElementById("myCanvas");
-                // 设置宽高
-                canvas1.width = el.offsetWidth; //注意：没有单位
-                canvas1.height = el.offsetHeight; //注意：没有单位
-                const initalImg = new Image();
-                initalImg.crossOrigin = "anonymous"
-                initalImg.src = dataUrl; //由于图片异步加载，一定要等initalImg加载好，再设置src属性
-                initalImg.onload = () => {
-                    const iconImg = new Image();
-                    iconImg.crossOrigin = "anonymous"
-                    iconImg.src = require("@/web3goLayout/assets/layout/logo-white.png");
-                    iconImg.onload = () => {
-                        const ctx = canvas1.getContext("2d");
-                        // 绘制图片
-                        ctx.drawImage(initalImg, 0, 0);
-                        //水印文字添加
-                        // ctx.font = "14px Calibri";
-                        // ctx.fillStyle = "rgba(0,0,0,0.8)";
-                        // ctx.fillText("水印文字", 0, 14);
-                        // 绘制水印
-                        ctx.globalAlpha = 0.2;
-                        ctx.drawImage(iconImg, 0, el.offsetHeight - 68, 255, 68);
-                        const url = canvas1.toDataURL();
-                        var link = document.createElement('a');
-                        link.download = this.state.detailData.name + '.png';
-                        link.href = url;
-                        link.click();
-                        this.setState({
-                            screenShortLoading: false
-                        });
-                    };
-                };
+                var link = document.createElement('a');
+                link.download = this.state.detailData.name + '.png';
+                link.href = dataUrl;
+                link.click();
+                this.setState({
+                    screenShortLoading: false
+                });
+                // const canvas1 = document.createElement("canvas");
+                // // const canvas1 = document.getElementById("myCanvas");
+                // // 设置宽高
+                // canvas1.width = el.offsetWidth; //注意：没有单位
+                // canvas1.height = el.offsetHeight; //注意：没有单位
+                // const initalImg = new Image();
+                // initalImg.crossOrigin = "anonymous"
+                // initalImg.src = dataUrl; //由于图片异步加载，一定要等initalImg加载好，再设置src属性
+                // initalImg.onload = () => {
+                //     const iconImg = new Image();
+                //     iconImg.crossOrigin = "anonymous"
+                //     iconImg.src = require("@/web3goLayout/assets/layout/logo-white.png");
+                //     iconImg.onload = () => {
+                //         const ctx = canvas1.getContext("2d");
+                //         // 绘制图片
+                //         ctx.drawImage(initalImg, 0, 0);
+                //         //水印文字添加
+                //         // ctx.font = "14px Calibri";
+                //         // ctx.fillStyle = "rgba(0,0,0,0.8)";
+                //         // ctx.fillText("水印文字", 0, 14);
+                //         // 绘制水印
+                //         ctx.globalAlpha = 0.2;
+                //         ctx.drawImage(iconImg, 0, el.offsetHeight - 68, 255, 68);
+                //         const url = canvas1.toDataURL();
+                //         var link = document.createElement('a');
+                //         link.download = this.state.detailData.name + '.png';
+                //         link.href = url;
+                //         link.click();
+                //         this.setState({
+                //             screenShortLoading: false
+                //         });
+                //     };
+                // };
             });
     }
     handleRefresh = () => {

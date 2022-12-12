@@ -187,22 +187,35 @@ class Component extends React.Component {
         }
     }
     getMyFavourites = () => {
+        // 查该用户的总收藏数
+        LayoutDashboardApi.listFavorites({
+            "pageSize": 9999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "accountId": this.props.accountId,
+            "searchName": ""
+        }).then(d => {
+            if (this.props.setMyFavouriteCount) {
+                this.props.setMyFavouriteCount(d.totalCount);
+            }
+        });
         if (!this.props.userData.account) {
             this.getList();
             return;
         }
-        LayoutDashboardApi.listMyFavorites().then(d => {
+        // 查自己的总收藏数
+        LayoutDashboardApi.listFavorites({
+            "pageSize": 9999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "accountId": this.props.userData.account.accountId,
+            "searchName": ""
+        }).then(d => {
             this.setState({
                 favouriteList: d.list
             }, () => {
-                // if (!d.list.length) {
-                //     return;
-                // }
                 this.getList();
             });
-            if (this.props.setMyFavouriteCount) {
-                this.props.setMyFavouriteCount(d.totalCount);
-            }
         });
     }
     openShareModal = (record) => {
@@ -295,16 +308,17 @@ class Component extends React.Component {
                 pagination: { ...this.state.pagination, current: 1 }
             });
         }
-        if (this.props.isFavourite && !this.state.favouriteList.length) {
-            this.setState({
-                loading: false,
-                tableData: [],
-                pagination: { ...this.state.pagination, total: 0 }
-            });
-            return;
-        }
+        // if (this.props.isFavourite && !this.state.favouriteList.length) {
+        //     this.setState({
+        //         loading: false,
+        //         tableData: [],
+        //         pagination: { ...this.state.pagination, total: 0 }
+        //     });
+        //     return;
+        // }
         this.setState({ loading: true });
-        LayoutDashboardApi.list({
+        const request = this.props.isFavourite ? LayoutDashboardApi.listFavorites : LayoutDashboardApi.list;
+        request({
             "pageSize": this.state.pagination.pageSize,
             "pageIndex": turnFirstPage ? 1 : this.state.pagination.current,
             "orderBys": this.state.tableSort.field ? [{
@@ -314,15 +328,37 @@ class Component extends React.Component {
             "tagIds": [],
             "searchName": this.props.searchValue,
             "creator": this.props.isFavourite ? '' : this.props.accountId,
-            "dashboardIds": this.props.isFavourite ? this.state.favouriteList.map(v => v.dashboardId) : []
+            "dashboardIds": [],
+            "accountId": this.props.isFavourite ? this.props.accountId : "",
         }).then(d => {
-            this.setState({
-                loading: false,
-                tableData: d.list,
-                pagination: { ...this.state.pagination, total: d.totalCount }
-            });
             if (!this.props.isFavourite) {
                 this.props.setDashboardListCount(d.totalCount);
+            }
+            const resolveDashboardData = (list) => {
+                this.setState({
+                    loading: false,
+                    tableData: list,
+                    pagination: { ...this.state.pagination, total: d.totalCount }
+                });
+            }
+            if (this.props.isFavourite) {
+                if (!d.list.length) {
+                    resolveDashboardData([]);
+                    return;
+                }
+                LayoutDashboardApi.list({
+                    "pageSize": 999999999,
+                    "pageIndex": 1,
+                    "orderBys": [],
+                    "tagIds": [],
+                    "searchName": '',
+                    "creator": '',
+                    "dashboardIds": d.list.map(v => v.dashboardId),
+                }).then(d2 => {
+                    resolveDashboardData(d2.list);
+                })
+            } else {
+                resolveDashboardData(d.list);
             }
         });
     }
