@@ -125,7 +125,7 @@ export class ReportDashboard {
   // creator: CoreUser;
 
   @Column("integer", { name: "made_public_by_id", nullable: true })
-  made_public_by_id: CoreUser;
+  made_public_by_id: number;
 
   @OneToMany(
     () => ReportDashboardcard,

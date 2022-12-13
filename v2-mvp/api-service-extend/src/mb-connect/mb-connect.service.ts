@@ -90,7 +90,7 @@ export class MBConnectService {
     generateRandomPublicId() {
         return (uuidv4().toString());
     }
-    async copyQuestion(param: ForkQuestionRequest, targetCollectionId: number, accountId: string,): Promise<ForkQuestionResponse> {
+    async copyQuestion(param: ForkQuestionRequest, targetCollectionId: number, accountId: string, enablePublic: boolean): Promise<ForkQuestionResponse> {
         let originalQuestionId = param.originalQuestionId;
         let targetDashboardId = param.targetDashboardId;
 
@@ -134,12 +134,18 @@ export class MBConnectService {
                 ...originalCard,
                 id: 0,
                 entityId: this.generateRandomEntityId(),
-                publicUuid: this.generateRandomPublicId(),
                 createdAt: time,
                 updatedAt: time,
                 creatorId: account.id,
-                collectionId: targetCollectionId
+                collectionId: targetCollectionId,
             });
+            if (enablePublic === true) {
+                newCard.made_public_by_id = account.id;
+                newCard.publicUuid = this.generateRandomPublicId();
+            } else {
+                newCard.made_public_by_id = null;
+                newCard.publicUuid = null;
+            }
 
 
             //this.logger.warn(newCard);
@@ -174,7 +180,7 @@ export class MBConnectService {
     }
 
 
-    async copyDashboard(param: ForkDashboardRequest, targetCollectionId: number, accountId: string): Promise<ForkDashboardResponse> {
+    async copyDashboard(param: ForkDashboardRequest, targetCollectionId: number, accountId: string, enablePublic: boolean): Promise<ForkDashboardResponse> {
         let resp: ForkDashboardResponse = { newDashboardId: null, newCardIds: [], msg: null };
 
         let originalDashboardId = param.originalDashboardId;
@@ -227,10 +233,16 @@ export class MBConnectService {
                 creatorId: account.id,
                 collectionId: targetCollectionId,
                 name: param.new_dashboard_name,
-                description: param.description,
-                publicUuid: this.generateRandomPublicId()
+                description: param.description, 
             });
-          
+            if (enablePublic === true) {
+                newDashboard.made_public_by_id = account.id;
+                newDashboard.publicUuid = this.generateRandomPublicId();
+            } else {
+                newDashboard.made_public_by_id = null;
+                newDashboard.publicUuid = null;
+            }
+
             this.logger.warn(newDashboard);
             await transactionalEntityManager.save<ReportDashboard>(newDashboard);
             resp.newDashboardId = newDashboard.id;
@@ -249,6 +261,13 @@ export class MBConnectService {
                         creatorId: account.id,
                         collectionId: targetCollectionId
                     });
+                    if (enablePublic === true) {
+                        newCard.made_public_by_id = account.id;
+                        newCard.publicUuid = this.generateRandomPublicId();
+                    } else {
+                        newCard.made_public_by_id = null;
+                        newCard.publicUuid = null;
+                    }
 
                     //this.logger.warn(newCard);
                     await transactionalEntityManager.save<ReportCard>(newCard);

@@ -166,39 +166,15 @@ export class ForkService {
         return resp;
     }
 
-    //TODO  duplicate dashboard + all questions
+    //duplicate dashboard + all questions
     async forkDashboard(request: Request, param: ForkDashboardRequest, accountId: string): Promise<ForkDashboardResponse> {
 
         let targetCollectionId = AppConfig.DASHBOARD_PUBLIC_COLLECTION_ID;
 
-        let resp: ForkDashboardResponse = await this.mbConnectService.copyDashboard(param, targetCollectionId, accountId);
+        let enablePublic = true;
+        let resp: ForkDashboardResponse = await this.mbConnectService.copyDashboard(param, targetCollectionId, accountId, enablePublic);
 
         if (resp.newDashboardId) {
-            const axios = require('axios').default;
-            let cookie = this.jwtService.extractXCookieFromHttpRequest(request);
-
-            //update dashboard as public
-            let api_enable_public_link = `${AppConfig.BASE_METABASE_API_URL}/dashboard/${resp.newDashboardId}/public_link`;
-            let options_public_link = {
-                method: 'POST',
-                url: api_enable_public_link,
-                headers: {
-                    Cookie: cookie
-                }
-            };
-            const { data: data_pl, status: status_pl } = await axios.request(options_public_link);
-            console.log(`response_public_link:`, data_pl);
-            if (status_pl === 200 && data_pl) {
-                //sample response data
-                // {
-                //     "uuid": "0098cb46-53b0-4fa7-b1ec-c054dc28d3c4"
-                // }
-                let uuid = data_pl.uuid || '';
-                this.logger.log(`public uuid for dashboard ${resp.newDashboardId}: ${uuid}`);
-            }
-            else {
-                throw new Error(`update public uuid dashboard ${resp.newDashboardId} failed`);
-            }
 
             //sync dashboard
             await this.eventService.syncDashboard(resp.newDashboardId);
@@ -219,7 +195,8 @@ export class ForkService {
     async forkQuestion(request: Request, param: ForkQuestionRequest, accountId: string): Promise<ForkQuestionResponse> {
         let targetCollectionId = AppConfig.DASHBOARD_PUBLIC_COLLECTION_ID;
 
-        let resp: ForkQuestionResponse = await this.mbConnectService.copyQuestion(param, targetCollectionId, accountId);
+        let enablePublic = true;
+        let resp: ForkQuestionResponse = await this.mbConnectService.copyQuestion(param, targetCollectionId, accountId, enablePublic);
 
         return resp;
     }
