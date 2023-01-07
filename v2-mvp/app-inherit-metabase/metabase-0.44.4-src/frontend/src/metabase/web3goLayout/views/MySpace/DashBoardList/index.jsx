@@ -239,7 +239,7 @@ class Component extends React.Component {
             new_dashboard_name: newName
         }).then(d => {
             const slug = slugg(newName);
-            const suffix = slug ? `${d.forkedDashboardId}-${slug}` : d.forkedDashboardId;
+            const suffix = slug ? `${d.newDashboardId}-${slug}` : d.newDashboardId;
             this.props.push(`/dashboard/${suffix}`);
         })
     }
