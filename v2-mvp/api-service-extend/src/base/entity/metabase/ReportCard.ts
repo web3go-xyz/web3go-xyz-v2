@@ -136,39 +136,15 @@ export class ReportCard {
   @OneToMany(() => PulseCard, (pulseCard) => pulseCard.card)
   pulseCards: PulseCard[];
 
-  @ManyToOne(() => Collection, (collection) => collection.reportCards, {
-    onDelete: "SET NULL",
-  })
-  @JoinColumn([{ name: "collection_id", referencedColumnName: "id" }])
-  collection: Collection;
+ 
+  @Column("integer", { name: "database_id" }) 
+  database_id: number;
 
-  @ManyToOne(() => CoreUser, (coreUser) => coreUser.reportCards, {
-    onDelete: "CASCADE",
-  })
-  @JoinColumn([{ name: "creator_id", referencedColumnName: "id" }])
-  creator: CoreUser;
+  @Column("integer", { name: "made_public_by_id" })  
+  made_public_by_id: number;
 
-  @ManyToOne(
-    () => MetabaseDatabase,
-    (metabaseDatabase) => metabaseDatabase.reportCards,
-    { onDelete: "CASCADE" }
-  )
-  @JoinColumn([{ name: "database_id", referencedColumnName: "id" }])
-  database: MetabaseDatabase;
-
-  @ManyToOne(() => CoreUser, (coreUser) => coreUser.reportCards2, {
-    onDelete: "CASCADE",
-  })
-  @JoinColumn([{ name: "made_public_by_id", referencedColumnName: "id" }])
-  madePublicBy: CoreUser;
-
-  @ManyToOne(
-    () => MetabaseTable,
-    (metabaseTable) => metabaseTable.reportCards,
-    { onDelete: "CASCADE" }
-  )
-  @JoinColumn([{ name: "table_id", referencedColumnName: "id" }])
-  table: MetabaseTable;
+  @Column("integer", { name: "table_id" })   
+  table_id: number;
 
   @OneToMany(
     () => ReportCardfavorite,

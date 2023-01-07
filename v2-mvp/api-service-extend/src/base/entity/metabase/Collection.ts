@@ -99,12 +99,12 @@ export class Collection {
   @OneToMany(() => Pulse, (pulse) => pulse.collection)
   pulses: Pulse[];
 
-  @OneToMany(() => ReportCard, (reportCard) => reportCard.collection)
+  @OneToMany(() => ReportCard, (reportCard) => reportCard.collectionId)
   reportCards: ReportCard[];
 
   @OneToMany(
     () => ReportDashboard,
-    (reportDashboard) => reportDashboard.collection
+    (reportDashboard) => reportDashboard.collectionId
   )
   reportDashboards: ReportDashboard[];
 

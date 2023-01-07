@@ -106,6 +106,6 @@ export class MetabaseDatabase {
   @OneToMany(() => PersistedInfo, (persistedInfo) => persistedInfo.database)
   persistedInfos: PersistedInfo[];
 
-  @OneToMany(() => ReportCard, (reportCard) => reportCard.database)
+  @OneToMany(() => ReportCard, (reportCard) => reportCard.database_id)
   reportCards: ReportCard[];
 }

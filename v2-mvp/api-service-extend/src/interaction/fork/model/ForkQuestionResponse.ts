@@ -7,7 +7,7 @@ export class ForkQuestionResponse {
 
     @ApiProperty({ required: true })
     @IsNotEmpty()
-    forkedQuestionId: number;
+    newQuestionId: number;
 
 
     @ApiProperty()
