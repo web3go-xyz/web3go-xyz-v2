@@ -1,8 +1,10 @@
 /* eslint-disable react/prop-types */
 import React from "react";
+import slugg from "slugg";
+
 import { connect } from "react-redux";
 import './index.less';
-import { Form, Input, Button, Grid, Select, InputNumber, Tooltip, Space, Modal } from '@arco-design/web-react';
+import { Form, Input, Button, Grid, Select, InputNumber, Tooltip, Space, Modal,Message } from '@arco-design/web-react';
 import { toggleDark } from "metabase/redux/app";
 import { push } from "react-router-redux";
 import { IconPlus } from '@arco-design/web-react/icon';
@@ -26,22 +28,37 @@ class Component extends React.Component {
         super(props);
         this.state = {
             visible: false,
-            info: ''
+            cardData: ''
         }
         this.formRef = React.createRef();
     }
     componentDidMount() {
         this.props.onRef(this)
     }
-    init = (info) => {
+    init = (cardData) => {
         this.setState({
-            info,
+            cardData,
             visible: true
         })
+        if (this.formRef.current) {
+            this.formRef.current.resetFields();
+        }
     }
     sure = () => {
         this.formRef.current.validate().then((form) => {
-
+            LayoutDashboardApi.forkQuestion({
+                "originalQuestionId": this.state.cardData.card_id,
+                "targetDashboardId": form.dashboardId
+            }).then(d => {
+                Message.success('Fork question success');
+                this.setState({
+                    visible: false
+                })
+                // const dashboardData = this.props.myDashboardList.find(v => v.v.id == form.dashboardId)
+                // const slug = slugg(dashboardData.name);
+                // const suffix = slug ? `${form.dashboardId}-${slug}` : form.dashboardId;
+                // this.props.push(`/dashboard/${suffix}`);
+            })
         })
     }
     render() {
