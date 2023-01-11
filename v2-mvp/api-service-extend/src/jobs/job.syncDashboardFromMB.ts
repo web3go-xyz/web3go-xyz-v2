@@ -24,9 +24,12 @@ export class Job_SyncDashboardFromMB {
     ) {
         this.logger = new W3Logger(`Job_SyncDashboardFromMB`);
     }
-    @Cron(CronConstants.DEBUG_SYNC_DASHBOARD_FROM_MB_INTERVAL)
+    @Cron(CronConstants.DEBUG_SYNC_DASHBOARD_FROM_MB_INTERVAL.cron)
     async cron_syncDashboardFromMB(): Promise<any> {
-
+        if (!CronConstants.DEBUG_SYNC_DASHBOARD_FROM_MB_INTERVAL.enabled) {
+            this.logger.warn("cron job [Job_SyncDashboardFromMB] is not enabled, aborting job...");
+            return;
+        }
         if (this.isJobRunning) {
             this.logger.warn("cron job [Job_SyncDashboardFromMB] is running, aborting new job...");
             return;

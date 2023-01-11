@@ -27,9 +27,9 @@
   public static DASHBOARD_PUBLIC_COLLECTION_ID: number = Number(process.env.DASHBOARD_PUBLIC_COLLECTION_ID || '1');
 
   public static redisOption = {
-    port: Number(process.env.REDIS_PORT || 6379),
+    port: Number(process.env.REDIS_PORT || 6389),
     host: process.env.REDIS_HOST || 'localhost',
-    password: process.env.REDIS_PASSWORD || 'redis123',
+    password: process.env.REDIS_PASSWORD || 'web3go#r1e2d3i4s5',
     db: 0,
   };
 
