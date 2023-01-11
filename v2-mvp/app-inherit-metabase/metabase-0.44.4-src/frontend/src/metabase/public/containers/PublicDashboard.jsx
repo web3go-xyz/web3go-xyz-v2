@@ -12,6 +12,7 @@ import DashboardControls from "metabase/dashboard/hoc/DashboardControls";
 import { getDashboardActions } from "metabase/dashboard/components/DashboardActions";
 import EmbedFrame from "../components/EmbedFrame";
 import title from "metabase/hoc/Title";
+import event from '@/web3goLayout/event';
 
 import { fetchDatabaseMetadata } from "metabase/redux/metadata";
 import { setErrorPage } from "metabase/redux/app";
@@ -78,11 +79,15 @@ class PublicDashboard extends Component {
     initialize();
     try {
       const dashboardData = await fetchDashboard(uuid || token, location.query);
+      if (this.props.getDashboardOriginId) {
+        this.props.getDashboardOriginId(dashboardData.payload.originDashboardId)
+      }
       await LayoutDashboardApi.logView({
         dashboardId: dashboardData.payload.originDashboardId,
         referralCode: this.props.route.query.referralCode || ''
       });
       await fetchDashboardCardData({ reload: false, clear: true });
+
     } catch (error) {
       console.error(error);
       setErrorPage(error);

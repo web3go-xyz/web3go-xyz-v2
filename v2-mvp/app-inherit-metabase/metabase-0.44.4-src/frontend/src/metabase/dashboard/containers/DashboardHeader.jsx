@@ -324,13 +324,13 @@ class DashboardHeader extends Component {
       buttons.push(
         ...[
           <DashboardHeaderActionDivider key="dashboard-button-divider" />,
-          <DashboardBookmark
-            key="dashboard-bookmark-button"
-            dashboard={dashboard}
-            onCreateBookmark={createBookmark}
-            onDeleteBookmark={deleteBookmark}
-            isBookmarked={isBookmarked}
-          />,
+          // <DashboardBookmark
+          //   key="dashboard-bookmark-button"
+          //   dashboard={dashboard}
+          //   onCreateBookmark={createBookmark}
+          //   onDeleteBookmark={deleteBookmark}
+          //   isBookmarked={isBookmarked}
+          // />,
           <Tooltip key="dashboard-info-button" tooltip={t`More info`}>
             <DashboardHeaderButton
               icon="info"

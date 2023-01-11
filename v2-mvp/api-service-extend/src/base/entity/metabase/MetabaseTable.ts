@@ -126,7 +126,7 @@ export class MetabaseTable {
   @OneToMany(() => Metric, (metric) => metric.table)
   metrics: Metric[];
 
-  @OneToMany(() => ReportCard, (reportCard) => reportCard.table)
+  @OneToMany(() => ReportCard, (reportCard) => reportCard.table_id)
   reportCards: ReportCard[];
 
   @OneToMany(() => Segment, (segment) => segment.table)

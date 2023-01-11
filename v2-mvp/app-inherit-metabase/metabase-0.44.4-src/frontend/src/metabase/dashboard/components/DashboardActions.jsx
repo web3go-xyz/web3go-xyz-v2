@@ -49,18 +49,18 @@ export const getDashboardActions = (
 
   if (!isEditing && !isEmpty && !isPublic) {
     // Getting notifications with static text-only cards doesn't make a lot of sense
-    if (canCreateSubscription && !isFullscreen) {
-      buttons.push(
-        <Tooltip tooltip={t`Subscriptions`} key="dashboard-subscriptions">
-          <DashboardHeaderButton
-            icon="subscription"
-            disabled={!canManageSubscriptions}
-            onClick={onSharingClick}
-            data-metabase-event="Dashboard;Subscriptions"
-          />
-        </Tooltip>,
-      );
-    }
+    // if (canCreateSubscription && !isFullscreen) {
+    //   buttons.push(
+    //     <Tooltip tooltip={t`Subscriptions`} key="dashboard-subscriptions">
+    //       <DashboardHeaderButton
+    //         icon="subscription"
+    //         disabled={!canManageSubscriptions}
+    //         onClick={onSharingClick}
+    //         data-metabase-event="Dashboard;Subscriptions"
+    //       />
+    //     </Tooltip>,
+    //   );
+    // }
 
     if (canShareDashboard) {
       // buttons.push(
@@ -97,53 +97,53 @@ export const getDashboardActions = (
       // );
 
       // fix:commonUser also can share
-      buttons.push(
-        <DashboardSharingEmbeddingModal
-          key="dashboard-embed"
-          additionalClickActions={() => self.refs.popover.close()}
-          dashboard={dashboard}
-          enabled={
-            !isEditing &&
-            !isFullscreen &&
-            isPublicLinksEnabled &&
-            isEmbeddingEnabled
-          }
-          isLinkEnabled={canShareDashboard}
-          linkText={
-            <Tooltip
-              isLinkEnabled={canShareDashboard}
-              tooltip={
-                canShareDashboard
-                  ? t`Sharing`
-                  : t`Add data to share this dashboard`
-              }
-            >
-              <DashboardHeaderButton
-                icon="share"
-                className={cx({
-                  "text-brand-hover": canShareDashboard,
-                  "text-light": !canShareDashboard,
-                })}
-              />
-            </Tooltip>
-          }
-        />,
-      );
+      // buttons.push(
+      //   <DashboardSharingEmbeddingModal
+      //     key="dashboard-embed"
+      //     additionalClickActions={() => self.refs.popover.close()}
+      //     dashboard={dashboard}
+      //     enabled={
+      //       !isEditing &&
+      //       !isFullscreen &&
+      //       isPublicLinksEnabled &&
+      //       isEmbeddingEnabled
+      //     }
+      //     isLinkEnabled={canShareDashboard}
+      //     linkText={
+      //       <Tooltip
+      //         isLinkEnabled={canShareDashboard}
+      //         tooltip={
+      //           canShareDashboard
+      //             ? t`Sharing`
+      //             : t`Add data to share this dashboard`
+      //         }
+      //       >
+      //         <DashboardHeaderButton
+      //           icon="share"
+      //           className={cx({
+      //             "text-brand-hover": canShareDashboard,
+      //             "text-light": !canShareDashboard,
+      //           })}
+      //         />
+      //       </Tooltip>
+      //     }
+      //   />,
+      // );
     }
   }
 
-  if (!isEditing && !isEmpty) {
-    buttons.push(
-      <RefreshWidget
-        key="refresh"
-        data-metabase-event="Dashboard;Refresh Menu Open"
-        className="text-brand-hover"
-        period={refreshPeriod}
-        setRefreshElapsedHook={setRefreshElapsedHook}
-        onChangePeriod={onRefreshPeriodChange}
-      />,
-    );
-  }
+  // if (!isEditing && !isEmpty) {
+  //   buttons.push(
+  //     <RefreshWidget
+  //       key="refresh"
+  //       data-metabase-event="Dashboard;Refresh Menu Open"
+  //       className="text-brand-hover"
+  //       period={refreshPeriod}
+  //       setRefreshElapsedHook={setRefreshElapsedHook}
+  //       onChangePeriod={onRefreshPeriodChange}
+  //     />,
+  //   );
+  // }
 
   if (!isEditing && isFullscreen && hasNightModeToggle) {
     buttons.push(

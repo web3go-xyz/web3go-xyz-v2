@@ -12,6 +12,9 @@ import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 import { numberSplit } from '@/web3goLayout/utils';
 import { LayoutLoginApi, LayoutDashboardApi, LayoutCreatorApi } from '@/services';
 import DashBoardList from '@/web3goLayout/components/DashBoardList';
+import { Link } from "react-router";
+
+
 const mapStateToProps = state => {
     return {
         userData: state.app.userData,
@@ -153,6 +156,9 @@ class Component extends React.Component {
             this.listMyFollows();
         });
     }
+    goMySpace = (accountId) => {
+        this.props.push(`/layout/mySpace?accountId=${accountId}`);
+    }
     handleUnfollow = (v) => {
         const newCreatorList = JSON.parse(JSON.stringify(this.state.creatorList));
         this.followLoading(v);
@@ -252,10 +258,14 @@ class Component extends React.Component {
                                             <img src={require("@/web3goLayout/assets/home/info33.png")} alt="" />
                                     }
                                 </div>
-                                <div className="btn hover-item" onClick={() => { this.props.push('/home'); }}>
-                                    <img src={require("@/web3goLayout/assets/home/add.png")} alt="" />
-                                    <span>New Dashboard</span>
-                                </div>
+                                <Link
+                                    to="/home"
+                                >
+                                    <div className="btn hover-item">
+                                        <img src={require("@/web3goLayout/assets/home/add.png")} alt="" />
+                                        <span>New Dashboard</span>
+                                    </div>
+                                </Link>
                             </div >
                         )
                     }
@@ -284,13 +294,13 @@ class Component extends React.Component {
                                 {this.state.creatorList.slice(0, 6).map((v, i) => (
                                     <div key={i} className={"item" + (i == 0 ? ' active' : '')}>
                                         <div className="i-top">
-                                            <div className="headicon-wrap">
+                                            <div className="headicon-wrap hover-item" onClick={() => this.goMySpace(v.accountId)}>
                                                 <img className="icon" src={require(`@/web3goLayout/assets/home/${i + 1}.png`)} alt="" />
                                                 <span className="rank">{i + 1}</span>
                                                 <UserHeadIcon className="headicon" iconSize={64} fontSize={18} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
                                             </div>
                                             <div className="it-right">
-                                                <div className="name" title={v.nickName}>{v.nickName}</div>
+                                                <div className="name hover-primary" onClick={() => this.goMySpace(v.accountId)} title={v.nickName}>{v.nickName}</div>
                                                 <div className="btn-wrap">
                                                     {
                                                         v.loading ? (

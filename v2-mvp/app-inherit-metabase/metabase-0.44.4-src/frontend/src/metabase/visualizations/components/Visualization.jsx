@@ -67,7 +67,7 @@ class Visualization extends React.PureComponent {
     isEditing: false,
     isSettings: false,
     isQueryBuilder: false,
-    onUpdateVisualizationSettings: () => {},
+    onUpdateVisualizationSettings: () => { },
     // prefer passing in a function that doesn't cause the application to reload
     onChangeLocation: location => {
       window.location = location;
@@ -228,9 +228,9 @@ class Visualization extends React.PureComponent {
 
     return mode
       ? mode.actionsForClick(
-          { ...clicked, extraData: getExtraDataForClick(clicked) },
-          {},
-        )
+        { ...clicked, extraData: getExtraDataForClick(clicked) },
+        {},
+      )
       : [];
   }
 
@@ -254,8 +254,7 @@ class Visualization extends React.PureComponent {
       MetabaseAnalytics.trackStructEvent(
         "Actions",
         "Clicked",
-        `${clicked.column ? "column" : ""} ${clicked.value ? "value" : ""} ${
-          clicked.dimensions ? "dimensions=" + clicked.dimensions.length : ""
+        `${clicked.column ? "column" : ""} ${clicked.value ? "value" : ""} ${clicked.dimensions ? "dimensions=" + clicked.dimensions.length : ""
         }`,
       );
     }
@@ -310,6 +309,7 @@ class Visualization extends React.PureComponent {
 
   render() {
     const {
+      titleOperation,
       actionButtons,
       className,
       dashcard,
@@ -455,6 +455,8 @@ class Visualization extends React.PureComponent {
         {!!hasHeader && (
           <div className="p1 flex-no-shrink">
             <ChartCaption
+              dashcard={dashcard}
+              titleOperation={titleOperation}
               series={series}
               settings={settings}
               icon={headerIcon}
@@ -470,81 +472,81 @@ class Visualization extends React.PureComponent {
         {replacementContent ? (
           replacementContent
         ) : // on dashboards we should show the "No results!" warning if there are no rows or there's a MinRowsError and actualRows === 0
-        isDashboard && noResults ? (
-          <div
-            className={
-              "flex-full px1 pb1 text-centered flex flex-column layout-centered " +
-              (isDashboard ? "text-slate-light" : "text-slate")
-            }
-          >
-            <Tooltip tooltip={t`No results!`} isEnabled={small}>
-              <img data-testid="no-results-image" src={NoResults} />
-            </Tooltip>
-            {!small && <span className="h4 text-bold">{t`No results!`}</span>}
-          </div>
-        ) : error ? (
-          <div
-            className={
-              "flex-full px1 pb1 text-centered flex flex-column layout-centered " +
-              (isDashboard ? "text-slate-light" : "text-slate")
-            }
-          >
-            <Tooltip tooltip={error} isEnabled={small}>
-              <Icon className="mb2" name={errorIcon || "warning"} size={50} />
-            </Tooltip>
-            {!small && <span className="h4 text-bold">{error}</span>}
-          </div>
-        ) : loading ? (
-          <div className="flex-full p1 text-centered text-brand flex flex-column layout-centered">
-            {isSlow ? (
-              <div className="text-slate">
-                <div className="h4 text-bold mb1">{t`Still Waiting...`}</div>
-                {isSlow === "usually-slow" ? (
-                  <div>
-                    {jt`This usually takes an average of ${(
-                      <span style={{ whiteSpace: "nowrap" }}>
-                        {duration(expectedDuration)}
-                      </span>
-                    )}.`}
-                    <br />
-                    {t`(This is a bit long for a dashboard)`}
-                  </div>
-                ) : (
-                  <div>
-                    {t`This is usually pretty fast but seems to be taking a while right now.`}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <LoadingSpinner className="text-slate" />
-            )}
-          </div>
-        ) : (
-          <CardVisualization
-            {...this.props}
-            // NOTE: CardVisualization class used to target ExplicitSize HOC
-            className="CardVisualization flex-full flex-basis-none"
-            series={series}
-            settings={settings}
-            card={series[0].card} // convenience for single-series visualizations
-            data={series[0].data} // convenience for single-series visualizations
-            hovered={hovered}
-            clicked={clicked}
-            headerIcon={hasHeader ? null : headerIcon}
-            onHoverChange={this.handleHoverChange}
-            onVisualizationClick={this.handleVisualizationClick}
-            visualizationIsClickable={this.visualizationIsClickable}
-            onRenderError={this.onRenderError}
-            onRender={this.onRender}
-            onActionDismissal={this.hideActions}
-            gridSize={gridSize}
-            onChangeCardAndRun={
-              this.props.onChangeCardAndRun
-                ? this.handleOnChangeCardAndRun
-                : null
-            }
-          />
-        )}
+          isDashboard && noResults ? (
+            <div
+              className={
+                "flex-full px1 pb1 text-centered flex flex-column layout-centered " +
+                (isDashboard ? "text-slate-light" : "text-slate")
+              }
+            >
+              <Tooltip tooltip={t`No results!`} isEnabled={small}>
+                <img data-testid="no-results-image" src={NoResults} />
+              </Tooltip>
+              {!small && <span className="h4 text-bold">{t`No results!`}</span>}
+            </div>
+          ) : error ? (
+            <div
+              className={
+                "flex-full px1 pb1 text-centered flex flex-column layout-centered " +
+                (isDashboard ? "text-slate-light" : "text-slate")
+              }
+            >
+              <Tooltip tooltip={error} isEnabled={small}>
+                <Icon className="mb2" name={errorIcon || "warning"} size={50} />
+              </Tooltip>
+              {!small && <span className="h4 text-bold">{error}</span>}
+            </div>
+          ) : loading ? (
+            <div className="flex-full p1 text-centered text-brand flex flex-column layout-centered">
+              {isSlow ? (
+                <div className="text-slate">
+                  <div className="h4 text-bold mb1">{t`Still Waiting...`}</div>
+                  {isSlow === "usually-slow" ? (
+                    <div>
+                      {jt`This usually takes an average of ${(
+                        <span style={{ whiteSpace: "nowrap" }}>
+                          {duration(expectedDuration)}
+                        </span>
+                      )}.`}
+                      <br />
+                      {t`(This is a bit long for a dashboard)`}
+                    </div>
+                  ) : (
+                    <div>
+                      {t`This is usually pretty fast but seems to be taking a while right now.`}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <LoadingSpinner className="text-slate" />
+              )}
+            </div>
+          ) : (
+            <CardVisualization
+              {...this.props}
+              // NOTE: CardVisualization class used to target ExplicitSize HOC
+              className="CardVisualization flex-full flex-basis-none"
+              series={series}
+              settings={settings}
+              card={series[0].card} // convenience for single-series visualizations
+              data={series[0].data} // convenience for single-series visualizations
+              hovered={hovered}
+              clicked={clicked}
+              headerIcon={hasHeader ? null : headerIcon}
+              onHoverChange={this.handleHoverChange}
+              onVisualizationClick={this.handleVisualizationClick}
+              visualizationIsClickable={this.visualizationIsClickable}
+              onRenderError={this.onRenderError}
+              onRender={this.onRender}
+              onActionDismissal={this.hideActions}
+              gridSize={gridSize}
+              onChangeCardAndRun={
+                this.props.onChangeCardAndRun
+                  ? this.handleOnChangeCardAndRun
+                  : null
+              }
+            />
+          )}
         <ChartTooltip series={series} hovered={hovered} settings={settings} />
         {this.props.onChangeCardAndRun && (
           <ChartClickActions

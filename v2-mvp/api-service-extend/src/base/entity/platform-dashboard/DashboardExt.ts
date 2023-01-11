@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, Index } from 'typeorm';
 
 @Entity("dashboard_ext", { schema: "public" })
+@Index("idx_dashboard_ext_creatorAccountId", ["creatorAccountId"], { unique: false })
 export class DashboardExt {
     @PrimaryColumn({
         type: "integer",

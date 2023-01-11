@@ -74,10 +74,24 @@ class Component extends React.Component {
     }
     sure = () => {
         this.formRef.current.validate().then((form) => {
-            this.setState({
-                visible: false
+            LayoutLoginApi.searchAccountsByEmail({
+                filter: form.email.toLowerCase(),
+            }).then(d => {
+                if (d.length) {
+                    const accountId = d[0].accountId;
+                    LayoutLoginApi.verifyCode({
+                        "email": form.email,
+                        "accountId": accountId,
+                        code: form.code,
+                        "verifyCodePurpose": "resetPassword"
+                    }).then(d => {
+                        this.setState({
+                            visible: false
+                        });
+                        this.props.goResetPsd(form);
+                    })
+                }
             });
-            this.props.goResetPsd(form);
         })
     }
     render() {
@@ -100,7 +114,6 @@ class Component extends React.Component {
                         layout="vertical"
                         requiredSymbol={{ position: 'end' }}
                     >
-
                         <FormItem className="email-row" label='Email address' required>
                             <FormItem field='email' noStyle={{ showErrorTip: true }} rules={[{ required: true, message: 'Email address cannot be empty' }, { type: 'email', message: 'Invalid email' }]}>
                                 <Input placeholder='helloworld@gmail.com' />

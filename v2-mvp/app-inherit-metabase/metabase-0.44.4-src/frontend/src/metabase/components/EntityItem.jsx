@@ -100,12 +100,12 @@ function EntityItemMenu({
   const actions = useMemo(
     () =>
       [
-        onPin && {
-          title: isPinned ? t`Unpin` : t`Pin this`,
-          icon: "pin",
-          action: onPin,
-          event: `${analyticsContext};Entity Item;Pin Item;${item.model}`,
-        },
+        // onPin && {
+        //   title: isPinned ? t`Unpin` : t`Pin this`,
+        //   icon: "pin",
+        //   action: onPin,
+        //   event: `${analyticsContext};Entity Item;Pin Item;${item.model}`,
+        // },
         onTogglePreview && {
           title: isPreviewShown
             ? t`Don’t show visualization`
@@ -119,12 +119,12 @@ function EntityItemMenu({
           disabled: !isPreviewAvailable,
           event: `${analyticsContext};Entity Item;Preview Item;${item.model}`,
         },
-        onMove && {
-          title: t`Move`,
-          icon: "move",
-          action: onMove,
-          event: `${analyticsContext};Entity Item;Move Item;${item.model}`,
-        },
+        // onMove && {
+        //   title: t`Move`,
+        //   icon: "move",
+        //   action: onMove,
+        //   event: `${analyticsContext};Entity Item;Move Item;${item.model}`,
+        // },
         onCopy && {
           title: t`Duplicate`,
           icon: "clone",
@@ -137,12 +137,12 @@ function EntityItemMenu({
           action: onArchive,
           event: `${analyticsContext};Entity Item;Archive Item;${item.model}`,
         },
-        onToggleBookmark && {
-          title: isBookmarked ? t`Remove from bookmarks` : t`Bookmark`,
-          icon: "bookmark",
-          action: onToggleBookmark,
-          event: `${analyticsContext};Entity Item;Bookmark Item;${item.model}`,
-        },
+        // onToggleBookmark && {
+        //   title: isBookmarked ? t`Remove from bookmarks` : t`Bookmark`,
+        //   icon: "bookmark",
+        //   action: onToggleBookmark,
+        //   event: `${analyticsContext};Entity Item;Bookmark Item;${item.model}`,
+        // },
       ].filter(action => action),
     [
       item.model,
