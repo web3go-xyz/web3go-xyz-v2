@@ -6,7 +6,7 @@
     port: process.env.DB_PORT || 5432,
     username: process.env.DB_USERNAME || 'postgres',
     password: process.env.DB_PASSWORD || 'Dev123!@#',
-    synchronize: true,
+    synchronize: false,
     logging: true,
   }
 
