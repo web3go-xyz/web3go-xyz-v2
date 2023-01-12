@@ -45,3 +45,28 @@ export function numberSplit(num) {
     var reg = /\d{1,3}(?=(\d{3})+$)/g;
     return (num + '').replace(reg, '$&,');
 }
+export function share(jumpUrl, imgUrl, title) {
+    let metaArr = [
+        "twitter:card",
+        "summary_large_image",
+        "twitter:site",
+        "https://web3go.xyz",
+        "twitter:url",
+        jumpUrl,
+        "twitter:title",
+        title,
+        "twitter:image",
+        imgUrl,
+    ];
+
+    let metaParams = metaArr.toString();
+    console.log("\r\noriginal metaParams:\r\n");
+    console.log(metaParams);
+    // 需要encode两次 因为浏览器会自动decode一次，另一次是服务端会decode
+
+    metaParams = encodeURIComponent(encodeURIComponent(metaParams));
+
+    let backInterfaceUrl = `https://web3go.xyz/portal/twittershare?meta=${metaParams}`;
+    let fullUrl = `https://twitter.com/share?text=${title}&url=${backInterfaceUrl}`;
+    window.open(fullUrl);
+}

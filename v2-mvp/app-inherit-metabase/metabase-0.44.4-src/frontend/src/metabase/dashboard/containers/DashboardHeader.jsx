@@ -62,6 +62,7 @@ class DashboardHeader extends Component {
   };
 
   static propTypes = {
+    uploadThumbnail: PropTypes.func.isRequired,
     dashboard: PropTypes.object.isRequired,
     isEditable: PropTypes.bool.isRequired,
     isEditing: PropTypes.oneOfType([PropTypes.bool, PropTypes.object])
@@ -123,6 +124,7 @@ class DashboardHeader extends Component {
 
   async onSave() {
     await this.props.saveDashboardAndCards(this.props.dashboard.id);
+    this.props.uploadThumbnail();
     this.onDoneEditing();
   }
 

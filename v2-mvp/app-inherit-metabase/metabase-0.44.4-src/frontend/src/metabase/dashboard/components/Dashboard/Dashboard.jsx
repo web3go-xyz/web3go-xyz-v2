@@ -22,6 +22,7 @@ import SyncedParametersList from "metabase/parameters/components/SyncedParameter
 import DashboardEmptyState from "./DashboardEmptyState/DashboardEmptyState";
 import { updateParametersWidgetStickiness } from "./stickyParameters";
 import { getValuePopulatedParameters } from "metabase/parameters/utils/parameter-values";
+import domtoimage from 'dom-to-image';
 
 const SCROLL_THROTTLE_INTERVAL = 1000 / 24;
 
@@ -205,7 +206,21 @@ class Dashboard extends Component {
   onSharingClick = () => {
     this.props.setSharing(true);
   };
-
+  uploadThumbnail = () => {
+    const el = document.getElementById('dashboard-thumbnail');
+    domtoimage.toJpeg(el, {
+      quality: 0.2,
+      width: 1200,
+      height: 630,
+      bgcolor: 'rgb(250,251,252)',
+    })
+      .then((dataUrl) => {
+        // var link = document.createElement('a');
+        // link.download = 'AAA.png';
+        // link.href = dataUrl;
+        // link.click();
+      });
+  }
   render() {
     const {
       addParameter,
@@ -273,6 +288,7 @@ class Dashboard extends Component {
               >
                 <DashboardHeader
                   {...this.props}
+                  uploadThumbnail={this.uploadThumbnail}
                   onEditingChange={this.setEditing}
                   setDashboardAttribute={this.setDashboardAttribute}
                   addParameter={addParameter}
@@ -311,6 +327,7 @@ class Dashboard extends Component {
                 )}
 
                 <CardsContainer
+                  id="dashboard-thumbnail"
                   addMarginTop={cardsContainerShouldHaveMarginTop}
                 >
                   {dashboardHasCards(dashboard) ? (
