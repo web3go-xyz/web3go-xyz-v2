@@ -8,7 +8,7 @@ module.exports = {
         env: {
             PORT: 12350,
             DB_TYPE: "postgres",
-            DB_HOST: "dev-v2.web3go.xyz",
+            DB_HOST:  "localhost", //"dev-v2.web3go.xyz",
             DB_PORT: 5432,
             DB_USERNAME: "postgres",
             DB_PASSWORD: "Dev123!@#",
@@ -16,7 +16,7 @@ module.exports = {
             DB_DATABASE: "dev-web3go-v2-extend",
             DB_DATABASE_METABASE: "dev-web3go-v2-metabase",
 
-            REDIS_HOST: "dev-v2.web3go.xyz",  // host for redis, use default password
+            REDIS_HOST: "localhost" ,// "dev-v2.web3go.xyz",  // host for redis, use default password
 
             BASE_API_URL: "https://dev-v2.web3go.xyz/api-ext",       // api prefix of api extend service
             BASE_WEB_URL: "https://dev-v2.web3go.xyz",              // domain of web page
