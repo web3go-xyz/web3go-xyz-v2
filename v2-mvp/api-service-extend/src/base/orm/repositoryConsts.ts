@@ -14,6 +14,9 @@ import { DashboardShareLog } from "../entity/platform-dashboard/DashboardShareLo
 import { DashboardViewLog } from "../entity/platform-dashboard/DashboardViewLog";
 import { DashboardTag } from "../entity/platform-dashboard/DashboradTag";
 import { ShareReferralCode } from "../entity/platform-dashboard/ShareReferralCode";
+import { ReportCard } from "../entity/metabase/ReportCard";
+import { ReportDashboardcard } from "../entity/metabase/ReportDashboardcard";
+import { CoreUser } from "../entity/metabase/CoreUser";
 
 export class RepositoryConsts {
 
@@ -115,6 +118,21 @@ export class RepositoryConsts {
       provide: 'MB_REPORT_DASHBOARD_REPOSITORY',
       connection: RepositoryConsts.DATABASE_CONNECTION_METABASE,
       entityTarget: ReportDashboard
+    },
+    MB_REPORT_CARD_REPOSITORY: {
+      provide: 'MB_REPORT_CARD_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_METABASE,
+      entityTarget: ReportCard
+    },
+    MB_REPORT_DASHBOARD_CARD_REPOSITORY: {
+      provide: 'MB_REPORT_DASHBOARD_CARD_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_METABASE,
+      entityTarget: ReportDashboardcard
+    },
+    MB_CORE_USER_REPOSITORY: {
+      provide: 'MB_CORE_USER_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_METABASE,
+      entityTarget: CoreUser
     }
   }
 }

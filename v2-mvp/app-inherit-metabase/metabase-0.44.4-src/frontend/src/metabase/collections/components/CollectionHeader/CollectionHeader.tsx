@@ -32,13 +32,13 @@ const CollectionHeader = ({
         onUpdateCollection={onUpdateCollection}
       />
       <HeaderActions data-testid="collection-menu">
-        <CollectionTimeline collection={collection} />
-        <CollectionBookmark
+        {/* <CollectionTimeline collection={collection} /> */}
+        {/* <CollectionBookmark
           collection={collection}
           isBookmarked={isBookmarked}
           onCreateBookmark={onCreateBookmark}
           onDeleteBookmark={onDeleteBookmark}
-        />
+        /> */}
         <CollectionMenu
           collection={collection}
           isAdmin={isAdmin}

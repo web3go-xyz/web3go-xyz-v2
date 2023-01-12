@@ -2,10 +2,11 @@ import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 import { AuthorizedUser } from 'src/base/auth/AuthorizedUser';
+import { AllowAnonymous } from 'src/base/auth/decorator/AllowAnonymous';
 import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
-import { W3Logger } from 'src/base/log/logger.service';
-import { QueryMyFavoriteDashboardListRequest } from 'src/dashboard/model/QueryMyFavoriteDashboardListRequest';
-import { QueryMyFavoriteDashboardListResponse } from 'src/dashboard/model/QueryMyFavoriteDashboardListResponse';
+import { W3Logger } from 'src/base/log/logger.service'; 
+import { QueryFavoriteDashboardListRequest } from 'src/dashboard/model/QueryFavoriteDashboardListRequest';
+import { QueryFavoriteDashboardListResponse } from 'src/dashboard/model/QueryFavoriteDashboardListResponse';
 import { FavoriteService } from './favorite.service';
 import { Log4FavoriteDashboardRequest } from './model/Log4FavoriteDashboardRequest';
 import { Log4FavoriteDashboardResponse } from './model/Log4FavoriteDashboardResponse';
@@ -22,14 +23,24 @@ export class FavoriteController {
     }
 
     @Post('/listMyFavorites')
-    @ApiOperation({ summary: 'list of my favorite ashboards ' })
-    @ApiOkResponse({ type: QueryMyFavoriteDashboardListResponse })
+    @ApiOperation({ summary: 'list of my favorite dashboards ' })
+    @ApiOkResponse({ type: QueryFavoriteDashboardListResponse })
     async listMyFavorites(@Req() req,
-        @Body() param: QueryMyFavoriteDashboardListRequest): Promise<QueryMyFavoriteDashboardListResponse> {
+        @Body() param: QueryFavoriteDashboardListRequest): Promise<QueryFavoriteDashboardListResponse> {
         let validateUser: AuthorizedUser = req.user;
         param.accountId = validateUser.id;
         this.logger.debug(`listMyFavorites:${JSON.stringify(param)}`);
-        return await this.service.listMyFavorites(param);
+        return await this.service.listFavorites(param);
+    }
+
+    @AllowAnonymous()
+    @Post('/listFavorites')
+    @ApiOperation({ summary: 'list of someone\'s favorite dashboards ' })
+    @ApiOkResponse({ type: QueryFavoriteDashboardListResponse })
+    async listFavorites(@Req() req,
+        @Body() param: QueryFavoriteDashboardListRequest): Promise<QueryFavoriteDashboardListResponse> {       
+        this.logger.debug(`listFavorites:${JSON.stringify(param)}`);
+        return await this.service.listFavorites(param);
     }
 
     @Post('/logFavorite')

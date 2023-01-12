@@ -30,7 +30,7 @@ class Component extends React.Component {
 
     render() {
         return (
-            <div className="web3go-layout-component-identity-icon">
+            <div className="web3go-layout-component-identity-icon" onClick={this.props.onClick}>
                 {
                     this.props.isPolkadot ?
                         <Identicon

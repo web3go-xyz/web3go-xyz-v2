@@ -32,7 +32,7 @@ import _ from "underscore";
 import { getIn } from "icepick";
 import { getParameterValuesBySlug } from "metabase/parameters/utils/parameter-values";
 import Utils from "metabase/lib/utils";
-import { DashCardRoot } from "./DashCard.styled";
+import { DashCardRoot, WaterMark } from "./DashCard.styled";
 
 const DATASET_USUALLY_FAST_THRESHOLD = 15 * 1000;
 
@@ -118,7 +118,6 @@ export default class DashCard extends Component {
       headerIcon,
       isNightMode,
     } = this.props;
-
     const mainCard = {
       ...dashcard.card,
       visualization_settings: mergeSettings(
@@ -201,6 +200,7 @@ export default class DashCard extends Component {
         }
         isNightMode={isNightMode}
       >
+        <WaterMark></WaterMark>
         {isEditingDashboardLayout ? (
           <DashboardCardActionsPanel onMouseDown={this.preventDragging}>
             <DashCardActionButtons
@@ -223,6 +223,7 @@ export default class DashCard extends Component {
           </DashboardCardActionsPanel>
         ) : null}
         <WrappedVisualization
+          titleOperation={true}
           className={cx("flex-full overflow-hidden", {
             "pointer-events-none": isEditingDashboardLayout,
           })}
@@ -266,7 +267,7 @@ export default class DashCard extends Component {
           }
           replacementContent={
             clickBehaviorSidebarDashcard != null &&
-            isVirtualDashCard(dashcard) ? (
+              isVirtualDashCard(dashcard) ? (
               <div className="flex full-height align-center justify-center">
                 <h4 className="text-medium">{t`Text card`}</h4>
               </div>
@@ -292,14 +293,14 @@ export default class DashCard extends Component {
           onChangeCardAndRun={
             navigateToNewCardFromDashboard
               ? ({ nextCard, previousCard, objectId }) => {
-                  // navigateToNewCardFromDashboard needs `dashcard` for applying active filters to the query
-                  navigateToNewCardFromDashboard({
-                    nextCard,
-                    previousCard,
-                    dashcard,
-                    objectId,
-                  });
-                }
+                // navigateToNewCardFromDashboard needs `dashcard` for applying active filters to the query
+                navigateToNewCardFromDashboard({
+                  nextCard,
+                  previousCard,
+                  dashcard,
+                  objectId,
+                });
+              }
               : null
           }
           onChangeLocation={this.props.onChangeLocation}

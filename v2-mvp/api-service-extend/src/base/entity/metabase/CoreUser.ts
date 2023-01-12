@@ -222,10 +222,10 @@ export class CoreUser {
   )
   pulseChannelRecipients: PulseChannelRecipient[];
 
-  @OneToMany(() => ReportCard, (reportCard) => reportCard.creator)
+  @OneToMany(() => ReportCard, (reportCard) => reportCard.creatorId)
   reportCards: ReportCard[];
 
-  @OneToMany(() => ReportCard, (reportCard) => reportCard.madePublicBy)
+  @OneToMany(() => ReportCard, (reportCard) => reportCard.made_public_by_id)
   reportCards2: ReportCard[];
 
   @OneToMany(
@@ -236,13 +236,13 @@ export class CoreUser {
 
   @OneToMany(
     () => ReportDashboard,
-    (reportDashboard) => reportDashboard.creator
+    (reportDashboard) => reportDashboard.creatorId
   )
   reportDashboards: ReportDashboard[];
 
   @OneToMany(
     () => ReportDashboard,
-    (reportDashboard) => reportDashboard.madePublicBy
+    (reportDashboard) => reportDashboard.made_public_by_id
   )
   reportDashboards2: ReportDashboard[];
 
