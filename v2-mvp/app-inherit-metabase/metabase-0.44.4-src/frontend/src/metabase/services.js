@@ -38,11 +38,16 @@ export const LayoutDashboardApi = {
   list: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/list"),
   listMyFavorites: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/listMyFavorites"),
   detail: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/detail"),
+  searchRelatedDashboards: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/searchRelatedDashboards"),
   logFavorite: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/logFavorite"),
   logView: WPOST(WEB3GO_BASE_URL + "/api/v2/view/logView"),
   externalEvent: WPOST(WEB3GO_BASE_URL + "/api/v2/event/externalEvent"),
   logShare: WPOST(WEB3GO_BASE_URL + "/api/v2/share/logShare"),
   generateDashboardShareLink: WPOST(WEB3GO_BASE_URL + "/api/v2/share/generateDashboardShareLink"),
+  forkDashboard: WPOST(WEB3GO_BASE_URL + "/api/v2/fork/forkDashboard"),
+  forkQuestion: WPOST(WEB3GO_BASE_URL + "/api/v2/fork/forkQuestion"),
+  refresh: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/refresh"),
+  listFavorites: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/listFavorites"),
 };
 export const LayoutCreatorApi = {
   listCreators: WPOST(WEB3GO_BASE_URL + "/api/v2/creator/listCreators"),

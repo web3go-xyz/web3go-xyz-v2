@@ -35,7 +35,7 @@ class Component extends React.Component {
                 height: (this.props.iconSize || 44) + 'px',
                 borderRadius: '50%',
             }}
-                src={this.props.avatar} alt="" />
+                src={this.props.avatar} alt="" onClick={this.props.onClick} />
         }
         let firstWord = '';
         if (this.props.nickName) {
@@ -62,7 +62,7 @@ class Component extends React.Component {
             alignItems: 'center',
             color: 'white',
             justifyContent: 'center'
-        }}>
+        }} onClick={this.props.onClick}>
             <span style={{ fontSize: (this.props.fontSize || 14) + 'px' }}>{firstWord}</span>
         </div>
 

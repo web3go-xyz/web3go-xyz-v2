@@ -42,6 +42,7 @@
     "d3-scale": "^2.1.0",
     "dc": "2.1.9",
     "diff": "^3.2.0",
+    "dom-to-image": "^2.6.0",
     "eslint-plugin-no-only-tests": "^2.4.0",
     "ethereum-blockies-base64": "^1.0.2",
     "ethers": "^5.5.1",

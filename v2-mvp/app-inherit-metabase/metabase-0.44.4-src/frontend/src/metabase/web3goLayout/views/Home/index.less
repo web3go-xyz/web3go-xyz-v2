@@ -219,10 +219,12 @@ body[arco-theme="dark"] .web3go-layout-home-page {
         .creator-list {
             margin: -10px;
             margin-bottom: 40px;
-            &.spin{
+
+            &.spin {
                 text-align: center;
                 padding-top: 20px;
             }
+
             .item {
                 display: inline-block;
                 padding: 24px;
@@ -249,6 +251,11 @@ body[arco-theme="dark"] .web3go-layout-home-page {
 
                 &.active {
                     background: linear-gradient(282.95deg, #615CF6 1.37%, #818DF8 100%);
+
+                    .it-right .name:hover {
+                        color: white!important;
+                        opacity: .8;
+                    }
 
                     .i-bottom {
                         border-color: #EDE8FF;
@@ -329,9 +336,11 @@ body[arco-theme="dark"] .web3go-layout-home-page {
                             white-space: nowrap;
                             width: 260px;
                         }
-                        .btn-wrap{
+
+                        .btn-wrap {
                             display: flex;
                         }
+
                         .btn {
                             padding: 2px 6px;
                             border: 1px solid var(--creator-follow-border);

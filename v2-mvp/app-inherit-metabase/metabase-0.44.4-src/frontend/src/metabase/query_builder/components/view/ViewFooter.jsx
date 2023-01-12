@@ -139,33 +139,33 @@ const ViewFooter = ({
               visualizationSettings={visualizationSettings}
             />
           ),
-          QuestionAlertWidget.shouldRender({
-            question,
-            visualizationSettings,
-          }) && (
-            <QuestionAlertWidget
-              key="alerts"
-              className="mx1 hide sm-show"
-              canManageSubscriptions={canManageSubscriptions}
-              question={question}
-              questionAlerts={questionAlerts}
-              onCreateAlert={() =>
-                question.isSaved()
-                  ? onOpenModal("create-alert")
-                  : onOpenModal("save-question-before-alert")
-              }
-            />
-          ),
-          QuestionEmbedWidget.shouldRender({ question, isAdmin }) && (
-            <QuestionEmbedWidgetTrigger
-              key="embeds"
-              onClick={() =>
-                question.isSaved()
-                  ? onOpenModal("embed")
-                  : onOpenModal("save-question-before-embed")
-              }
-            />
-          ),
+          // QuestionAlertWidget.shouldRender({
+          //   question,
+          //   visualizationSettings,
+          // }) && (
+          //   <QuestionAlertWidget
+          //     key="alerts"
+          //     className="mx1 hide sm-show"
+          //     canManageSubscriptions={canManageSubscriptions}
+          //     question={question}
+          //     questionAlerts={questionAlerts}
+          //     onCreateAlert={() =>
+          //       question.isSaved()
+          //         ? onOpenModal("create-alert")
+          //         : onOpenModal("save-question-before-alert")
+          //     }
+          //   />
+          // ),
+          // QuestionEmbedWidget.shouldRender({ question, isAdmin }) && (
+          //   <QuestionEmbedWidgetTrigger
+          //     key="embeds"
+          //     onClick={() =>
+          //       question.isSaved()
+          //         ? onOpenModal("embed")
+          //         : onOpenModal("save-question-before-embed")
+          //     }
+          //   />
+          // ),
           QuestionTimelineWidget.shouldRender({ isTimeseries }) && (
             <QuestionTimelineWidget
               key="timelines"

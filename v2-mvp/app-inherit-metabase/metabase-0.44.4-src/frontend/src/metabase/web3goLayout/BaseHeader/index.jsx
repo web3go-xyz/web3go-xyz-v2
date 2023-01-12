@@ -14,6 +14,7 @@ import { LayoutLoginApi } from '@/services'
 import event from '@/web3goLayout/event';
 import MyHeadIcon from '@/web3goLayout/components/MyHeadIcon';
 import { logout } from "@/auth/actions";
+import { Link } from "react-router";
 
 const mapStateToProps = (state) => {
     return {
@@ -48,8 +49,8 @@ class Component extends React.Component {
         event.on('goSignIn', (text) => {
             this.goSignIn();
         })
-        const mainEl = document.querySelector('main');
-        mainEl.addEventListener("scroll", (e) => {
+        const mainEl = document.documentElement;
+        window.addEventListener("scroll", (e) => {
             let ifScroll;
             if (mainEl.scrollTop > 10) {
                 ifScroll = true;
@@ -77,7 +78,15 @@ class Component extends React.Component {
     }
     clickDropdownIcon = (key) => {
         if (key == 1) {
-            this.props.push('/layout/mySpace');
+            if (this.props.route.pathname == "/layout/mySpace") {
+                // 刷新路由
+                this.props.replace(`/layout/blank`);
+                setTimeout(() => {
+                    this.props.replace('/layout/mySpace');
+                });
+            } else {
+                this.props.push('/layout/mySpace');
+            }
         } else if (key == 2) {
             this.props.push('/layout/accountSetting');
         } else if (key == 3) {
@@ -111,9 +120,6 @@ class Component extends React.Component {
     }
     goAccountSetting = () => {
         this.props.push('/layout/accountSetting');
-    }
-    handleCreate = () => {
-        this.props.push('/home');
     }
     handleSearch = () => {
         this.props.push('/layout/globalSearch');
@@ -182,7 +188,11 @@ class Component extends React.Component {
                                 </svg>) :
                                 <img className="light" src={require('@/web3goLayout/assets/layout/light.png')} alt="" />}
                         </div>
-                        <Button className="btn" type='primary' onClick={this.handleCreate}>Create</Button>
+                        <Link
+                            to="/home"
+                        >
+                            <Button className="btn" type='primary'>Create</Button>
+                        </Link>
                         {this.props.currentUser ?
                             (
                                 <Dropdown trigger='click' position="bottom" droplist={

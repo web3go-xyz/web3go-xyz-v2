@@ -16,7 +16,8 @@ body[arco-theme="dark"] .web3go-layout-myspace-followers-list {}
                 .i-right {
                     display: none;
                 }
-                .follow-btn{
+
+                .follow-btn {
                     display: flex;
                 }
             }
@@ -29,6 +30,10 @@ body[arco-theme="dark"] .web3go-layout-myspace-followers-list {}
                     margin-left: 8px;
 
                     .name {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        width: 350px;
                         font-weight: 600;
                         font-size: 14px;
                         line-height: 22px;
@@ -73,7 +78,7 @@ body[arco-theme="dark"] .web3go-layout-myspace-followers-list {}
                 justify-content: center;
                 cursor: pointer;
                 display: none;
-                
+
                 &:hover {
                     background: #E5E6E8;
                 }

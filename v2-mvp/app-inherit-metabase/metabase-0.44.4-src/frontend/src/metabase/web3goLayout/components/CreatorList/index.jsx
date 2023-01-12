@@ -10,6 +10,7 @@ import { IconPlus, IconCheck } from '@arco-design/web-react/icon';
 import { numberSplit } from '@/web3goLayout/utils';
 import ShareModal from "@/web3goLayout/components/ShareModal";
 import { LayoutLoginApi, LayoutDashboardApi, LayoutCreatorApi } from '@/services';
+import event from '@/web3goLayout/event';
 
 const Option = Select.Option;
 const mapStateToProps = state => {
@@ -61,7 +62,7 @@ class Component extends React.Component {
             loading: false,
             pagination: {
                 total: 0,
-                pageSize: 10,
+                pageSize: 12,
                 current: 1,
                 onChange: (current) => {
                     this.setState((state) => {
@@ -153,6 +154,9 @@ class Component extends React.Component {
             })
         });
     }
+    goSignIn = () => {
+        event.emit('goSignIn');
+    }
     handleFollow = (v) => {
         if (!this.props.userData.account) {
             this.goSignIn();
@@ -170,6 +174,9 @@ class Component extends React.Component {
         }).then(d => {
             this.refreshCreatorListAndMyFollowsList();
         });
+    }
+    goMySpace = (accountId) => {
+        this.props.push(`/layout/mySpace?accountId=${accountId}`);
     }
     render() {
         return (
@@ -208,9 +215,9 @@ class Component extends React.Component {
                             this.state.tableData.map((v, i) => (
                                 <div className="item" key={i}>
                                     <div className="i-top">
-                                        <UserHeadIcon className="headicon" iconSize={48} fontSize={16} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
+                                        <UserHeadIcon onClick={() => this.goMySpace(v.accountId)} className="headicon hover-item" iconSize={48} fontSize={16} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
                                         <div className="it-right">
-                                            <div className="title" title={v.nickName}>{v.nickName}</div>
+                                            <div className="title hover-primary" onClick={() => this.goMySpace(v.accountId)} title={v.nickName}>{v.nickName}</div>
                                             <div className="info">
                                                 <div className="svg-wrap" title="dashboards">
                                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

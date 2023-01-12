@@ -20,6 +20,8 @@ import AccountSetting from "metabase/web3goLayout/views/AccountSetting";
 import MySpace from "metabase/web3goLayout/views/MySpace";
 import GlobalSearch from "metabase/web3goLayout/views/GlobalSearch";
 import DashBoardList from "metabase/web3goLayout/views/DashBoardList";
+import DashBoardDetail from "metabase/web3goLayout/views/DashBoardDetail";
+
 import CreatorList from "metabase/web3goLayout/views/CreatorList";
 import Home from "metabase/web3goLayout/views/Home";
 import VerifyEmailPage from "metabase/web3goLayout/views/VerifyEmailPage";
@@ -185,7 +187,7 @@ export const getRoutes = store => (
     <Route path="public">
       <Route path="question/:uuid" component={PublicQuestion} />
       <Route path="dashboard/:uuid" component={PublicDashboard} />
-    </Route>-
+    </Route>
 
     {/* APP */}
     <Route
@@ -213,8 +215,18 @@ export const getRoutes = store => (
         >
           <IndexRedirect to="home" />
           <Route
+            path="blank"
+            component={() => <div></div>}
+          >
+          </Route>
+          <Route
             path="home"
             component={Home}
+          >
+          </Route>
+          <Route
+            path="dashboardDetail/:uuid"
+            component={DashBoardDetail}
           >
           </Route>
           <Route

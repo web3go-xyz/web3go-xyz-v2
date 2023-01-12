@@ -93,6 +93,7 @@ export class Api extends EventEmitter {
         if (token) {
           headers['Authorization'] = `Bearer ${token}`
         }
+        headers['X-Cookie'] = document.cookie;
         if (ANTI_CSRF_TOKEN) {
           headers[ANTI_CSRF_HEADER] = ANTI_CSRF_TOKEN;
         }
@@ -193,7 +194,7 @@ export class Api extends EventEmitter {
           } else {
             if (status != 401) {
               Message.error((body && body.message) || 'request error');
-            }
+            } 
             reject({
               status: status,
               data: body,

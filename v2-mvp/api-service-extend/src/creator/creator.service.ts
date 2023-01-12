@@ -30,7 +30,7 @@ export class CreatorService {
             .getRawOne();
         resp.totalCount = await query_count.creator_account_id_count;
 
-        let query = await this.dextRepo.createQueryBuilder("d")
+        let query = this.dextRepo.createQueryBuilder("d")
             .leftJoinAndSelect(Account, "a", "a.account_id = d.creator_account_id")
             .select(`a."nick_name"`, `creator_account_name`)
             .addSelect("creator_account_id", "creator_account_id")
@@ -50,13 +50,10 @@ export class CreatorService {
             query = query.orderBy("dashboard_count", "DESC");
         }
 
-        query = query.take(PageRequest.getTake(param))
-            .skip(PageRequest.getSkip(param))
-
-
+        query = query.offset(PageRequest.getSkip(param))
+            .limit(PageRequest.getTake(param));  // use offset and limit here , since skip/take doesn't work when join tables.
 
         let records = await query.getRawMany();
-        this.logger.log(records);
 
         for (const t of records) {
             resp.list.push({

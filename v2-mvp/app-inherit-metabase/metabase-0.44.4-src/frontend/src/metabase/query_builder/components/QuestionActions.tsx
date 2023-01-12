@@ -114,9 +114,9 @@ const QuestionActions = ({
 
   const extraButtons = [];
 
-  extraButtons.push(
-    PLUGIN_MODERATION.getMenuItems(question, isModerator, softReloadCard),
-  );
+  // extraButtons.push(
+  //   PLUGIN_MODERATION.getMenuItems(question, isModerator, softReloadCard),
+  // );
 
   if (isDataset) {
     extraButtons.push(
@@ -157,20 +157,20 @@ const QuestionActions = ({
   }
 
   if (canWrite) {
-    extraButtons.push({
-      title: t`Move`,
-      icon: "move",
-      action: () => onOpenModal(MODAL_TYPES.MOVE),
-      testId: MOVE_TESTID,
-    });
-    if (!isDataset) {
-      extraButtons.push({
-        title: t`Turn into a model`,
-        icon: "model",
-        action: handleTurnToModel,
-        testId: TURN_INTO_DATASET_TESTID,
-      });
-    }
+    // extraButtons.push({
+    //   title: t`Move`,
+    //   icon: "move",
+    //   action: () => onOpenModal(MODAL_TYPES.MOVE),
+    //   testId: MOVE_TESTID,
+    // });
+    // if (!isDataset) {
+    //   extraButtons.push({
+    //     title: t`Turn into a model`,
+    //     icon: "model",
+    //     action: handleTurnToModel,
+    //     testId: TURN_INTO_DATASET_TESTID,
+    //   });
+    // }
     if (isDataset) {
       extraButtons.push({
         title: t`Turn back to saved question`,
@@ -201,13 +201,13 @@ const QuestionActions = ({
   return (
     <>
       <QuestionActionsDivider />
-      <Tooltip tooltip={bookmarkTooltip}>
+      {/* <Tooltip tooltip={bookmarkTooltip}>
         <BookmarkToggle
           onCreateBookmark={handleBookmark}
           onDeleteBookmark={handleBookmark}
           isBookmarked={isBookmarked}
         />
-      </Tooltip>
+      </Tooltip> */}
       <Tooltip tooltip={t`More info`}>
         <ViewHeaderIconButtonContainer>
           <Button

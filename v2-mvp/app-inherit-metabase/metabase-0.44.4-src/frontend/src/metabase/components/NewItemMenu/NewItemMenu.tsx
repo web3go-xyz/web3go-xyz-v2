@@ -86,12 +86,12 @@ const NewItemMenu = ({
         action: () => setModal("new-dashboard"),
         event: `${analyticsContext};New Dashboard Click;`,
       },
-      {
-        title: t`Collection`,
-        icon: "folder",
-        action: () => setModal("new-collection"),
-        event: `${analyticsContext};New Collection Click;`,
-      },
+      // {
+      //   title: t`Collection`,
+      //   icon: "folder",
+      //   action: () => setModal("new-collection"),
+      //   event: `${analyticsContext};New Collection Click;`,
+      // },
     );
 
     return items;
