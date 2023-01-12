@@ -11,6 +11,11 @@
   stroke-dasharray: 5, 5;
 }
 
+.dc-chart .grid-line line {
+  stroke: #E5E6E8;
+  opacity: 1;
+}
+
 .LineAreaBarChart .dc-chart .axis {
   z-index: -1;
 }
@@ -25,7 +30,8 @@
 
 .LineAreaBarChart .dc-chart .axis .domain,
 .LineAreaBarChart .dc-chart .axis .tick line {
-  stroke: var(--color-text-light);
+  /* stroke: var(--color-text-light); */
+  stroke: #E5E6E8;
 }
 
 .LineAreaBarChart .dc-chart .axis .tick text {
@@ -38,6 +44,7 @@
   font-weight: 400;
   letter-spacing: -0.01em;
 }
+
 .LineAreaBarChart .dc-chart g.row text.inside {
   fill: white;
   font-weight: bold;
@@ -129,6 +136,7 @@
 .LineAreaBarChart .dc-chart .line {
   stroke-width: 2px;
 }
+
 .LineAreaBarChart .dc-chart .dc-tooltip .dot {
   r: 3px !important;
   stroke-width: 2px;
@@ -138,6 +146,7 @@
 .LineAreaBarChart .dc-chart .line--medium .line {
   stroke-width: 3px;
 }
+
 .LineAreaBarChart .dc-chart .line--medium .dc-tooltip .dot {
   r: 3px !important;
   stroke-width: 2px;
@@ -147,6 +156,7 @@
 .LineAreaBarChart .dc-chart .line--heavy .line {
   stroke-width: 4px;
 }
+
 .LineAreaBarChart .dc-chart .line--heavy .dc-tooltip .dot {
   r: 3.5px !important;
   stroke-width: 3px;
@@ -165,6 +175,7 @@
 .LineAreaBarChart .dc-chart .dc-tooltip .dot.deselected {
   opacity: 0;
 }
+
 .LineAreaBarChart .dc-chart .line.deselected {
   color: var(--color-text-light);
 }

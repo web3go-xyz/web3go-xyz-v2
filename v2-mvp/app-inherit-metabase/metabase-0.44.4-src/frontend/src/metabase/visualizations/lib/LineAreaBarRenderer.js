@@ -563,7 +563,6 @@ function getCharts(
         });
     });
   }
-
   return groups.map((group, index) => {
     const single = series[index];
     const seriesSettings = settings.series(single);
@@ -926,7 +925,6 @@ export default function lineAreaBar(element, props) {
       }
     });
   });
-
   // apply any on-rendering functions (this code lives in `LineAreaBarPostRenderer`)
   lineAndBarOnRender(parent, {
     datas,
