@@ -1,7 +1,8 @@
 import Color from "color";
 import { ColorPalette } from "./types";
 
-export const ACCENT_COUNT = 8;
+// export const ACCENT_COUNT = 8;
+export const ACCENT_COUNT = 10;
 
 // NOTE: DO NOT ADD COLORS WITHOUT EXTREMELY GOOD REASON AND DESIGN REVIEW
 // NOTE: KEEP SYNCRONIZED WITH COLORS.CSS
@@ -10,14 +11,25 @@ export const colors: ColorPalette = {
   brand: "#509EE3",
   summarize: "#88BF4D",
   filter: "#7172AD",
-  accent0: "#509EE3",
-  accent1: "#88BF4D",
-  accent2: "#A989C5",
-  accent3: "#EF8C8C",
-  accent4: "#F9D45C",
-  accent5: "#F2A86F",
-  accent6: "#98D9D9",
-  accent7: "#7172AD",
+  // accent0: "#509EE3",
+  // accent1: "#88BF4D",
+  // accent2: "#A989C5",
+  // accent3: "#EF8C8C",
+  // accent4: "#F9D45C",
+  // accent5: "#F2A86F",
+  // accent6: "#98D9D9",
+  // accent7: "#7172AD",
+  accent0: "#6F62F4",
+  accent1: "#5B8FF9",
+  accent2: "#61DDAA",
+  accent3: "#65789B",
+  accent4: "#F6BD16",
+  accent5: "#78D3F8",
+  accent6: "#9661BC",
+  accent7: "#F6903D",
+  accent8: "#008685",
+  accent9: "#F08BB4",
+
   "admin-navbar": "#7172AD",
   white: "#FFFFFF",
   black: "#2E353B",
@@ -68,6 +80,8 @@ const aliases: Record<string, (palette: ColorPalette) => string> = {
   "accent5-light": palette => tint(color(`accent5`, palette)),
   "accent6-light": palette => tint(color(`accent6`, palette)),
   "accent7-light": palette => tint(color(`accent7`, palette)),
+  "accent8-light": palette => tint(color(`accent8`, palette)),
+  "accent9-light": palette => tint(color(`accent9`, palette)),
 
   "accent0-dark": palette => shade(color(`accent0`, palette)),
   "accent1-dark": palette => shade(color(`accent1`, palette)),
@@ -77,6 +91,8 @@ const aliases: Record<string, (palette: ColorPalette) => string> = {
   "accent5-dark": palette => shade(color(`accent5`, palette)),
   "accent6-dark": palette => shade(color(`accent6`, palette)),
   "accent7-dark": palette => shade(color(`accent7`, palette)),
+  "accent8-dark": palette => shade(color(`accent8`, palette)),
+  "accent9-dark": palette => shade(color(`accent9`, palette)),
 };
 
 export const color = (color: string, palette = colors) => {

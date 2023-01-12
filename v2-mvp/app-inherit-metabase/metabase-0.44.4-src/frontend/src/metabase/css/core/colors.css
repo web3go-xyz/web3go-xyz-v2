@@ -4,13 +4,24 @@
 :root {
   --color-brand: #509ee3;
   --color-brand-light: #ddecfa;
-  --color-accent1: #88bf4d;
+  /* --color-accent1: #88bf4d;
   --color-accent2: #a989c5;
   --color-accent3: #ef8c8c;
   --color-accent4: #f9d45c;
   --color-accent5: #f2a86f;
   --color-accent6: #98d9d9;
-  --color-accent7: #7172ad;
+  --color-accent7: #7172ad; */
+  --color-accent0: #6F62F4;
+  --color-accent1: #5B8FF9;
+  --color-accent2: #61DDAA;
+  --color-accent3: #65789B;
+  --color-accent4: #F6BD16;
+  --color-accent5: #78D3F8;
+  --color-accent6: #9661BC;
+  --color-accent7: #F6903D;
+  --color-accent7: #008685;
+  --color-accent7: #F08BB4;
+
   --color-admin-navbar: #7172ad;
   --color-white: #ffffff;
   --color-black: #2e353b;
