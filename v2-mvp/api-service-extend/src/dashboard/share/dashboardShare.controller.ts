@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -55,6 +56,9 @@ export class DashboardShareController {
     ); // persist for 5 hours
     return `${AppConfig.BASE_API_URL}/v2/dashboard/sns/share/gateway/${uuid}`;
   }
+  private illegalStateExp(msg) {
+    throw new BadRequestException(msg);
+  }
 
   @Get('gateway/:uuid')
   @ApiOperation({ summary: 'twitter share metadata' })
@@ -62,12 +66,12 @@ export class DashboardShareController {
   async twitterShare(@Param('uuid') uuid): Promise<string> {
     const rawCache = await this.kvService.get(`dashboard:share:${uuid}`);
     if (!rawCache) {
-      return 'sorry, the sharing link has been expired.';
+      this.illegalStateExp('sorry, the sharing link has been expired.');
     }
 
     const data = JSON.parse(rawCache) as DashboardGetShareUrlRequest;
     if (data.platform !== 'twitter') {
-      return 'sorry, not supported platform';
+      this.illegalStateExp('sorry, not supported platform');
     }
     const record = await this.dashboardService.findDashboardExtByPK(
       data.dashboardId,
