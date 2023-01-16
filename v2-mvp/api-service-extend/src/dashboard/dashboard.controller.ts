@@ -94,8 +94,6 @@ export class DashboardController {
 
     const writeImage = createWriteStream(join(dir, `${path}`))
     writeImage.write(file.buffer);
-    console.log("imgUpload path:", path);
-
 
     const previewImgUrl = `${AppConfig.BASE_WEB_URL}/imgUpload/preview/${path}`
     this.service.updateDashboardPreviewImgUrl(id, previewImgUrl);

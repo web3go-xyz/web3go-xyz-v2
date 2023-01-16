@@ -5,19 +5,9 @@ import {
   Get,
   Param,
   Post,
-  Query,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiOkResponse,
-  ApiBearerAuth,
-  ApiConsumes,
-  ApiBody,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
 import { W3Logger } from 'src/base/log/logger.service';
 import { DashboardGetShareUrlRequest } from './model/DashboardGetShareUrlRequest';
@@ -33,20 +23,19 @@ import { AllowAnonymous } from 'src/base/auth/decorator/AllowAnonymous';
 @Controller('/api/v2/dashboard/sns/share')
 @ApiTags('/api/v2/dashboard/sns/share')
 export class DashboardShareController {
-  logger: W3Logger;
+  // logger: W3Logger;
   constructor(
     private dashboardService: DashboardService,
     private kvService: KVService,
   ) {
-    this.logger = new W3Logger(`DashboardShareController`);
+    // this.logger = new W3Logger(`DashboardShareController`);
   }
 
   @Post('getUrl')
   async getShareUrl(@Body() data: DashboardGetShareUrlRequest) {
     const supportedPlatform = ['twitter'];
-    if (supportedPlatform.indexOf(data.platform) < 0) {
-      return 'not supported';
-    }
+    this.assert(supportedPlatform.indexOf(data.platform) > -1, 'not supported');
+    this.assert(data && data.metaData.filter(it => it.key==='twitter:url')[0], 'missing required data')
 
     const uuid = randomUUID();
     await this.kvService.set(
@@ -56,8 +45,10 @@ export class DashboardShareController {
     ); // persist for 5 hours
     return `${AppConfig.BASE_API_URL}/v2/dashboard/sns/share/gateway/${uuid}`;
   }
-  private illegalStateExp(msg) {
-    throw new BadRequestException(msg);
+  private assert(condition, msg) {
+    if (!condition) {
+      throw new BadRequestException(msg);
+    }
   }
 
   @Get('gateway/:uuid')
@@ -65,14 +56,11 @@ export class DashboardShareController {
   @AllowAnonymous()
   async twitterShare(@Param('uuid') uuid): Promise<string> {
     const rawCache = await this.kvService.get(`dashboard:share:${uuid}`);
-    if (!rawCache) {
-      this.illegalStateExp('sorry, the sharing link has been expired.');
-    }
+    this.assert(!!rawCache, 'sorry, the sharing link has been expired.');
 
     const data = JSON.parse(rawCache) as DashboardGetShareUrlRequest;
-    if (data.platform !== 'twitter') {
-      this.illegalStateExp('sorry, not supported platform');
-    }
+    this.assert(data.platform === 'twitter', 'sorry, not supported platform');
+
     const record = await this.dashboardService.findDashboardExtByPK(
       data.dashboardId,
     );
@@ -103,7 +91,6 @@ export class DashboardShareController {
       '</script>' +
       '</body>\n' +
       '</html>';
-    console.log(retHtml);
 
     return retHtml;
   }
