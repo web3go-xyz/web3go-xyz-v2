@@ -54,8 +54,29 @@ class Component extends React.Component {
         }).then(d => {
             if (shareChannel == 'twitter') {
                 const title = `Check out ${this.state.record.name} on Web3go! Here is the link:`;
-                const url = `https://twitter.com/intent/tweet?text=${title}&url=${encodeURIComponent(d.shareLink)}&via=web3go&hashtags=blockChain%2Cweb3go`;
-                window.open(url);
+                let metaArr = {
+                    "platform": "twitter",
+                    "dashboardId": 126,
+                    "metaData": [
+                        { "key": "twitter:card", "value": "summary_large_image" },
+                        { "key": "twitter:site", "value": "https://web3go.xyz" },
+                        { "key": "twitter:url", "value": "https://web3go.xyz/#/ParaChainCrowdloanContributionDetail?crowdloanId=2119-E3BajuRoG9Wv7RQW6s5vtqMZkLk2khDPjgzVXRwXdd913Uw-0" },
+                        { "key": "twitter:title", "value": title }
+                    ]
+                };
+
+                let metaParams = metaArr.toString();
+                console.log("\r\noriginal metaParams:\r\n");
+                console.log(metaParams);
+                // 需要encode两次 因为浏览器会自动decode一次，另一次是服务端会decode
+
+                metaParams = encodeURIComponent(encodeURIComponent(metaParams));
+
+                let backInterfaceUrl = `https://web3go.xyz/portal/twittershare?meta=${metaParams}`;
+                let fullUrl = `https://twitter.com/share?text=${title}&url=${backInterfaceUrl}`;
+                window.open(fullUrl);
+                // const url = `https://twitter.com/intent/tweet?text=${title}&url=${encodeURIComponent(d.shareLink)}&via=web3go&hashtags=blockChain%2Cweb3go`;
+                // window.open(url);
             }
             if (shareChannel == 'telegram') {
                 const title = `Check out ${this.state.record.name} on Web3go!`;

@@ -21,6 +21,7 @@ import MySpace from "metabase/web3goLayout/views/MySpace";
 import GlobalSearch from "metabase/web3goLayout/views/GlobalSearch";
 import DashBoardList from "metabase/web3goLayout/views/DashBoardList";
 import DashBoardDetail from "metabase/web3goLayout/views/DashBoardDetail";
+import CreatePage from "metabase/web3goLayout/views/CreatePage";
 
 import CreatorList from "metabase/web3goLayout/views/CreatorList";
 import Home from "metabase/web3goLayout/views/Home";
@@ -253,6 +254,12 @@ export const getRoutes = store => (
             path="creatorList"
             component={CreatorList}
           >
+          </Route>
+          <Route component={IsAuthenticated}>
+            <Route
+              path="create"
+              component={CreatePage}
+            />
           </Route>
         </Route>
       </Route>

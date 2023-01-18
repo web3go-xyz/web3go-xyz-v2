@@ -45,36 +45,37 @@ class Component extends React.Component {
         this.ResetPsdRef = React.createRef();
         this.ConnectWalletRef = React.createRef();
     }
+
     componentDidMount() {
         event.on('goSignIn', (text) => {
             this.goSignIn();
         })
         const mainEl = document.documentElement;
-        window.addEventListener("scroll", (e) => {
-            let ifScroll;
-            if (mainEl.scrollTop > 10) {
-                ifScroll = true;
+        // window.addEventListener("scroll", (e) => {
+        //     let ifScroll;
+        //     if (mainEl.scrollTop > 10) {
+        //         ifScroll = true;
 
-            } else {
-                ifScroll = false;
+        //     } else {
+        //         ifScroll = false;
+        //     }
+        //     if (this.state.ifScroll !== ifScroll) {
+        //         this.setState({
+        //             ifScroll
+        //         });
+        //     }
+        // });
+
+    }
+    componentDidUpdate(prevProps) {
+        if (this.props.route.key !== prevProps.route.key) {
+            const { route } = this.props;
+            if (route.hash == '#showLogin') {
+                // 去掉hash
+                this.props.replace(route.pathname + route.search);
+                this.SignInOrUpRef.init(true);
             }
-            if (this.state.ifScroll !== ifScroll) {
-                this.setState({
-                    ifScroll
-                });
-            }
-        });
-        const { route } = this.props;
-        if (route.hash == '#showLogin') {
-            // 去掉hash
-            this.props.replace(route.pathname + route.search);
-            this.SignInOrUpRef.init(true);
         }
-        // if (localStorage.getItem('token')) {
-        //     LayoutLoginApi.getAccountInfo().then(d => {
-        //         this.props.changeUserData(d);
-        //     })
-        // }
     }
     clickDropdownIcon = (key) => {
         if (key == 1) {
@@ -126,7 +127,8 @@ class Component extends React.Component {
     }
     render() {
         return (
-            <div className={'web3go-layout-baseheader-component' + (this.state.ifScroll ? ' scroll' : '')}>
+            // <div className={'web3go-layout-baseheader-component' + (this.state.ifScroll ? ' scroll' : '')}>
+            <div className='web3go-layout-baseheader-component scroll'>
                 <div className="head-wrap">
                     <div className="h-left">
                         {this.props.isDark ? <img
@@ -189,7 +191,7 @@ class Component extends React.Component {
                                 <img className="light" src={require('@/web3goLayout/assets/layout/light.png')} alt="" />}
                         </div>
                         <Link
-                            to="/home"
+                            to="/layout/create"
                         >
                             <Button className="btn" type='primary'>Create</Button>
                         </Link>

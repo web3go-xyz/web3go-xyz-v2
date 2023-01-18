@@ -215,6 +215,7 @@ class Dashboard extends Component {
       bgcolor: 'rgb(250,251,252)',
     })
       .then((dataUrl) => {
+        const uuid = crypto.randomUUID();
         // var link = document.createElement('a');
         // link.download = 'AAA.png';
         // link.href = dataUrl;

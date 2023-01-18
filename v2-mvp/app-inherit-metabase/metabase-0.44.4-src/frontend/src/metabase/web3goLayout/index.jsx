@@ -6,16 +6,16 @@ import BaseHeader from './BaseHeader';
 import BaseFooter from './BaseFooter';
 
 const mapStateToProps = state => ({
-
+    route: state.routing.locationBeforeTransitions,
 });
 class Component extends React.Component {
     constructor(props) {
         super(props)
     }
-    componentDidMount(){
-        
+    componentDidMount() {
     }
     render() {
+        const showFooter = this.props.route.pathname.includes('/layout/create') ? false : true;
         return (<div className="web3go-layout-page">
             <BaseHeader />
             <div className="container-content">
@@ -23,7 +23,7 @@ class Component extends React.Component {
                     {this.props.children}
                 </div>
             </div>
-            <BaseFooter />
+            {showFooter ? <BaseFooter /> : null}
         </div>)
 
     }
