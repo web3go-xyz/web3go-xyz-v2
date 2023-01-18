@@ -195,6 +195,11 @@ class Component extends React.Component {
                         >
                             <Button className="btn" type='primary'>Create</Button>
                         </Link>
+                        <Link
+                            to="/home"
+                        >
+                            <Button className="btn" style={{ marginLeft: '8px' }} type='primary'>OldCreate</Button>
+                        </Link>
                         {this.props.currentUser ?
                             (
                                 <Dropdown trigger='click' position="bottom" droplist={
