@@ -241,5 +241,13 @@ export class DashboardService {
 
         return resp;
     }
+
+    async findDashboardExtByPK(id: number): Promise<DashboardExt> {
+        return await this.dextRepo.findOne( { where: {id}});
+    }
+
+    async updateDashboardPreviewImgUrl(id: number, previewImgUrl: string) {
+        await this.dextRepo.update({id}, { previewImg: previewImgUrl });
+    }
 }
 

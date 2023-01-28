@@ -102,6 +102,13 @@ export class DashboardExt {
     })
     publicLink: string;
 
+
+    @Column({
+        name: "preview_img",
+        comment: 'Preview image url'
+    })
+    previewImg?: string;
+
     @Column("timestamp with time zone", {
         name: "latest_refresh_time",
         nullable: true,

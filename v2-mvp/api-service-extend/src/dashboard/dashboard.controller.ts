@@ -1,5 +1,8 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Body, Controller, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiOperation, ApiOkResponse, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { createWriteStream, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
 
 import { AllowAnonymous } from 'src/base/auth/decorator/AllowAnonymous';
 import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
@@ -8,8 +11,12 @@ import { QueryDashboardDetailRequest } from 'src/dashboard/model/QueryDashboardD
 import { QueryDashboardDetailResponse } from 'src/dashboard/model/QueryDashboardDetailResponse';
 import { QueryDashboardListRequest } from 'src/dashboard/model/QueryDashboardListRequest';
 import { QueryDashboardListResponse } from 'src/dashboard/model/QueryDashboardListResponse';
+import { FileUploadDto } from 'src/viewModel/base/FileUploadDto';
 import { DashboardService } from './dashboard.service';
 import { QueryRelatedDashboardsRequest } from './model/QueryRelatedDashboardsRequest';
+
+
+import { AppConfig } from 'src/base/setting/appConfig';
 
 
 
@@ -63,4 +70,34 @@ export class DashboardController {
         this.logger.debug(`searchRelatedDashboards:${JSON.stringify(param)}`);
         return await this.service.searchRelatedDashboards(param);
     }
+
+
+  @Post('/update/preview-url/:id')
+  @ApiOperation({ summary: 'upload img and return the path' })
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: FileUploadDto,
+  })
+  updateMeta(@Param('id') id: number, @UploadedFile() file, @Body() body) {
+    // console.log(body);
+    // console.log(file);
+
+    let dir = join(__dirname, '/imgUpload/preview');
+    // console.log(dir);
+
+    if (existsSync(dir) == false) {
+      mkdirSync(dir, {recursive: true});
+    }
+
+    let path = 'dashboard-' + id + file.originalname.substr(file.originalname.indexOf('.'));
+
+    const writeImage = createWriteStream(join(dir, `${path}`))
+    writeImage.write(file.buffer);
+
+    const previewImgUrl = `${AppConfig.BASE_WEB_URL}/imgUpload/preview/${path}`
+    this.service.updateDashboardPreviewImgUrl(id, previewImgUrl);
+    return previewImgUrl;
+  }
+
 }
