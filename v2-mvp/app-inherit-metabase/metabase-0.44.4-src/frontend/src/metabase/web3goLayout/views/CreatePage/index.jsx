@@ -8,6 +8,7 @@ import { push } from "react-router-redux";
 import cx from "classnames";
 import CreateDataset from './CreateDataset';
 import CreateDashboard from './CreateDashboard';
+import { pseudoStyle } from "styled-system";
 
 const { Text } = Typography;
 const mapStateToProps = state => {
@@ -38,6 +39,7 @@ class Component extends React.Component {
         });
     }
     render() {
+        console.log('222', this.props);
         const { detailData } = this.state;
         return (
             <div className="web3go-create-page">
@@ -64,10 +66,10 @@ class Component extends React.Component {
                 <div className={cx("p-main", this.state.tabIndex == 0 ? 'dataset' : 'dashboard'
                 )}>
                     <div className="datasetTab">
-                        <CreateDataset ></CreateDataset>
+                        <CreateDataset location={this.props.location} params={this.props.params}></CreateDataset>
                     </div>
                     <div className="dashboardTab">
-                        <CreateDashboard ></CreateDashboard>
+                        <CreateDashboard location={this.props.location} params={this.props.params}></CreateDashboard>
                     </div>
                 </div>
             </div >

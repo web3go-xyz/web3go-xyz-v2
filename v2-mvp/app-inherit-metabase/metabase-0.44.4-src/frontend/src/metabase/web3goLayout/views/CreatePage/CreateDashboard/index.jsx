@@ -6,6 +6,7 @@ import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typogr
 import { IconLaunch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
 import { push } from "react-router-redux";
 import cx from "classnames";
+import AddChartModal from './AddChartModal';
 
 const { Text } = Typography;
 const mapStateToProps = state => {
@@ -34,6 +35,7 @@ class Component extends React.Component {
         }
         this.dashboardNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
+        this.AddChartModalRef = React.createRef();
     }
     changeDashboardName = (value) => {
         this.setState({
@@ -72,6 +74,9 @@ class Component extends React.Component {
         this.setState({
             tagList,
         })
+    }
+    handleAddChart = () => {
+        this.AddChartModalRef.init();
     }
     render() {
         const { tagList, dashboardName, ifEditDashboardName, ifEditTag } = this.state;
@@ -118,7 +123,7 @@ class Component extends React.Component {
                     </div>
                 </div>
                 <div className="p-operation-wrap">
-                    <div className="item hover-item">
+                    <div className="item hover-item" onClick={this.handleAddChart}>
                         <img src={require("@/web3goLayout/assets/dashboardCreate/chart.png")} alt="" />
                         <span>Add Chart</span>
                     </div>
@@ -142,6 +147,7 @@ class Component extends React.Component {
                 <div className="p-main">
 
                 </div>
+                <AddChartModal location={this.props.location} params={this.props.params} onRef={(ref) => this.AddChartModalRef = ref}></AddChartModal>
             </div >
         )
     }
