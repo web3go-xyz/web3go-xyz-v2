@@ -125,7 +125,7 @@ class Component extends React.Component {
                         </div>
                     </div>
                     <div className="dm-middle">
-                        <QueryBuilder location={this.props.location} params={this.props.params}></QueryBuilder>
+                        {/* <QueryBuilder location={this.props.location} params={this.props.params}></QueryBuilder> */}
                     </div>
                 </div>
                 <div className="d-footer">

@@ -47,6 +47,7 @@ export const LayoutDashboardApi = {
   forkDashboard: WPOST(WEB3GO_BASE_URL + "/api/v2/fork/forkDashboard"),
   forkQuestion: WPOST(WEB3GO_BASE_URL + "/api/v2/fork/forkQuestion"),
   refresh: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/refresh"),
+  listFavorites: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/listFavorites"),
   previewUrl: (id) => WPOST(WEB3GO_BASE_URL + `/api/v2/dashboard/update/preview-url/${id}`),
   getShareUrl: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/listFavorites"),
 };
