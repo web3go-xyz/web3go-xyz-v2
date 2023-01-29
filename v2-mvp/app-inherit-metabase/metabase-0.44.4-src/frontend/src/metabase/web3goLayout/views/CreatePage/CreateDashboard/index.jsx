@@ -7,6 +7,7 @@ import { IconLaunch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arc
 import { push } from "react-router-redux";
 import cx from "classnames";
 import AddChartModal from './AddChartModal';
+import * as Urls from "metabase/lib/urls";
 
 const { Text } = Typography;
 const mapStateToProps = state => {
@@ -77,6 +78,12 @@ class Component extends React.Component {
     }
     handleAddChart = () => {
         this.AddChartModalRef.init();
+        // const url = Urls.newQuestion({
+        //     mode: "notebook",
+        //     creationType: "custom_question",
+        // })
+        // console.log('111', url);
+        // this.props.push(url);
     }
     render() {
         const { tagList, dashboardName, ifEditDashboardName, ifEditTag } = this.state;

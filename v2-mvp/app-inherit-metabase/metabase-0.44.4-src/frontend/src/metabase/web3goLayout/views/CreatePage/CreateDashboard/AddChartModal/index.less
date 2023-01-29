@@ -68,8 +68,9 @@ body[arco-theme="dark"] .web3go-add-dashboard-add-chart-drawer {}
 
     .d-main {
         height: calc(100vh - 157px);
-
+        display: flex;
         .dm-left {
+            flex: none;
             height: 100%;
             width: 284px;
             box-sizing: border-box;
@@ -145,6 +146,9 @@ body[arco-theme="dark"] .web3go-add-dashboard-add-chart-drawer {}
                     border-radius: 6px;
                 }
             }
+        }
+        .dm-middle{
+            flex: 1;
         }
     }
 

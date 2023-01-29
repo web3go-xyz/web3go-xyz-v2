@@ -447,7 +447,8 @@ class View extends React.Component {
 
     // if we don't have a card at all or no databases then we are initializing, so keep it simple
     if (!card || !databases) {
-      return <LoadingAndErrorWrapper className="full-height" loading />;
+      return <div></div>;
+      // return <LoadingAndErrorWrapper className="full-height" loading />;
     }
 
     const isStructured = query instanceof StructuredQuery;
@@ -488,10 +489,10 @@ class View extends React.Component {
                 {...this.props}
               />
             )}
+            {this.renderMain({ leftSidebar, rightSidebar })}
             <ViewSidebar side="left" isOpen={!!leftSidebar}>
               {leftSidebar}
             </ViewSidebar>
-            {this.renderMain({ leftSidebar, rightSidebar })}
             <ViewSidebar
               side="right"
               isOpen={!!rightSidebar}

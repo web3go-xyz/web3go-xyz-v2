@@ -39,7 +39,6 @@ class Component extends React.Component {
         });
     }
     render() {
-        console.log('222', this.props);
         const { detailData } = this.state;
         return (
             <div className="web3go-create-page">

@@ -7,6 +7,7 @@ import { IconSearch, IconPlus } from '@arco-design/web-react/icon';
 import { push } from "react-router-redux";
 import cx from "classnames";
 import QueryBuilder from "metabase/query_builder/containers/QueryBuilder";
+import event from '@/web3goLayout/event';
 
 const { Text } = Typography;
 const mapStateToProps = state => {
@@ -61,7 +62,10 @@ class Component extends React.Component {
 
     }
     handleSearchDataset = () => {
-         
+
+    }
+    handleOk() {
+        event.emit('addChartSave');
     }
     render() {
         const { chartName, ifEditChartName, visible } = this.state;
@@ -125,7 +129,7 @@ class Component extends React.Component {
                         </div>
                     </div>
                     <div className="dm-middle">
-                        {/* <QueryBuilder location={this.props.location} params={this.props.params}></QueryBuilder> */}
+                        <QueryBuilder location={this.props.location} params={this.props.params}></QueryBuilder>
                     </div>
                 </div>
                 <div className="d-footer">
@@ -133,8 +137,8 @@ class Component extends React.Component {
                         <Button className="btn" type="secondary">duplicate from other dashboards</Button>
                     </div>
                     <div className="f-right">
-                        <Button className="btn" type="primary">Cancel</Button>
-                        <Button className="btn" type="secondary">OK</Button>
+                        <Button className="btn" type="primary" onClick={() => { this.setState({ visible: false }) }}>Cancel</Button>
+                        <Button className="btn" type="secondary" onClick={this.handleOk}>OK</Button>
                     </div>
                 </div>
             </Drawer>

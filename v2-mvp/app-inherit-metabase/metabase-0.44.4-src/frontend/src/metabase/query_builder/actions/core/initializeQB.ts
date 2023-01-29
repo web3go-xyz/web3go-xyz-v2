@@ -207,7 +207,7 @@ async function handleQBInit(
     !options.segment &&
     !options.metric
   ) {
-    dispatch(redirectToNewQuestionFlow());
+    // dispatch(redirectToNewQuestionFlow());
     return;
   }
 
