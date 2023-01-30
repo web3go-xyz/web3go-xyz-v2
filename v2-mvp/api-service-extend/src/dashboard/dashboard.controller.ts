@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiOkResponse, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { createWriteStream, existsSync, mkdirSync } from 'fs';
@@ -17,6 +17,8 @@ import { QueryRelatedDashboardsRequest } from './model/QueryRelatedDashboardsReq
 
 
 import { AppConfig } from 'src/base/setting/appConfig';
+import { Dataset } from 'src/base/entity/platform-dataset/Dataset';
+import { ReportCard } from 'src/base/entity/metabase/ReportCard';
 
 
 
@@ -99,5 +101,36 @@ export class DashboardController {
     this.service.updateDashboardPreviewImgUrl(id, previewImgUrl);
     return previewImgUrl;
   }
+  
+  @Post('/uploadBgImg/:id')
+  @ApiOperation({ summary: 'upload background img and return the path' })
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: FileUploadDto,
+  })
+  uploadBgImg(@Param('id') id: number, @UploadedFile() file, @Body() body) {
 
+    console.log(file);
+    let dir = join(__dirname, '/imgUpload/backgroundImg');
+    if (existsSync(dir) == false) {
+      mkdirSync(dir, {recursive: true});
+    }
+
+    let path = 'dashboard-' + id + file.originalname.substr(file.originalname.indexOf('.'));
+
+    const writeImage = createWriteStream(join(dir, `${path}`))
+    writeImage.write(file.buffer);
+
+    const bgImgUrl = `${AppConfig.BASE_WEB_URL}/imgUpload/backgroundImg/${path}`
+    this.service.updateDashboardBgImgUrl(id, bgImgUrl);
+    return bgImgUrl;
+  }
+
+  @Get('/getDataSets')
+  @ApiOperation({ summary: 'get all datasets' })
+  @ApiOkResponse({ type: ReportCard, isArray: true })
+  async getDataSets():Promise<ReportCard[]>{
+      return await this.service.getDataSets();
+  }
 }

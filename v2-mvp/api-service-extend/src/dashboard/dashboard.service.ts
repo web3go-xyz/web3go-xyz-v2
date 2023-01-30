@@ -12,6 +12,7 @@ import { QueryDashboardListRequest } from 'src/dashboard/model/QueryDashboardLis
 import { QueryDashboardListResponse } from 'src/dashboard/model/QueryDashboardListResponse';
 import { FindManyOptions, FindOptionsWhere, In, Like, Repository } from 'typeorm';
 import { QueryRelatedDashboardsRequest } from './model/QueryRelatedDashboardsRequest';
+import { ReportCard } from 'src/base/entity/metabase/ReportCard';
 
 @Injectable()
 export class DashboardService {
@@ -27,6 +28,9 @@ export class DashboardService {
         private dextRepo: Repository<DashboardExt>,
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_TAG_REPOSITORY.provide)
         private dtagRepo: Repository<DashboardTag>,
+
+        @Inject(RepositoryConsts.REPOSITORYS_METABASE.MB_REPORT_CARD_REPOSITORY.provide)
+        private dataSet: Repository<ReportCard>,
     ) {
         this.logger = new W3Logger(`DashboardService`);
     }
@@ -248,6 +252,12 @@ export class DashboardService {
 
     async updateDashboardPreviewImgUrl(id: number, previewImgUrl: string) {
         await this.dextRepo.update({id}, { previewImg: previewImgUrl });
+    }
+    async updateDashboardBgImgUrl(id: number, BgImgUrl: string) {
+        await this.dextRepo.update({id}, { backgroundImg: BgImgUrl });
+    }
+    async getDataSets():Promise<ReportCard[]>{
+        return await this.dataSet.find({select:['id','name'],where:{dataset:true}})
     }
 }
 

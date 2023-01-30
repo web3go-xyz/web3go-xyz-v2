@@ -109,6 +109,14 @@ export class DashboardExt {
     })
     previewImg?: string;
 
+    @Column({
+        name: "bg_img",
+        comment: 'background image url',
+        default: '',
+        nullable: true
+    })
+    backgroundImg?: string;
+
     @Column("timestamp with time zone", {
         name: "latest_refresh_time",
         nullable: true,
