@@ -19,6 +19,7 @@ import { QueryRelatedDashboardsRequest } from './model/QueryRelatedDashboardsReq
 import { AppConfig } from 'src/base/setting/appConfig';
 import { Dataset } from 'src/base/entity/platform-dataset/Dataset';
 import { ReportCard } from 'src/base/entity/metabase/ReportCard';
+import { randomUUID } from 'crypto';
 
 
 
@@ -101,30 +102,28 @@ export class DashboardController {
     this.service.updateDashboardPreviewImgUrl(id, previewImgUrl);
     return previewImgUrl;
   }
-  
-  @Post('/uploadBgImg/:id')
+
+  @Post('/uploadPublicImg')
   @ApiOperation({ summary: 'upload background img and return the path' })
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     type: FileUploadDto,
   })
-  uploadBgImg(@Param('id') id: number, @UploadedFile() file, @Body() body) {
+  uploadPublicImg(@UploadedFile() file, @Body() body) {
 
-    console.log(file);
-    let dir = join(__dirname, '/imgUpload/backgroundImg');
+    let dir = join(__dirname, '/imgUpload/public');
     if (existsSync(dir) == false) {
       mkdirSync(dir, {recursive: true});
     }
 
-    let path = 'dashboard-' + id + file.originalname.substr(file.originalname.indexOf('.'));
-
+    const uuid = randomUUID();
+    let path =  uuid+"."+file.mimetype.split('/')[1]
     const writeImage = createWriteStream(join(dir, `${path}`))
     writeImage.write(file.buffer);
 
-    const bgImgUrl = `${AppConfig.BASE_WEB_URL}/imgUpload/backgroundImg/${path}`
-    this.service.updateDashboardBgImgUrl(id, bgImgUrl);
-    return bgImgUrl;
+    const publicImgUrl = `${AppConfig.BASE_WEB_URL}/imgUpload/public/${path}`
+    return publicImgUrl;
   }
 
   @Get('/getDataSets')

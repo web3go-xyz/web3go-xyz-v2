@@ -253,11 +253,9 @@ export class DashboardService {
     async updateDashboardPreviewImgUrl(id: number, previewImgUrl: string) {
         await this.dextRepo.update({id}, { previewImg: previewImgUrl });
     }
-    async updateDashboardBgImgUrl(id: number, BgImgUrl: string) {
-        await this.dextRepo.update({id}, { backgroundImg: BgImgUrl });
-    }
+    
     async getDataSets():Promise<ReportCard[]>{
-        return await this.dataSet.find({select:['id','name'],where:{dataset:true}})
+        return await this.dataSet.find({select:['id','name'],where:{dataset:true},order:{name:"ASC"}})
     }
 }
 
