@@ -37,6 +37,8 @@ import ViewFooter from "./ViewFooter";
 import ViewSidebar from "./ViewSidebar";
 import NewQuestionView from "./View/NewQuestionView";
 import QueryViewNotebook from "./View/QueryViewNotebook";
+import event from '@/web3goLayout/event';
+import { CollectionsApi } from '@/services'
 
 import {
   BorderedViewTitleHeader,
@@ -60,7 +62,32 @@ class View extends React.Component {
   state = {
     ...DEFAULT_POPOVER_STATE,
   };
-
+  componentDidMount() {
+    event.on('addChartSave', (chartName) => {
+      this.saveOrCreateQuestion(chartName);
+    })
+  }
+  saveOrCreateQuestion = async (chartName) => {
+    let { card, originalCard } = this.props;
+    const saveType = originalCard && !originalCard.dataset && originalCard.can_write
+      ? "overwrite"
+      : "create"
+    console.log('111', this.props);
+    const collectionList = await CollectionsApi.list();
+    const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
+    card = {
+      ...card,
+      name: chartName,
+      description: null,
+      collection_id: publicSpaceCollection.id,
+    };
+    if (saveType === "create") {
+      await this.props.onCreate(card);
+    } else if (saveType === "overwrite") {
+      card.id = this.props.originalCard.id;
+      await this.props.onSave(card);
+    }
+  }
   handleAddSeries = e => {
     this.setState({
       ...DEFAULT_POPOVER_STATE,
@@ -481,7 +508,7 @@ class View extends React.Component {
     return (
       <div className="full-height">
         <QueryBuilderViewRoot className="QueryBuilder">
-          {isHeaderVisible && this.renderHeader()}
+          {isHeaderVisible && !location.pathname.includes('/layout') && this.renderHeader()}
           <QueryBuilderContentContainer>
             {isStructured && (
               <QueryViewNotebook

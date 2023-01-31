@@ -174,7 +174,7 @@ export const updateUrl = createThunkAction(
 
       const urlParsed = parseUrl(url);
       const locationDescriptor = {
-        pathname: location.pathname.includeS('/layout') ? window.location.pathname : getPathNameFromQueryBuilderMode({
+        pathname: location.pathname.includes('/layout') ? window.location.pathname : getPathNameFromQueryBuilderMode({
           pathname: urlParsed.pathname || "",
           queryBuilderMode,
           datasetEditorTab,

@@ -154,7 +154,7 @@ class Component extends React.Component {
                 <div className="p-main">
 
                 </div>
-                <AddChartModal location={this.props.location} params={this.props.params} onRef={(ref) => this.AddChartModalRef = ref}></AddChartModal>
+                <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref}></AddChartModal>
             </div >
         )
     }

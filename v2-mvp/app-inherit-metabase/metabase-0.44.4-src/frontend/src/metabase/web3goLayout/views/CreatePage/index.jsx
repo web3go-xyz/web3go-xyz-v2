@@ -65,10 +65,10 @@ class Component extends React.Component {
                 <div className={cx("p-main", this.state.tabIndex == 0 ? 'dataset' : 'dashboard'
                 )}>
                     <div className="datasetTab">
-                        <CreateDataset location={this.props.location} params={this.props.params}></CreateDataset>
+                        <CreateDataset {...this.props}></CreateDataset>
                     </div>
                     <div className="dashboardTab">
-                        <CreateDashboard location={this.props.location} params={this.props.params}></CreateDashboard>
+                        <CreateDashboard {...this.props}></CreateDashboard>
                     </div>
                 </div>
             </div >
