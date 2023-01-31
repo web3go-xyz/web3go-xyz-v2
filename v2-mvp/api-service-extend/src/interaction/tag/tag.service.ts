@@ -1,5 +1,5 @@
 
-import { Inject, Injectable } from '@nestjs/common';
+import { Delete, Inject, Injectable } from '@nestjs/common';
 import { ConfigTag } from 'src/base/entity/platform-config/ConfigTag';
 import { DashboardTag } from 'src/base/entity/platform-dashboard/DashboradTag';
 import { W3Logger } from 'src/base/log/logger.service';
@@ -65,8 +65,10 @@ export class TagService {
                     }
                 });
                 if (record) {
-                    await transactionalEntityManager.remove<DashboardTag>(record);
-                    removedTagIds.push(tagId);
+                    const removeTag = await transactionalEntityManager.remove<DashboardTag>(record);
+                    if(removeTag){
+                      removedTagIds.push(tagId);
+                    } 
                 }
             }
         });
