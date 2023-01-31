@@ -13,6 +13,7 @@ import { QueryDashboardListResponse } from 'src/dashboard/model/QueryDashboardLi
 import { FindManyOptions, FindOptionsWhere, In, Like, Repository } from 'typeorm';
 import { QueryRelatedDashboardsRequest } from './model/QueryRelatedDashboardsRequest';
 import { ReportCard } from 'src/base/entity/metabase/ReportCard';
+import { Collection } from 'src/base/entity/metabase/Collection';
 
 @Injectable()
 export class DashboardService {
@@ -255,7 +256,17 @@ export class DashboardService {
     }
     
     async getDataSets():Promise<ReportCard[]>{
-        return await this.dataSet.find({select:['id','name'],where:{dataset:true},order:{name:"ASC"}})
+        let queryBuilder = await this.dataSet.createQueryBuilder('dataset');
+        let records =await queryBuilder.leftJoinAndSelect(Collection,'ctn','ctn.id=dataset.collection_id')
+                                       .where('dataset.dataset = TRUE')
+                                       .andWhere('dataset.result_metadata IS NOT NULL')
+                                       .andWhere('dataset.archived = FALSE')
+                                       .orderBy('dataset.name','ASC')
+                                       .select(`concat('card__',dataset.id) as id ,dataset.database_id as db_id,dataset.name as display_name,dataset.table_id,dataset.description,ctn.name as schema`)
+                                       .getRawMany();
+
+        return records;
+        
     }
 }
 
