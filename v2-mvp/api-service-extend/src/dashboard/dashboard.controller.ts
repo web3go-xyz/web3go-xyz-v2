@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiOkResponse, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { createWriteStream, existsSync, mkdirSync } from 'fs';
@@ -17,6 +17,9 @@ import { QueryRelatedDashboardsRequest } from './model/QueryRelatedDashboardsReq
 
 
 import { AppConfig } from 'src/base/setting/appConfig';
+import { Dataset } from 'src/base/entity/platform-dataset/Dataset';
+import { ReportCard } from 'src/base/entity/metabase/ReportCard';
+import { randomUUID } from 'crypto';
 
 
 
@@ -100,4 +103,33 @@ export class DashboardController {
     return previewImgUrl;
   }
 
+  @Post('/uploadPublicImg')
+  @ApiOperation({ summary: 'upload background img and return the path' })
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: FileUploadDto,
+  })
+  uploadPublicImg(@UploadedFile() file, @Body() body) {
+
+    let dir = join(__dirname, '/imgUpload/public');
+    if (existsSync(dir) == false) {
+      mkdirSync(dir, {recursive: true});
+    }
+
+    const uuid = randomUUID();
+    let path =  uuid+"."+file.mimetype.split('/')[1]
+    const writeImage = createWriteStream(join(dir, `${path}`))
+    writeImage.write(file.buffer);
+
+    const publicImgUrl = `${AppConfig.BASE_WEB_URL}/imgUpload/public/${path}`
+    return publicImgUrl;
+  }
+
+  @Get('/getDataSets')
+  @ApiOperation({ summary: 'get all datasets' })
+  @ApiOkResponse({ type: ReportCard, isArray: true })
+  async getDataSets():Promise<ReportCard[]>{
+      return await this.service.getDataSets();
+  }
 }
