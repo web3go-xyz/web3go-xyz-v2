@@ -40,6 +40,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            searchKey: '',
             datasetLoading: false,
             visible: false,
             ifEditChartName: false,
@@ -86,12 +87,12 @@ class Component extends React.Component {
             ifEditChartName: false
         })
     }
-    handleSure = () => {
-
+    changeSearchKey = (value) => {
+        this.setState({
+            searchKey: value
+        })
     }
-    handleSearchDataset = () => {
 
-    }
     clickDatasetItem = (v) => {
         const newState = {
             "card": {
@@ -122,14 +123,14 @@ class Component extends React.Component {
                 refreshFlag: true
             })
         });
-        // event.emit('addChartClickDataset', v.id);
     }
     handleOk = () => {
         event.emit('addChartSave', this.state.chartName);
     }
     handleCancel = () => {
         this.setState({
-            visible: false
+            visible: false,
+            datasetList: []
         });
         this.props.push({
             pathname: window.location.pathname,
@@ -138,6 +139,10 @@ class Component extends React.Component {
             search: this.props.location.search,
             state: {}
         });
+    }
+    get formatDatasetList() {
+        const { datasetList, searchKey } = this.state;
+        return datasetList.filter(v => v.display_name.includes(searchKey));
     }
     render() {
         const { chartName, ifEditChartName, visible, refreshFlag } = this.state;
@@ -170,7 +175,8 @@ class Component extends React.Component {
                         <div className="dml-title">Dataset</div>
                         <div className="search-wrap">
                             <Input
-                                prefix={<IconSearch className="hover-item" onClick={this.handleSearchDataset} />}
+                                onChange={this.changeSearchKey}
+                                prefix={<IconSearch />}
                                 placeholder='Search dataset…'
                             />
                         </div>
@@ -182,7 +188,7 @@ class Component extends React.Component {
                         </div>
                         <div className="dataset-list">
                             <Spin loading={this.state.datasetLoading} style={{ display: 'block', minHeight: 100 }}>
-                                {this.state.datasetList.map(v => (
+                                {this.formatDatasetList.map(v => (
                                     <div className="item" key={v.id} onClick={() => { this.clickDatasetItem(v) }}>
                                         <img src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
                                         <div title={v.display_name} className="text">{v.display_name}</div>
