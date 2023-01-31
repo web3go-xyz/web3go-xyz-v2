@@ -55,19 +55,21 @@ export class TagService {
             msg: ''
         };
         let removedTagIds: number[] = [];
-        for (const tagId of param.tagIds) {
-            let record = await this.dtagRepo.findOne({
-                where: {
-                    creator: accountId,
-                    dashboardId: param.dashboardId,
-                    tagId: tagId
+        await this.dtagRepo.manager.transaction(async transactionalEntityManager =>{
+            for (const tagId of param.tagIds) {
+                let record = await this.dtagRepo.findOne({
+                    where: {
+                        creator: accountId,
+                        dashboardId: param.dashboardId,
+                        tagId: tagId
+                    }
+                });
+                if (record) {
+                    await transactionalEntityManager.remove<DashboardTag>(record);
+                    removedTagIds.push(tagId);
                 }
-            });
-            if (record) {
-                await this.dtagRepo.remove(record);
-                removedTagIds.push(tagId);
             }
-        }
+        });
         resp.msg = removedTagIds.join(',');
         return resp;
     }
@@ -103,49 +105,52 @@ export class TagService {
 
     async addTag(param: AddTag4DashboardRequest,accountId: string): Promise<AddTag4DashboardResponse> {
         let resp: AddTag4DashboardResponse = {
-          data: {},
+            data: {},
         }
         let tagName = param.tagName.trim();
         let tagId = param.tagId;
-        if (tagName) {
-            let tagRecord = await this.ctagRepo.findOne({
-                where: {
-                tagName
-                },
-            });
-            if (!tagRecord) {
-                let newTag: ConfigTag = {
-                tagName,
-                tagDescription: tagName,
-                createdAt: new Date(),
-                creator: accountId,
-                } as ConfigTag;
-                tagRecord = await this.ctagRepo.save(newTag);
+        await this.ctagRepo.manager.transaction(async transactionalEntityManager =>{
+            if (tagName) {
+                let tagRecord = await this.ctagRepo.findOne({
+                    where: {
+                    tagName
+                    },
+                });
+                if (!tagRecord) {
+                    let newTag: ConfigTag = new ConfigTag();
+                    Object.assign(newTag,{
+                        tagName,
+                        tagDescription: tagName,
+                        createdAt: new Date(),
+                        creator: accountId,
+                        } as ConfigTag);
+                    tagRecord = await transactionalEntityManager.save<ConfigTag>(newTag)
+                }
+                tagId = tagRecord.id;
             }
-            tagId = tagRecord.id;
-        }
-        let record = null;
-        if (tagId) {
-           record = await this.dtagRepo.findOne({
-                where: {
-                creator: accountId,
-                dashboardId: param.dashboardId,
-                tagId,
-                },
-            });
-            if (!record) {
-                let newTag: DashboardTag = {
-                  dashboardId: param.dashboardId,
-                  tagId: tagId,
-                  createdAt: new Date(),
-                  creator: accountId,
-                };
-                await this.dtagRepo.save(newTag);
-                resp.data= {tagName,tagId};
-            }
+            let record = null;
+            if (tagId) {
+                record = await this.dtagRepo.findOne({
+                    where: {
+                    creator: accountId,
+                    dashboardId: param.dashboardId,
+                    tagId,
+                    },
+                });
+                if (!record) {
+                    let newTag: DashboardTag = new DashboardTag();
+                    Object.assign(newTag,{
+                        dashboardId: param.dashboardId,
+                        tagId: tagId,
+                        createdAt: new Date(),
+                        creator: accountId,
+                        });
+                    await transactionalEntityManager.save<DashboardTag>(newTag);
 
-        } 
-
+                    resp.data= {tagName,tagId};
+                }
+            } 
+        })
         return resp;
       }
 }
