@@ -94,6 +94,7 @@ import {
   getAutocompleteResultsFn,
 } from "../selectors";
 import * as actions from "../actions";
+import event from '@/web3goLayout/event';
 
 const timelineProps = {
   query: { include: "events" },
@@ -301,7 +302,6 @@ function QueryBuilder(props) {
       setRecentlySaved,
     ],
   );
-
   useOnMount(() => {
     initializeQB(location, params);
   }, []);

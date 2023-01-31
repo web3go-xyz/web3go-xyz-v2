@@ -7,6 +7,10 @@ import { IconLaunch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arc
 import { push } from "react-router-redux";
 import cx from "classnames";
 import AddChartModal from './AddChartModal';
+import * as Urls from "metabase/lib/urls";
+import { DashboardApi } from '@/services';
+import slugg from "slugg";
+import DashboardApp from "metabase/dashboard/containers/DashboardApp";
 
 const { Text } = Typography;
 const mapStateToProps = state => {
@@ -36,6 +40,21 @@ class Component extends React.Component {
         this.dashboardNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
         this.AddChartModalRef = React.createRef();
+    }
+    async componentDidMount() {
+        if (!this.props.location.query.dashboardSlug) {
+            const result = await DashboardApi.create({
+                "name": this.state.dashboardName,
+                "collection_id": 40
+            });
+            const slug = slugg(result.name);
+            const dashboardSlug = slug ? `${result.id}-${slug}` : result.id;
+            this.props.push({
+                pathname: this.props.location.pathname,
+                query: { dashboardSlug: dashboardSlug }
+            });
+        }
+
     }
     changeDashboardName = (value) => {
         this.setState({
@@ -75,8 +94,17 @@ class Component extends React.Component {
             tagList,
         })
     }
+    handleCancel=()=>{
+        
+    }
     handleAddChart = () => {
         this.AddChartModalRef.init();
+        // const url = Urls.newQuestion({
+        //     mode: "notebook",
+        //     creationType: "custom_question",
+        // })
+        // console.log('111', url);
+        // this.props.push(url);
     }
     render() {
         const { tagList, dashboardName, ifEditDashboardName, ifEditTag } = this.state;
@@ -117,7 +145,7 @@ class Component extends React.Component {
                         </div>
                     </div>
                     <div className="pt-right">
-                        <Button className="btn">Cancel</Button>
+                        <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
                         <Button className="btn">Save as Draft</Button>
                         <Button className="btn" type="primary" >Post</Button>
                     </div>
@@ -145,9 +173,9 @@ class Component extends React.Component {
                     </div>
                 </div>
                 <div className="p-main">
-
+                    {this.props.location.query.dashboardSlug ? <DashboardApp {...this.props}></DashboardApp> : null}
                 </div>
-                <AddChartModal location={this.props.location} params={this.props.params} onRef={(ref) => this.AddChartModalRef = ref}></AddChartModal>
+                <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref}></AddChartModal>
             </div >
         )
     }

@@ -60,12 +60,11 @@ import Dashboards from "metabase/entities/dashboards";
 
 const mapStateToProps = (state, props) => {
   return {
-    dashboardId: props.dashboardId || Urls.extractEntityId(props.params.slug),
-
+    dashboardId: props.dashboardId || Urls.extractEntityId(location.pathname.includes('/layout') ? props.location.query.dashboardSlug : props.params.slug),
     canManageSubscriptions: canManageSubscriptions(state, props),
     isAdmin: getUserIsAdmin(state, props),
     isNavbarOpen: getIsNavbarOpen(state),
-    isEditing: getIsEditing(state, props),
+    isEditing: location.pathname.includes('/layout') ? true : getIsEditing(state, props),
     isSharing: getIsSharing(state, props),
     dashboardBeforeEditing: getDashboardBeforeEditing(state, props),
     isEditingParameter: getIsEditingParameter(state, props),
@@ -87,7 +86,7 @@ const mapStateToProps = (state, props) => {
     documentTitle: getDocumentTitle(state),
     isRunning: getIsRunning(state),
     isLoadingComplete: getIsLoadingComplete(state),
-    isHeaderVisible: getIsHeaderVisible(state),
+    isHeaderVisible: location.pathname.includes('/layout') ? false : getIsHeaderVisible(state),
     isAdditionalInfoVisible: getIsAdditionalInfoVisible(state),
     embedOptions: getEmbedOptions(state),
   };
