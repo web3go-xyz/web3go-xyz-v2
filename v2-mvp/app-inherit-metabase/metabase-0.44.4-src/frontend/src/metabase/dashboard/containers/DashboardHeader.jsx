@@ -77,6 +77,8 @@ class DashboardHeader extends Component {
 
     addCardToDashboard: PropTypes.func.isRequired,
     addTextDashCardToDashboard: PropTypes.func.isRequired,
+    addImageDashCardToDashboard: PropTypes.func.isRequired,
+    addVideoDashCardToDashboard: PropTypes.func.isRequired,
     fetchDashboard: PropTypes.func.isRequired,
     saveDashboardAndCards: PropTypes.func.isRequired,
     setDashboardAttribute: PropTypes.func.isRequired,
@@ -108,6 +110,14 @@ class DashboardHeader extends Component {
 
   onAddTextBox() {
     this.props.addTextDashCardToDashboard({ dashId: this.props.dashboard.id });
+  }
+
+  onAddImageBox() {
+    this.props.addImageDashCardToDashboard({ dashId: this.props.dashboard.id });
+  }
+
+  onAddVideoBox() {
+    this.props.addVideoDashCardToDashboard({ dashId: this.props.dashboard.id });
   }
 
   onDoneEditing() {
@@ -226,6 +236,38 @@ class DashboardHeader extends Component {
           >
             <DashboardHeaderButton>
               <Icon name="string" size={18} />
+            </DashboardHeaderButton>
+          </a>
+        </Tooltip>,
+      );
+
+      // Add image card button
+      buttons.push(
+        <Tooltip key="add-a-image-box" tooltip={t`Add a Image box`}>
+          <a
+            data-metabase-event="Dashboard;Add Image Box"
+            key="add-text"
+            className="text-brand-hover cursor-pointer"
+            onClick={() => this.onAddImageBox()}
+          >
+            <DashboardHeaderButton>
+              <Icon name="image" size={18} />
+            </DashboardHeaderButton>
+          </a>
+        </Tooltip>,
+      );
+
+      // Add video card button
+      buttons.push(
+        <Tooltip key="add-a-video-box" tooltip={t`Add a Video box`}>
+          <a
+            data-metabase-event="Dashboard;Add Video Box"
+            key="add-text"
+            className="text-brand-hover cursor-pointer"
+            onClick={() => this.onAddVideoBox()}
+          >
+            <DashboardHeaderButton>
+              <Icon name="video" size={18} />
             </DashboardHeaderButton>
           </a>
         </Tooltip>,
