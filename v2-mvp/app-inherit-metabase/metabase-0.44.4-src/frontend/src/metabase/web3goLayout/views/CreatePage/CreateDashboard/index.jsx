@@ -12,6 +12,9 @@ import { DashboardApi } from '@/services';
 import slugg from "slugg";
 import DashboardApp from "metabase/dashboard/containers/DashboardApp";
 
+
+import { addTextDashCardToDashboard, addImageDashCardToDashboard, addVideoDashCardToDashboard } from "../../../../dashboard/actions";
+
 const { Text } = Typography;
 const mapStateToProps = state => {
     return {
@@ -28,6 +31,7 @@ const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
 
 class Component extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -106,6 +110,21 @@ class Component extends React.Component {
         // console.log('111', url);
         // this.props.push(url);
     }
+
+  onAddTextBox = () => {
+    const {dispatch, getState} = this.DashbaordAppRef.store;
+    addTextDashCardToDashboard({dashId: getState().dashboard.dashboardId })(dispatch, getState);
+  }
+
+  onAddImageBox = () => {
+    const {dispatch, getState} = this.DashbaordAppRef.store;
+    addImageDashCardToDashboard({dashId: getState().dashboard.dashboardId })(dispatch, getState);
+  }
+
+  onAddVideoBox = () => {
+    const {dispatch, getState} = this.DashbaordAppRef.store;
+    addVideoDashCardToDashboard({dashId: getState().dashboard.dashboardId })(dispatch, getState);
+  }
     render() {
         const { tagList, dashboardName, ifEditDashboardName, ifEditTag } = this.state;
         return (
@@ -159,21 +178,23 @@ class Component extends React.Component {
                         <img src={require("@/web3goLayout/assets/dashboardCreate/filter.png")} alt="" />
                         <span>Add Filter</span>
                     </div>
-                    <div className="item hover-item">
+                    <div className="item hover-item" onClick={this.onAddTextBox}>
                         <img src={require("@/web3goLayout/assets/dashboardCreate/text.png")} alt="" />
                         <span>Add Text</span>
                     </div>
-                    <div className="item hover-item">
+                    <div className="item hover-item" onClick={this.onAddVideoBox}>
                         <img src={require("@/web3goLayout/assets/dashboardCreate/media.png")} alt="" />
                         <span>Add Video</span>
                     </div>
-                    <div className="item hover-item">
+                    <div className="item hover-item" onClick={this.onAddImageBox}>
                         <img src={require("@/web3goLayout/assets/dashboardCreate/image.png")} alt="" />
                         <span>Add Image</span>
                     </div>
                 </div>
                 <div className="p-main">
-                    {this.props.location.query.dashboardSlug ? <DashboardApp {...this.props}></DashboardApp> : null}
+                    {this.props.location.query.dashboardSlug ?
+                      <DashboardApp {...this.props} ref={(ref) => this.DashbaordAppRef = ref} /> 
+                    : null}
                 </div>
                 <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref}></AddChartModal>
             </div >

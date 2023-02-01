@@ -418,6 +418,7 @@ const ChartSettingsButton = ({
   <ModalWithTrigger
     wide
     tall
+    isInitiallyOpen={false}
     triggerElement={
       <Tooltip tooltip={t`Visualization options`}>
         <Icon
