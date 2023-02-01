@@ -8,6 +8,7 @@ import SmartScalar from "./visualizations/SmartScalar";
 import Progress from "./visualizations/Progress";
 import Table from "./visualizations/Table";
 import Text from "./visualizations/Text";
+import Media from "./visualizations/Media";
 import LineChart from "./visualizations/LineChart";
 import BarChart from "./visualizations/BarChart";
 import WaterfallChart from "./visualizations/WaterfallChart";
@@ -29,6 +30,7 @@ export default function () {
   registerVisualization(Gauge);
   registerVisualization(Table);
   registerVisualization(Text);
+  registerVisualization(Media);
   registerVisualization(LineChart);
   registerVisualization(AreaChart);
   registerVisualization(BarChart);

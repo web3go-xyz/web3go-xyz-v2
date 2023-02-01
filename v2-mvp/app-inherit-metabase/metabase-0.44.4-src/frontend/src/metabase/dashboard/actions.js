@@ -303,6 +303,28 @@ export const addTextDashCardToDashboard = function ({ dashId }) {
   });
 };
 
+const addMedia = ( {dashId}, type) => {
+  const virtualTextCard = createCard();
+  virtualTextCard.display = "media";
+  virtualTextCard.archived = false;
+
+  const dashcardOverrides = {
+    card: virtualTextCard,
+    visualization_settings: {
+      virtual_card: virtualTextCard,
+      type
+    },
+  };  
+
+  return addDashCardToDashboard({
+    dashId: dashId,
+    dashcardOverrides: dashcardOverrides,
+  });
+}
+
+export const addVideoDashCardToDashboard =  dashObj => addMedia(dashObj, 'video');
+export const addImageDashCardToDashboard =  dashObj => addMedia(dashObj, 'image');
+
 export const saveDashboardAndCards = createThunkAction(
   SAVE_DASHBOARD_AND_CARDS,
   function () {
