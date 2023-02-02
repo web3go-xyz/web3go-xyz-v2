@@ -67,6 +67,7 @@ export const toggleDark = createAction(TOGGLE_DARK);
 export const changeUserData = createAction(CHANGE_USERDATA);
 export const changeGlobalSearchValue = createAction(CHANGE_GLOBAL_SEARCH_VALUE);
 export const changeMyDashboardList = createAction(CHANGE_MY_DASHBOARD_LIST);
+export const changePublicSpaceCollectionId = createAction('metabase/app/changePublicSpaceCollectionId');
 
 export function getIsNavbarOpen(state) {
   return state.app.isNavbarOpen;
@@ -95,7 +96,6 @@ const isDark = handleActions(
   },
   defaultIsDark == 'true' ? true : false,
 );
-
 const userData = handleActions(
   {
     [CHANGE_USERDATA]: (state, { payload }) => {
@@ -120,11 +120,20 @@ const myDashboardList = handleActions(
   },
   [],
 );
+const publicSpaceCollectionId = handleActions(
+  {
+    ['metabase/app/changePublicSpaceCollectionId']: (state, { payload }) => {
+      return payload
+    },
+  },
+  null,
+);
 export default combineReducers({
   errorPage,
   isNavbarOpen,
   isDark,
   userData,
   globalSearchValue,
-  myDashboardList
+  myDashboardList,
+  publicSpaceCollectionId
 });

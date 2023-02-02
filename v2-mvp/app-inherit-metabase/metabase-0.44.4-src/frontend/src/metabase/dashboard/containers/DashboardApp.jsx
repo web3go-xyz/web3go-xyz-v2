@@ -16,6 +16,7 @@ import Toaster from "metabase/components/Toaster";
 import { useLoadingTimer } from "metabase/hooks/use-loading-timer";
 import { useWebNotification } from "metabase/hooks/use-web-notification";
 import { useOnUnmount } from "metabase/hooks/use-on-unmount";
+import event from '@/web3goLayout/event';
 
 import { fetchDatabaseMetadata } from "metabase/redux/metadata";
 import { getIsNavbarOpen, setErrorPage } from "metabase/redux/app";
@@ -60,7 +61,7 @@ import Dashboards from "metabase/entities/dashboards";
 
 const mapStateToProps = (state, props) => {
   return {
-    dashboardId: props.dashboardId || Urls.extractEntityId(location.pathname.includes('/layout') ? props.location.query.dashboardSlug : props.params.slug),
+    dashboardId: props.dashboardId || Urls.extractEntityId(location.pathname.includes('/layout') ? props.params.dashboardSlug : props.params.slug),
     canManageSubscriptions: canManageSubscriptions(state, props),
     isAdmin: getUserIsAdmin(state, props),
     isNavbarOpen: getIsNavbarOpen(state),
@@ -121,7 +122,22 @@ const DashboardApp = props => {
     timer: 15000,
     onTimeout,
   });
-
+  const saveDashboardHandler = async (dashboardName, successFn) => {
+    await props.setDashboardAttributes({
+      id: props.dashboardId,
+      attributes: { ["name"]: dashboardName },
+    });
+    await props.saveDashboardAndCards(props.dashboardId);
+    if (successFn) {
+      successFn();
+    }
+  };
+  useEffect(() => {
+    event.on('saveDashboard', saveDashboardHandler)
+    return () => {
+      event.off('saveDashboard', saveDashboardHandler)
+    };
+  }, []);
   const [requestPermission, showNotification] = useWebNotification();
 
   useOnUnmount(props.reset);

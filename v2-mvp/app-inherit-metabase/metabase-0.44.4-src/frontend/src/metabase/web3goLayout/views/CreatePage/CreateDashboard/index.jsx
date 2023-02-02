@@ -2,15 +2,19 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Spin, Upload, Message, AutoComplete, Tabs, Typography, Tooltip } from '@arco-design/web-react';
 import { IconLaunch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
-import { push } from "react-router-redux";
+import { replace } from "react-router-redux";
 import cx from "classnames";
 import AddChartModal from './AddChartModal';
 import * as Urls from "metabase/lib/urls";
 import { DashboardApi } from '@/services';
 import slugg from "slugg";
 import DashboardApp from "metabase/dashboard/containers/DashboardApp";
+import * as dashboardActions from "@/dashboard/actions";
+import { publicSpaceCollectionId } from "metabase/redux/app";
+import event from '@/web3goLayout/event';
+import { LayoutDashboardApi } from "../../../../services";
 
 
 import { addTextDashCardToDashboard, addImageDashCardToDashboard, addVideoDashCardToDashboard } from "../../../../dashboard/actions";
@@ -21,10 +25,12 @@ const mapStateToProps = state => {
         currentUser: state.currentUser,
         isDark: state.app.isDark,
         userData: state.app.userData,
+        publicSpaceCollectionId: state.app.publicSpaceCollectionId,
     }
 };
 const mapDispatchToProps = {
-    push,
+    ...dashboardActions,
+    replace,
 
 };
 const FormItem = Form.Item;
@@ -35,30 +41,61 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            createDefaultDbLoading: false,
             ifEditDashboardName: false,
             dashboardName: 'New dashboard',
             tagList: ['aaa'],
             ifEditTag: false,
-            addTagName: ''
+            addTagName: '',
+            allTagList: [],
+            savedAllTagList: [],
+            currentDashboardId: null
         }
         this.dashboardNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
         this.AddChartModalRef = React.createRef();
     }
     async componentDidMount() {
-        if (!this.props.location.query.dashboardSlug) {
+        if (!this.props.params.dashboardSlug) {
+            this.setState({
+                createDefaultDbLoading: true
+            });
             const result = await DashboardApi.create({
                 "name": this.state.dashboardName,
-                "collection_id": 40
+                "collection_id": this.props.publicSpaceCollectionId
             });
             const slug = slugg(result.name);
             const dashboardSlug = slug ? `${result.id}-${slug}` : result.id;
-            this.props.push({
-                pathname: this.props.location.pathname,
-                query: { dashboardSlug: dashboardSlug }
+            this.setState({
+                createDefaultDbLoading: false
             });
+            this.props.replace({
+                pathname: this.props.location.pathname + '/' + dashboardSlug,
+            });
+            return;
         }
-
+        const slug = this.props.params.dashboardSlug;
+        const currentDashboardId = Urls.extractEntityId(slug);
+        this.setState({
+            currentDashboardId
+        });
+        this.getDashboardTags(currentDashboardId);
+        this.getAllTagList();
+    }
+    getDashboardTags = (currentDashboardId) => {
+        LayoutDashboardApi.listDashboardTags(currentDashboardId)().then(d => {
+            this.setState({
+                tagList: d.map(v => v.tag_name)
+            });
+        })
+    }
+    getAllTagList = () => {
+        LayoutDashboardApi.listAllTags().then(d => {
+            this.setState({
+                savedAllTagList: d,
+                allTagList: d.map(v => v.tagName)
+            });
+        });
     }
     changeDashboardName = (value) => {
         this.setState({
@@ -86,6 +123,12 @@ class Component extends React.Component {
         })
     }
     finishEditTag = () => {
+        if (!this.state.addTagName) {
+            this.setState({
+                ifEditTag: false
+            })
+            return;
+        }
         this.setState({
             tagList: [...this.state.tagList, this.state.addTagName],
             ifEditTag: false
@@ -98,17 +141,14 @@ class Component extends React.Component {
             tagList,
         })
     }
-    handleCancel=()=>{
-        
+    handleCancel = () => {
+        LayoutDashboardApi.AddTag({
+            "dashboardId": 271,
+            "tagName": "hhh"
+        });
     }
     handleAddChart = () => {
         this.AddChartModalRef.init();
-        // const url = Urls.newQuestion({
-        //     mode: "notebook",
-        //     creationType: "custom_question",
-        // })
-        // console.log('111', url);
-        // this.props.push(url);
     }
 
   onAddTextBox = () => {
@@ -125,8 +165,25 @@ class Component extends React.Component {
     const {dispatch, getState} = this.DashbaordAppRef.store;
     addVideoDashCardToDashboard({dashId: getState().dashboard.dashboardId })(dispatch, getState);
   }
+    addChartToDashboard = (cardId) => {
+        this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
+    }
+    handleSaveDashboard = () => {
+        event.emit('saveDashboard', this.state.dashboardName, () => {
+            this.props.push('/');
+        });
+    }
     render() {
-        const { tagList, dashboardName, ifEditDashboardName, ifEditTag } = this.state;
+        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList } = this.state;
+        if (createDefaultDbLoading) {
+            return <Spin style={
+                {
+                    display: 'block', minHeight: 100, display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }
+            }></Spin >
+        }
         return (
             <div className="web3go-dashboard-create-page">
                 <div className="p-top">
@@ -151,7 +208,8 @@ class Component extends React.Component {
                                 {
                                     ifEditTag ? (
                                         <div className="add-tag hover-item">
-                                            <Input ref={this.tagInputRef} className="input" type="text" onChange={this.changeTagName} onBlur={this.finishEditTag} onPressEnter={this.finishEditTag} />
+                                            <AutoComplete ref={this.tagInputRef} data={allTagList} className="input" type="text" onChange={this.changeTagName} onBlur={this.finishEditTag} onPressEnter={this.finishEditTag} ></AutoComplete>
+                                            {/* <Input ref={this.tagInputRef} className="input" type="text" onChange={this.changeTagName} onBlur={this.finishEditTag} onPressEnter={this.finishEditTag} /> */}
                                         </div>
                                     ) : (
                                         <div className="add-tag hover-item" onClick={this.handleEditTag}>
@@ -165,8 +223,8 @@ class Component extends React.Component {
                     </div>
                     <div className="pt-right">
                         <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
-                        <Button className="btn">Save as Draft</Button>
-                        <Button className="btn" type="primary" >Post</Button>
+                        <Button className="btn" onClick={this.handleSaveDashboard}>Save as Draft</Button>
+                        <Button className="btn" type="primary">Post</Button>
                     </div>
                 </div>
                 <div className="p-operation-wrap">
@@ -192,11 +250,11 @@ class Component extends React.Component {
                     </div>
                 </div>
                 <div className="p-main">
-                    {this.props.location.query.dashboardSlug ?
+                    {this.props.params.dashboardSlug ?
                       <DashboardApp {...this.props} ref={(ref) => this.DashbaordAppRef = ref} /> 
                     : null}
                 </div>
-                <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref}></AddChartModal>
+                <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} addChartToDashboard={this.addChartToDashboard}></AddChartModal>
             </div >
         )
     }

@@ -3,6 +3,7 @@ import React from "react";
 import { Motion, spring } from "react-motion";
 import _ from "underscore";
 import { t } from "ttag";
+import { connect } from "react-redux";
 
 import ExplicitSize from "metabase/components/ExplicitSize";
 import Popover from "metabase/components/Popover";
@@ -57,29 +58,48 @@ const DEFAULT_POPOVER_STATE = {
   breakoutIndex: null,
   breakoutPopoverTarget: null,
 };
+const mapStateToProps = state => {
+  return {
+    publicSpaceCollectionId: state.app.publicSpaceCollectionId,
+  }
+};
+const mapDispatchToProps = {
 
+};
 class View extends React.Component {
-  state = {
-    ...DEFAULT_POPOVER_STATE,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      ...DEFAULT_POPOVER_STATE,
+    }
+    this.addChartSaveHandler = async (chartName, successFn) => {
+      await this.saveOrCreateQuestion(chartName);
+      if (successFn) {
+        successFn(this.props.card.id);
+      }
+    }
+  }
+  // state = {
+  //   ...DEFAULT_POPOVER_STATE,
+  // };
+  
   componentDidMount() {
-    event.on('addChartSave', (chartName) => {
-      this.saveOrCreateQuestion(chartName);
-    })
+    event.on('addChartSave', this.addChartSaveHandler)
+  }
+  componentWillUnmount() {
+    event.off('addChartSave', this.addChartSaveHandler)
   }
   saveOrCreateQuestion = async (chartName) => {
     let { card, originalCard } = this.props;
     const saveType = originalCard && !originalCard.dataset && originalCard.can_write
       ? "overwrite"
       : "create"
-    console.log('111', this.props);
-    const collectionList = await CollectionsApi.list();
-    const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
+
     card = {
       ...card,
       name: chartName,
       description: null,
-      collection_id: publicSpaceCollection.id,
+      collection_id: this.props.publicSpaceCollectionId,
     };
     if (saveType === "create") {
       await this.props.onCreate(card);
@@ -553,4 +573,5 @@ class View extends React.Component {
   }
 }
 
-export default ExplicitSize({ refreshMode: "debounceLeading" })(View);
+// export default ExplicitSize({ refreshMode: "debounceLeading" })(View);
+export default connect(mapStateToProps, mapDispatchToProps)(ExplicitSize({ refreshMode: "debounceLeading" })(View))
