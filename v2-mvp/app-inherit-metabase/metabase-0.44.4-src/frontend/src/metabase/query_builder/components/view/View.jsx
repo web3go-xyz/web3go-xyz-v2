@@ -75,14 +75,14 @@ class View extends React.Component {
     this.addChartSaveHandler = async (chartName, successFn) => {
       await this.saveOrCreateQuestion(chartName);
       if (successFn) {
-        successFn();
+        successFn(this.props.card.id);
       }
     }
   }
   // state = {
   //   ...DEFAULT_POPOVER_STATE,
   // };
-
+  
   componentDidMount() {
     event.on('addChartSave', this.addChartSaveHandler)
   }

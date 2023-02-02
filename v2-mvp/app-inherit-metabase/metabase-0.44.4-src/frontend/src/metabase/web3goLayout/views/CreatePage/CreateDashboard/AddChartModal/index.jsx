@@ -59,7 +59,6 @@ class Component extends React.Component {
         this.setState({
             visible: true
         });
-        this.props.changeShowDashboardAppComponent(false);
         this.getDatasetList();
     }
     getDatasetList = () => {
@@ -134,7 +133,8 @@ class Component extends React.Component {
         });
     }
     handleOk = () => {
-        event.emit('addChartSave', this.state.chartName, () => {
+        event.emit('addChartSave', this.state.chartName, async (cardId) => {
+            await this.props.addChartToDashboard(cardId);
             this.setState({
                 visible: false
             })
@@ -145,7 +145,6 @@ class Component extends React.Component {
             visible: false,
             datasetList: []
         });
-        this.props.changeShowDashboardAppComponent(true);
         this.props.push({
             pathname: window.location.pathname,
             hash: '',

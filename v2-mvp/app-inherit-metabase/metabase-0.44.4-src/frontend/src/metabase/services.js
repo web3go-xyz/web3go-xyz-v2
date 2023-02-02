@@ -51,6 +51,11 @@ export const LayoutDashboardApi = {
   previewUrl: (id) => WPOST(WEB3GO_BASE_URL + `/api/v2/dashboard/update/preview-url/${id}`),
   getShareUrl: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/listFavorites"),
   getDataSets: WGET(WEB3GO_BASE_URL + "/api/v2/dashboard/getDataSets"),
+  markTags: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/markTags"),
+  removeTags: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/removeTags"),
+  listDashboardTags: (id) => WGET(WEB3GO_BASE_URL + `/api/v2/tag/listDashboardTags/${id}`),
+  AddTag: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/AddTag"),
+
 };
 export const LayoutCreatorApi = {
   listCreators: WPOST(WEB3GO_BASE_URL + "/api/v2/creator/listCreators"),
