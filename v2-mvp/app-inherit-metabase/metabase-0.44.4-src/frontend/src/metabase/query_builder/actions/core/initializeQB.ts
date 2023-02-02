@@ -293,7 +293,6 @@ async function handleQBInit(
   });
 
   const objectId = params?.objectId || queryParams?.objectId;
-
   dispatch({
     type: INITIALIZE_QB,
     payload: {

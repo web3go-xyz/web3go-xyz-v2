@@ -2,13 +2,16 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Spin, Tabs, Typography, Tooltip } from '@arco-design/web-react';
 import { IconLaunch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
 import { push } from "react-router-redux";
 import cx from "classnames";
 import CreateDataset from './CreateDataset';
 import CreateDashboard from './CreateDashboard';
 import { pseudoStyle } from "styled-system";
+import { CollectionsApi } from '@/services'
+import { publicSpaceCollectionId, changePublicSpaceCollectionId } from "metabase/redux/app";
+
 
 const { Text } = Typography;
 const mapStateToProps = state => {
@@ -16,11 +19,12 @@ const mapStateToProps = state => {
         currentUser: state.currentUser,
         isDark: state.app.isDark,
         userData: state.app.userData,
+        publicSpaceCollectionId: state.app.publicSpaceCollectionId,
     }
 };
 const mapDispatchToProps = {
     push,
-
+    changePublicSpaceCollectionId
 };
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
@@ -29,7 +33,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tabIndex: 1
+            tabIndex: 1,
         }
         this.ShareModalRef = React.createRef();
     }
@@ -38,8 +42,24 @@ class Component extends React.Component {
             tabIndex
         });
     }
+    async componentDidMount() {
+        //测试用，加快速度
+        this.props.changePublicSpaceCollectionId(40);
+
+        // const collectionList = await CollectionsApi.list();
+        // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
+        // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
+    }
     render() {
-        const { detailData } = this.state;
+        if (!this.props.publicSpaceCollectionId) {
+            return <Spin style={
+                {
+                    display: 'block', minHeight: 100, display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }
+            }></Spin >
+        }
         return (
             <div className="web3go-create-page">
                 <div className="p-side-bar">

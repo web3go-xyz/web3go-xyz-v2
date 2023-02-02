@@ -260,6 +260,14 @@ export const getRoutes = store => (
               path="create"
               component={CreatePage}
             />
+            <Route
+              path="create/:dashboardSlug"
+              component={CreatePage}
+            />
+            <Route
+              path="createcreate/:dashboardSlug/:chartSlug"
+              component={CreatePage}
+            />
           </Route>
         </Route>
       </Route>

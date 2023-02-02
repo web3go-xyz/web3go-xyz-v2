@@ -163,14 +163,14 @@ const QuestionActions = ({
     //   action: () => onOpenModal(MODAL_TYPES.MOVE),
     //   testId: MOVE_TESTID,
     // });
-    // if (!isDataset) {
-    //   extraButtons.push({
-    //     title: t`Turn into a model`,
-    //     icon: "model",
-    //     action: handleTurnToModel,
-    //     testId: TURN_INTO_DATASET_TESTID,
-    //   });
-    // }
+    if (!isDataset) {
+      extraButtons.push({
+        title: t`Turn into a model`,
+        icon: "model",
+        action: handleTurnToModel,
+        testId: TURN_INTO_DATASET_TESTID,
+      });
+    }
     if (isDataset) {
       extraButtons.push({
         title: t`Turn back to saved question`,

@@ -8,7 +8,8 @@ import { push } from "react-router-redux";
 import cx from "classnames";
 import QueryBuilder from "metabase/query_builder/containers/QueryBuilder";
 import event from '@/web3goLayout/event';
-import { GET } from "metabase/lib/api";
+import { LayoutDashboardApi } from '@/services'
+// import { GET } from "metabase/lib/api";
 import { parse as parseUrl } from "url";
 
 import {
@@ -64,13 +65,19 @@ class Component extends React.Component {
         this.setState({
             datasetLoading: true
         })
-        const getVirtualDatasetTables = GET("/api/database/:dbId/datasets/:schemaName");
-        getVirtualDatasetTables({ dbId: -1337, schemaName: 'PublicSpace' }).then(d => {
+        LayoutDashboardApi.getDataSets().then(d => {
             this.setState({
                 datasetList: d,
                 datasetLoading: false
             });
         })
+        // const getVirtualDatasetTables = GET("/api/database/:dbId/datasets/:schemaName");
+        // getVirtualDatasetTables({ dbId: -1337, schemaName: 'PublicSpace' }).then(d => {
+        //     this.setState({
+        //         datasetList: d,
+        //         datasetLoading: false
+        //     });
+        // })
     }
     changeChartName = (value) => {
         this.setState({
@@ -112,6 +119,7 @@ class Component extends React.Component {
         const locationDescriptor = {
             pathname: window.location.pathname,
             search: urlParsed.search,
+            // hash: encodeURIComponent(urlParsed.hash),
             hash: urlParsed.hash,
             state: newState
         };
@@ -125,7 +133,11 @@ class Component extends React.Component {
         });
     }
     handleOk = () => {
-        event.emit('addChartSave', this.state.chartName);
+        event.emit('addChartSave', this.state.chartName, () => {
+            this.setState({
+                visible: false
+            })
+        });
     }
     handleCancel = () => {
         this.setState({

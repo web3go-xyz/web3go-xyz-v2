@@ -171,7 +171,6 @@ export const updateUrl = createThunkAction(
       const { currentState } = getState().qb;
       const queryParams = preserveParameters ? getCurrentQueryParams() : {};
       const url = getURLForCardState(newState, dirty, queryParams, objectId);
-
       const urlParsed = parseUrl(url);
       const locationDescriptor = {
         pathname: location.pathname.includes('/layout') ? window.location.pathname : getPathNameFromQueryBuilderMode({

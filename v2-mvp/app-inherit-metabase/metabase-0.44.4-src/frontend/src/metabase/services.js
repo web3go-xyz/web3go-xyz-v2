@@ -50,6 +50,7 @@ export const LayoutDashboardApi = {
   listFavorites: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/listFavorites"),
   previewUrl: (id) => WPOST(WEB3GO_BASE_URL + `/api/v2/dashboard/update/preview-url/${id}`),
   getShareUrl: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/listFavorites"),
+  getDataSets: WGET(WEB3GO_BASE_URL + "/api/v2/dashboard/getDataSets"),
 };
 export const LayoutCreatorApi = {
   listCreators: WPOST(WEB3GO_BASE_URL + "/api/v2/creator/listCreators"),

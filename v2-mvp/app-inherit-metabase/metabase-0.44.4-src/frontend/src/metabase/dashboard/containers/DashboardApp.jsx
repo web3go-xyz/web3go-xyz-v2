@@ -60,7 +60,7 @@ import Dashboards from "metabase/entities/dashboards";
 
 const mapStateToProps = (state, props) => {
   return {
-    dashboardId: props.dashboardId || Urls.extractEntityId(location.pathname.includes('/layout') ? props.location.query.dashboardSlug : props.params.slug),
+    dashboardId: props.dashboardId || Urls.extractEntityId(location.pathname.includes('/layout') ? props.params.dashboardSlug : props.params.slug),
     canManageSubscriptions: canManageSubscriptions(state, props),
     isAdmin: getUserIsAdmin(state, props),
     isNavbarOpen: getIsNavbarOpen(state),
