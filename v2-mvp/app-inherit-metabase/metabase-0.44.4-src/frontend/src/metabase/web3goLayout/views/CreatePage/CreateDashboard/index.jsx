@@ -40,7 +40,8 @@ class Component extends React.Component {
             dashboardName: 'New dashboard',
             tagList: ['aaa'],
             ifEditTag: false,
-            addTagName: ''
+            addTagName: '',
+            showDashboardAppComponent: true
         }
         this.dashboardNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
@@ -65,6 +66,11 @@ class Component extends React.Component {
             });
         }
 
+    }
+    changeShowDashboardAppComponent = (value) => {
+        this.setState({
+            showDashboardAppComponent: value
+        })
     }
     changeDashboardName = (value) => {
         this.setState({
@@ -122,7 +128,7 @@ class Component extends React.Component {
         this.props.addCardToDashboard({ dashId: dashboardId, cardId: 6 });
     }
     render() {
-        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading } = this.state;
+        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, showDashboardAppComponent } = this.state;
         if (createDefaultDbLoading) {
             return <Spin style={
                 {
@@ -197,9 +203,9 @@ class Component extends React.Component {
                     </div>
                 </div>
                 <div className="p-main">
-                    {/* {this.props.params.dashboardSlug ? <DashboardApp {...this.props}></DashboardApp> : null} */}
+                    {this.props.params.dashboardSlug && showDashboardAppComponent ? <DashboardApp {...this.props}></DashboardApp> : null}
                 </div>
-                <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref}></AddChartModal>
+                <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} changeShowDashboardAppComponent={this.changeShowDashboardAppComponent}></AddChartModal>
             </div >
         )
     }

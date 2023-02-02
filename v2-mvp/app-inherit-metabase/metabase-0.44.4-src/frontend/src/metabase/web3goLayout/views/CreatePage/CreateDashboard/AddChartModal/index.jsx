@@ -59,6 +59,7 @@ class Component extends React.Component {
         this.setState({
             visible: true
         });
+        this.props.changeShowDashboardAppComponent(false);
         this.getDatasetList();
     }
     getDatasetList = () => {
@@ -144,6 +145,7 @@ class Component extends React.Component {
             visible: false,
             datasetList: []
         });
+        this.props.changeShowDashboardAppComponent(true);
         this.props.push({
             pathname: window.location.pathname,
             hash: '',
