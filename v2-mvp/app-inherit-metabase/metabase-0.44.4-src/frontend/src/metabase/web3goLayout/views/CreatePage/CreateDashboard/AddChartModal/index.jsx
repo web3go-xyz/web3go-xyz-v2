@@ -225,8 +225,8 @@ class Component extends React.Component {
                         <Button className="btn" type="secondary">duplicate from other dashboards</Button>
                     </div>
                     <div className="f-right">
-                        <Button className="btn" type="primary" onClick={this.handleCancel}>Cancel</Button>
-                        <Button className="btn" type="secondary" onClick={this.handleOk}>OK</Button>
+                        <Button className="btn" type="secondary" onClick={this.handleCancel}>Cancel</Button>
+                        <Button className="btn" type="primary" onClick={this.handleOk}>OK</Button>
                     </div>
                 </div>
             </Drawer>
