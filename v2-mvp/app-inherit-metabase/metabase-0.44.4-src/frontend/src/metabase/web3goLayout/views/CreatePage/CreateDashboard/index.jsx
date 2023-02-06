@@ -44,7 +44,8 @@ class Component extends React.Component {
             createDefaultDbLoading: false,
             ifEditDashboardName: false,
             dashboardName: 'New dashboard',
-            tagList: ['aaa'],
+            tagList: [],
+            savedCurrentTagList: [],
             ifEditTag: false,
             addTagName: '',
             allTagList: [],
@@ -85,7 +86,8 @@ class Component extends React.Component {
     getDashboardTags = (currentDashboardId) => {
         LayoutDashboardApi.listDashboardTags(currentDashboardId)().then(d => {
             this.setState({
-                tagList: d.map(v => v.tag_name)
+                tagList: d.map(v => v.tag_name),
+                savedCurrentTagList: d
             });
         })
     }
@@ -142,34 +144,68 @@ class Component extends React.Component {
         })
     }
     handleCancel = () => {
-        LayoutDashboardApi.AddTag({
-            "dashboardId": 271,
-            "tagName": "hhh"
+        this.props.router.goBack();
+    }
+    saveTag = () => {
+        const { tagList, savedAllTagList, savedCurrentTagList, currentDashboardId } = this.state;
+        const removeTagList = [];
+        const markTagList = [];
+        tagList.forEach(v => {
+            if (!savedCurrentTagList.find(sv => sv.tag_name == v)) {
+                const find = savedAllTagList.find(sv => sv.tagName == v)
+                if (find) {
+                    markTagList.push(find);
+
+                } else {
+                    LayoutDashboardApi.AddTag({
+                        "dashboardId": currentDashboardId,
+                        "tagName": v
+                    })
+                }
+            }
         });
+        savedCurrentTagList.forEach(v => {
+            if (!tagList.includes(v.tag_name)) {
+                removeTagList.push(v);
+            }
+        })
+        if (markTagList.length) {
+            LayoutDashboardApi.markTags({
+                "dashboardId": currentDashboardId,
+                "tagIds": markTagList.map(v => v.id)
+            })
+        }
+        if (removeTagList.length) {
+            LayoutDashboardApi.removeTags({
+                "dashboardId": currentDashboardId,
+                "tagIds": removeTagList.map(v => v.id)
+            })
+        }
     }
     handleAddChart = () => {
         this.AddChartModalRef.init();
     }
 
-  onAddTextBox = () => {
-    const {dispatch, getState} = this.DashbaordAppRef.store;
-    addTextDashCardToDashboard({dashId: getState().dashboard.dashboardId })(dispatch, getState);
-  }
+    onAddTextBox = () => {
+        const { dispatch, getState } = this.DashbaordAppRef.store;
+        addTextDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
+    }
 
-  onAddImageBox = () => {
-    const {dispatch, getState} = this.DashbaordAppRef.store;
-    addImageDashCardToDashboard({dashId: getState().dashboard.dashboardId })(dispatch, getState);
-  }
+    onAddImageBox = () => {
+        const { dispatch, getState } = this.DashbaordAppRef.store;
+        addImageDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
+    }
 
-  onAddVideoBox = () => {
-    const {dispatch, getState} = this.DashbaordAppRef.store;
-    addVideoDashCardToDashboard({dashId: getState().dashboard.dashboardId })(dispatch, getState);
-  }
+    onAddVideoBox = () => {
+        const { dispatch, getState } = this.DashbaordAppRef.store;
+        addVideoDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
+    }
     addChartToDashboard = (cardId) => {
         this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
     }
     handleSaveDashboard = () => {
         event.emit('saveDashboard', this.state.dashboardName, () => {
+            this.saveTag();
             this.props.push('/');
         });
     }
@@ -251,8 +287,8 @@ class Component extends React.Component {
                 </div>
                 <div className="p-main">
                     {this.props.params.dashboardSlug ?
-                      <DashboardApp {...this.props} ref={(ref) => this.DashbaordAppRef = ref} /> 
-                    : null}
+                        <DashboardApp {...this.props} ref={(ref) => this.DashbaordAppRef = ref} />
+                        : null}
                 </div>
                 <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} addChartToDashboard={this.addChartToDashboard}></AddChartModal>
             </div >
