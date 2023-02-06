@@ -16,12 +16,12 @@ import { publicSpaceCollectionId } from "metabase/redux/app";
 import event from '@/web3goLayout/event';
 import { LayoutDashboardApi } from "../../../../services";
 
-
 import { addTextDashCardToDashboard, addImageDashCardToDashboard, addVideoDashCardToDashboard } from "../../../../dashboard/actions";
 
 const { Text } = Typography;
-const mapStateToProps = state => {
+const mapStateToProps = (state, props) => {
     return {
+        key: props.location.params,
         currentUser: state.currentUser,
         isDark: state.app.isDark,
         userData: state.app.userData,
@@ -57,6 +57,14 @@ class Component extends React.Component {
         this.AddChartModalRef = React.createRef();
     }
     async componentDidMount() {
+        this.init();
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps.params !== this.props.params) {
+            this.init();
+        }
+    }
+    init = async () => {
         if (!this.props.params.dashboardSlug) {
             this.setState({
                 createDefaultDbLoading: true
@@ -203,6 +211,17 @@ class Component extends React.Component {
     addChartToDashboard = (cardId) => {
         this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
     }
+    handlePostDashboard = () => {
+        event.emit('saveDashboard', this.state.dashboardName, async () => {
+            this.saveTag();
+            await this.props.createPublicLink({ id: this.state.currentDashboardId });
+            await LayoutDashboardApi.externalEvent({
+                "topic": "dashboard.changed",
+                "data": this.state.currentDashboardId
+            })
+            this.props.push('/');
+        });
+    }
     handleSaveDashboard = () => {
         event.emit('saveDashboard', this.state.dashboardName, () => {
             this.saveTag();
@@ -260,7 +279,7 @@ class Component extends React.Component {
                     <div className="pt-right">
                         <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
                         <Button className="btn" onClick={this.handleSaveDashboard}>Save as Draft</Button>
-                        <Button className="btn" type="primary">Post</Button>
+                        <Button className="btn" onClick={this.handlePostDashboard} type="primary">Post</Button>
                     </div>
                 </div>
                 <div className="p-operation-wrap">
