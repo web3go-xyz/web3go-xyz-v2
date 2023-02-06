@@ -7,6 +7,7 @@ import { IconLaunch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arc
 import { replace } from "react-router-redux";
 import cx from "classnames";
 import AddChartModal from './AddChartModal';
+import AddFilterDrawer from './AddFilterDrawer';
 import * as Urls from "metabase/lib/urls";
 import { DashboardApi } from '@/services';
 import slugg from "slugg";
@@ -50,7 +51,8 @@ class Component extends React.Component {
             addTagName: '',
             allTagList: [],
             savedAllTagList: [],
-            currentDashboardId: null
+            currentDashboardId: null,
+            addFilterDrawerVisible: false
         }
         this.dashboardNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
@@ -63,6 +65,11 @@ class Component extends React.Component {
         if (prevProps.params !== this.props.params) {
             this.init();
         }
+    }
+    changeAddFilterDrawerVisible = (value) => {
+        this.setState({
+            addFilterDrawerVisible: value
+        });
     }
     init = async () => {
         if (!this.props.params.dashboardSlug) {
@@ -193,7 +200,9 @@ class Component extends React.Component {
     handleAddChart = () => {
         this.AddChartModalRef.init();
     }
-
+    handleAddFilter = () => {
+        this.changeAddFilterDrawerVisible(true);
+    }
     onAddTextBox = () => {
         const { dispatch, getState } = this.DashbaordAppRef.store;
         addTextDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
@@ -228,8 +237,9 @@ class Component extends React.Component {
             this.props.push('/');
         });
     }
+
     render() {
-        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList } = this.state;
+        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList, addFilterDrawerVisible } = this.state;
         if (createDefaultDbLoading) {
             return <Spin style={
                 {
@@ -287,7 +297,7 @@ class Component extends React.Component {
                         <img src={require("@/web3goLayout/assets/dashboardCreate/chart.png")} alt="" />
                         <span>Add Chart</span>
                     </div>
-                    <div className="item hover-item">
+                    <div className="item hover-item" onClick={this.handleAddFilter}>
                         <img src={require("@/web3goLayout/assets/dashboardCreate/filter.png")} alt="" />
                         <span>Add Filter</span>
                     </div>
@@ -310,6 +320,7 @@ class Component extends React.Component {
                         : null}
                 </div>
                 <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} addChartToDashboard={this.addChartToDashboard}></AddChartModal>
+                <AddFilterDrawer {...this.props} addFilterDrawerVisible={addFilterDrawerVisible} changeAddFilterDrawerVisible={this.changeAddFilterDrawerVisible}></AddFilterDrawer>
             </div >
         )
     }

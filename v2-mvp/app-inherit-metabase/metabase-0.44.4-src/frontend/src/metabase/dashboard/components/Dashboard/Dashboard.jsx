@@ -287,17 +287,20 @@ class Dashboard extends Component {
                 isFullscreen={isFullscreen}
                 isNightMode={shouldRenderAsNightMode}
               >
-                <DashboardHeader
-                  {...this.props}
-                  uploadThumbnail={this.uploadThumbnail}
-                  onEditingChange={this.setEditing}
-                  setDashboardAttribute={this.setDashboardAttribute}
-                  addParameter={addParameter}
-                  parametersWidget={parametersWidget}
-                  onSharingClick={this.onSharingClick}
-                  onToggleAddQuestionSidebar={this.onToggleAddQuestionSidebar}
-                  showAddQuestionSidebar={showAddQuestionSidebar}
-                />
+                {
+                  location.pathname.includes('/layout') ? null :
+                    <DashboardHeader
+                      {...this.props}
+                      uploadThumbnail={this.uploadThumbnail}
+                      onEditingChange={this.setEditing}
+                      setDashboardAttribute={this.setDashboardAttribute}
+                      addParameter={addParameter}
+                      parametersWidget={parametersWidget}
+                      onSharingClick={this.onSharingClick}
+                      onToggleAddQuestionSidebar={this.onToggleAddQuestionSidebar}
+                      showAddQuestionSidebar={showAddQuestionSidebar}
+                    />
+                }
 
                 {shouldRenderParametersWidgetInEditMode && (
                   <ParametersWidgetContainer
