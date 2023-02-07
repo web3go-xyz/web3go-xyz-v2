@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors, Request } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiOkResponse, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { createWriteStream, existsSync, mkdirSync } from 'fs';
@@ -20,6 +20,8 @@ import { AppConfig } from 'src/base/setting/appConfig';
 import { Dataset } from 'src/base/entity/platform-dataset/Dataset';
 import { ReportCard } from 'src/base/entity/metabase/ReportCard';
 import { randomUUID } from 'crypto';
+import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
+
 
 
 
@@ -29,18 +31,28 @@ import { randomUUID } from 'crypto';
 @ApiTags('/api/v2/dashboard')
 export class DashboardController {
     logger: W3Logger;
-    constructor(private readonly service: DashboardService) {
+    constructor(private readonly service: DashboardService,
+      private readonly jwtService: JWTAuthService) {
         this.logger = new W3Logger(`DashboardController`);
+    }
+
+    private getUserSession(/*@Request() */rawRequest) {
+      try {
+          return this.jwtService.decodeAuthUserFromHttpRequest(rawRequest);
+      } catch(e) {
+          // mute invalid sessions, jus treated as unlogged users.
+      }
+      return null;
     }
 
     @AllowAnonymous()
     @Post('/list')
     @ApiOperation({ summary: 'list dashboard' })
     @ApiOkResponse({ type: QueryDashboardListResponse })
-    async list(@Body() param: QueryDashboardListRequest): Promise<QueryDashboardListResponse> {
+    async list(@Body() param: QueryDashboardListRequest, @Request() rawRequest): Promise<QueryDashboardListResponse> {
 
         this.logger.debug(`list:${JSON.stringify(param)}`);
-        return await this.service.list(param);
+        return await this.service.list(param, this.getUserSession(rawRequest));
     }
 
     @AllowAnonymous()
@@ -68,10 +80,10 @@ export class DashboardController {
     @Post('/searchRelatedDashboards')
     @ApiOperation({ summary: 'search related dashboards which has similar tags' })
     @ApiOkResponse({ type: QueryDashboardListResponse })
-    async searchRelatedDashboards(@Body() param: QueryRelatedDashboardsRequest): Promise<QueryDashboardListResponse> {
+    async searchRelatedDashboards(@Body() param: QueryRelatedDashboardsRequest, @Request() rawRequest): Promise<QueryDashboardListResponse> {
 
         this.logger.debug(`searchRelatedDashboards:${JSON.stringify(param)}`);
-        return await this.service.searchRelatedDashboards(param);
+        return await this.service.searchRelatedDashboards(param, this.getUserSession(rawRequest));
     }
 
 
