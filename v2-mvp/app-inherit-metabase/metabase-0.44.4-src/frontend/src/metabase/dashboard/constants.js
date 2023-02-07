@@ -4,4 +4,5 @@ export const SIDEBAR_NAME = {
   editParameter: "editParameter",
   sharing: "sharing",
   info: "info",
+  newCardEditor: "newCardEditor",
 };

@@ -23,6 +23,7 @@ import DashboardEmptyState from "./DashboardEmptyState/DashboardEmptyState";
 import { updateParametersWidgetStickiness } from "./stickyParameters";
 import { getValuePopulatedParameters } from "metabase/parameters/utils/parameter-values";
 import domtoimage from 'dom-to-image';
+import { SIDEBAR_NAME } from "../../constants";
 
 const SCROLL_THROTTLE_INTERVAL = 1000 / 24;
 
@@ -89,6 +90,7 @@ class Dashboard extends Component {
     closeSidebar: PropTypes.func.isRequired,
     openAddQuestionSidebar: PropTypes.func.isRequired,
     showAddQuestionSidebar: PropTypes.bool.isRequired,
+    openNewCardEditorSidebar: PropTypes.func.isRequired,
     embedOptions: PropTypes.object,
   };
 
@@ -191,12 +193,22 @@ class Dashboard extends Component {
     });
   };
 
-  onToggleAddQuestionSidebar = () => {
+  onToggleAddQuestionSidebar = (dashcardId, cardId) => {
     if (this.props.showAddQuestionSidebar) {
       this.props.closeSidebar();
     } else {
-      this.props.openAddQuestionSidebar();
+      this.props.openAddQuestionSidebar(dashcardId, cardId);
     }
+  };
+
+  onToggleNewCardEditorSidebar = ({type, dashboardId, dashcardId, action, series, onReplaceAllVisualizationSettings }) => {
+    if (this.props.sidebar.name === SIDEBAR_NAME.newCardEditor) {
+      this.props.closeSidebar();
+      if (this.props.sidebar.props.params.type === type) {
+        return;
+      }
+    } 
+    this.props.openNewCardEditorSidebar({type, dashboardId, dashcardId, action, series, onReplaceAllVisualizationSettings });
   };
 
   onCancel = () => {
@@ -298,6 +310,7 @@ class Dashboard extends Component {
                       parametersWidget={parametersWidget}
                       onSharingClick={this.onSharingClick}
                       onToggleAddQuestionSidebar={this.onToggleAddQuestionSidebar}
+                      onToggleNewCardEditorSidebar={this.onToggleNewCardEditorSidebar}
                       showAddQuestionSidebar={showAddQuestionSidebar}
                     />
                 }
@@ -339,6 +352,7 @@ class Dashboard extends Component {
                       {...this.props}
                       isNightMode={shouldRenderAsNightMode}
                       onEditingChange={this.setEditing}
+                      onToggleNewCardEditorSidebar={this.onToggleNewCardEditorSidebar}
                     />
                   ) : (
                     <DashboardEmptyState

@@ -60,7 +60,15 @@ export class Api extends EventEmitter {
       return async (data, invocationOptions = {}) => {
         const options = { ...defaultOptions, ...invocationOptions };
         let url = urlTemplate;
-        data = { ...data };
+        if (!options.isUpload) {
+          data = { ...data };
+           // remove undefined
+            for (const name in data) {
+              if (data[name] === undefined) {
+                delete data[name];
+              }
+            }
+        }
         // 此方法去掉了端口号，先注释
         // for (const tag of url.match(/:\w+/g) || []) {
         //   const paramName = tag.slice(1);
@@ -75,12 +83,7 @@ export class Api extends EventEmitter {
         //   }
         //   url = url.replace(tag, value);
         // }
-        // remove undefined
-        for (const name in data) {
-          if (data[name] === undefined) {
-            delete data[name];
-          }
-        }
+       
 
         const headers = options.json
           ? { Accept: "application/json", "Content-Type": "application/json" }
@@ -99,7 +102,10 @@ export class Api extends EventEmitter {
         }
 
         let body;
-        if (options.hasBody) {
+        if (options.isUpload) {
+          body = data;
+          delete headers["Content-Type"] ;//= 'multipart/form-data';
+        } else if (options.hasBody) {
           body = JSON.stringify(
             options.bodyParamName != null ? data[options.bodyParamName] : data,
           );
