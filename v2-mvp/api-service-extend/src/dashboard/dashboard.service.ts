@@ -10,7 +10,7 @@ import { QueryDashboardDetailRequest } from 'src/dashboard/model/QueryDashboardD
 import { QueryDashboardDetailResponse } from 'src/dashboard/model/QueryDashboardDetailResponse';
 import { QueryDashboardListRequest } from 'src/dashboard/model/QueryDashboardListRequest';
 import { QueryDashboardListResponse } from 'src/dashboard/model/QueryDashboardListResponse';
-import { FindManyOptions, FindOptionsWhere, In, Like, Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, In, Like, Not, Raw, Repository } from 'typeorm';
 import { QueryRelatedDashboardsRequest } from './model/QueryRelatedDashboardsRequest';
 import { ReportCard } from 'src/base/entity/metabase/ReportCard';
 import { Collection } from 'src/base/entity/metabase/Collection';
@@ -31,13 +31,13 @@ export class DashboardService {
         private dtagRepo: Repository<DashboardTag>,
 
         @Inject(RepositoryConsts.REPOSITORYS_METABASE.MB_REPORT_CARD_REPOSITORY.provide)
-        private dataSet: Repository<ReportCard>,
+        private dataSet: Repository<ReportCard>
     ) {
         this.logger = new W3Logger(`DashboardService`);
     }
 
 
-    async list(request: QueryDashboardListRequest): Promise<QueryDashboardListResponse> {
+    async list(request: QueryDashboardListRequest, userSession): Promise<QueryDashboardListResponse> {
 
         let resp: QueryDashboardListResponse = new QueryDashboardListResponse();
 
@@ -92,8 +92,17 @@ export class DashboardService {
         }
         if (request.creator) {
             where.creatorAccountId = request.creator;
+        } else {
+            // where.publicLink = Not(''); //Not(Raw('NULL'));
+            // My Space Page may vary by the log-in status
+            
+            
         }
-
+        where.publicLink = Not(''); //Not(Raw('NULL'));
+        if (userSession && userSession.id && userSession.id === request.creator) {
+            delete where.publicLink;
+        }
+        
         let options: FindManyOptions<DashboardExt> = {
             where: where,
             take: PageRequest.getTake(request),
@@ -232,7 +241,7 @@ export class DashboardService {
     }
 
 
-    async searchRelatedDashboards(param: QueryRelatedDashboardsRequest): Promise<QueryDashboardListResponse> {
+    async searchRelatedDashboards(param: QueryRelatedDashboardsRequest, userSession): Promise<QueryDashboardListResponse> {
 
         let resp = await this.list({
             tagIds: param.tagIds,
@@ -242,7 +251,7 @@ export class DashboardService {
             pageSize: param.pageSize,
             pageIndex: param.pageIndex,
             orderBys: param.orderBys
-        });
+        }, userSession);
 
         return resp;
     }
