@@ -63,7 +63,7 @@ export const DashboardBody = styled.div`
 
 export const HeaderContainer = styled.header`
   background-color: white;
-  border-bottom: 1px solid ${color("border")};
+  // border-bottom: 1px solid ${color("border")};
   position: relative;
   z-index: 2;
 
@@ -96,11 +96,12 @@ export const ParametersWidgetContainer = styled(FullWidthContainer)`
   padding-top: ${space(2)};
   padding-bottom: ${space(1)};
   z-index: 3;
-
+  padding-left:20px!important;
+  padding-right:20px!important;
   ${({ isEditing }) =>
     isEditing &&
     css`
-      border-top: 1px solid ${color("border")};
+      // border-top: 1px solid ${color("border")};
     `}
 
   ${({ isSticky, topNav }) =>

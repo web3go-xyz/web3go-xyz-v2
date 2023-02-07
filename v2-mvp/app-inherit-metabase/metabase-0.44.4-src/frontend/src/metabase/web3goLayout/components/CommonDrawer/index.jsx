@@ -3,9 +3,11 @@ import React from "react";
 import './index.less';
 import { Button, Form, Tabs, Drawer } from '@arco-design/web-react';
 
-export default function ({ visible, onOk, onCancel, children }) {
+export default function (props) {
+    const { visible, onOk, onCancel, children } = props
     return (
         <Drawer
+            {...props}
             width={480}
             title={null}
             footer={null}

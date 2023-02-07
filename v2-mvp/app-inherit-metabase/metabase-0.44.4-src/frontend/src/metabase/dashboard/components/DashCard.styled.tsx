@@ -16,7 +16,7 @@ export const DashCardRoot = styled.div<DashCardRootProps>`
     `}
 `;
 export const WaterMark = styled.div`
-background-image: url(${require('@/web3goLayout/assets/dashboard/logo.png')});
+background-image: url(${require('@/web3goLayout/assets/dashboard/logo.svg')});
 background-position: 50%;
 background-repeat: no-repeat;
 background-size: 40%;

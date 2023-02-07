@@ -1,16 +1,22 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import ParameterValueWidget from "./ParameterValueWidget";
 import Icon from "metabase/components/Icon";
 import { color } from "metabase/lib/colors";
-
+import { IconSettings, IconMinusCircle } from '@arco-design/web-react/icon';
 import S from "./ParameterWidget.css";
 import cx from "classnames";
 
 import FieldSet from "../../components/FieldSet";
+import { flex } from "styled-system";
+import * as dashboardActions from "@/dashboard/actions";
 
-export default class ParameterWidget extends Component {
+const mapDispatchToProps = {
+  ...dashboardActions,
+};
+class ParameterWidget extends Component {
   state = {
     isEditingName: false,
     editingNameValue: undefined,
@@ -103,26 +109,39 @@ export default class ParameterWidget extends Component {
       <div
         className={cx(
           className,
-          "flex align-center bordered rounded cursor-pointer text-bold mr1 mb1",
+          // "flex align-center bordered rounded cursor-pointer text-bold mr1 mb1",
+          "flex align-center bordered rounded cursor-pointer mr1 mb1 bg-white text-brand-hover",
           {
-            "bg-brand text-white": isEditingParameter,
-            "text-brand-hover bg-white": !isEditingParameter,
+            // "bg-brand text-white": isEditingParameter,
+            // "text-brand-hover bg-white": !isEditingParameter,
           },
         )}
-        onClick={() =>
-          setEditingParameter(isEditingParameter ? null : parameter.id)
-        }
+
         style={{
-          padding: 8,
-          width: 170,
-          borderColor: isEditingParameter && color("brand"),
+          padding: '5px 8px',
+          width: 200,
+          borderColor: '#E5E6E8',
+          color: '#6B7785',
+          fontSize: 14,
+          justifyContent: 'space-between'
+          // borderColor: isEditingParameter && color("brand"),
         }}
       >
-        <div className="mr1" onClick={e => e.stopPropagation()}>
-          {dragHandle}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="mr1" onClick={e => e.stopPropagation()}>
+            {dragHandle}
+          </div>
+          {parameter.name}
         </div>
-        {parameter.name}
-        <Icon className="flex-align-right" name="gear" />
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <IconSettings className="hover-item" onClick={() => {
+            setEditingParameter(isEditingParameter ? null : parameter.id)
+          }} />
+          <IconMinusCircle className="hover-item" style={{ marginLeft: 4 }} onClick={() => {
+            this.props.closeSidebar();
+            this.props.removeParameter(parameter.id);
+          }} />
+        </div>
       </div>
     );
 
@@ -141,3 +160,4 @@ export default class ParameterWidget extends Component {
     }
   }
 }
+export default connect(null, mapDispatchToProps)(ParameterWidget);

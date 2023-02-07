@@ -18,6 +18,7 @@ import LoadingAndErrorWrapper from "metabase/components/LoadingAndErrorWrapper";
 
 import ParameterValueWidget from "metabase/parameters/components/ParameterValueWidget";
 import Sidebar from "metabase/dashboard/components/Sidebar";
+import CommonDrawer from '@/web3goLayout/components/CommonDrawer';
 
 const LINKED_FILTER = "linked-filters";
 const TABS = [
@@ -62,6 +63,7 @@ class ParameterSidebar extends React.Component {
       : TABS.filter(({ value }) => value !== LINKED_FILTER);
 
     return (
+      //  <CommonDrawer visible={true} onCancel={this.handleCancel} onOk={done}>
       <Sidebar onClose={done} onCancel={this.handleCancel}>
         <div className="flex justify-evenly border-bottom">
           <Radio
@@ -111,6 +113,7 @@ class ParameterSidebar extends React.Component {
           )}
         </div>
       </Sidebar>
+      // </CommonDrawer>
     );
   }
 }

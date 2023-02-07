@@ -41,6 +41,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            saveChartLoading: false,
             searchKey: '',
             datasetLoading: false,
             visible: false,
@@ -133,10 +134,14 @@ class Component extends React.Component {
         });
     }
     handleOk = () => {
+        this.setState({
+            saveChartLoading: true
+        });
         event.emit('addChartSave', this.state.chartName, async (cardId) => {
             await this.props.addChartToDashboard(cardId);
             this.setState({
-                visible: false
+                visible: false,
+                saveChartLoading: false
             })
         });
     }
@@ -158,7 +163,7 @@ class Component extends React.Component {
         return datasetList.filter(v => v.display_name.includes(searchKey));
     }
     render() {
-        const { chartName, ifEditChartName, visible, refreshFlag } = this.state;
+        const { chartName, ifEditChartName, visible, refreshFlag, saveChartLoading } = this.state;
         return (
             <Drawer
                 width={'100%'}
@@ -226,7 +231,7 @@ class Component extends React.Component {
                     </div>
                     <div className="f-right">
                         <Button className="btn" type="secondary" onClick={this.handleCancel}>Cancel</Button>
-                        <Button className="btn" type="primary" onClick={this.handleOk}>OK</Button>
+                        <Button loading={saveChartLoading} className="btn" type="primary" onClick={this.handleOk}>OK</Button>
                     </div>
                 </div>
             </Drawer>
