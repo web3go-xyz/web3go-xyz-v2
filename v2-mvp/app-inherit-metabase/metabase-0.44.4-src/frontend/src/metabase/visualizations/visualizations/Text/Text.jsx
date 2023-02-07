@@ -38,7 +38,7 @@ export default class Text extends Component {
   static noHeader = true;
   static supportsSeries = false;
   static hidden = true;
-  static supportPreviewing = true;
+  static supportPreviewing = false;
 
   static minSize = { width: 4, height: 1 };
 
@@ -61,7 +61,7 @@ export default class Text extends Component {
     "text.align_vertical": {
       section: t`Display`,
       title: t`Vertical Alignment`,
-      widget: "select",
+      widget: "radio",
       props: {
         options: [
           { name: t`Top`, value: "top" },
@@ -74,7 +74,7 @@ export default class Text extends Component {
     "text.align_horizontal": {
       section: t`Display`,
       title: t`Horizontal Alignment`,
-      widget: "select",
+      widget: "radio",
       props: {
         options: [
           { name: t`Left`, value: "left" },
@@ -94,7 +94,11 @@ export default class Text extends Component {
   };
 
   handleTextChange(text) {
-    this.props.onUpdateVisualizationSettings({ text: text });
+    this.setState({text})
+    this.props.onUpdateVisualizationSettings({ text });
+  }
+  componentDidMount() {
+    this.setState({text: this.props.settings.text})
   }
 
   preventDragging = e => e.stopPropagation();
@@ -107,9 +111,11 @@ export default class Text extends Component {
       gridSize,
       settings,
       isEditing,
-      isPreviewing,
       parameterValues,
+      isSettings,
     } = this.props;
+
+    const isPreviewing = this.props.isPreviewing || !isSettings;
     const isSingleRow = gridSize && gridSize.height === 1;
 
     let parametersByTag = {};
@@ -144,7 +150,7 @@ export default class Text extends Component {
       return (
         <div
           className={cx(className, styles.Text, {
-            [styles.padded]: !isPreviewing,
+            [styles.padded]: !isEditing,
           })}
         >
           {isPreviewing ? (
@@ -166,7 +172,7 @@ export default class Text extends Component {
               )}
               name="text"
               placeholder={t`You can use Markdown here, and include variables {{like_this}}`}
-              value={settings.text}
+              value={this.state.text}
               onChange={e => this.handleTextChange(e.target.value)}
               // Prevents text cards from dragging when you actually want to select text
               // See: https://github.com/metabase/metabase/issues/17039

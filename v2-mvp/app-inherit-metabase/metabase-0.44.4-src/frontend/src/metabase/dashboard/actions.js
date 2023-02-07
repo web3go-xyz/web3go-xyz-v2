@@ -211,6 +211,24 @@ export const openAddQuestionSidebar = () => dispatch => {
   );
 };
 
+export const openNewCardEditorSidebar = ({type, dashboardId, dashcardId, action, series, onReplaceAllVisualizationSettings}) => dispatch => {
+  dispatch(
+    setSidebar({
+      name: SIDEBAR_NAME.newCardEditor,
+      props: {
+        dashboardId,
+        onReplaceAllVisualizationSettings,
+        params: {
+          type,
+          action: action || 'add',
+          dashboardId, dashcardId,
+          series
+        }
+      },
+    }),
+  );
+};
+
 export const markNewCardSeen = createAction(MARK_NEW_CARD_SEEN);
 export const showAddParameterPopover = createAction(SHOW_ADD_PARAMETER_POPOVER);
 export const hideAddParameterPopover = createAction(HIDE_ADD_PARAMETER_POPOVER);
@@ -286,39 +304,49 @@ export const addDashCardToDashboard = function ({ dashId, dashcardOverrides }) {
   };
 };
 
-export const addTextDashCardToDashboard = function ({ dashId }) {
-  const virtualTextCard = createCard();
-  virtualTextCard.display = "text";
-  virtualTextCard.archived = false;
+export const newDashboardConfigTmpl = (type)=> {
+  if (type === 'text') {
+    const virtualTextCard = createCard();
+    virtualTextCard.display = "text";
+    virtualTextCard.archived = false;
+  
+    const dashcardOverrides = {
+      card: virtualTextCard,
+      visualization_settings: {
+        virtual_card: virtualTextCard,
+      },
+    };
+    return dashcardOverrides;
+  } if (type === 'video' || type === 'image') {
+    const virtualTextCard = createCard();
+    virtualTextCard.display = "media";
+    virtualTextCard.archived = false;
+  
+    const dashcardOverrides = {
+      card: virtualTextCard,
+      visualization_settings: {
+        virtual_card: virtualTextCard,
+        type
+      },
+    };  
+    return dashcardOverrides;
+  } else {
+   
+    throw new Error('not supported type');
+  }
+}
 
-  const dashcardOverrides = {
-    card: virtualTextCard,
-    visualization_settings: {
-      virtual_card: virtualTextCard,
-    },
-  };
+export const addTextDashCardToDashboard = function ({ dashId }) {
   return addDashCardToDashboard({
-    dashId: dashId,
-    dashcardOverrides: dashcardOverrides,
+    dashId,
+    dashcardOverrides: newDashboardConfigTmpl('text'),
   });
 };
 
 const addMedia = ( {dashId}, type) => {
-  const virtualTextCard = createCard();
-  virtualTextCard.display = "media";
-  virtualTextCard.archived = false;
-
-  const dashcardOverrides = {
-    card: virtualTextCard,
-    visualization_settings: {
-      virtual_card: virtualTextCard,
-      type
-    },
-  };  
-
   return addDashCardToDashboard({
     dashId: dashId,
-    dashcardOverrides: dashcardOverrides,
+    dashcardOverrides: newDashboardConfigTmpl(type),
   });
 }
 

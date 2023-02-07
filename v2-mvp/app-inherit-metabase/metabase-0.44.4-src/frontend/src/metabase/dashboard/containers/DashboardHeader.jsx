@@ -76,6 +76,7 @@ class DashboardHeader extends Component {
     setRefreshElapsedHook: PropTypes.func.isRequired,
 
     addCardToDashboard: PropTypes.func.isRequired,
+    onToggleNewCardEditorSidebar: PropTypes.func.isRequired,
     addTextDashCardToDashboard: PropTypes.func.isRequired,
     addImageDashCardToDashboard: PropTypes.func.isRequired,
     addVideoDashCardToDashboard: PropTypes.func.isRequired,
@@ -106,6 +107,10 @@ class DashboardHeader extends Component {
     const toggleBookmark = isBookmarked ? deleteBookmark : createBookmark;
 
     toggleBookmark(this.props.dashboardId);
+  }
+
+  onToggleNewCardEditorSidebar(type, cardId) {
+    this.props.onToggleNewCardEditorSidebar({type, cardId, dashId: this.props.dashboard.id });
   }
 
   onAddTextBox() {
@@ -192,6 +197,7 @@ class DashboardHeader extends Component {
       isEditable,
       location,
       onToggleAddQuestionSidebar,
+      onToggleNewCardEditorSidebar,
       showAddQuestionSidebar,
       onFullscreenChange,
       createBookmark,
@@ -226,13 +232,17 @@ class DashboardHeader extends Component {
       );
 
       // Add text card button
+      // TODO 
+      // const addTextButtonHint = this.props.sidebar && this.props.sidebar.name === "newCardEditor"
+      //   ? t`Close sidebar`
+      //   : t`Add questions`;
       buttons.push(
         <Tooltip key="add-a-text-box" tooltip={t`Add a text box`}>
           <a
             data-metabase-event="Dashboard;Add Text Box"
             key="add-text"
             className="text-brand-hover cursor-pointer"
-            onClick={() => this.onAddTextBox()}
+            onClick={() => this.onToggleNewCardEditorSidebar('text')}
           >
             <DashboardHeaderButton>
               <Icon name="string" size={18} />
@@ -248,7 +258,7 @@ class DashboardHeader extends Component {
             data-metabase-event="Dashboard;Add Image Box"
             key="add-text"
             className="text-brand-hover cursor-pointer"
-            onClick={() => this.onAddImageBox()}
+            onClick={() => this.onToggleNewCardEditorSidebar('image')}
           >
             <DashboardHeaderButton>
               <Icon name="image" size={18} />
@@ -264,7 +274,7 @@ class DashboardHeader extends Component {
             data-metabase-event="Dashboard;Add Video Box"
             key="add-text"
             className="text-brand-hover cursor-pointer"
-            onClick={() => this.onAddVideoBox()}
+            onClick={() => this.onToggleNewCardEditorSidebar('video')}
           >
             <DashboardHeaderButton>
               <Icon name="video" size={18} />

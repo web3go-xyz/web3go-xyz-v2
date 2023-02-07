@@ -21,7 +21,8 @@
   line-height: 1.602em;
   min-height: unset;
   outline: none;
-  padding: 0.25em 0.75em;
+  /* padding: 0.25em 0.75em; */
+  padding-top: 25px;
   pointer-events: all;
   resize: none;
   width: 100%;
