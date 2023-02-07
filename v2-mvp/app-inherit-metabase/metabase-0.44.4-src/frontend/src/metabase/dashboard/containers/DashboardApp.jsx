@@ -87,7 +87,7 @@ const mapStateToProps = (state, props) => {
     documentTitle: getDocumentTitle(state),
     isRunning: getIsRunning(state),
     isLoadingComplete: getIsLoadingComplete(state),
-    isHeaderVisible: location.pathname.includes('/layout') ? false : getIsHeaderVisible(state),
+    isHeaderVisible:  getIsHeaderVisible(state),
     isAdditionalInfoVisible: getIsAdditionalInfoVisible(state),
     embedOptions: getEmbedOptions(state),
   };
