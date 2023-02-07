@@ -33,11 +33,11 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tabIndex: 1,
+            tabIndex: 0,
         }
         this.ShareModalRef = React.createRef();
     }
-    changeTab(tabIndex) {
+    changeTab = (tabIndex) => {
         this.setState({
             tabIndex
         });
@@ -82,14 +82,13 @@ class Component extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div className={cx("p-main", this.state.tabIndex == 0 ? 'dataset' : 'dashboard'
-                )}>
-                    <div className="datasetTab">
-                        <CreateDataset {...this.props}></CreateDataset>
-                    </div>
-                    <div className="dashboardTab">
-                        <CreateDashboard {...this.props}></CreateDashboard>
-                    </div>
+                <div className="p-main">
+                    {
+                        this.state.tabIndex == 0 ?
+                            <CreateDataset {...this.props} changeTopTab={this.changeTab}></CreateDataset>
+                            :
+                            <CreateDashboard {...this.props} changeTopTab={this.changeTab}></CreateDashboard>
+                    }
                 </div>
             </div >
         )
