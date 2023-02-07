@@ -28,7 +28,6 @@ const TabPane = Tabs.TabPane;
 const Component = ({ addFilterDrawerVisible, changeAddFilterDrawerVisible, addParameter }) => {
     // const [] = useState(false);
     const PARAMETER_SECTIONS = getDashboardParameterSections();
-    console.log('111', PARAMETER_SECTIONS);
     const handleCancel = () => {
         changeAddFilterDrawerVisible(false);
     }

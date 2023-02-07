@@ -210,7 +210,7 @@ class Component extends React.Component {
                             </Spin>
                         </div>
                         <div className="manage-wrap">
-                            <Button className="btn" type='outline'>Manage dataset</Button>
+                            <Button className="btn" type='outline' onClick={() => { this.props.changeTopTab(0) }}>Manage dataset</Button>
                         </div>
                     </div>
                     <div className="dm-middle">
@@ -222,7 +222,7 @@ class Component extends React.Component {
                 </div>
                 <div className="d-footer">
                     <div className="f-left">
-                        <Button className="btn" type="secondary">duplicate from other dashboards</Button>
+                        <Button className="btn" type="secondary" onClick={() => { this.props.push('/layout/dashBoardList') }}>duplicate from other dashboards</Button>
                     </div>
                     <div className="f-right">
                         <Button className="btn" type="secondary" onClick={this.handleCancel}>Cancel</Button>
