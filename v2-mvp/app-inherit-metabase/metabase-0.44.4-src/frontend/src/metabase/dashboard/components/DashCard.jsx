@@ -219,6 +219,8 @@ export default class DashCard extends Component {
               isPreviewing={this.state.isPreviewingCard}
               onPreviewToggle={this.handlePreviewToggle}
               dashboard={dashboard}
+              dashcardId={dashcard.id}
+              onToggleNewCardEditorSidebar={this.props.onToggleNewCardEditorSidebar}
             />
           </DashboardCardActionsPanel>
         ) : null}
@@ -347,6 +349,8 @@ const DashCardActionButtons = ({
   onPreviewToggle,
   isPreviewing,
   dashboard,
+  onToggleNewCardEditorSidebar,
+  dashcardId
 }) => {
   const buttons = [];
 
@@ -371,6 +375,8 @@ const DashCardActionButtons = ({
           series={series}
           onReplaceAllVisualizationSettings={onReplaceAllVisualizationSettings}
           dashboard={dashboard}
+          dashcardId={dashcardId}
+          onToggleNewCardEditorSidebar={onToggleNewCardEditorSidebar}
         />,
       );
     }
@@ -414,32 +420,60 @@ const ChartSettingsButton = ({
   series,
   onReplaceAllVisualizationSettings,
   dashboard,
-}) => (
-  <ModalWithTrigger
-    wide
-    tall
-    isInitiallyOpen={false}
-    triggerElement={
-      <Tooltip tooltip={t`Visualization options`}>
-        <Icon
-          name="palette"
-          size={HEADER_ICON_SIZE}
-          style={HEADER_ACTION_STYLE}
-        />
-      </Tooltip>
+  onToggleNewCardEditorSidebar,
+  dashcardId
+}) => {
+  if (series[0].card.display === "text" || series[0].card.display === "media" ) {
+    const doEdit = ()=> {
+      onToggleNewCardEditorSidebar({
+        type: series[0].card.display, 
+        action: 'edit', 
+        dashboardId: dashboard.id, 
+        dashcardId,
+        onReplaceAllVisualizationSettings,
+        series }
+      );
     }
-    triggerClasses="text-dark-hover cursor-pointer flex align-center flex-no-shrink mr1 drag-disabled"
-    enableMouseEvents
-  >
-    <ChartSettingsWithState
-      className="spread"
-      series={series}
-      onChange={onReplaceAllVisualizationSettings}
-      isDashboard
-      dashboard={dashboard}
-    />
-  </ModalWithTrigger>
-);
+    return (
+    <span  onClick={() => doEdit()}>
+      <a className="text-dark-hover drag-disabled">
+        <Tooltip tooltip={t`Visualization options`}>
+          <Icon
+            name="palette"
+            size={HEADER_ICON_SIZE}
+            style={HEADER_ACTION_STYLE}
+          />
+        </Tooltip>
+      </a>
+    </span>)
+  } else {
+    return <ModalWithTrigger
+      wide
+      tall
+      isInitiallyOpen={false}
+      triggerElement={
+        <Tooltip tooltip={t`Visualization options`}>
+          <Icon
+            name="palette"
+            size={HEADER_ICON_SIZE}
+            style={HEADER_ACTION_STYLE}
+          />
+        </Tooltip>
+      }
+      triggerClasses="text-dark-hover cursor-pointer flex align-center flex-no-shrink mr1 drag-disabled"
+      enableMouseEvents
+    >
+      <ChartSettingsWithState
+        className="spread"
+        series={series}
+        onChange={onReplaceAllVisualizationSettings}
+        isDashboard
+        dashboard={dashboard}
+      />
+    </ModalWithTrigger>
+  }
+  
+};
 
 const RemoveButton = ({ onRemove }) => (
   <a

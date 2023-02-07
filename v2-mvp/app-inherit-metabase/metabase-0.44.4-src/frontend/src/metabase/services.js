@@ -55,7 +55,7 @@ export const LayoutDashboardApi = {
   removeTags: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/removeTags"),
   listDashboardTags: (id) => WGET(WEB3GO_BASE_URL + `/api/v2/tag/listDashboardTags/${id}`),
   AddTag: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/AddTag"),
-
+  uploadPublicImg: WPOST(WEB3GO_BASE_URL + '/api/v2/dashboard/uploadPublicImg')
 };
 export const LayoutCreatorApi = {
   listCreators: WPOST(WEB3GO_BASE_URL + "/api/v2/creator/listCreators"),

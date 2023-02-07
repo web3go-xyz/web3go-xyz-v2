@@ -72,7 +72,12 @@ export default class Media extends Component {
   };
 
   handleTextChange(url) {
+    this.setState({url})
     this.props.onUpdateVisualizationSettings({ url });
+  }
+
+  componentDidMount() {
+    this.setState({url: this.props.settings.url})
   }
 
   preventDragging = e => e.stopPropagation();
@@ -122,18 +127,26 @@ export default class Media extends Component {
         substitute_tags(content, parametersByTag, siteLocale()),
       );
     }
-    const type = this.props.card.visualization_settings.type;
+    const type =( this.props.card ? 
+      this.props.card.visualization_settings.type : this.props.series[0].card.visualization_settings.type) ||
+      this.props.series[0].visualization_settings.type
+      ;
+
+    const onUploadSuccess = (url) => {
+      this.handleTextChange(url);
+    }
+    
     if (type === "image") {
       if (!isSettings) {
         return (
           <div
             className={cx(className, styles.Text, {
-              [styles.padded]: !isPreviewing,
+              [styles.padded]: !isEditing,
             })}
             onClick={this.handleImgClick}
           >
             {content ? (
-              <Image src={content} loader={true} width={'100%'}/>
+              <Image src={this.state.url} loader={true} width={'100%'}/>
             ) : (
               <></>
             )}
@@ -143,18 +156,18 @@ export default class Media extends Component {
         return (
           <div
             className={cx(styles.Text, {
-              [styles.padded]: !isPreviewing,
+              [styles.padded]: !isEditing,
             })}
           >
             <>
-              <Uploader />
+              <Uploader onUploadSuccess={onUploadSuccess} />
               <div className={cx(styles["split-title"])}>
                 Or put your image URL here
               </div>
               <Input
                 className={cx(styles["my-input"])}
                 fullWidth
-                value={settings.url}
+                value={this.state.url}
                 onChange={e => this.handleTextChange(e.target.value)}
                 placeholder="e.g. https://example.com/image.png"
               />
@@ -167,12 +180,12 @@ export default class Media extends Component {
         return (
           <div
             className={cx(className, styles.Text, {
-              [styles.padded]: !isPreviewing,
+              [styles.padded]: !isEditing,
             })}
             onMouseDown={this.preventDragging}
           >
             {content ? (
-              <ReactPlayer url={content} width="100%" height="100%" />
+              <ReactPlayer url={this.state.url} width="100%" height="100%" />
             ) : (
               <></>
             )}
@@ -182,13 +195,13 @@ export default class Media extends Component {
         return (
           <div
             className={cx(styles.Text, {
-              [styles.padded]: !isPreviewing,
+              [styles.padded]: !isEditing,
             }, cx(styles["my-input"]))}
           >
             <>
               <textarea
                 fullWidth
-                value={settings.url}
+                value={this.state.url}
                 placeholder="Type or paste video url here, only YouTube videos are supported now, e.g. https://www.youtube.com/watch?v=yL1o7axk1pg"
                 onChange={e => this.handleTextChange(e.target.value)}
               />

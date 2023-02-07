@@ -323,6 +323,7 @@ class DashboardGrid extends Component {
         dashboard={this.props.dashboard}
         showClickBehaviorSidebar={this.props.showClickBehaviorSidebar}
         clickBehaviorSidebarDashcard={this.props.clickBehaviorSidebarDashcard}
+        onToggleNewCardEditorSidebar={this.props.onToggleNewCardEditorSidebar}
       />
     );
   }
