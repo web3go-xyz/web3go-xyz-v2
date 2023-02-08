@@ -202,7 +202,7 @@ class Component extends React.Component {
                         </Link>
                         {this.props.currentUser ?
                             (
-                                <Dropdown trigger='click' position="bottom" droplist={
+                                <Dropdown trigger='click' position="br" droplist={
                                     <Menu onClickMenuItem={(key) => { this.clickDropdownIcon(key) }}>
                                         <Menu.Item key='1'>My Space</Menu.Item>
                                         <Menu.Item key='2'>Account Setting</Menu.Item>

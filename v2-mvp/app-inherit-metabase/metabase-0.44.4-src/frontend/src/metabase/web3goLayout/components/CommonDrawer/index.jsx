@@ -12,6 +12,7 @@ export default function (props) {
             title={null}
             footer={null}
             closable={false}
+            focusLock={false}
             maskClosable={true}
             visible={visible}
             wrapClassName="web3go-common-drawer"

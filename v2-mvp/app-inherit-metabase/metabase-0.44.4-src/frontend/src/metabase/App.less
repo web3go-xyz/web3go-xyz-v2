@@ -235,9 +235,12 @@ body[arco-theme="dark"] {
     border-top-right-radius: 12px;
     border-bottom-right-radius: 12px;
 }
-.arco-input-inner-wrapper .arco-input-group-prefix, .arco-input-inner-wrapper .arco-input-group-suffix{
+
+.arco-input-inner-wrapper .arco-input-group-prefix,
+.arco-input-inner-wrapper .arco-input-group-suffix {
     display: block;
 }
+
 .arco-input {
     height: 46px;
     font-size: 14px;
@@ -512,6 +515,63 @@ thead>.arco-table-tr>.arco-table-th {
     border-radius: 0;
 }
 
+.common-form {
+    .arco-select-size-default.arco-select-single .arco-select-view {
+        border-radius: 6px;
+        height: 40px;
+        line-height: 40px;
+        padding: 0 12px;
+    }
+
+    .arco-select-arrow-icon {
+        font-size: 16px;
+    }
+
+    .arco-select-popup {
+        padding: 8px 0;
+        border-radius: 8px;
+    }
+
+    .arco-select-popup .arco-select-option {
+        color: var(--6bColor);
+    }
+
+    .arco-input-inner-wrapper {
+        border-radius: 6px;
+    }
+
+    .arco-input {
+        height: 40px;
+        font-size: 14px;
+        line-height: 22px;
+        font-weight: 400;
+        border-radius: 6px;
+
+        .el-input__wrapper {
+            padding: 0 12px;
+            box-shadow: none;
+            background: #F2F3F5;
+
+            &.is-focus {
+                box-shadow: 0 0 0 1px var(--el-input-focus-border-color) inset;
+            }
+
+            .el-input__inner {
+                color: var(--6bColor);
+            }
+
+            .el-input__count-inner {
+
+                background: transparent;
+                color: #6B7785;
+                font-weight: 400;
+                font-size: 14px;
+                line-height: 22px;
+            }
+        }
+    }
+}
+
 .common-form-modal {
     .arco-modal {
         border-radius: 16px;
@@ -565,9 +625,11 @@ thead>.arco-table-tr>.arco-table-th {
         }
     }
 }
-.arco-radio-checked .arco-radio-mask::after{
+
+.arco-radio-checked .arco-radio-mask::after {
     transform: scale(0.6);
 }
+
 .common-sort-td {
     padding-right: 20px;
 }
