@@ -64,13 +64,12 @@ export class NewCardEditorSidebar extends React.Component {
     }
 
     const onUpdateVisualizationSettings = ({ text, url }) => {
-      console.info("editing.." + (url || text));
+      /// console.info("editing.." + (url || text));
       settings[componentAdapter.contentKey] = url || text || "";
     };
 
     const handleCancel = () => this.props.closeSidebar();
     const done = () => {
-      console.info("test");
       // '[{"card":{"query_average_duration":null,"name":null,"display":"text","visualization_settings":{},"dataset_query":{},"archived":false}}]'
       // '[{"card":{"query_average_duration":null,"name":null,"display":"media","visualization_settings":{},"dataset_query":{},"archived":false}}]'
       if (action === "add") {

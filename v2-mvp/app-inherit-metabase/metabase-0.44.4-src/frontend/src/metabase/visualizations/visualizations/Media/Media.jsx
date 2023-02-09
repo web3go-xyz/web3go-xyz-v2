@@ -185,7 +185,7 @@ export default class Media extends Component {
             onMouseDown={this.preventDragging}
           >
             {content ? (
-              <ReactPlayer url={this.state.url} width="100%" height="100%" />
+              <ReactPlayer url={this.state.url} controls={true} width="100%" height="100%" />
             ) : (
               <></>
             )}
