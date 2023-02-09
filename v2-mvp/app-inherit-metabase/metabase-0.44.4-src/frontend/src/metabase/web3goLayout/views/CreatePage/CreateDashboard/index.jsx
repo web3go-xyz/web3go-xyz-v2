@@ -52,7 +52,8 @@ class Component extends React.Component {
             allTagList: [],
             savedAllTagList: [],
             currentDashboardId: null,
-            addFilterDrawerVisible: false
+            addFilterDrawerVisible: false,
+            addFilterDrawerIsEdit: false
         }
         this.dashboardNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
@@ -69,6 +70,11 @@ class Component extends React.Component {
     changeAddFilterDrawerVisible = (value) => {
         this.setState({
             addFilterDrawerVisible: value
+        });
+    }
+    changeAddFilterDrawerIsEdit = (value) => {
+        this.setState({
+            addFilterDrawerIsEdit: value
         });
     }
     init = async () => {
@@ -201,6 +207,7 @@ class Component extends React.Component {
         this.AddChartModalRef.init();
     }
     handleAddFilter = () => {
+        this.changeAddFilterDrawerIsEdit(false);
         this.changeAddFilterDrawerVisible(true);
     }
     onAddTextBox = () => {
@@ -239,7 +246,7 @@ class Component extends React.Component {
     }
 
     render() {
-        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList, addFilterDrawerVisible } = this.state;
+        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList, addFilterDrawerVisible, addFilterDrawerIsEdit } = this.state;
         if (createDefaultDbLoading) {
             return <Spin style={
                 {
@@ -320,7 +327,12 @@ class Component extends React.Component {
                         : null}
                 </div>
                 <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} addChartToDashboard={this.addChartToDashboard}></AddChartModal>
-                <AddFilterDrawer {...this.props} addFilterDrawerVisible={addFilterDrawerVisible} changeAddFilterDrawerVisible={this.changeAddFilterDrawerVisible}></AddFilterDrawer>
+                <AddFilterDrawer {...this.props}
+                    addFilterDrawerVisible={addFilterDrawerVisible}
+                    changeAddFilterDrawerVisible={this.changeAddFilterDrawerVisible}
+                    addFilterDrawerIsEdit={addFilterDrawerIsEdit}
+                    changeAddFilterDrawerIsEdit={this.changeAddFilterDrawerIsEdit}
+                ></AddFilterDrawer>
             </div >
         )
     }

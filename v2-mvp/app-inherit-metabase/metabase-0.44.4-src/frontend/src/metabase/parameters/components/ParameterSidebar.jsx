@@ -2,6 +2,7 @@
 import React from "react";
 import { t, jt } from "ttag";
 import cx from "classnames";
+import { Switch } from '@arco-design/web-react';
 
 import { DashboardApi } from "metabase/services";
 import Fields from "metabase/entities/fields";
@@ -57,7 +58,6 @@ class ParameterSidebar extends React.Component {
       setFilteringParameters,
     } = this.props;
     const { currentTab } = this.state;
-
     const tabs = canUseLinkedFilters(parameter)
       ? TABS
       : TABS.filter(({ value }) => value !== LINKED_FILTER);
@@ -138,6 +138,7 @@ class OtherParameterList extends React.Component {
   }
 
   expandColumnPairs = async id => {
+
     if (id === this.state.expandedParameterId) {
       this.setState({ expandedParameterId: null, error: null });
       return;
@@ -176,7 +177,6 @@ class OtherParameterList extends React.Component {
     } = this.props;
     const { expandedParameterId, columnPairs } = this.state;
     const usableParameters = otherParameters.filter(usableAsLinkedFilter);
-
     return (
       <div className="py3 px2">
         <h3>{t`Limit this filter's choices`}</h3>
@@ -230,6 +230,140 @@ class OtherParameterList extends React.Component {
                           <div className="flex">
                             <div className="half text-brand px2 pt1">{t`Filtering column`}</div>
                             <div className="half text-brand px2 pt1">{t`Filtered column`}</div>
+                          </div>
+                        )}
+                        <div className="flex">
+                          {row.map(fieldId => (
+                            <FieldAndTableName
+                              fieldId={fieldId}
+                              key={fieldId}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </LoadingAndErrorWrapper>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+}
+
+export class OtherParameterList2 extends React.Component {
+  state = {
+    expandedParameterId: null,
+    columnPairs: [],
+    loading: false,
+    error: null,
+  };
+
+  componentDidUpdate(prevProps) {
+    if (this.props.parameter.id !== prevProps.parameter.id) {
+      this.setState({
+        expandedParameterId: null,
+        columnPairs: [],
+        loading: false,
+        error: null,
+      });
+    }
+  }
+
+  expandColumnPairs = async id => {
+    if (!this.props.addFilterDrawerIsEdit) {
+      return;
+    }
+    if (id === this.state.expandedParameterId) {
+      this.setState({ expandedParameterId: null, error: null });
+      return;
+    } else {
+      this.setState({ expandedParameterId: id, loading: true, error: null });
+    }
+
+    const { parameter, otherParameters } = this.props;
+    const filtered = parameter.fields.map(field => field.id);
+    const parameterForId = otherParameters.find(p => p.id === id);
+    const filtering = parameterForId.fields.map(field => field.id);
+    if (filtered.length === 0 || filtering.length === 0) {
+      const param = filtered.length === 0 ? parameter : parameterForId;
+      const error = t`To view this, ${param.name} must be connected to at least one field.`;
+      this.setState({ loading: false, error });
+      return;
+    }
+    const result = await DashboardApi.validFilterFields({
+      filtered,
+      filtering,
+    });
+    const columnPairs = Object.entries(result).flatMap(
+      ([filteredId, filteringIds]) =>
+        filteringIds.map(filteringId => [filteringId, filteredId]),
+    );
+
+    this.setState({ columnPairs, loading: false });
+  };
+
+  render() {
+    const {
+      otherParameters,
+      parameter: { filteringParameters = [] },
+      setFilteringParameters,
+      showAddParameterPopover,
+    } = this.props;
+    const { expandedParameterId, columnPairs } = this.state;
+    const usableParameters = otherParameters.filter(usableAsLinkedFilter);
+
+    return (
+      <div className="">
+        <div className="t-title">{t`Limit this filter's choices`}</div>
+        {usableParameters.length === 0 ? (
+          <div className="tip">
+            <span>{t`If you have another dashboard filter, you can limit the choices that are listed for this filter based on the selection of the other one.`}</span>
+            <span>{jt`So first, add another dashboard filter`}</span>
+          </div>
+        ) : (
+          <div>
+            <div className="tip">{jt`If you toggle on one of these dashboard filters, selecting a value for that filter will limit the available choices for ${(
+              <span className="text-italic">{t`this`}</span>
+            )} filter.`}</div>
+            {usableParameters.map(({ id, name }) => (
+              <div className="switch-row" key={name}>
+                <div className="flex justify-between align-center">
+                  <span
+                    className={cx('border-dashed-bottom text-bold switch-text', { "cursor-pointer hover-item": this.props.addFilterDrawerIsEdit })}
+                    onClick={() => this.expandColumnPairs(id)}
+                  >
+                    {name}
+                  </span>
+                  <Switch
+                    checked={(filteringParameters || []).includes(id)}
+                    onChange={included =>
+                      setFilteringParameters(
+                        included
+                          ? filteringParameters.concat(id)
+                          : filteringParameters.filter(x => x !== id),
+                      )
+                    }
+                  />
+
+                </div>
+                {id === expandedParameterId && (
+                  <LoadingAndErrorWrapper
+                    loading={this.state.loading}
+                    error={this.state.error}
+                    className="border-top text-small"
+                  >
+                    {columnPairs.map((row, index) => (
+                      <div
+                        key={index}
+                        className={cx('link-filter-show-table-item', { "border-top": index > 0 })}
+                      >
+                        {index === 0 && (
+                          <div className="flex">
+                            <div className="half column">{t`Filtering column`}</div>
+                            <div className="half column">{t`Filtered column`}</div>
                           </div>
                         )}
                         <div className="flex">

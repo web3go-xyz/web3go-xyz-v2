@@ -64,7 +64,6 @@ class ParameterValueWidget extends Component {
 
   constructor(props) {
     super(props);
-
     this.valuePopover = React.createRef();
     this.trigger = React.createRef();
   }

@@ -959,7 +959,17 @@ export const addParameter = createThunkAction(
     );
   },
 );
-
+export const addParameterNotOpenSideBar = createThunkAction(
+  ADD_PARAMETER,
+  parameterOption => (dispatch, getState) => {
+    let parameter;
+    updateParameters(dispatch, getState, parameters => {
+      parameter = createParameter(parameterOption, parameters);
+      return parameters.concat(parameter);
+    });
+    return parameter;
+  },
+);
 export const removeParameter = createThunkAction(
   REMOVE_PARAMETER,
   parameterId => (dispatch, getState) => {

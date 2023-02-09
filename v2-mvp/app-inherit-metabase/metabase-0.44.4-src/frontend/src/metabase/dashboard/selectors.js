@@ -166,7 +166,6 @@ export const getDefaultParametersById = createSelector(
       if (parameter.default) {
         map[parameter.id] = parameter.default;
       }
-
       return map;
     }, {}),
 );

@@ -6,6 +6,9 @@
   padding: 0.25em 1em;
   width: 100%;
 }
+.ParameterWidgetTag {
+ color: #6B7785;
+}
 
 :local(.container) legend {
   text-transform: none;

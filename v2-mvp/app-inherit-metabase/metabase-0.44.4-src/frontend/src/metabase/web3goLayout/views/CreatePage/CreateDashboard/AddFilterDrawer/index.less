@@ -17,7 +17,10 @@ body[arco-theme="dark"] .web3go-add-filter-drawer {}
             }
 
             .si-inner {
-                padding: 13px 0;
+                margin: 13px 0;
+                padding: 10px 12px;
+                background: #FAFBFC;
+                border-radius: 6px;
 
                 .setting-content {
                     .tab-list {
@@ -78,17 +81,56 @@ body[arco-theme="dark"] .web3go-add-filter-drawer {}
                         }
 
                         .switch-list {
-                            .switch-item {
-                                margin-top: 24px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: space-between;
+                            .switch-row {
+                                border-bottom: 1px dashed #E5E6E8;
+                                padding: 17px 0;
 
-                                .text {
+                                &:last-child {
+                                    border-bottom: 0;
+                                }
+
+                                .switch-text {
                                     font-weight: 400;
                                     font-size: 14px;
                                     line-height: 22px;
                                     color: #4E5969;
+                                }
+
+                                .cursor-pointer {
+                                    color: var(--primary-color);
+                                }
+
+                                .link-filter-show-table-item {
+                                    padding-top: 5px;
+
+                                    .column {
+                                        font-weight: 400;
+                                        font-size: 12px;
+                                        line-height: 20px;
+                                        letter-spacing: -0.01em;
+                                        color: #6B7785;
+                                    }
+
+                                    .px2 {
+                                        padding: 0;
+                                        color: #86909C !important;
+
+                                        &>div {
+                                            display: flex;
+                                            align-items: center;
+
+                                            &::before {
+                                                content: '';
+                                                display: inline-block;
+                                                width: 4px;
+                                                height: 4px;
+                                                border-radius: 50%;
+                                                background: #86909C;
+                                                margin-right: 6px;
+                                            }
+                                        }
+
+                                    }
                                 }
                             }
                         }
