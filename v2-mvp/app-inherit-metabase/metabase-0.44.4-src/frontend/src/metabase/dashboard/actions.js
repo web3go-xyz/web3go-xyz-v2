@@ -211,7 +211,7 @@ export const openAddQuestionSidebar = () => dispatch => {
   );
 };
 
-export const openNewCardEditorSidebar = ({type, dashboardId, dashcardId, action, series, onReplaceAllVisualizationSettings}) => dispatch => {
+export const openNewCardEditorSidebar = ({type, vanillaMode, dashboardId, dashcardId, action, series, onReplaceAllVisualizationSettings}) => dispatch => {
   dispatch(
     setSidebar({
       name: SIDEBAR_NAME.newCardEditor,
@@ -221,6 +221,7 @@ export const openNewCardEditorSidebar = ({type, dashboardId, dashcardId, action,
         params: {
           type,
           action: action || 'add',
+          vanillaMode,
           dashboardId, dashcardId,
           series
         }

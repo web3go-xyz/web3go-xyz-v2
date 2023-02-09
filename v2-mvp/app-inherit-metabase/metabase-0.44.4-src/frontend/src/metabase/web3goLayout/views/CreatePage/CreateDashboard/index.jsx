@@ -222,17 +222,21 @@ class Component extends React.Component {
     }
     onAddTextBox = () => {
         const { dispatch, getState } = this.DashbaordAppRef.store;
-        addTextDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
+        //addTextDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
+        this.DashbaordAppRef.props.openNewCardEditorSidebar({type: 'text', dashId: getState().dashboard.dashboardId });
     }
 
     onAddImageBox = () => {
         const { dispatch, getState } = this.DashbaordAppRef.store;
-        addImageDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
+        // addImageDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
+        this.DashbaordAppRef.props.openNewCardEditorSidebar({type: 'image', dashId: getState().dashboard.dashboardId });
     }
 
     onAddVideoBox = () => {
         const { dispatch, getState } = this.DashbaordAppRef.store;
-        addVideoDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
+        //addVideoDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
+        this.DashbaordAppRef.props.openNewCardEditorSidebar({type: 'video', dashId: getState().dashboard.dashboardId });
+
     }
     addChartToDashboard = (cardId) => {
         this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });

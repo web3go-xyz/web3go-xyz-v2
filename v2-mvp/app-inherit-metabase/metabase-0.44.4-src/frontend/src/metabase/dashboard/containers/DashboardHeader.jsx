@@ -109,8 +109,8 @@ class DashboardHeader extends Component {
     toggleBookmark(this.props.dashboardId);
   }
 
-  onToggleNewCardEditorSidebar(type, cardId) {
-    this.props.onToggleNewCardEditorSidebar({type, cardId, dashId: this.props.dashboard.id });
+  onToggleNewCardEditorSidebar(type, vanillaMode, cardId) {
+    this.props.onToggleNewCardEditorSidebar({type, cardId, dashId: this.props.dashboard.id, vanillaMode });
   }
 
   onAddTextBox() {
@@ -242,7 +242,7 @@ class DashboardHeader extends Component {
             data-metabase-event="Dashboard;Add Text Box"
             key="add-text"
             className="text-brand-hover cursor-pointer"
-            onClick={() => this.onToggleNewCardEditorSidebar('text')}
+            onClick={() => this.onToggleNewCardEditorSidebar('text', true)}
           >
             <DashboardHeaderButton>
               <Icon name="string" size={18} />
@@ -258,7 +258,7 @@ class DashboardHeader extends Component {
             data-metabase-event="Dashboard;Add Image Box"
             key="add-text"
             className="text-brand-hover cursor-pointer"
-            onClick={() => this.onToggleNewCardEditorSidebar('image')}
+            onClick={() => this.onToggleNewCardEditorSidebar('image', true)}
           >
             <DashboardHeaderButton>
               <Icon name="image" size={18} />
@@ -274,7 +274,7 @@ class DashboardHeader extends Component {
             data-metabase-event="Dashboard;Add Video Box"
             key="add-text"
             className="text-brand-hover cursor-pointer"
-            onClick={() => this.onToggleNewCardEditorSidebar('video')}
+            onClick={() => this.onToggleNewCardEditorSidebar('video', true)}
           >
             <DashboardHeaderButton>
               <Icon name="video" size={18} />
