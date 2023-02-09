@@ -8,6 +8,7 @@ import { color } from "metabase/lib/colors";
 import { IconSettings, IconMinusCircle } from '@arco-design/web-react/icon';
 import S from "./ParameterWidget.css";
 import cx from "classnames";
+import event from '@/web3goLayout/event';
 
 import FieldSet from "../../components/FieldSet";
 import { flex } from "styled-system";
@@ -107,13 +108,16 @@ class ParameterWidget extends Component {
 
     const renderEditing = () => (
       <div
+        onClick={() =>
+          setEditingParameter(isEditingParameter ? null : parameter.id)
+        }
         className={cx(
           className,
-          // "flex align-center bordered rounded cursor-pointer text-bold mr1 mb1",
-          "flex align-center bordered rounded cursor-pointer mr1 mb1 bg-white text-brand-hover",
+          S.widgetTag,
+          "flex align-center bordered rounded cursor-pointer mr1 mb1",
           {
-            // "bg-brand text-white": isEditingParameter,
-            // "text-brand-hover bg-white": !isEditingParameter,
+            "bg-brand text-white": isEditingParameter,
+            "text-brand-hover bg-white ParameterWidgetTag": !isEditingParameter,
           },
         )}
 
@@ -121,7 +125,7 @@ class ParameterWidget extends Component {
           padding: '5px 8px',
           width: 200,
           borderColor: '#E5E6E8',
-          color: '#6B7785',
+          // color: '#6B7785',
           fontSize: 14,
           justifyContent: 'space-between'
           // borderColor: isEditingParameter && color("brand"),
@@ -134,10 +138,16 @@ class ParameterWidget extends Component {
           {parameter.name}
         </div>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <IconSettings className="hover-item" onClick={() => {
-            setEditingParameter(isEditingParameter ? null : parameter.id)
+          <IconSettings className="hover-item" onClick={(e) => {
+            if (!location.pathname.includes('/layout')) {
+              return;
+            }
+            e.stopPropagation();
+            event.emit('editDashboardFilter', parameter.id);
+            // setEditingParameter(isEditingParameter ? null : parameter.id)
           }} />
-          <IconMinusCircle className="hover-item" style={{ marginLeft: 4 }} onClick={() => {
+          <IconMinusCircle className="hover-item" style={{ marginLeft: 4 }} onClick={(e) => {
+            e.stopPropagation();
             this.props.closeSidebar();
             this.props.removeParameter(parameter.id);
           }} />

@@ -5,20 +5,137 @@ body[arco-theme="dark"] .web3go-add-filter-drawer {}
 
     .switch-list {
         .s-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
             &+.s-item {
-                margin-top: 24px;
+                margin-top: 12px;
             }
 
-
-            .text {
+            .arco-radio-text {
                 font-weight: 400;
                 font-size: 14px;
                 line-height: 22px;
                 color: #4E5969;
+            }
+
+            .si-inner {
+                margin: 13px 0;
+                padding: 10px 12px;
+                background: #FAFBFC;
+                border-radius: 6px;
+
+                .setting-content {
+                    .tab-list {
+                        margin-top: 12px;
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 16px;
+
+                        .tab {
+                            padding: 5px 12px;
+                            font-weight: 400;
+                            font-size: 14px;
+                            line-height: 22px;
+                            cursor: pointer;
+                            color: #6B7785;
+
+                            &+.tab {
+                                margin-left: 20px;
+                            }
+
+                            &.active {
+                                color: #615CF6;
+                                background: #F2F3F5;
+                                border-radius: 4px;
+                            }
+
+                            &:hover {
+                                color: #615CF6;
+                            }
+                        }
+                    }
+
+                    .label {
+                        font-weight: 400;
+                        font-size: 14px;
+                        line-height: 22px;
+                        color: #6B7785;
+                        margin-bottom: 12px;
+
+                        &.second {
+                            margin-top: 24px;
+                        }
+                    }
+
+                    .tab-content {
+                        .t-title {
+                            font-weight: 400;
+                            font-size: 14px;
+                            line-height: 22px;
+                            color: #1D2129;
+                        }
+
+                        .tip {
+                            font-weight: 400;
+                            font-size: 14px;
+                            line-height: 22px;
+                            color: #6B7785;
+                        }
+
+                        .switch-list {
+                            .switch-row {
+                                border-bottom: 1px dashed #E5E6E8;
+                                padding: 17px 0;
+
+                                &:last-child {
+                                    border-bottom: 0;
+                                }
+
+                                .switch-text {
+                                    font-weight: 400;
+                                    font-size: 14px;
+                                    line-height: 22px;
+                                    color: #4E5969;
+                                }
+
+                                .cursor-pointer {
+                                    color: var(--primary-color);
+                                }
+
+                                .link-filter-show-table-item {
+                                    padding-top: 5px;
+
+                                    .column {
+                                        font-weight: 400;
+                                        font-size: 12px;
+                                        line-height: 20px;
+                                        letter-spacing: -0.01em;
+                                        color: #6B7785;
+                                    }
+
+                                    .px2 {
+                                        padding: 0;
+                                        color: #86909C !important;
+
+                                        &>div {
+                                            display: flex;
+                                            align-items: center;
+
+                                            &::before {
+                                                content: '';
+                                                display: inline-block;
+                                                width: 4px;
+                                                height: 4px;
+                                                border-radius: 50%;
+                                                background: #86909C;
+                                                margin-right: 6px;
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

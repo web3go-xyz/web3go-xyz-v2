@@ -33,7 +33,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tabIndex: 0,
+            tabIndex: 1,
         }
         this.ShareModalRef = React.createRef();
     }
@@ -61,7 +61,7 @@ class Component extends React.Component {
             }></Spin >
         }
         return (
-            <div className="web3go-create-page">
+            <div className="web3go-create-page common-form">
                 <div className="p-side-bar">
                     <div className="item">
                         <div className={cx("icon-wrap hover-item",

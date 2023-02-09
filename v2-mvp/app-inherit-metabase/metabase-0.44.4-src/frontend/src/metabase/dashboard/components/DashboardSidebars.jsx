@@ -89,7 +89,7 @@ export function DashboardSidebars({
   );
 
   const doNewCardEditorSave = useCallback(
-    (dashcardOverrides)=> {
+    (dashcardOverrides) => {
       addDashCardToDashboard({
         dashId: dashboard.id,
         dashcardOverrides,
@@ -135,6 +135,9 @@ export function DashboardSidebars({
         parameters,
         p => p.id === editingParameterId,
       );
+      if (location.pathname.includes('/layout')) {
+        return null;
+      }
       return (
         <ParameterSidebar
           parameter={parameter}
@@ -175,8 +178,8 @@ export function DashboardSidebars({
         </aside>
       );
     case SIDEBAR_NAME.newCardEditor:
-        return (
-          <NewCardEditorSidebar
+      return (
+        <NewCardEditorSidebar
           sidebar={sidebar}
           // dashcardId={dashboard.collection_id}
           dashcardId={dashboard.id}
@@ -187,7 +190,7 @@ export function DashboardSidebars({
           }
         />
 
-        );
+      );
     default:
       return null;
   }
