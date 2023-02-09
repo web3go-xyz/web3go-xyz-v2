@@ -166,7 +166,6 @@ export default class Media extends Component {
               </div>
               <Input
                 className={cx(styles["my-input"])}
-                fullWidth
                 value={this.state.url}
                 onChange={e => this.handleTextChange(e.target.value)}
                 placeholder="e.g. https://example.com/image.png"

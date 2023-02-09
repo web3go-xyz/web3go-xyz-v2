@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import Sidebar from "metabase/dashboard/components/Sidebar";
-import { Button, Switch, Form, Radio } from "@arco-design/web-react";
+import { Button, Switch, Form, Radio, Drawer } from "@arco-design/web-react";
 import cx from "classnames";
 import { t } from "ttag";
 import Text from "../../../visualizations/visualizations/Text/Text";
@@ -10,6 +10,7 @@ import { newDashboardConfigTmpl } from "../../actions";
 import Media from "../../../visualizations/visualizations/Media/Media";
 import styles from "./Style.less";
 import { IconClose } from "@arco-design/web-react/icon";
+import CommonDrawer from "@/web3goLayout/components/CommonDrawer";
 
 export class NewCardEditorSidebar extends React.Component {
   constructor(props) {
@@ -23,7 +24,7 @@ export class NewCardEditorSidebar extends React.Component {
   }
 
   render() {
-    const { action } = this.props.sidebar.props.params;
+    const { action, vanillaMode } = this.props.sidebar.props.params;
     const series =
       action === "add"
         ? [newDashboardConfigTmpl(this.props.sidebar.props.params.type)]
@@ -89,6 +90,60 @@ export class NewCardEditorSidebar extends React.Component {
 
     const Component = props => componentAdapter.render(props);
 
+    const StyleComponent = props => {
+      if (vanillaMode) {
+        return (
+          <Sidebar className={cx(styles["vanilla-wrap"])}>
+            <div
+              className={cx(
+                "flex align-center border-bottom",
+                styles["sidebar-title-wrap"],
+              )}
+            >
+              <h5 className={cx(styles["sidebar-title"])}>{title}</h5>
+              <IconClose
+                className={cx("ml-auto", styles["sidebar-title-x"])}
+                onClick={() => handleCancel()}
+              />
+            </div>
+            <React.Fragment {...props} />
+            <div
+              className="flex align-center border-top justify-end"
+              style={{
+                paddingTop: 12,
+                paddingBottom: 12,
+                paddingRight: 32,
+                paddingLeft: 32,
+              }}
+            >
+              <Button onClick={handleCancel}>{t`Cancel`}</Button>
+              <Button
+                type="primary"
+                style={{
+                  marginLeft: 12,
+                }}
+                onClick={done}
+              >{t`Done`}</Button>
+            </div>
+          </Sidebar>
+        );
+      }
+      return (
+        <CommonDrawer
+          className={cx(styles["new-wrap"])}
+          visible={true}
+          title={title}
+          onOk={() => {
+            done();
+          }}
+          onCancel={() => {
+            handleCancel();
+          }}
+          {...props}
+        ></CommonDrawer>
+      );
+    };
+
     const Settings = props => {
       const settingsUiConfigs = componentAdapter.uiSettings;
       return (
@@ -100,7 +155,10 @@ export class NewCardEditorSidebar extends React.Component {
               const { widget, title, props } = conf;
               if (widget === "toggle") {
                 return (
-                  <div className={cx("flex", styles["my-settings-row"])} key={name}>
+                  <div
+                    className={cx("flex", styles["my-settings-row"])}
+                    key={name}
+                  >
                     <label style={{ paddingTop: 0 }}>{title} </label>
                     <Switch
                       className="ml-auto"
@@ -133,23 +191,11 @@ export class NewCardEditorSidebar extends React.Component {
     };
 
     return (
-      <Sidebar>
-        <div
-          className={cx(
-            "flex align-center border-bottom",
-            styles["sidebar-title-wrap"],
-          )}
-        >
-          <h5 className={cx(styles["sidebar-title"])}>{title}</h5>
-          <IconClose
-            className={cx("ml-auto", styles["sidebar-title-x"])}
-            onClick={() => handleCancel()}
-          />
-        </div>
+      <StyleComponent>
         <div
           className={cx(
             "flex flex-column flex-auto overflow-y-auto",
-            styles["content"],
+            styles[vanillaMode ? "vanilla-wrap-content" : "new-wrap-content"],
           )}
         >
           <Settings />
@@ -161,25 +207,7 @@ export class NewCardEditorSidebar extends React.Component {
             isSettings={true}
           />
         </div>
-        <div
-          className="flex align-center border-top justify-end"
-          style={{
-            paddingTop: 12,
-            paddingBottom: 12,
-            paddingRight: 32,
-            paddingLeft: 32,
-          }}
-        >
-          <Button onClick={handleCancel}>{t`Cancel`}</Button>
-          <Button
-            type="primary"
-            style={{
-              marginLeft: 12,
-            }}
-            onClick={done}
-          >{t`Done`}</Button>
-        </div>
-      </Sidebar>
+      </StyleComponent>
     );
   }
 }

@@ -201,14 +201,14 @@ class Dashboard extends Component {
     }
   };
 
-  onToggleNewCardEditorSidebar = ({type, dashboardId, dashcardId, action, series, onReplaceAllVisualizationSettings }) => {
+  onToggleNewCardEditorSidebar = ({type, dashboardId, dashcardId, vanillaMode, action, series, onReplaceAllVisualizationSettings }) => {
     if (this.props.sidebar.name === SIDEBAR_NAME.newCardEditor) {
       this.props.closeSidebar();
       if (this.props.sidebar.props.params.type === type) {
         return;
       }
     } 
-    this.props.openNewCardEditorSidebar({type, dashboardId, dashcardId, action, series, onReplaceAllVisualizationSettings });
+    this.props.openNewCardEditorSidebar({type, vanillaMode, dashboardId, dashcardId, action, series, onReplaceAllVisualizationSettings });
   };
 
   onCancel = () => {
