@@ -18,7 +18,9 @@ import event from '@/web3goLayout/event';
 import { LayoutDashboardApi } from "../../../../services";
 
 import { addTextDashCardToDashboard, addImageDashCardToDashboard, addVideoDashCardToDashboard } from "../../../../dashboard/actions";
-
+import {
+    getDashboardComplete,
+} from "@/dashboard/selectors";
 const { Text } = Typography;
 const mapStateToProps = (state, props) => {
     return {
@@ -27,6 +29,7 @@ const mapStateToProps = (state, props) => {
         isDark: state.app.isDark,
         userData: state.app.userData,
         publicSpaceCollectionId: state.app.publicSpaceCollectionId,
+        dashboard: getDashboardComplete(state, props)
     }
 };
 const mapDispatchToProps = {
@@ -53,7 +56,9 @@ class Component extends React.Component {
             savedAllTagList: [],
             currentDashboardId: null,
             addFilterDrawerVisible: false,
-            addFilterDrawerIsEdit: false
+            addFilterDrawerIsEdit: false,
+            saveBtnLoading: false,
+            postBtnLoading: false
         }
         this.dashboardNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
@@ -65,6 +70,11 @@ class Component extends React.Component {
     componentDidUpdate(prevProps) {
         if (prevProps.params !== this.props.params) {
             this.init();
+        }
+        if ((prevProps.dashboard !== this.props.dashboard) && this.props.dashboard && this.props.dashboard.name) {
+            this.setState({
+                dashboardName: this.props.dashboard.name
+            })
         }
     }
     changeAddFilterDrawerVisible = (value) => {
@@ -228,6 +238,13 @@ class Component extends React.Component {
         this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
     }
     handlePostDashboard = () => {
+        if (!this.DashbaordAppRef.props.dashboard.ordered_cards || !this.DashbaordAppRef.props.dashboard.ordered_cards.length) {
+            Message.error('Please add something to dashboard');
+            return;
+        }
+        this.setState({
+            postBtnLoading: true
+        });
         event.emit('saveDashboard', this.state.dashboardName, async () => {
             this.saveTag();
             await this.props.createPublicLink({ id: this.state.currentDashboardId });
@@ -235,12 +252,21 @@ class Component extends React.Component {
                 "topic": "dashboard.changed",
                 "data": this.state.currentDashboardId
             })
+            this.setState({
+                postBtnLoading: false
+            });
             this.props.push('/');
         });
     }
     handleSaveDashboard = () => {
+        this.setState({
+            saveBtnLoading: true
+        });
         event.emit('saveDashboard', this.state.dashboardName, () => {
             this.saveTag();
+            this.setState({
+                saveBtnLoading: false
+            });
             this.props.push('/');
         });
     }
@@ -295,8 +321,8 @@ class Component extends React.Component {
                     </div>
                     <div className="pt-right">
                         <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
-                        <Button className="btn" onClick={this.handleSaveDashboard}>Save as Draft</Button>
-                        <Button className="btn" onClick={this.handlePostDashboard} type="primary">Post</Button>
+                        <Button className="btn" loading={this.state.saveBtnLoading} onClick={this.handleSaveDashboard}>Save as Draft</Button>
+                        <Button className="btn" loading={this.state.postBtnLoading} onClick={this.handlePostDashboard} type="primary">Post</Button>
                     </div>
                 </div>
                 <div className="p-operation-wrap">

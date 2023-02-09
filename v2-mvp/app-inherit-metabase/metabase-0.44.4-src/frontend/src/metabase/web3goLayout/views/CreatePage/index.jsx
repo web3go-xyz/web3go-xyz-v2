@@ -33,7 +33,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tabIndex: 1,
+            tabIndex: 0,
         }
         this.ShareModalRef = React.createRef();
     }
@@ -43,12 +43,18 @@ class Component extends React.Component {
         });
     }
     async componentDidMount() {
+        if (this.props.location.state && this.props.location.state.tabIndex) {
+            this.setState({
+                tabIndex: this.props.location.state.tabIndex
+            });
+        }
         //测试用，加快速度
-        this.props.changePublicSpaceCollectionId(40);
+        // this.props.changePublicSpaceCollectionId(40);
+        const collectionList = await CollectionsApi.list();
+        const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
+        this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
 
-        // const collectionList = await CollectionsApi.list();
-        // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
-        // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
+
     }
     render() {
         if (!this.props.publicSpaceCollectionId) {

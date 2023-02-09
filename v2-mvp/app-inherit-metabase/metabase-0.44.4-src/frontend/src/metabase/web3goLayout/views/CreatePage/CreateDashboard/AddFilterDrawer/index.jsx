@@ -73,7 +73,6 @@ const Component = ({ addFilterDrawerVisible, changeAddFilterDrawerVisible, addFi
     const [tabIndex, setTabIndex] = useState(0);
     const [parameterObj, setParameterObj] = useState({});
     const PARAMETER_SECTIONS = getDashboardParameterSections();
-    console.log('PARAMETER_SECTIONS', PARAMETER_SECTIONS);
     useEffect(() => {
         if (!addFilterDrawerIsEdit) {
             setCurrentRadioObj({});

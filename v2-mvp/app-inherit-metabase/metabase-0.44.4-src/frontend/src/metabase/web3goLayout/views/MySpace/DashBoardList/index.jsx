@@ -265,7 +265,7 @@ class Component extends React.Component {
         else if (key == 'Edit') {
             const slug = slugg(record.name);
             const suffix = slug ? `${record.id}-${slug}` : record.id;
-            this.props.push(`/dashboard/${suffix}`);
+            this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1 } });
         }
         else if (key == 'Forks') {
             this.fork(record);
