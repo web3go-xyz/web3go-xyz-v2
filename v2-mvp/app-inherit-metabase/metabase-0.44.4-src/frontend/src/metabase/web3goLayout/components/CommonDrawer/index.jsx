@@ -19,7 +19,7 @@ export default function (props) {
             onCancel={onCancel}
         >
             <div className="d-title">
-                <span>Filter</span>
+                <span>{props.title || 'Filter'}</span>
                 <img className="close hover-item" onClick={onCancel} src={require("@/web3goLayout/assets/dashboardCreate/close.png")} alt="" />
             </div>
             <div className="d-main">
