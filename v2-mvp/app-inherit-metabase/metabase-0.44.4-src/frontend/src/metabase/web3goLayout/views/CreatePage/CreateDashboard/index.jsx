@@ -181,8 +181,9 @@ class Component extends React.Component {
     handleCancel = () => {
         this.props.router.goBack();
     }
-    saveTag = () => {
-        const { tagList, savedAllTagList, savedCurrentTagList, currentDashboardId } = this.state;
+    saveTag = (newDashbarodId) => {
+        const { tagList, savedAllTagList, savedCurrentTagList } = this.state;
+        let currentDashboardId = newDashbarodId || this.state.currentDashboardId;
         const removeTagList = [];
         const markTagList = [];
         tagList.forEach(v => {
@@ -242,6 +243,7 @@ class Component extends React.Component {
         this.DashbaordAppRef.props.openNewCardEditorSidebar({type: 'video', dashId: getState().dashboard.dashboardId });
 
     }
+
     addChartToDashboard = (cardId) => {
         this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
     }
