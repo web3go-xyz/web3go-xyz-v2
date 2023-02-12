@@ -41,7 +41,7 @@ server {
         }
         
         location /imgUpload/ {
-                alias /home/ubuntu/dev-web3go-v2/web3go-xyz-v2/v2-mvp/api-service-extend/dist/dashboard/imgUpload/;
+                alias /home/ubuntu/dev-web3go-v2/web3go-xyz-v2/v2-mvp/api-service-extend/imgUpload/;
                 autoindex on;
                 add_header Access-Control-Allow-Origin *;
         }
