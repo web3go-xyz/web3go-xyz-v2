@@ -211,7 +211,7 @@ export const openAddQuestionSidebar = () => dispatch => {
   );
 };
 
-export const openNewCardEditorSidebar = ({type, vanillaMode, dashboardId, dashcardId, action, series, onReplaceAllVisualizationSettings}) => dispatch => {
+export const openNewCardEditorSidebar = ({ type, vanillaMode, dashboardId, dashcardId, action, series, onReplaceAllVisualizationSettings }) => dispatch => {
   dispatch(
     setSidebar({
       name: SIDEBAR_NAME.newCardEditor,
@@ -305,12 +305,12 @@ export const addDashCardToDashboard = function ({ dashId, dashcardOverrides }) {
   };
 };
 
-export const newDashboardConfigTmpl = (type)=> {
+export const newDashboardConfigTmpl = (type) => {
   if (type === 'text') {
     const virtualTextCard = createCard();
     virtualTextCard.display = "text";
     virtualTextCard.archived = false;
-  
+
     const dashcardOverrides = {
       card: virtualTextCard,
       visualization_settings: {
@@ -322,17 +322,17 @@ export const newDashboardConfigTmpl = (type)=> {
     const virtualTextCard = createCard();
     virtualTextCard.display = "media";
     virtualTextCard.archived = false;
-  
+
     const dashcardOverrides = {
       card: virtualTextCard,
       visualization_settings: {
         virtual_card: virtualTextCard,
         type
       },
-    };  
+    };
     return dashcardOverrides;
   } else {
-   
+
     throw new Error('not supported type');
   }
 }
@@ -344,15 +344,15 @@ export const addTextDashCardToDashboard = function ({ dashId }) {
   });
 };
 
-const addMedia = ( {dashId}, type) => {
+const addMedia = ({ dashId }, type) => {
   return addDashCardToDashboard({
     dashId: dashId,
     dashcardOverrides: newDashboardConfigTmpl(type),
   });
 }
 
-export const addVideoDashCardToDashboard =  dashObj => addMedia(dashObj, 'video');
-export const addImageDashCardToDashboard =  dashObj => addMedia(dashObj, 'image');
+export const addVideoDashCardToDashboard = dashObj => addMedia(dashObj, 'video');
+export const addImageDashCardToDashboard = dashObj => addMedia(dashObj, 'image');
 
 export const saveDashboardAndCards = createThunkAction(
   SAVE_DASHBOARD_AND_CARDS,
@@ -853,7 +853,61 @@ export const fetchDashboard = createThunkAction(
     };
   },
 );
+export const fetchDashboardPublicWithCommonId = createThunkAction(
+  FETCH_DASHBOARD,
+  function (dashId, queryParams, preserveParameters) {
+    let result;
+    return async function (dispatch, getState) {
+      result = await DashboardApi.get({ dashId });
+      result = {
+        ...result,
+        originDashboardId: result.id,
+        id: dashId,
+        ordered_cards: result.ordered_cards.map(dc => ({
+          ...dc,
+          dashboard_id: dashId,
+        })),
+      };
+      // copy over any virtual cards from the dashcard to the underlying card/question
+      result.ordered_cards.forEach(card => {
+        if (card.visualization_settings.virtual_card) {
+          card.card = Object.assign(
+            card.card || {},
+            card.visualization_settings.virtual_card,
+          );
+        }
+      });
 
+      if (result.param_values) {
+        dispatch(addParamValues(result.param_values));
+      }
+      if (result.param_fields) {
+        dispatch(addFields(result.param_fields));
+      }
+
+      const metadata = getMetadata(getState());
+      const parameters = getDashboardUiParameters(result, metadata);
+
+      const parameterValuesById = preserveParameters
+        ? getParameterValues(getState())
+        : getParameterValuesByIdFromQueryParams(
+          parameters,
+          queryParams,
+          metadata,
+          {
+            forcefullyUnsetDefaultedParametersWithEmptyStringValue: true,
+          },
+        );
+
+      return {
+        ...normalize(result, dashboard), // includes `result` and `entities`
+        dashboardId: dashId,
+        originDashboardId: result.originDashboardId,
+        parameterValues: parameterValuesById,
+      };
+    };
+  },
+);
 export const UPDATE_ENABLE_EMBEDDING =
   "metabase/dashboard/UPDATE_ENABLE_EMBEDDING";
 export const updateEnableEmbedding = createAction(

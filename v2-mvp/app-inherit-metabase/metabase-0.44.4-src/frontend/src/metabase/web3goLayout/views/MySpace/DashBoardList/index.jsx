@@ -10,7 +10,10 @@ import moment from 'moment';
 import { numberSplit } from '@/web3goLayout/utils';
 import ShareModal from "@/web3goLayout/components/ShareModal";
 import { LayoutDashboardApi } from '@/services'
+import Dashboard from "metabase/entities/dashboards";
+
 const Option = Select.Option;
+
 const mapStateToProps = state => {
     return {
         isDark: state.app.isDark,
@@ -18,7 +21,8 @@ const mapStateToProps = state => {
     }
 };
 const mapDispatchToProps = {
-    push
+    push,
+    setDashboardArchived: Dashboard.actions.setArchived,
 };
 const FormItem = Form.Item;
 
@@ -46,7 +50,7 @@ class Component extends React.Component {
                     render: (col, record, index) => (
                         <div className="name-col">
                             <div className="right">
-                                <div className="title hover-primary" onClick={() => { record.publicLink && window.open(record.publicLink) }}>{record.name}</div>
+                                <div className="title hover-primary" onClick={() => { window.open(record.publicLink ? record.publicLink : `/layout/dashboardDetail/${record.id}`) }}>{record.name}</div>
                                 <div className="tag-list">
                                     {
                                         record.tagList.map(v => (
@@ -240,7 +244,7 @@ class Component extends React.Component {
         }).then(d => {
             const slug = slugg(newName);
             const suffix = slug ? `${d.newDashboardId}-${slug}` : d.newDashboardId;
-            this.props.push(`/dashboard/${suffix}`);
+            this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1 } });
         })
     }
     clickDropdownIcon = (key, record) => {
@@ -271,21 +275,18 @@ class Component extends React.Component {
             this.fork(record);
         }
         else if (key == 'Delete') {
-            const slug = slugg(record.name);
-            const suffix = slug ? `${record.id}-${slug}` : record.id;
-            this.props.push(`/dashboard/${suffix}`);
-            // Modal.confirm({
-            //     wrapClassName: 'common-confirm-modal',
-            //     closable: true,
-            //     title: 'Delete Dashboard',
-            //     content:
-            //         'Are you sure you want to delete this dashboard?',
-            //     okText: 'Confirm',
-            //     cancelText: 'Cancel',
-            //     onOk: () => {
-
-            //     }
-            // });
+            Modal.confirm({
+                wrapClassName: 'common-confirm-modal',
+                closable: true,
+                title: 'Delete Dashboard',
+                content:
+                    'Are you sure to delete this dashboard ?',
+                cancelText: 'Cancel',
+                onOk: async () => {
+                    await this.props.setDashboardArchived({ id: record.id }, true);
+                    this.getMyFavourites();
+                }
+            });
         }
     }
     onChangeTable = (pagination, sorter) => {
@@ -369,6 +370,22 @@ class Component extends React.Component {
         }
         return (
             <div className="web3go-layout-myspace-dashbaoard-list">
+                <div className="filter-row">
+                    <span className="total">
+                        Post 123 Dashboards
+                    </span>
+                    <Dropdown trigger='click' position="br" droplist={
+                        <Menu onClickMenuItem={(key) => { this.clickDropdownIcon(key) }}>
+                            <Menu.Item key='1'>All</Menu.Item>
+                            <Menu.Item key='2'>Draft</Menu.Item>
+                            <Menu.Item key='3'>Posted</Menu.Item>
+                        </Menu>
+                    }>
+                        <div className="btn">
+                            All
+                        </div>
+                    </Dropdown>
+                </div>
                 <Table
                     className={'pagination-right' + (this.state.ifShowMore ? 'show-more' : '')}
                     rowKey="id"

@@ -269,22 +269,24 @@ class Component extends React.Component {
                                         <span className="value">{detailData.forkCount}</span>
                                     </div>
                                 </div>
-                                <div className="operation-wrap">
-                                    <Button onClick={() => { this.openShareModal() }}>
-                                        <IconLaunch style={{ fontSize: 16 }} />
-                                        <span>Share</span>
-                                    </Button>
-                                    <Button onClick={() => { this.fork() }}>
-                                        <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M5.50002 5V10M5.50002 11.1667V10M5.50002 10C5.50002 8.33333 11.8334 7.66667 11.8334 5M6.83335 3.33333C6.83335 3.68696 6.69288 4.02609 6.44283 4.27614C6.19278 4.52619 5.85364 4.66667 5.50002 4.66667C5.1464 4.66667 4.80726 4.52619 4.55721 4.27614C4.30716 4.02609 4.16669 3.68696 4.16669 3.33333C4.16669 2.97971 4.30716 2.64057 4.55721 2.39052C4.80726 2.14048 5.1464 2 5.50002 2C5.85364 2 6.19278 2.14048 6.44283 2.39052C6.69288 2.64057 6.83335 2.97971 6.83335 3.33333V3.33333ZM13.1667 3.33333C13.1667 3.68696 13.0262 4.02609 12.7762 4.27614C12.5261 4.52619 12.187 4.66667 11.8334 4.66667C11.4797 4.66667 11.1406 4.52619 10.8905 4.27614C10.6405 4.02609 10.5 3.68696 10.5 3.33333C10.5 2.97971 10.6405 2.64057 10.8905 2.39052C11.1406 2.14048 11.4797 2 11.8334 2C12.187 2 12.5261 2.14048 12.7762 2.39052C13.0262 2.64057 13.1667 2.97971 13.1667 3.33333V3.33333ZM6.83335 12.6667C6.83335 13.0203 6.69288 13.3594 6.44283 13.6095C6.19278 13.8595 5.85364 14 5.50002 14C5.1464 14 4.80726 13.8595 4.55721 13.6095C4.30716 13.3594 4.16669 13.0203 4.16669 12.6667C4.16669 12.313 4.30716 11.9739 4.55721 11.7239C4.80726 11.4738 5.1464 11.3333 5.50002 11.3333C5.85364 11.3333 6.19278 11.4738 6.44283 11.7239C6.69288 11.9739 6.83335 12.313 6.83335 12.6667V12.6667Z" stroke="#6B7785" strokeWidth="1.33" />
-                                        </svg>
-                                        <span>Fork</span>
-                                    </Button>
-                                    <Button onClick={() => { this.toggleFavourite() }}>
-                                        <IconStar style={{ fontSize: 16 }} className={this.state.favouriteList.find(v => v.dashboardId == this.state.detailData.id) ? 'star active' : 'star'} />
-                                        <span>Favorite</span>
-                                    </Button>
-                                </div>
+                                {detailData.publicUUID ? (
+                                    <div className="operation-wrap">
+                                        <Button onClick={() => { this.openShareModal() }}>
+                                            <IconLaunch style={{ fontSize: 16 }} />
+                                            <span>Share</span>
+                                        </Button>
+                                        <Button onClick={() => { this.fork() }}>
+                                            <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M5.50002 5V10M5.50002 11.1667V10M5.50002 10C5.50002 8.33333 11.8334 7.66667 11.8334 5M6.83335 3.33333C6.83335 3.68696 6.69288 4.02609 6.44283 4.27614C6.19278 4.52619 5.85364 4.66667 5.50002 4.66667C5.1464 4.66667 4.80726 4.52619 4.55721 4.27614C4.30716 4.02609 4.16669 3.68696 4.16669 3.33333C4.16669 2.97971 4.30716 2.64057 4.55721 2.39052C4.80726 2.14048 5.1464 2 5.50002 2C5.85364 2 6.19278 2.14048 6.44283 2.39052C6.69288 2.64057 6.83335 2.97971 6.83335 3.33333V3.33333ZM13.1667 3.33333C13.1667 3.68696 13.0262 4.02609 12.7762 4.27614C12.5261 4.52619 12.187 4.66667 11.8334 4.66667C11.4797 4.66667 11.1406 4.52619 10.8905 4.27614C10.6405 4.02609 10.5 3.68696 10.5 3.33333C10.5 2.97971 10.6405 2.64057 10.8905 2.39052C11.1406 2.14048 11.4797 2 11.8334 2C12.187 2 12.5261 2.14048 12.7762 2.39052C13.0262 2.64057 13.1667 2.97971 13.1667 3.33333V3.33333ZM6.83335 12.6667C6.83335 13.0203 6.69288 13.3594 6.44283 13.6095C6.19278 13.8595 5.85364 14 5.50002 14C5.1464 14 4.80726 13.8595 4.55721 13.6095C4.30716 13.3594 4.16669 13.0203 4.16669 12.6667C4.16669 12.313 4.30716 11.9739 4.55721 11.7239C4.80726 11.4738 5.1464 11.3333 5.50002 11.3333C5.85364 11.3333 6.19278 11.4738 6.44283 11.7239C6.69288 11.9739 6.83335 12.313 6.83335 12.6667V12.6667Z" stroke="#6B7785" strokeWidth="1.33" />
+                                            </svg>
+                                            <span>Fork</span>
+                                        </Button>
+                                        <Button onClick={() => { this.toggleFavourite() }}>
+                                            <IconStar style={{ fontSize: 16 }} className={this.state.favouriteList.find(v => v.dashboardId == this.state.detailData.id) ? 'star active' : 'star'} />
+                                            <span>Favorite</span>
+                                        </Button>
+                                    </div>
+                                ) : null}
                             </div>
                         </div>
                     </div>
@@ -310,22 +312,22 @@ class Component extends React.Component {
                             : ''
                         }
                     </div>
-                    <div className="relatedDashboardList-wrap">
-                        <div className="r-title">
-                            <span>
+                    {detailData.publicUUID ? (
+                        <div className="relatedDashboardList-wrap">
+                            <div className="r-title">
+                                <span>
+                                    Related Dashboards
+                                </span>
+                                <Tooltip content='dashboards with same labels'>
+                                    <IconInfoCircle />
+                                </Tooltip>
+                            </div>
+                            {
+                                detailData.id ? <RelatedDashboardList detailData={detailData} myFollowingList={this.state.myFollowingList}></RelatedDashboardList> : null
+                            }
 
-                                Related Dashboards
-                            </span>
-                            <Tooltip content='dashboards with same labels'>
-                                <IconInfoCircle />
-                            </Tooltip>
                         </div>
-                        {
-                            detailData.id ? <RelatedDashboardList detailData={detailData} myFollowingList={this.state.myFollowingList}></RelatedDashboardList> : null
-                        }
-
-                    </div>
-
+                    ) : null}
                 </div>
                 {
                     this.state.screenShortLoading ? (<div className="loading-wrap">

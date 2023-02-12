@@ -13,7 +13,9 @@ import { getDashboardActions } from "metabase/dashboard/components/DashboardActi
 import EmbedFrame from "../components/EmbedFrame";
 import title from "metabase/hoc/Title";
 import event from '@/web3goLayout/event';
-
+import {
+  getDashboardType,
+} from "@/dashboard/utils";
 import { fetchDatabaseMetadata } from "metabase/redux/metadata";
 import { setErrorPage } from "metabase/redux/app";
 import { getMetadata } from "metabase/selectors/metadata";
@@ -65,6 +67,7 @@ class PublicDashboard extends Component {
     const {
       initialize,
       fetchDashboard,
+      fetchDashboardPublicWithCommonId,
       fetchDashboardCardData,
       setErrorPage,
       location,
@@ -78,7 +81,13 @@ class PublicDashboard extends Component {
     }
     initialize();
     try {
-      const dashboardData = await fetchDashboard(uuid || token, location.query);
+      let dashboardData;
+      const dashboardType = getDashboardType(uuid);
+      if (location.pathname.includes('/layout') && dashboardType !== 'public') {
+        dashboardData = await fetchDashboardPublicWithCommonId(uuid, location.query);
+      } else {
+        dashboardData = await fetchDashboard(uuid || token, location.query);
+      }
       if (this.props.getDashboardOriginId) {
         this.props.getDashboardOriginId(dashboardData.payload.originDashboardId)
       }

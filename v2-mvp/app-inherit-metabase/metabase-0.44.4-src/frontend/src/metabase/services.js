@@ -8,7 +8,6 @@ import { FieldDimension } from "metabase-lib/lib/Dimension";
 
 // use different endpoints for embed previews
 const embedBase = IS_EMBED_PREVIEW ? "/api/preview_embed" : "/api/embed";
-
 import getGAMetadata from "promise-loader?global!metabase/lib/ga-metadata"; // eslint-disable-line import/default
 export const WEB3GO_BASE_URL = 'https://dev-v2.web3go.xyz/api-ext';
 export const LayoutLoginApi = {
