@@ -17,11 +17,10 @@ import { publicSpaceCollectionId } from "metabase/redux/app";
 import event from '@/web3goLayout/event';
 import { LayoutDashboardApi } from "../../../../services";
 
-import { addTextDashCardToDashboard, addImageDashCardToDashboard, addVideoDashCardToDashboard } from "../../../../dashboard/actions";
+//import { addTextDashCardToDashboard, addImageDashCardToDashboard, addVideoDashCardToDashboard } from "../../../../dashboard/actions";
 import {
     getDashboardComplete,
 } from "@/dashboard/selectors";
-const { Text } = Typography;
 const mapStateToProps = (state, props) => {
     return {
         key: props.location.params,
@@ -88,30 +87,35 @@ class Component extends React.Component {
         });
     }
     init = async () => {
-        if (!this.props.params.dashboardSlug) {
-            this.setState({
-                createDefaultDbLoading: true
-            });
-            const result = await DashboardApi.create({
-                "name": this.state.dashboardName,
-                "collection_id": this.props.publicSpaceCollectionId
-            });
-            const slug = slugg(result.name);
-            const dashboardSlug = slug ? `${result.id}-${slug}` : result.id;
-            this.setState({
-                createDefaultDbLoading: false
-            });
-            this.props.replace({
-                pathname: this.props.location.pathname + '/' + dashboardSlug,
-            });
-            return;
-        }
+        // if (!this.props.params.dashboardSlug) {
+        //     this.setState({
+        //         createDefaultDbLoading: true
+        //     });
+        //     const result = await DashboardApi.create({
+        //         "name": this.state.dashboardName,
+        //         "collection_id": this.props.publicSpaceCollectionId
+        //     });
+        //     const slug = slugg(result.name);
+        //     const dashboardSlug = slug ? `${result.id}-${slug}` : result.id;
+        //     this.setState({
+        //         createDefaultDbLoading: false
+        //     });
+        //     this.props.replace({
+        //         pathname: this.props.location.pathname + '/' + dashboardSlug,
+        //     });
+        //     return;
+        // }
+        // if (!this.props.params.dashboardSlug) {
+        //     this.props.setDashboardAttributes({ id: this.props.dashboard.id, attributes: { parameters: {createPending: true} } });
+        // }
         const slug = this.props.params.dashboardSlug;
-        const currentDashboardId = Urls.extractEntityId(slug);
+        const currentDashboardId = Urls.extractEntityId(slug) || -1;
         this.setState({
             currentDashboardId
         });
-        this.getDashboardTags(currentDashboardId);
+        if (this.props.params.dashboardSlug) {
+            this.getDashboardTags(currentDashboardId);
+        }
         this.getAllTagList();
     }
     getDashboardTags = (currentDashboardId) => {
@@ -241,39 +245,72 @@ class Component extends React.Component {
     addChartToDashboard = (cardId) => {
         this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
     }
-    handlePostDashboard = () => {
+
+    handlePostDashboard = async (isDraft) => {
         if (!this.DashbaordAppRef.props.dashboard.ordered_cards || !this.DashbaordAppRef.props.dashboard.ordered_cards.length) {
             Message.error('Please add something to dashboard');
             return;
         }
+        const isDelayDashboardCreation = !this.props.params.dashboardSlug
+        let newId = this.props.dashboard.id;
+        if (isDelayDashboardCreation) {
+            const result = await DashboardApi.create({
+                "name": this.state.dashboardName,
+                "collection_id": this.props.publicSpaceCollectionId
+            });
+            newId = result.id;
+            this.props.setIdForNewDashboard({id:this.props.dashboard.id, newId, dashboardName: this.state.dashboardName});//(dispatch, getState);
+            this.setState({dashboardId : newId})
+        }
+
+
         this.setState({
             postBtnLoading: true
         });
         event.emit('saveDashboard', this.state.dashboardName, async () => {
             this.saveTag();
-            await this.props.createPublicLink({ id: this.state.currentDashboardId });
-            await LayoutDashboardApi.externalEvent({
-                "topic": "dashboard.changed",
-                "data": this.state.currentDashboardId
-            })
+            if (!isDraft) {
+                await this.props.createPublicLink({ id: newId });
+                await LayoutDashboardApi.externalEvent({
+                    "topic": "dashboard.changed",
+                    "data": newId
+                })
+            }
             this.setState({
                 postBtnLoading: false
             });
-            this.props.push('/');
-        });
-    }
-    handleSaveDashboard = () => {
-        this.setState({
-            saveBtnLoading: true
-        });
-        event.emit('saveDashboard', this.state.dashboardName, () => {
-            this.saveTag();
+
             this.setState({
-                saveBtnLoading: false
+                createDefaultDbLoading: false
             });
+            if (isDelayDashboardCreation) {
+                this.setState({currentDashboardId: newId });
+                // const slug = slugg(this.props.dashboard.name);
+                // const dashboardSlug = `${newId}-${slug}`;
+                // alert(this.props.location.pathname + '/' + dashboardSlug);
+                // this.props.replace({
+                //     pathname: this.props.location.pathname + '/' + dashboardSlug
+                // });
+
+            } 
+            
+
             this.props.push('/');
-        });
+
+        }, newId);
     }
+    // handleSaveDashboard = () => {
+    //     this.setState({
+    //         saveBtnLoading: true
+    //     });
+    //     event.emit('saveDashboard', this.state.dashboardName, () => {
+    //         this.saveTag();
+    //         this.setState({
+    //             saveBtnLoading: false
+    //         });
+    //         this.props.push('/');
+    //     });
+    // }
 
     render() {
         const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList, addFilterDrawerVisible, addFilterDrawerIsEdit } = this.state;
@@ -325,8 +362,8 @@ class Component extends React.Component {
                     </div>
                     <div className="pt-right">
                         <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
-                        <Button className="btn" loading={this.state.saveBtnLoading} onClick={this.handleSaveDashboard}>Save as Draft</Button>
-                        <Button className="btn" loading={this.state.postBtnLoading} onClick={this.handlePostDashboard} type="primary">Post</Button>
+                        <Button className="btn" loading={this.state.saveBtnLoading} onClick={()=>this.handlePostDashboard(true)}>Save as Draft</Button>
+                        <Button className="btn" loading={this.state.postBtnLoading} onClick={()=>this.handlePostDashboard(false)} type="primary">Post</Button>
                     </div>
                 </div>
                 <div className="p-operation-wrap">
@@ -352,9 +389,7 @@ class Component extends React.Component {
                     </div>
                 </div>
                 <div className="p-main">
-                    {this.props.params.dashboardSlug ?
                         <DashboardApp {...this.props} ref={(ref) => this.DashbaordAppRef = ref} />
-                        : null}
                 </div>
                 <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} addChartToDashboard={this.addChartToDashboard}></AddChartModal>
                 <AddFilterDrawer {...this.props}

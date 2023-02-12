@@ -122,12 +122,12 @@ const DashboardApp = props => {
     timer: 15000,
     onTimeout,
   });
-  const saveDashboardHandler = async (dashboardName, successFn) => {
+  const saveDashboardHandler = async (dashboardName, successFn, newId) => {
     await props.setDashboardAttributes({
-      id: props.dashboardId,
+      id: props.dashboardId || newId,
       attributes: { ["name"]: dashboardName },
     });
-    await props.saveDashboardAndCards(props.dashboardId);
+    await props.saveDashboardAndCards(props.dashboardId || newId);
     if (successFn) {
       successFn();
     }
