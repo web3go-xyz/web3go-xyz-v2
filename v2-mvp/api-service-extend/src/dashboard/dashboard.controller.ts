@@ -30,61 +30,61 @@ import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
 @Controller('/api/v2/dashboard')
 @ApiTags('/api/v2/dashboard')
 export class DashboardController {
-    logger: W3Logger;
-    constructor(private readonly service: DashboardService,
-      private readonly jwtService: JWTAuthService) {
-        this.logger = new W3Logger(`DashboardController`);
+  logger: W3Logger;
+  constructor(private readonly service: DashboardService,
+    private readonly jwtService: JWTAuthService) {
+    this.logger = new W3Logger(`DashboardController`);
+  }
+
+  private getUserSession(/*@Request() */rawRequest) {
+    try {
+      return this.jwtService.decodeAuthUserFromHttpRequest(rawRequest);
+    } catch (e) {
+      // mute invalid sessions, jus treated as unlogged users.
     }
+    return null;
+  }
 
-    private getUserSession(/*@Request() */rawRequest) {
-      try {
-          return this.jwtService.decodeAuthUserFromHttpRequest(rawRequest);
-      } catch(e) {
-          // mute invalid sessions, jus treated as unlogged users.
-      }
-      return null;
-    }
+  @AllowAnonymous()
+  @Post('/list')
+  @ApiOperation({ summary: 'list dashboard' })
+  @ApiOkResponse({ type: QueryDashboardListResponse })
+  async list(@Body() param: QueryDashboardListRequest, @Request() rawRequest): Promise<QueryDashboardListResponse> {
 
-    @AllowAnonymous()
-    @Post('/list')
-    @ApiOperation({ summary: 'list dashboard' })
-    @ApiOkResponse({ type: QueryDashboardListResponse })
-    async list(@Body() param: QueryDashboardListRequest, @Request() rawRequest): Promise<QueryDashboardListResponse> {
+    this.logger.debug(`list:${JSON.stringify(param)}`);
+    return await this.service.list(param, this.getUserSession(rawRequest));
+  }
 
-        this.logger.debug(`list:${JSON.stringify(param)}`);
-        return await this.service.list(param, this.getUserSession(rawRequest));
-    }
+  @AllowAnonymous()
+  @Post('/detail')
+  @ApiOperation({ summary: 'get detail info of the specified dashboard' })
+  @ApiOkResponse({ type: QueryDashboardDetailResponse })
+  async detail(@Body() param: QueryDashboardDetailRequest): Promise<QueryDashboardDetailResponse> {
 
-    @AllowAnonymous()
-    @Post('/detail')
-    @ApiOperation({ summary: 'get detail info of the specified dashboard' })
-    @ApiOkResponse({ type: QueryDashboardDetailResponse })
-    async detail(@Body() param: QueryDashboardDetailRequest): Promise<QueryDashboardDetailResponse> {
-
-        this.logger.debug(`detail:${JSON.stringify(param)}`);
-        return await this.service.detail(param);
-    }
+    this.logger.debug(`detail:${JSON.stringify(param)}`);
+    return await this.service.detail(param);
+  }
 
 
-    @AllowAnonymous()
-    @Post('/refresh')
-    @ApiOperation({ summary: 'refresh the specified dashboards' })
-    @ApiOkResponse({ type: Object })
-    async refresh(@Body() param: QueryDashboardDetailRequest): Promise<any> {
+  @AllowAnonymous()
+  @Post('/refresh')
+  @ApiOperation({ summary: 'refresh the specified dashboards' })
+  @ApiOkResponse({ type: Object })
+  async refresh(@Body() param: QueryDashboardDetailRequest): Promise<any> {
 
-        this.logger.debug(`refresh:${JSON.stringify(param)}`);
-        return await this.service.refresh(param);
-    }
+    this.logger.debug(`refresh:${JSON.stringify(param)}`);
+    return await this.service.refresh(param);
+  }
 
-    @AllowAnonymous()
-    @Post('/searchRelatedDashboards')
-    @ApiOperation({ summary: 'search related dashboards which has similar tags' })
-    @ApiOkResponse({ type: QueryDashboardListResponse })
-    async searchRelatedDashboards(@Body() param: QueryRelatedDashboardsRequest, @Request() rawRequest): Promise<QueryDashboardListResponse> {
+  @AllowAnonymous()
+  @Post('/searchRelatedDashboards')
+  @ApiOperation({ summary: 'search related dashboards which has similar tags' })
+  @ApiOkResponse({ type: QueryDashboardListResponse })
+  async searchRelatedDashboards(@Body() param: QueryRelatedDashboardsRequest, @Request() rawRequest): Promise<QueryDashboardListResponse> {
 
-        this.logger.debug(`searchRelatedDashboards:${JSON.stringify(param)}`);
-        return await this.service.searchRelatedDashboards(param, this.getUserSession(rawRequest));
-    }
+    this.logger.debug(`searchRelatedDashboards:${JSON.stringify(param)}`);
+    return await this.service.searchRelatedDashboards(param, this.getUserSession(rawRequest));
+  }
 
 
   @Post('/update/preview-url/:id')
@@ -98,11 +98,11 @@ export class DashboardController {
     // console.log(body);
     // console.log(file);
 
-    let dir = join(__dirname, '/imgUpload/preview');
+    let dir = join(AppConfig.IMG_UPLOAD_DIR || __dirname, '/imgUpload/preview');
     // console.log(dir);
 
     if (existsSync(dir) == false) {
-      mkdirSync(dir, {recursive: true});
+      mkdirSync(dir, { recursive: true });
     }
 
     let path = 'dashboard-' + id + file.originalname.substr(file.originalname.indexOf('.'));
@@ -124,13 +124,13 @@ export class DashboardController {
   })
   uploadPublicImg(@UploadedFile() file, @Body() body) {
 
-    let dir = join(__dirname, '/imgUpload/public');
+    let dir = join(AppConfig.IMG_UPLOAD_DIR || __dirname, '/imgUpload/public');
     if (existsSync(dir) == false) {
-      mkdirSync(dir, {recursive: true});
+      mkdirSync(dir, { recursive: true });
     }
 
     const uuid = randomUUID();
-    let path =  uuid+"."+file.mimetype.split('/')[1]
+    let path = uuid + "." + file.mimetype.split('/')[1]
     const writeImage = createWriteStream(join(dir, `${path}`))
     writeImage.write(file.buffer);
 
@@ -141,7 +141,7 @@ export class DashboardController {
   @Get('/getDataSets')
   @ApiOperation({ summary: 'get all datasets' })
   @ApiOkResponse({ type: ReportCard, isArray: true })
-  async getDataSets():Promise<ReportCard[]>{
-      return await this.service.getDataSets();
+  async getDataSets(): Promise<ReportCard[]> {
+    return await this.service.getDataSets();
   }
 }
