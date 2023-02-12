@@ -1,4 +1,4 @@
- export class AppConfig {
+export class AppConfig {
 
   public static dbConnection = {
     type: process.env.DB_TYPE || 'postgres',
@@ -35,6 +35,8 @@
 
   public static STATIC_ASSET_DIR: string = 'static/';
   public static STATIC_ASSET_PREFIX: string = '';
+
+  public static IMG_UPLOAD_DIR: string = process.env.IMG_UPLOAD_DIR || './';
 
   public static initilize() {
     AppConfig.STATIC_ASSET_PREFIX = AppConfig.BASE_API_URL + '/' + AppConfig.STATIC_ASSET_DIR;
