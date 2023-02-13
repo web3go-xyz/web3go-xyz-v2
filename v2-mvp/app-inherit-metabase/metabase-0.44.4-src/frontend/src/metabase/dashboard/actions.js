@@ -731,12 +731,12 @@ export const fetchCardData = createThunkAction(
         result = await fetchDataOrError(
           maybeUsePivotEndpoint(endpoint, card)(
             {
-              dashboardId: dashcard.dashboard_id,
+              dashboardId: dashcard.dashboard_id === -1 ? undefined : dashcard.dashboard_id,
               dashcardId: dashcard.id,
               cardId: card.id,
               parameters: datasetQuery.parameters,
               ignore_cache: ignoreCache,
-              dashboard_id: dashcard.dashboard_id,
+              dashboard_id: dashcard.dashboard_id === -1 ? undefined : dashcard.dashboard_id,
             },
             queryOptions,
           ),
