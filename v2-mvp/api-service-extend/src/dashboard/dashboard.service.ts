@@ -95,12 +95,24 @@ export class DashboardService {
         } else {
             // where.publicLink = Not(''); //Not(Raw('NULL'));
             // My Space Page may vary by the log-in status
-            
-            
         }
-        where.publicLink = Not(''); //Not(Raw('NULL'));
-        if (userSession && userSession.id && userSession.id === request.creator) {
-            delete where.publicLink;
+        const isAllowShowingDraft = userSession && userSession.id && userSession.id === request.creator;
+        // specified the defat status of a dashboard, 0 or default: not limited(mixed the drafted and the posted);  1: draft data only 2: only posted(no drafts)
+
+         if (request.draftStatus === 1) { // draft data only
+            if (!isAllowShowingDraft) {
+                //throw new BadRequestException('permission failed')
+                // to make the query dismatch any records
+                where.id = -11;
+            } else {
+                where.publicLink = '';
+            } 
+        } else if (request.draftStatus === 2) {         // only posted
+            where.publicLink = Not(''); //Not(Raw('NULL'));
+        } else {  // mixed
+            if (!isAllowShowingDraft) { // if no auth, only show posted
+                where.publicLink = '';
+            } 
         }
         
         let options: FindManyOptions<DashboardExt> = {
@@ -250,7 +262,9 @@ export class DashboardService {
             dashboardIds: [],
             pageSize: param.pageSize,
             pageIndex: param.pageIndex,
-            orderBys: param.orderBys
+            orderBys: param.orderBys,
+            // TODO TEST
+            draftStatus: null
         }, userSession);
 
         return resp;

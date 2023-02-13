@@ -17,7 +17,7 @@ export class QueryDashboardListRequest extends PageRequest {
 
 
     @ApiProperty({
-        description: 'search creator account',
+        description: 'search creator account', 
         default: ''
     })
     creator: string;
@@ -28,5 +28,13 @@ export class QueryDashboardListRequest extends PageRequest {
         default: []
     })
     dashboardIds: number[];
+
+    @ApiProperty({
+        description: 'specified the defat status of a dashboard, 0 or default: not limited(mixed the drafted and the posted);  1: draft data only 2: only posted(no drafts)',
+        default: null
+    })
+    draftStatus: number;
+
+
 }
 
