@@ -228,79 +228,90 @@ class Component extends React.Component {
     onAddTextBox = () => {
         const { dispatch, getState } = this.DashbaordAppRef.store;
         //addTextDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
-        this.DashbaordAppRef.props.openNewCardEditorSidebar({type: 'text', dashId: getState().dashboard.dashboardId });
+        this.DashbaordAppRef.props.openNewCardEditorSidebar({ type: 'text', dashId: getState().dashboard.dashboardId });
     }
 
     onAddImageBox = () => {
         const { dispatch, getState } = this.DashbaordAppRef.store;
         // addImageDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
-        this.DashbaordAppRef.props.openNewCardEditorSidebar({type: 'image', dashId: getState().dashboard.dashboardId });
+        this.DashbaordAppRef.props.openNewCardEditorSidebar({ type: 'image', dashId: getState().dashboard.dashboardId });
     }
 
     onAddVideoBox = () => {
         const { dispatch, getState } = this.DashbaordAppRef.store;
         //addVideoDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
-        this.DashbaordAppRef.props.openNewCardEditorSidebar({type: 'video', dashId: getState().dashboard.dashboardId });
+        this.DashbaordAppRef.props.openNewCardEditorSidebar({ type: 'video', dashId: getState().dashboard.dashboardId });
 
     }
 
     addChartToDashboard = (cardId) => {
         this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
     }
-
     handlePostDashboard = async (isDraft) => {
-        if (!this.DashbaordAppRef.props.dashboard.ordered_cards || !this.DashbaordAppRef.props.dashboard.ordered_cards.length) {
-            Message.error('Please add something to dashboard');
-            return;
-        }
-        const isDelayDashboardCreation = !this.props.params.dashboardSlug
-        let newId = this.props.dashboard.id;
-        if (isDelayDashboardCreation) {
-            const result = await DashboardApi.create({
-                "name": this.state.dashboardName,
-                "collection_id": this.props.publicSpaceCollectionId
-            });
-            newId = result.id;
-            this.props.setIdForNewDashboard({id:this.props.dashboard.id, newId, dashboardName: this.state.dashboardName});//(dispatch, getState);
-            this.setState({dashboardId : newId})
-        }
-
-
-        this.setState({
-            postBtnLoading: true
-        });
-        event.emit('saveDashboard', this.state.dashboardName, async () => {
-            this.saveTag();
+        // 改了名字，得先触发blur事件再保存
+        setTimeout(async () => {
             if (!isDraft) {
-                await this.props.createPublicLink({ id: newId });
-                await LayoutDashboardApi.externalEvent({
-                    "topic": "dashboard.changed",
-                    "data": newId
-                })
+                if (!this.DashbaordAppRef.props.dashboard.ordered_cards || !this.DashbaordAppRef.props.dashboard.ordered_cards.length) {
+                    Message.error('Please add something to dashboard');
+                    return;
+                }
             }
-            this.setState({
-                postBtnLoading: false
-            });
-
-            this.setState({
-                createDefaultDbLoading: false
-            });
-            if (isDelayDashboardCreation) {
-                this.setState({currentDashboardId: newId });
-                // const slug = slugg(this.props.dashboard.name);
-                // const dashboardSlug = `${newId}-${slug}`;
-                // alert(this.props.location.pathname + '/' + dashboardSlug);
-                // this.props.replace({
-                //     pathname: this.props.location.pathname + '/' + dashboardSlug
-                // });
-
-            } 
             
-
-            this.props.push('/');
-
-        }, newId);
+            const isDelayDashboardCreation = !this.props.params.dashboardSlug
+            let realId = this.props.dashboard.id;
+            if (isDelayDashboardCreation) {
+                const result = await DashboardApi.create({
+                    "name": this.state.dashboardName,
+                    "collection_id": this.props.publicSpaceCollectionId
+                });
+                realId = result.id;
+                this.props.setIdForNewDashboard({id:this.props.dashboard.id, newId: realId, dashboardName: this.state.dashboardName});//(dispatch, getState);
+                this.setState({dashboardId : realId})
+            }
+    
+            this.setState({
+                postBtnLoading: true
+            });
+            event.emit('saveDashboard', this.state.dashboardName, async () => {
+                this.saveTag();
+                if (!isDraft) {
+                    await this.props.createPublicLink({ id: realId });
+                    await LayoutDashboardApi.externalEvent({
+                        "topic": "dashboard.changed",
+                        "data": realId
+                    })
+                }
+                this.setState({
+                    postBtnLoading: false
+                });
+                 if (isDraft) {
+                    const slug = slugg(this.state.dashboardName);
+                    const dashboardSlug = `${realId}-${slug}`;
+                    this.props.replace({
+                        pathname: this.props.location.pathname + '/' + dashboardSlug
+                    });
+                 }
+                 else {
+                    this.props.push('/');
+                 }
+            }, realId);
+        }, 0);
     }
+    // handleSaveDashboard = () => {
+    //     // 改了名字，得先触发blur事件再保存
+    //     setTimeout(() => {
+    //         this.setState({
+    //             saveBtnLoading: true
+    //         });
+    //         event.emit('saveDashboard', this.state.dashboardName, () => {
+    //             this.saveTag();
+    //             this.setState({
+    //                 saveBtnLoading: false
+    //             });
+    //             this.props.push('/');
+    //         });
+    //     }, 0);
+    // }
     // handleSaveDashboard = () => {
     //     this.setState({
     //         saveBtnLoading: true

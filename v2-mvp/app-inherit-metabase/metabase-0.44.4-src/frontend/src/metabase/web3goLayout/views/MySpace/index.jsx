@@ -146,7 +146,8 @@ class Component extends React.Component {
                 <TabPane key='2' title={`${this.state.isMyself?'My Favorites':'Favorites'} ${myFavouriteCount}`}>
                 </TabPane>
             </Tabs>
-            <DashBoardList
+
+            <DashBoardList 
                 viewType={this.state.viewType}
                 isFavourite={this.state.activeTab == '2'}
                 onRef={(ref) => this.DashboardRef = ref}

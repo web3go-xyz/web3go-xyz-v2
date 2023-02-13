@@ -214,7 +214,18 @@ body[arco-theme="dark"] .web3go-dashboardDetail-page {
             position: initial;
 
             .EmbedFrame-header {
-                display: none;
+                background: transparent;
+
+                &>.my2 {
+                    display: none;
+                }
+
+                &>.flex>.mt1 {
+                    margin-top: 0;
+                    margin-bottom: 10px;
+                }
+
+                // display: none;
             }
 
             .EmbedFrame-footer {

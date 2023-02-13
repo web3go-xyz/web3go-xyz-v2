@@ -18,6 +18,8 @@ module.exports = {
 
             REDIS_HOST: "localhost" ,// "dev-v2.web3go.xyz",  // host for redis, use default password
 
+            IMG_UPLOAD_DIR: "/home/ubuntu/dev-web3go-v2/web3go-xyz-v2/v2-mvp/api-service-extend",
+
             BASE_API_URL: "https://dev-v2.web3go.xyz/api-ext",       // api prefix of api extend service
             BASE_WEB_URL: "https://dev-v2.web3go.xyz",              // domain of web page
             BASE_METABASE_API_URL: "https://dev-v2.web3go.xyz/api", // api prefix of metabase service
