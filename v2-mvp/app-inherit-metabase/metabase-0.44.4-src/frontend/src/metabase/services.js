@@ -9,7 +9,14 @@ import { FieldDimension } from "metabase-lib/lib/Dimension";
 // use different endpoints for embed previews
 const embedBase = IS_EMBED_PREVIEW ? "/api/preview_embed" : "/api/embed";
 import getGAMetadata from "promise-loader?global!metabase/lib/ga-metadata"; // eslint-disable-line import/default
-export const WEB3GO_BASE_URL = '/api-ext';
+const WEBPACK_BUNDLE = process.env.WEBPACK_BUNDLE || "development";
+let _WEB3GO_BASE_URL;
+if (WEBPACK_BUNDLE == 'hot') {
+  _WEB3GO_BASE_URL = 'https://dev-v2.web3go.xyz/api-ext';
+} else {
+  _WEB3GO_BASE_URL = '/api-ext';
+}
+export const WEB3GO_BASE_URL = _WEB3GO_BASE_URL;
 export const LayoutLoginApi = {
   signIn: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/signin"),
   signUp: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/signup"),
