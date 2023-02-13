@@ -43,7 +43,7 @@ export class DashboardShareController {
       JSON.stringify(data),
       5 * 60 * 60,
     ); // persist for 5 hours
-    return `${AppConfig.BASE_API_URL}/v2/dashboard/sns/share/gateway/${uuid}`;
+    return `${AppConfig.BASE_API_URL}/api/v2/dashboard/sns/share/gateway/${uuid}`;
   }
   private assert(condition, msg) {
     if (!condition) {

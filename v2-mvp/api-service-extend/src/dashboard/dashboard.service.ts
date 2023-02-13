@@ -111,7 +111,7 @@ export class DashboardService {
             where.publicLink = Not(''); //Not(Raw('NULL'));
         } else {  // mixed
             if (!isAllowShowingDraft) { // if no auth, only show posted
-                where.publicLink = '';
+                where.publicLink = Not('')
             } 
         }
         
