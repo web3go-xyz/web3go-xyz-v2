@@ -280,6 +280,10 @@ class Component extends React.Component {
         });
     }
     handlePostDashboard = async (isDraft) => {
+        if (this.state.saveBtnLoading || this.state.postBtnLoading) {
+            return;
+        }
+        const loadingKey = isDraft ? 'saveBtnLoading' : 'postBtnLoading';
         // 改了名字，得先触发blur事件再保存
         setTimeout(async () => {
             if (!isDraft) {
@@ -302,7 +306,7 @@ class Component extends React.Component {
             }
 
             this.setState({
-                postBtnLoading: true
+                [loadingKey]: true
             });
             event.emit('saveDashboard', this.state.dashboardName, async () => {
                 this.saveTag();
@@ -315,17 +319,16 @@ class Component extends React.Component {
                     await this.uploadThumbnail(realId);
                 }
                 this.setState({
-                    postBtnLoading: false
+                    [loadingKey]: false
                 });
-                if (isDraft) {
+                 if (!isDraft) {
+                    this.props.push('/');
+                 } else if (isDelayDashboardCreation) { 
                     const slug = slugg(this.state.dashboardName);
                     const dashboardSlug = `${realId}-${slug}`;
                     this.props.replace({
                         pathname: this.props.location.pathname + '/' + dashboardSlug
                     });
-                }
-                else {
-                    this.props.push('/');
                 }
             }, realId);
         }, 0);
