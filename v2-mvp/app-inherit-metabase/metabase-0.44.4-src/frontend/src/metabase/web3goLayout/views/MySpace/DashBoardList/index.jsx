@@ -381,8 +381,11 @@ class Component extends React.Component {
                             <Menu.Item key='3'>Posted</Menu.Item>
                         </Menu>
                     }>
-                        <div className="btn">
-                            All
+                        <div className="btn hover-primary">
+                            <span>
+                                All
+                            </span>
+                            <IconDown />
                         </div>
                     </Dropdown>
                 </div>

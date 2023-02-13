@@ -25,6 +25,7 @@ import TagEditorSidebar from "../template_tags/TagEditorSidebar";
 import SnippetSidebar from "../template_tags/SnippetSidebar";
 import SavedQuestionIntroModal from "../SavedQuestionIntroModal";
 import QueryModals from "../QueryModals";
+import { Message } from '@arco-design/web-react';
 
 import ChartSettingsSidebar from "./sidebars/ChartSettingsSidebar";
 import ChartTypeSidebar from "./sidebars/ChartTypeSidebar";
@@ -73,6 +74,11 @@ class View extends React.Component {
       ...DEFAULT_POPOVER_STATE,
     }
     this.addChartSaveHandler = async (chartName, successFn) => {
+      let { card, originalCard } = this.props;
+      if (!card) {
+        Message.error('Please select dataset first');
+        return;
+      }
       await this.saveOrCreateQuestion(chartName);
       if (successFn) {
         successFn(this.props.card.id);
@@ -82,7 +88,7 @@ class View extends React.Component {
   // state = {
   //   ...DEFAULT_POPOVER_STATE,
   // };
-  
+
   componentDidMount() {
     event.on('addChartSave', this.addChartSaveHandler)
   }
