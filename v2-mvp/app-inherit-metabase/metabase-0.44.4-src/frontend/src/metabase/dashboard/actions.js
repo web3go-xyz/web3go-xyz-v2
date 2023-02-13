@@ -94,6 +94,9 @@ export const SAVE_DASHBOARD_AND_CARDS =
   "metabase/dashboard/SAVE_DASHBOARD_AND_CARDS";
 export const SET_DASHBOARD_ATTRIBUTES =
   "metabase/dashboard/SET_DASHBOARD_ATTRIBUTES";
+  export const SET_ID_FOR_NEW_DASHBOARD =
+  "metabase/dashboard/SET_ID_FOR_NEW_DASHBOARD";
+
 
 export const ADD_CARD_TO_DASH = "metabase/dashboard/ADD_CARD_TO_DASH";
 export const REMOVE_CARD_FROM_DASH = "metabase/dashboard/REMOVE_CARD_FROM_DASH";
@@ -305,7 +308,14 @@ export const addDashCardToDashboard = function ({ dashId, dashcardOverrides }) {
   };
 };
 
-export const newDashboardConfigTmpl = (type) => {
+
+export const setIdForNewDashboard = ({id, newId, dashboardName}) => {
+  return function (dispatch, getState) {
+    dispatch(createAction(SET_ID_FOR_NEW_DASHBOARD)({id, newId, dashboardName}));
+  }
+}
+
+export const newDashboardConfigTmpl = (type)=> {
   if (type === 'text') {
     const virtualTextCard = createCard();
     virtualTextCard.display = "text";
@@ -439,7 +449,7 @@ export const saveDashboardAndCards = createThunkAction(
       // update the dashboard itself
       if (dashboard.isDirty) {
         const { id, name, description, parameters } = dashboard;
-        await dispatch(
+        dispatch(
           Dashboards.actions.update({ id }, { name, description, parameters }),
         );
       }
@@ -803,8 +813,43 @@ export const fetchDashboard = createThunkAction(
         // HACK: this is horrible but the easiest way to get "inline" dashboards up and running
         // pass the dashboard in as dashboardId, and replace the id with [object Object] because
         // that's what it will be when cast to a string
-        result = expandInlineDashboard(dashId);
-        dashId = result.id = String(dashId);
+        // TODO INTEND FOR ADDING EMPTY DASHBOARD
+        if (dashId === undefined) {
+          dashId = -1;
+          const { publicSpaceCollectionId } = getState().app;
+          result = expandInlineDashboard({
+              isCreatePending: true,
+              "description": null,
+              "archived": false,
+              "collection_position": null,
+              "ordered_cards": [],
+              "can_write": true,
+              "enable_embedding": false,
+              "collection_id": publicSpaceCollectionId,
+              "show_in_getting_started": false,
+              "name": "New dashboard",
+              "caveats": null,
+              "collection_authority_level": "official",
+              // "creator_id": -1,
+              //"updated_at": "2023-02-11T03:09:02.904811Z",
+              //"made_public_by_id": null,
+              "embedding_params":null,
+              //"cache_ttl": null,
+              "id": dashId,
+              "position": null,
+              "entity_id": "",
+              "param_fields": null,
+              //"last-edit-info": {},
+              "parameters": [],
+              //"created_at": "2023-02-11T03:09:02.904811Z",
+              "public_uuid": "48e77a12-eff0-472d-89a4-8fbd2c581d33",
+              "points_of_interest": null
+          });
+          dashId = result.id = String(dashId);  
+        } else {
+          result = expandInlineDashboard(dashId);
+          dashId = result.id = String(dashId);
+        }
       } else {
         result = await DashboardApi.get({ dashId: dashId });
       }
