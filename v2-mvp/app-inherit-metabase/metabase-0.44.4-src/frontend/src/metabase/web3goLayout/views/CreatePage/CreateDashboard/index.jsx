@@ -14,6 +14,7 @@ import slugg from "slugg";
 import DashboardApp from "metabase/dashboard/containers/DashboardApp";
 import * as dashboardActions from "@/dashboard/actions";
 import { publicSpaceCollectionId } from "metabase/redux/app";
+import domtoimage from 'dom-to-image';
 import event from '@/web3goLayout/event';
 import { LayoutDashboardApi } from "../../../../services";
 
@@ -57,7 +58,8 @@ class Component extends React.Component {
             addFilterDrawerVisible: false,
             addFilterDrawerIsEdit: false,
             saveBtnLoading: false,
-            postBtnLoading: false
+            postBtnLoading: false,
+            isEditing: true
         }
         this.dashboardNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
@@ -247,6 +249,36 @@ class Component extends React.Component {
     addChartToDashboard = (cardId) => {
         this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
     }
+    uploadThumbnail = (id) => {
+        return new Promise((resolve) => {
+            this.setState({
+                isEditing: false
+            }, () => {
+                const el = document.getElementById('dashboard-thumbnail');
+                domtoimage.toBlob(el, {
+                    quality: 0.2,
+                    width: 1200,
+                    height: 630,
+                    bgcolor: 'rgb(250,251,252)',
+                })
+                    .then((blob) => {
+                        this.setState({
+                            isEditing: true
+                        });
+                        // const uuid = crypto.randomUUID();
+                        const formData = new FormData();
+                        formData.append('file', blob);
+                        LayoutDashboardApi.previewUrl(id)(formData, { isUpload: true }).then(d => {
+                            resolve();
+                        });
+                        // var link = document.createElement('a');
+                        // link.download = 'AAA.png';
+                        // link.href = dataUrl;
+                        // link.click();
+                    });
+            });
+        });
+    }
     handlePostDashboard = async (isDraft) => {
         // 改了名字，得先触发blur事件再保存
         setTimeout(async () => {
@@ -256,7 +288,7 @@ class Component extends React.Component {
                     return;
                 }
             }
-            
+
             const isDelayDashboardCreation = !this.props.params.dashboardSlug
             let realId = this.props.dashboard.id;
             if (isDelayDashboardCreation) {
@@ -265,10 +297,10 @@ class Component extends React.Component {
                     "collection_id": this.props.publicSpaceCollectionId
                 });
                 realId = result.id;
-                this.props.setIdForNewDashboard({id:this.props.dashboard.id, newId: realId, dashboardName: this.state.dashboardName});//(dispatch, getState);
-                this.setState({dashboardId : realId})
+                this.props.setIdForNewDashboard({ id: this.props.dashboard.id, newId: realId, dashboardName: this.state.dashboardName });//(dispatch, getState);
+                this.setState({ dashboardId: realId })
             }
-    
+
             this.setState({
                 postBtnLoading: true
             });
@@ -280,20 +312,21 @@ class Component extends React.Component {
                         "topic": "dashboard.changed",
                         "data": realId
                     })
+                    await this.uploadThumbnail(realId);
                 }
                 this.setState({
                     postBtnLoading: false
                 });
-                 if (isDraft) {
+                if (isDraft) {
                     const slug = slugg(this.state.dashboardName);
                     const dashboardSlug = `${realId}-${slug}`;
                     this.props.replace({
                         pathname: this.props.location.pathname + '/' + dashboardSlug
                     });
-                 }
-                 else {
+                }
+                else {
                     this.props.push('/');
-                 }
+                }
             }, realId);
         }, 0);
     }
@@ -326,7 +359,8 @@ class Component extends React.Component {
     // }
 
     render() {
-        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList, addFilterDrawerVisible, addFilterDrawerIsEdit } = this.state;
+        console.log('111', this.props.dashboard);
+        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList, addFilterDrawerVisible, addFilterDrawerIsEdit, isEditing } = this.state;
         if (createDefaultDbLoading) {
             return <Spin style={
                 {
@@ -373,11 +407,20 @@ class Component extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div className="pt-right">
-                        <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
-                        <Button className="btn" loading={this.state.saveBtnLoading} onClick={()=>this.handlePostDashboard(true)}>Save as Draft</Button>
-                        <Button className="btn" loading={this.state.postBtnLoading} onClick={()=>this.handlePostDashboard(false)} type="primary">Post</Button>
-                    </div>
+                    {
+                        !this.props.dashboard || this.props.dashboard.id == -1 || !this.props.dashboard.public_uuid ? (
+                            <div className="pt-right">
+                                <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
+                                <Button className="btn" loading={this.state.saveBtnLoading} onClick={() => this.handlePostDashboard(true)}>Save as Draft</Button>
+                                <Button className="btn" loading={this.state.postBtnLoading} onClick={() => this.handlePostDashboard(false)} type="primary">Post</Button>
+                            </div>
+                        ) : (
+                            <div className="pt-right">
+                                <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
+                                <Button className="btn" loading={this.state.postBtnLoading} onClick={() => this.handlePostDashboard(false)} type="primary">Save</Button>
+                            </div>
+                        )
+                    }
                 </div>
                 <div className="p-operation-wrap">
                     <div className="item hover-item" onClick={this.handleAddChart}>
@@ -402,7 +445,7 @@ class Component extends React.Component {
                     </div>
                 </div>
                 <div className="p-main">
-                        <DashboardApp {...this.props} ref={(ref) => this.DashbaordAppRef = ref} />
+                    <DashboardApp isEditing={isEditing} {...this.props} ref={(ref) => this.DashbaordAppRef = ref} />
                 </div>
                 <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} addChartToDashboard={this.addChartToDashboard}></AddChartModal>
                 <AddFilterDrawer {...this.props}

@@ -227,6 +227,7 @@ class Dashboard extends Component {
       bgcolor: 'rgb(250,251,252)',
     })
       .then((dataUrl) => {
+        debugger
         const uuid = crypto.randomUUID();
         // var link = document.createElement('a');
         // link.download = 'AAA.png';
@@ -293,7 +294,7 @@ class Dashboard extends Component {
         error={error}
       >
         {() => (
-          <DashboardStyled>
+          <DashboardStyled id="dashboard-thumbnail">
             {isHeaderVisible && (
               <HeaderContainer
                 isFullscreen={isFullscreen}
@@ -344,7 +345,7 @@ class Dashboard extends Component {
                 )}
 
                 <CardsContainer
-                  id="dashboard-thumbnail"
+                  
                   addMarginTop={cardsContainerShouldHaveMarginTop}
                 >
                   {dashboardHasCards(dashboard) ? (

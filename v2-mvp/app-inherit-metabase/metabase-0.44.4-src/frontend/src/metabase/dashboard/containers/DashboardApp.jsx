@@ -65,7 +65,7 @@ const mapStateToProps = (state, props) => {
     canManageSubscriptions: canManageSubscriptions(state, props),
     isAdmin: getUserIsAdmin(state, props),
     isNavbarOpen: getIsNavbarOpen(state),
-    isEditing: location.pathname.includes('/layout') ? true : getIsEditing(state, props),
+    isEditing: location.pathname.includes('/layout') ? props.isEditing : getIsEditing(state, props),
     isSharing: getIsSharing(state, props),
     dashboardBeforeEditing: getDashboardBeforeEditing(state, props),
     isEditingParameter: getIsEditingParameter(state, props),
@@ -87,7 +87,7 @@ const mapStateToProps = (state, props) => {
     documentTitle: getDocumentTitle(state),
     isRunning: getIsRunning(state),
     isLoadingComplete: getIsLoadingComplete(state),
-    isHeaderVisible:  getIsHeaderVisible(state),
+    isHeaderVisible: getIsHeaderVisible(state),
     isAdditionalInfoVisible: getIsAdditionalInfoVisible(state),
     embedOptions: getEmbedOptions(state),
   };

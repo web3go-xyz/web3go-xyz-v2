@@ -103,6 +103,11 @@ class Component extends React.Component {
                     if (!this.props.userData.account || (record.creatorAccountId !== this.props.userData.account.accountId)) {
                         operationList.pop();
                         operationList.pop();
+                        operationList.pop();
+                    }
+                    if (!record.publicLink) {
+                        operationList.shift();
+                        operationList.shift();
                     }
                     return (
                         <Dropdown trigger='click' position="bottom" droplist={
