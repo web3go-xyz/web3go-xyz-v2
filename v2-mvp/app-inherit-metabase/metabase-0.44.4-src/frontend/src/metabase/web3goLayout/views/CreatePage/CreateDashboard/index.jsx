@@ -362,7 +362,6 @@ class Component extends React.Component {
     // }
 
     render() {
-        console.log('111', this.props.dashboard);
         const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList, addFilterDrawerVisible, addFilterDrawerIsEdit, isEditing } = this.state;
         if (createDefaultDbLoading) {
             return <Spin style={
