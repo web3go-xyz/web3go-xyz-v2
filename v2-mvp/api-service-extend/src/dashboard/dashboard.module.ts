@@ -4,7 +4,6 @@ import { MBOrmModule } from 'src/base/orm/mb.orm.module';
 import { PlatformOrmModule } from 'src/base/orm/platoform.orm.module';
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
-import { DashboardShareController } from './share/dashboardShare.controller';
 
 @Module({
     imports: [
@@ -12,11 +11,11 @@ import { DashboardShareController } from './share/dashboardShare.controller';
         MBOrmModule,
         JWTAuthModule
     ],
-    controllers: [DashboardController, DashboardShareController],
+    controllers: [DashboardController],
     providers: [
         DashboardService,
     ],
-    exports: []
+    exports: [DashboardService]
 })
 export class DashboardModule { }
 
