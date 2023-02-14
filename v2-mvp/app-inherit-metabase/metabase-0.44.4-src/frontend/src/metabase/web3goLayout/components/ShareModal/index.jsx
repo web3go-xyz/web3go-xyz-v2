@@ -56,7 +56,7 @@ class Component extends React.Component {
                 const title = `Check out ${this.state.record.name} on Web3go! Here is the link:`;
                 let metaArr = {
                     "platform": "twitter",
-                    "dashboardId": 396,
+                    "dashboardId": this.state.record.id,
                     "metaData": [
                         { "key": "twitter:card", "value": "summary_large_image" },
                         { "key": "twitter:site", "value": "https://web3go.xyz" },
