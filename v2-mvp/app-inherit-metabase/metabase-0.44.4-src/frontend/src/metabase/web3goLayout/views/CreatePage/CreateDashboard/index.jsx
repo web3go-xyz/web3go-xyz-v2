@@ -256,7 +256,12 @@ class Component extends React.Component {
     addChartToDashboard = (cardId) => {
         this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
     }
-    uploadThumbnail = (id) => {
+    uploadThumbnail = async (id, thumbnailBlob) => {
+        const formData = new FormData();
+        formData.append('file', thumbnailBlob);
+        await LayoutDashboardApi.previewUrl(id)(formData, { isUpload: true })
+    }
+    createThumbnail() {
         return new Promise((resolve) => {
             this.setState({
                 isEditing: false
@@ -272,16 +277,7 @@ class Component extends React.Component {
                         this.setState({
                             isEditing: true
                         });
-                        // const uuid = crypto.randomUUID();
-                        const formData = new FormData();
-                        formData.append('file', blob);
-                        LayoutDashboardApi.previewUrl(id)(formData, { isUpload: true }).then(d => {
-                            resolve();
-                        });
-                        // var link = document.createElement('a');
-                        // link.download = 'AAA.png';
-                        // link.href = dataUrl;
-                        // link.click();
+                        resolve(blob);
                     });
             });
         });
@@ -315,6 +311,10 @@ class Component extends React.Component {
             this.setState({
                 [loadingKey]: true
             });
+            let thumbnailBlob;
+            if (!isDraft) {
+                thumbnailBlob = await this.createThumbnail();
+            }
             event.emit('saveDashboard', this.state.dashboardName, async () => {
                 this.saveTag();
                 if (!isDraft) {
@@ -323,7 +323,7 @@ class Component extends React.Component {
                         "topic": "dashboard.changed",
                         "data": realId
                     })
-                    await this.uploadThumbnail(realId);
+                    await this.uploadThumbnail(realId, thumbnailBlob);
                 }
                 this.setState({
                     [loadingKey]: false

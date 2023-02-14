@@ -164,7 +164,7 @@ class Component extends React.Component {
         }).then(d => {
             const slug = slugg(newName);
             const suffix = slug ? `${d.newDashboardId}-${slug}` : d.newDashboardId;
-            this.props.push(`/dashboard/${suffix}`);
+            this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1 } });
         })
     }
     goMySpace = (accountId) => {
