@@ -13,7 +13,7 @@ import { W3Logger } from 'src/base/log/logger.service';
 import { DashboardGetShareUrlRequest } from './model/DashboardGetShareUrlRequest';
 import { KVService } from 'src/base/kv/kv.service';
 import { randomUUID } from 'crypto';
-import { DashboardService } from '../dashboard.service';
+import { DashboardService } from '../../dashboard/dashboard.service';
 
 import { AppConfig } from 'src/base/setting/appConfig';
 import { AllowAnonymous } from 'src/base/auth/decorator/AllowAnonymous';
@@ -37,7 +37,7 @@ export class DashboardShareController {
     this.assert(supportedPlatform.indexOf(data.platform) > -1, 'not supported');
     this.assert(data && data.metaData.filter(it => it.key==='twitter:url')[0], 'missing required data')
 
-    const uuid = randomUUID();
+    const uuid = `${data.dashboardId}-${randomUUID()}`;
     await this.kvService.set(
       `dashboard:share:${uuid}`,
       JSON.stringify(data),
@@ -54,18 +54,28 @@ export class DashboardShareController {
   @Get('gateway/:uuid')
   @ApiOperation({ summary: 'twitter share metadata' })
   @AllowAnonymous()
-  async twitterShare(@Param('uuid') uuid): Promise<string> {
-    const rawCache = await this.kvService.get(`dashboard:share:${uuid}`);
-    this.assert(!!rawCache, 'sorry, the sharing link has been expired.');
-
-    const data = JSON.parse(rawCache) as DashboardGetShareUrlRequest;
-    this.assert(data.platform === 'twitter', 'sorry, not supported platform');
+  async twitterShare(@Param('uuid') uuid: string): Promise<string> {
+    // TODO WE CAN infer the platform by HTTP HEADER REFFER
+    // this.assert(data.platform === 'twitter', 'sorry, not supported platform'); 
+    let data = {metaData: [], platform: undefined, dashboardId: undefined};
+    let rawCache = await this.kvService.get(`dashboard:share:${uuid}`);
+    const isCacheValid = !!rawCache;
+    if (isCacheValid) {
+      // this.assert(!!rawCache, 'sorry, the sharing link has been expired.');
+      data = JSON.parse(rawCache) as DashboardGetShareUrlRequest;
+    } else {
+      data.dashboardId = parseInt(uuid.substring(0, uuid.indexOf('-')));
+      this.assert(!!data.dashboardId, 'sorry, the sharing link has been expired.');
+    }
 
     const record = await this.dashboardService.findDashboardExtByPK(
       data.dashboardId,
     );
     if (record) {
-      data.metaData.push({ key: 'twitter:image', value: record.previewImg });
+      if (record.previewImg) data.metaData.push({ key: 'twitter:image', value: record.previewImg });
+      if (!isCacheValid) {
+        data.metaData.push({key:'twitter:url', value: `${AppConfig.BASE_WEB_URL}/layout/dashboardDetail/${record.publicUUID}`});
+      }
     }
 
     let metas = data.metaData;
