@@ -59,7 +59,8 @@ class Component extends React.Component {
             addFilterDrawerIsEdit: false,
             saveBtnLoading: false,
             postBtnLoading: false,
-            isEditing: true
+            isEditing: true,
+            originDashboardDetail: {}
         }
         this.dashboardNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
@@ -77,6 +78,12 @@ class Component extends React.Component {
                 dashboardName: this.state.dashboardName || this.props.dashboard.name || 'New dashboard'
             })
         }
+        if (!prevProps.dashboard && this.props.dashboard) {
+            this.setState({
+                originDashboardDetail: this.props.dashboard
+            });
+        }
+
     }
     changeAddFilterDrawerVisible = (value) => {
         this.setState({
@@ -321,9 +328,9 @@ class Component extends React.Component {
                 this.setState({
                     [loadingKey]: false
                 });
-                 if (!isDraft) {
+                if (!isDraft) {
                     this.props.push('/');
-                 } else if (isDelayDashboardCreation) { 
+                } else if (isDelayDashboardCreation) {
                     const slug = slugg(this.state.dashboardName);
                     const dashboardSlug = `${realId}-${slug}`;
                     this.props.replace({
@@ -362,7 +369,7 @@ class Component extends React.Component {
     // }
 
     render() {
-        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList, addFilterDrawerVisible, addFilterDrawerIsEdit, isEditing } = this.state;
+        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList, addFilterDrawerVisible, addFilterDrawerIsEdit, isEditing, originDashboardDetail } = this.state;
         if (createDefaultDbLoading) {
             return <Spin style={
                 {
@@ -410,7 +417,7 @@ class Component extends React.Component {
                         </div>
                     </div>
                     {
-                        !this.props.dashboard || this.props.dashboard.id == -1 || !this.props.dashboard.public_uuid ? (
+                        originDashboardDetail.id == -1 || !originDashboardDetail.public_uuid ? (
                             <div className="pt-right">
                                 <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
                                 <Button className="btn" loading={this.state.saveBtnLoading} onClick={() => this.handlePostDashboard(true)}>Save as Draft</Button>
