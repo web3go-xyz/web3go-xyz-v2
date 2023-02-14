@@ -47,7 +47,7 @@ class Component extends React.Component {
         this.state = {
             createDefaultDbLoading: false,
             ifEditDashboardName: false,
-            dashboardName: 'New dashboard',
+            dashboardName: '',
             tagList: [],
             savedCurrentTagList: [],
             ifEditTag: false,
@@ -74,7 +74,7 @@ class Component extends React.Component {
         }
         if ((prevProps.dashboard !== this.props.dashboard) && this.props.dashboard && this.props.dashboard.name) {
             this.setState({
-                dashboardName: this.props.dashboard.name
+                dashboardName: this.state.dashboardName || this.props.dashboard.name || 'New dashboard'
             })
         }
     }
