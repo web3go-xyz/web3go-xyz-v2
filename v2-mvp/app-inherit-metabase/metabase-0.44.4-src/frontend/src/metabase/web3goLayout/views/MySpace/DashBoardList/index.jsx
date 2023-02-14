@@ -30,6 +30,14 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            stateList: [{
+                name: 'Draft',
+                value: 1
+            }, {
+                name: 'Posted',
+                value: 2
+            }],
+            state: 2,
             shareVisible: false,
             filterList: [],
             currentFilter: {},
@@ -174,11 +182,10 @@ class Component extends React.Component {
                 ,
                 name: 'Delete'
             }],
-            tableData: [
-
-            ],
+            tableData: [],
             loading: false,
             pagination: {
+                showTotal: true,
                 total: 96,
                 pageSize: 10,
                 current: 1,
@@ -251,6 +258,13 @@ class Component extends React.Component {
             const suffix = slug ? `${d.newDashboardId}-${slug}` : d.newDashboardId;
             this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1 } });
         })
+    }
+    clickDashboardState = (key) => {
+        this.setState({
+            state: key
+        }, () => {
+            this.getList();
+        });
     }
     clickDropdownIcon = (key, record) => {
         if (key == 'Favorite') {
@@ -336,6 +350,7 @@ class Component extends React.Component {
             "creator": this.props.isFavourite ? '' : this.props.accountId,
             "dashboardIds": [],
             "accountId": this.props.isFavourite ? this.props.accountId : "",
+            "draftStatus": this.props.isFavourite ? "" : Number(this.state.state)
         }).then(d => {
             if (!this.props.isFavourite) {
                 this.props.setDashboardListCount(d.totalCount);
@@ -373,22 +388,20 @@ class Component extends React.Component {
         if (this.state.ifShowMore) {
             columns = [...this.state.columns, ...this.state.moreColumn, ...this.state.operationColumn];
         }
+        const stateObj = this.state.stateList.find(v => v.value == this.state.state);
         return (
             <div className="web3go-layout-myspace-dashbaoard-list">
                 <div className="filter-row">
-                    <span className="total">
-                        Post 123 Dashboards
-                    </span>
                     <Dropdown trigger='click' position="br" droplist={
-                        <Menu onClickMenuItem={(key) => { this.clickDropdownIcon(key) }}>
-                            <Menu.Item key='1'>All</Menu.Item>
-                            <Menu.Item key='2'>Draft</Menu.Item>
-                            <Menu.Item key='3'>Posted</Menu.Item>
+                        <Menu onClickMenuItem={(key) => { this.clickDashboardState(key) }}>
+                            {
+                                this.state.stateList.map(v => <Menu.Item key={v.value}>{v.name}</Menu.Item>)
+                            }
                         </Menu>
                     }>
                         <div className="btn hover-primary">
                             <span>
-                                All
+                                {stateObj.name}
                             </span>
                             <IconDown />
                         </div>
