@@ -44,7 +44,7 @@ export default class Media extends Component {
   static supportPreviewing = false;
   static isOpen = true;
 
-  static minSize = { width: 4, height: 1 };
+  static minSize = { width: 1, height: 1 };
 
   static checkRenderable() {
     // text can always be rendered, nothing needed here

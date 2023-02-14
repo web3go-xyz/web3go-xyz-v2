@@ -112,7 +112,6 @@ function GridLayout({
 
   // https://github.com/react-grid-layout/react-grid-layout#performance
   const children = useMemo(() => items.map(renderItem), [items, renderItem]);
-
   return (
     <ReactGridLayout
       breakpoints={breakpoints}
