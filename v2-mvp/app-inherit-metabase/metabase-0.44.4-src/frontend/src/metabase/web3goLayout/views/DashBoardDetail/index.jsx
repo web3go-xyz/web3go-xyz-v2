@@ -241,7 +241,14 @@ class Component extends React.Component {
                                     <img src={require("@/web3goLayout/assets/dashboard/Dashboard-line.png")} alt="" />
                                 </div>
                                 <div className="info">
-                                    <div className="title">{detailData.name}</div>
+                                    <div className="title">
+                                        <span>
+                                            {detailData.name}
+                                        </span>
+                                        {
+                                            detailData.publicUUID ? null : <div className="draft">Draft</div>
+                                        }
+                                    </div>
                                     <div className="tag-list">
                                         {
                                             detailData.tagList.map(v => (
