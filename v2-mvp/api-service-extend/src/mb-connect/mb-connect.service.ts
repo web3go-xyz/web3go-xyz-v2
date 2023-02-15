@@ -203,21 +203,32 @@ export class MBConnectService {
             return resp;
         }
 
-        let originalDashboardCards = await this.mb_rdcRepo.find({
+        let originalAllDashboardCards = await this.mb_rdcRepo.find({
             where: {
                 dashboardId: originalDashboardId
             }
         });
-        let originalCards: ReportCard[] = [];
-        if (originalDashboardCards) {
-            originalCards = await this.mb_rcRepo.find({
+        let originalRealCards: ReportCard[] = [];
+        let originalVirtualCards: ReportDashboardcard[] = [];
+        if (originalAllDashboardCards) {
+            let realCardIds = originalAllDashboardCards.filter(t => t.cardId != null).map(t => t.cardId);
+            originalVirtualCards = originalAllDashboardCards.filter(t => t.cardId == null).map(t => t);
+
+            originalRealCards = await this.mb_rcRepo.find({
                 where: {
-                    id: In(originalDashboardCards.map(t => t.cardId))
+                    id: In(realCardIds)
                 }
             });
         }
 
-        this.logger.log(`copyDashboard  originalDashboardId=${originalDashboardId}, accountId=${accountId}, originalDashboardCards=${originalDashboardCards.length} cards`);
+
+        this.logger.log(`copyDashboard ` + JSON.stringify({
+            "originalDashboardId": originalDashboardId,
+            "accountId": accountId,
+            "originalAllDashboardCards": originalAllDashboardCards.length,
+            "originalRealCards": originalRealCards.length,
+            "originalVirtualCards": originalVirtualCards.length
+        }));
 
 
         let time = new Date();
@@ -233,7 +244,7 @@ export class MBConnectService {
                 creatorId: account.id,
                 collectionId: targetCollectionId,
                 name: param.new_dashboard_name,
-                description: param.description, 
+                description: param.description,
             });
             if (enablePublic === true) {
                 newDashboard.made_public_by_id = account.id;
@@ -247,8 +258,8 @@ export class MBConnectService {
             await transactionalEntityManager.save<ReportDashboard>(newDashboard);
             resp.newDashboardId = newDashboard.id;
 
-            if (originalCards && originalCards.length > 0) {
-                for (const oc of originalCards) {
+            if (originalRealCards && originalRealCards.length > 0) {
+                for (const oc of originalRealCards) {
 
                     let newCard: ReportCard = new ReportCard();
                     Object.assign(newCard, {
@@ -274,7 +285,7 @@ export class MBConnectService {
                     let newCardId = newCard.id;
                     resp.newCardIds.push(newCardId);
 
-                    let findOriginalDashboardCard = originalDashboardCards.find(t => t.cardId == oc.id);
+                    let findOriginalDashboardCard = originalAllDashboardCards.find(t => t.cardId == oc.id);
                     if (findOriginalDashboardCard) {
                         let newReportDashboardCard: ReportDashboardcard = new ReportDashboardcard();
                         Object.assign(newReportDashboardCard, {
@@ -291,8 +302,33 @@ export class MBConnectService {
                 }
             }
 
+            if (originalVirtualCards && originalVirtualCards.length > 0) {
+                for (const oc of originalVirtualCards) {
+
+                    let newReportDashboardCard: ReportDashboardcard = new ReportDashboardcard();
+                    Object.assign(newReportDashboardCard, {
+                        ...oc,
+                        id: 0,
+                        createdAt: time,
+                        updatedAt: time,
+                        cardId: null,
+                        dashboardId: resp.newDashboardId,
+                        entityId: this.generateRandomEntityId(),
+                    });
+                    await transactionalEntityManager.save<ReportDashboardcard>(newReportDashboardCard);
+
+                }
+            }
+
             resp.msg = 'success';
-            this.logger.log(`copyDashboard success: newQuestionId=${resp.newDashboardId}, originalDashboardId=${originalDashboardId}, accountId=${accountId}, originalDashboardCards=${originalDashboardCards.length} cards`);
+            this.logger.log(`copyDashboard success:` + JSON.stringify({
+                "newQuestionId": resp.newDashboardId,
+                "originalDashboardId": originalDashboardId,
+                "accountId": accountId,
+                "originalAllDashboardCards": originalAllDashboardCards.length,
+                "originalRealCards": originalRealCards.length,
+                "originalVirtualCards": originalVirtualCards.length
+            }));
         });
 
         return resp;

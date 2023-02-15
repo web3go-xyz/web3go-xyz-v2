@@ -171,7 +171,7 @@ export class ForkService {
 
         let targetCollectionId = AppConfig.DASHBOARD_PUBLIC_COLLECTION_ID;
 
-        let enablePublic = true;
+        let enablePublic = false;
         let resp: ForkDashboardResponse = await this.mbConnectService.copyDashboard(param, targetCollectionId, accountId, enablePublic);
 
         if (resp.newDashboardId) {
@@ -195,7 +195,7 @@ export class ForkService {
     async forkQuestion(request: Request, param: ForkQuestionRequest, accountId: string): Promise<ForkQuestionResponse> {
         let targetCollectionId = AppConfig.DASHBOARD_PUBLIC_COLLECTION_ID;
 
-        let enablePublic = true;
+        let enablePublic = false;
         let resp: ForkQuestionResponse = await this.mbConnectService.copyQuestion(param, targetCollectionId, accountId, enablePublic);
 
         return resp;
