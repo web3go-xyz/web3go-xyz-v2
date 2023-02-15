@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { W3Logger } from 'src/base/log/logger.service';
-import { AccountVerifyCode } from 'src/base/entity/platform-user/AccountVerifyCode.entity'; 
+import { AccountVerifyCode } from 'src/base/entity/platform-user/AccountVerifyCode.entity';
 import { VerifyCodeType, VerifyCodePurpose } from 'src/account/model/VerifyCodeType';
 
 @Injectable()
@@ -54,7 +54,9 @@ export class VerifyCodeBaseService {
     }
     return code;
   }
-  async verifyCode(accountId: string, code: string, verifyKey: string, verifyType: VerifyCodeType, verifyCodePurpose: VerifyCodePurpose, clearAfterVerifiedSuccess: boolean = true): Promise<Boolean> {
+  async verifyCode(accountId: string,
+    code: string, verifyKey: string,
+    verifyType: VerifyCodeType, verifyCodePurpose: VerifyCodePurpose): Promise<Boolean> {
     this.logger.debug(`verify code: accountId=${accountId}, code=${code}, verifyKey=${verifyKey}, verifyCodePurpose=${verifyCodePurpose}`);
     let findCode = await this.accountVerifyCodeRepository.findOne({
       where: {
@@ -67,10 +69,7 @@ export class VerifyCodeBaseService {
     });
     if (findCode && findCode.expired_time.getTime() > new Date().getTime()) {
       this.logger.debug(`verify code success: accountId=${accountId}, code=${code}, verifyKey=${verifyKey}, verifyCodePurpose=${verifyCodePurpose}`);
-     
-      if (clearAfterVerifiedSuccess) {
-        await this.clearCode(accountId, verifyKey, verifyType, verifyCodePurpose);
-      }
+
       return true;
     }
 

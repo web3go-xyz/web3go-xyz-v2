@@ -135,7 +135,7 @@ export class AccountAuthService implements IAuthService {
   }
 
 
-  async verifyCodeAndGrantToken(request: VerifyCodeRequest, clearAfterVerifiedSuccess: boolean = true, autoGenerateSignInToken: boolean = true): Promise<any> {
+  async verifyCodeAndGrantToken(request: VerifyCodeRequest, autoGenerateSignInToken: boolean = true): Promise<any> {
     this.logger.debug(`verify code:${JSON.stringify(request)}`);
     let verify_result = await this.verifyCodeBaseService.verifyCode(request.accountId, request.code, request.email, VerifyCodeType.Email, request.verifyCodePurpose);
 
@@ -155,7 +155,7 @@ export class AccountAuthService implements IAuthService {
       }
 
       //remove verification code 
-      if (clearAfterVerifiedSuccess) {
+      if ([VerifyCodePurpose.Account, VerifyCodePurpose.LinkEmail].indexOf(request.verifyCodePurpose) > -1) {
         await this.verifyCodeBaseService.clearCode(request.accountId, request.email, VerifyCodeType.Email, request.verifyCodePurpose);
       }
 
@@ -210,6 +210,10 @@ export class AccountAuthService implements IAuthService {
     accountEmail.password_hash = this.jwtAuthService.passwordEncrypt(accountEmail.accountId, request.newPassword);
     await this.accountEmailRepository.save(accountEmail);
 
+    await this.verifyCodeBaseService.clearCode(request.accountId,
+      request.email,
+      VerifyCodeType.Email,
+      VerifyCodePurpose.ResetPassword);
     return true;
   }
 
