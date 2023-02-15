@@ -61,6 +61,7 @@
                   :font-src     ["*"]
                   :img-src      ["*"
                                  "'self' data:"]
+                  :media-src    ["*"]         
                   :connect-src  ["'self'"                                  
                                  "*"
                                  ]
