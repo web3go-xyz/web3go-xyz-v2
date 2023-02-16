@@ -58,15 +58,18 @@ class Component extends React.Component {
         this.props.onRef(this);
     }
     init = (chartObj) => {
-
         this.setState({
             visible: true,
-            ifAdd: chartObj ? false : true
+            ifAdd: chartObj ? false : true,
+            currentModifyChart: chartObj,
         });
         this.getDatasetList();
         if (chartObj) {
             const chartData = chartObj.dashboard.ordered_cards.find(v => v.id == chartObj.dashcardId);
             const name = chartData.card.name;
+            this.setState({
+                chartName: name
+            });
             const slug = slugg(name);
             const suffix = slug ? `${chartData.card.id}-${slug}` : chartData.card.id;
             if (chartObj.dashboard.id == '-1') {
@@ -162,7 +165,7 @@ class Component extends React.Component {
             if (this.state.ifAdd) {
                 await this.props.addChartToDashboard(cardId);
             } else {
-                await this.props.reloadChart(cardId);
+                await this.props.removeAndAddChatToDashboard(cardId, this.state.currentModifyChart);
             }
             this.setState({
                 visible: false,

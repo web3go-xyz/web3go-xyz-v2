@@ -259,10 +259,14 @@ class Component extends React.Component {
     addChartToDashboard = (cardId) => {
         this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
     }
-    reloadChart = (cardId) => {
-        this.props.fetchDashboardCardData({ reload: true, clear: true })
+    removeAndAddChatToDashboard = async (cardId, originCard) => {
+        await this.props.removeCardFromDashboard({
+            dashId: this.state.currentDashboardId,
+            dashcardId: originCard.dashcardId,
+        });
+        await this.props.addToDashboardWithOldPosition({ dashId: this.state.currentDashboardId, cardId, originCard })
     }
-    uploadThumbnail = async (id, thumbailBlob) => {
+    uploadThumbnail = async (id, thumbnailBlob) => {
         const formData = new FormData();
         formData.append('file', thumbnailBlob);
         await LayoutDashboardApi.previewUrl(id)(formData, { isUpload: true })
@@ -462,7 +466,7 @@ class Component extends React.Component {
                 <div className="p-main">
                     <DashboardApp isEditing={isEditing} {...this.props} ref={(ref) => this.DashbaordAppRef = ref} />
                 </div>
-                <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} addChartToDashboard={this.addChartToDashboard} reloadChart={this.reloadChart}></AddChartModal>
+                <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} addChartToDashboard={this.addChartToDashboard} removeAndAddChatToDashboard={this.removeAndAddChatToDashboard}></AddChartModal>
                 <AddFilterDrawer {...this.props}
                     addFilterDrawerVisible={addFilterDrawerVisible}
                     changeAddFilterDrawerVisible={this.changeAddFilterDrawerVisible}

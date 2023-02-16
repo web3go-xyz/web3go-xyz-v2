@@ -75,7 +75,7 @@ class View extends React.Component {
     }
     this.addChartSaveHandler = async (chartName, successFn) => {
       let { card, originalCard } = this.props;
-      if (!card) {
+      if (!card && !this.props.params.chartSlug) {
         Message.error('Please select dataset first');
         return;
       }

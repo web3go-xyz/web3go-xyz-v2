@@ -285,10 +285,9 @@ export const addCardToDashboard =
 
       dispatch(loadMetadataForDashboard([dashcard]));
     };
-export const reloadCardInDashboard =
-  ({ dashId, cardId }) =>
+export const addToDashboardWithOldPosition =
+  ({ dashId, cardId, originCard }) =>
     async (dispatch, getState) => {
-      debugger
       await dispatch(Questions.actions.fetch({ id: cardId }));
       const card = Questions.selectors.getObject(getState(), {
         entityId: cardId,
@@ -298,17 +297,23 @@ export const reloadCardInDashboard =
       const existingCards = dashboard.ordered_cards
         .map(id => dashcards[id])
         .filter(dc => !dc.isRemoved);
+      const originCardObj = originCard.dashboard.ordered_cards.find(v => v.id == originCard.dashcardId);
       const dashcard = {
         id: generateTemporaryDashcardId(),
         dashboard_id: dashId,
         card_id: card.id,
         card: card,
         series: [],
-        ...getPositionForNewDashCard(existingCards),
+        row: originCardObj.row,
+        col: originCardObj.col,
+        sizeX: originCardObj.sizeX,
+        sizeY: originCardObj.sizeY,
         parameter_mappings: [],
         visualization_settings: {},
       };
+      dispatch(createAction(ADD_CARD_TO_DASH)(dashcard));
       dispatch(fetchCardData(card, dashcard, { reload: true, clear: true }));
+
       dispatch(loadMetadataForDashboard([dashcard]));
     };
 

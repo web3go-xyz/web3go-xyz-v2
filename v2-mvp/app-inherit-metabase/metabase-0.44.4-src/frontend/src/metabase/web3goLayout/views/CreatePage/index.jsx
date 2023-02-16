@@ -56,10 +56,10 @@ class Component extends React.Component {
             });
         }
         //测试用，加快速度
-        // this.props.changePublicSpaceCollectionId(40);
-        const collectionList = await CollectionsApi.list();
-        const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
-        this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
+        this.props.changePublicSpaceCollectionId(40);
+        // const collectionList = await CollectionsApi.list();
+        // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
+        // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
 
 
     }
