@@ -19,7 +19,6 @@ const HomeRecentSection = ({
   recentItems,
 }: HomeRecentSectionProps): JSX.Element => {
   const hasHelpCard = user.is_installer && isWithinWeeks(user.first_login, 2);
-
   return (
     <div>
       <HomeCaption>{t`What you have viewed recently`}</HomeCaption>

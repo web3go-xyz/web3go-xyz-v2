@@ -11,6 +11,7 @@ import event from '@/web3goLayout/event';
 import { LayoutDashboardApi } from '@/services'
 // import { GET } from "metabase/lib/api";
 import { parse as parseUrl } from "url";
+import slugg from "slugg";
 
 import {
     getURLForCardState,
@@ -32,7 +33,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
     push,
-
 };
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
@@ -48,7 +48,8 @@ class Component extends React.Component {
             ifEditChartName: false,
             chartName: 'New Chart',
             datasetList: [],
-            refreshFlag: true
+            refreshFlag: true,
+            ifAdd: true
         }
         this.ChartNameInputRef = React.createRef();
 
@@ -56,11 +57,31 @@ class Component extends React.Component {
     componentDidMount() {
         this.props.onRef(this);
     }
-    init = () => {
+    init = (chartObj) => {
+
         this.setState({
-            visible: true
+            visible: true,
+            ifAdd: chartObj ? false : true
         });
         this.getDatasetList();
+        if (chartObj) {
+            const chartData = chartObj.dashboard.ordered_cards.find(v => v.id == chartObj.dashcardId);
+            const name = chartData.card.name;
+            const slug = slugg(name);
+            const suffix = slug ? `${chartData.card.id}-${slug}` : chartData.card.id;
+            if (chartObj.dashboard.id == '-1') {
+                this.props.push({ pathname: `/layout/create/question/${suffix}` });
+            } else {
+                this.props.push({ pathname: `/layout/create/question/${suffix}/${this.props.params.dashboardSlug}` });
+            }
+            this.setState({
+                refreshFlag: false
+            }, () => {
+                this.setState({
+                    refreshFlag: true
+                })
+            });
+        }
     }
     getDatasetList = () => {
         this.setState({
@@ -138,7 +159,11 @@ class Component extends React.Component {
             saveChartLoading: true
         });
         event.emit('addChartSave', this.state.chartName, async (cardId) => {
-            await this.props.addChartToDashboard(cardId);
+            if (this.state.ifAdd) {
+                await this.props.addChartToDashboard(cardId);
+            } else {
+                await this.props.reloadChart(cardId);
+            }
             this.setState({
                 visible: false,
                 saveChartLoading: false
@@ -151,7 +176,7 @@ class Component extends React.Component {
             datasetList: []
         });
         this.props.push({
-            pathname: window.location.pathname,
+            pathname: this.props.params.dashboardSlug ? `/layout/create/${this.props.params.dashboardSlug}` : '/layout/create',
             hash: '',
             query: this.props.location.query,
             search: this.props.location.search,

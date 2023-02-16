@@ -33,6 +33,8 @@ import { getIn } from "icepick";
 import { getParameterValuesBySlug } from "metabase/parameters/utils/parameter-values";
 import Utils from "metabase/lib/utils";
 import { DashCardRoot, WaterMark } from "./DashCard.styled";
+import event from '@/web3goLayout/event';
+
 
 const DATASET_USUALLY_FAST_THRESHOLD = 15 * 1000;
 
@@ -436,7 +438,7 @@ const ChartSettingsButton = ({
       );
     }
     return (
-      <span onClick={() => doEdit()}>
+      <span onClick={() => doEdit({})}>
         <a className="text-dark-hover drag-disabled">
           <Tooltip tooltip={t`Visualization options`}>
             <Icon
@@ -448,8 +450,12 @@ const ChartSettingsButton = ({
         </a>
       </span>)
   } else {
-    const editChart=()=>{
-      
+    const editChart = () => {
+      event.emit('editChartEvent', {
+        dashboard,
+        dashcardId,
+        series
+      });
     }
     return (
       <span onClick={() => editChart()}>

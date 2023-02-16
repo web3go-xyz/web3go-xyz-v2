@@ -79,9 +79,9 @@ class View extends React.Component {
         Message.error('Please select dataset first');
         return;
       }
-      await this.saveOrCreateQuestion(chartName);
+      const cardId = await this.saveOrCreateQuestion(chartName);
       if (successFn) {
-        successFn(this.props.card.id);
+        successFn(cardId);
       }
     }
   }
@@ -113,6 +113,7 @@ class View extends React.Component {
       card.id = this.props.originalCard.id;
       await this.props.onSave(card);
     }
+    return card.id;
   }
   handleAddSeries = e => {
     this.setState({

@@ -67,6 +67,7 @@ class Component extends React.Component {
         this.AddChartModalRef = React.createRef();
     }
     async componentDidMount() {
+        event.on('editChartEvent', this.handleEditChart);
         this.init();
     }
     componentDidUpdate(prevProps) {
@@ -83,7 +84,6 @@ class Component extends React.Component {
                 originDashboardDetail: this.props.dashboard
             });
         }
-
     }
     changeAddFilterDrawerVisible = (value) => {
         this.setState({
@@ -230,6 +230,9 @@ class Component extends React.Component {
     handleAddChart = () => {
         this.AddChartModalRef.init();
     }
+    handleEditChart = (chartObj) => {
+        this.AddChartModalRef.init(chartObj);
+    }
     handleAddFilter = () => {
         this.changeAddFilterDrawerIsEdit(false);
         this.changeAddFilterDrawerVisible(true);
@@ -256,7 +259,10 @@ class Component extends React.Component {
     addChartToDashboard = (cardId) => {
         this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
     }
-    uploadThumbnail = async (id, thumbnailBlob) => {
+    reloadChart = (cardId) => {
+        this.props.fetchDashboardCardData({ reload: true, clear: true })
+    }
+    uploadThumbnail = async (id, thumbailBlob) => {
         const formData = new FormData();
         formData.append('file', thumbnailBlob);
         await LayoutDashboardApi.previewUrl(id)(formData, { isUpload: true })
@@ -456,7 +462,7 @@ class Component extends React.Component {
                 <div className="p-main">
                     <DashboardApp isEditing={isEditing} {...this.props} ref={(ref) => this.DashbaordAppRef = ref} />
                 </div>
-                <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} addChartToDashboard={this.addChartToDashboard}></AddChartModal>
+                <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} addChartToDashboard={this.addChartToDashboard} reloadChart={this.reloadChart}></AddChartModal>
                 <AddFilterDrawer {...this.props}
                     addFilterDrawerVisible={addFilterDrawerVisible}
                     changeAddFilterDrawerVisible={this.changeAddFilterDrawerVisible}

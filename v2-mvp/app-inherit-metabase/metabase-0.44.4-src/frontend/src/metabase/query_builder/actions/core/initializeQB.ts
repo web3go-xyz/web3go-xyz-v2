@@ -193,9 +193,8 @@ async function handleQBInit(
 ) {
   dispatch(resetQB());
   dispatch(cancelQuery());
-
   const queryParams = location.query;
-  const cardId = Urls.extractEntityId(params.slug);
+  const cardId = Urls.extractEntityId(location.pathname.includes('/layout') ? params.chartSlug : params.slug);
   const uiControls: UIControls = getQueryBuilderModeFromLocation(location);
   const { options, serializedCard } = parseHash(location.hash);
   const hasCard = cardId || serializedCard;
@@ -324,11 +323,11 @@ async function handleQBInit(
 
 export const initializeQB =
   (location: LocationDescriptorObject, params: QueryParams) =>
-  async (dispatch: Dispatch, getState: GetState) => {
-    try {
-      await handleQBInit(dispatch, getState, { location, params });
-    } catch (error) {
-      console.warn("initializeQB failed because of an error:", error);
-      dispatch(setErrorPage(error));
-    }
-  };
+    async (dispatch: Dispatch, getState: GetState) => {
+      try {
+        await handleQBInit(dispatch, getState, { location, params });
+      } catch (error) {
+        console.warn("initializeQB failed because of an error:", error);
+        dispatch(setErrorPage(error));
+      }
+    };
