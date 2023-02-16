@@ -256,8 +256,8 @@ class Component extends React.Component {
 
     }
 
-    addChartToDashboard = (cardId) => {
-        this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
+    addChartToDashboard = async (cardId) => {
+        await this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
     }
     removeAndAddChatToDashboard = async (cardId, originCard) => {
         await this.props.removeCardFromDashboard({
