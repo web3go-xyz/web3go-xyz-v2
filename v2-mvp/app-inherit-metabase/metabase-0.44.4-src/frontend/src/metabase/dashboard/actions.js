@@ -94,7 +94,7 @@ export const SAVE_DASHBOARD_AND_CARDS =
   "metabase/dashboard/SAVE_DASHBOARD_AND_CARDS";
 export const SET_DASHBOARD_ATTRIBUTES =
   "metabase/dashboard/SET_DASHBOARD_ATTRIBUTES";
-  export const SET_ID_FOR_NEW_DASHBOARD =
+export const SET_ID_FOR_NEW_DASHBOARD =
   "metabase/dashboard/SET_ID_FOR_NEW_DASHBOARD";
 
 
@@ -285,6 +285,37 @@ export const addCardToDashboard =
 
       dispatch(loadMetadataForDashboard([dashcard]));
     };
+export const addToDashboardWithOldPosition =
+  ({ dashId, cardId, originCard }) =>
+    async (dispatch, getState) => {
+      await dispatch(Questions.actions.fetch({ id: cardId }));
+      const card = Questions.selectors.getObject(getState(), {
+        entityId: cardId,
+      });
+      const { dashboards, dashcards } = getState().dashboard;
+      const dashboard = dashboards[dashId];
+      const existingCards = dashboard.ordered_cards
+        .map(id => dashcards[id])
+        .filter(dc => !dc.isRemoved);
+      const originCardObj = originCard.dashboard.ordered_cards.find(v => v.id == originCard.dashcardId);
+      const dashcard = {
+        id: generateTemporaryDashcardId(),
+        dashboard_id: dashId,
+        card_id: card.id,
+        card: card,
+        series: [],
+        row: originCardObj.row,
+        col: originCardObj.col,
+        sizeX: originCardObj.sizeX,
+        sizeY: originCardObj.sizeY,
+        parameter_mappings: [],
+        visualization_settings: {},
+      };
+      dispatch(createAction(ADD_CARD_TO_DASH)(dashcard));
+      dispatch(fetchCardData(card, dashcard, { reload: true, clear: true }));
+
+      dispatch(loadMetadataForDashboard([dashcard]));
+    };
 
 export const addDashCardToDashboard = function ({ dashId, dashcardOverrides }) {
   return function (dispatch, getState) {
@@ -309,13 +340,13 @@ export const addDashCardToDashboard = function ({ dashId, dashcardOverrides }) {
 };
 
 
-export const setIdForNewDashboard = ({id, newId, dashboardName}) => {
+export const setIdForNewDashboard = ({ id, newId, dashboardName }) => {
   return function (dispatch, getState) {
-    dispatch(createAction(SET_ID_FOR_NEW_DASHBOARD)({id, newId, dashboardName}));
+    dispatch(createAction(SET_ID_FOR_NEW_DASHBOARD)({ id, newId, dashboardName }));
   }
 }
 
-export const newDashboardConfigTmpl = (type)=> {
+export const newDashboardConfigTmpl = (type) => {
   if (type === 'text') {
     const virtualTextCard = createCard();
     virtualTextCard.display = "text";
@@ -819,34 +850,34 @@ export const fetchDashboard = createThunkAction(
           dashId = -1;
           const { publicSpaceCollectionId } = getState().app;
           result = expandInlineDashboard({
-              isCreatePending: true,
-              "description": null,
-              "archived": false,
-              "collection_position": null,
-              "ordered_cards": [],
-              "can_write": true,
-              "enable_embedding": false,
-              "collection_id": publicSpaceCollectionId,
-              "show_in_getting_started": false,
-              "name": "New dashboard",
-              "caveats": null,
-              "collection_authority_level": "official",
-              // "creator_id": -1,
-              //"updated_at": "2023-02-11T03:09:02.904811Z",
-              //"made_public_by_id": null,
-              "embedding_params":null,
-              //"cache_ttl": null,
-              "id": dashId,
-              "position": null,
-              "entity_id": "",
-              "param_fields": null,
-              //"last-edit-info": {},
-              "parameters": [],
-              //"created_at": "2023-02-11T03:09:02.904811Z",
-              "public_uuid": "48e77a12-eff0-472d-89a4-8fbd2c581d33",
-              "points_of_interest": null
+            isCreatePending: true,
+            "description": null,
+            "archived": false,
+            "collection_position": null,
+            "ordered_cards": [],
+            "can_write": true,
+            "enable_embedding": false,
+            "collection_id": publicSpaceCollectionId,
+            "show_in_getting_started": false,
+            "name": "New dashboard",
+            "caveats": null,
+            "collection_authority_level": "official",
+            // "creator_id": -1,
+            //"updated_at": "2023-02-11T03:09:02.904811Z",
+            //"made_public_by_id": null,
+            "embedding_params": null,
+            //"cache_ttl": null,
+            "id": dashId,
+            "position": null,
+            "entity_id": "",
+            "param_fields": null,
+            //"last-edit-info": {},
+            "parameters": [],
+            //"created_at": "2023-02-11T03:09:02.904811Z",
+            "public_uuid": "48e77a12-eff0-472d-89a4-8fbd2c581d33",
+            "points_of_interest": null
           });
-          dashId = result.id = String(dashId);  
+          dashId = result.id = String(dashId);
         } else {
           result = expandInlineDashboard(dashId);
           dashId = result.id = String(dashId);

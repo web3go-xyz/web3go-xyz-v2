@@ -43,16 +43,23 @@ class Component extends React.Component {
         });
     }
     async componentDidMount() {
+        // addChart后没关闭弹窗直接刷新，导致参数残留
+        if (this.props.params.chartSlug || this.props.location.hash) {
+            this.props.push({
+                pathname: '/layout/create',
+            });
+            return;
+        }
         if (this.props.location.state && this.props.location.state.tabIndex) {
             this.setState({
                 tabIndex: this.props.location.state.tabIndex
             });
         }
         //测试用，加快速度
-        // this.props.changePublicSpaceCollectionId(40);
-        const collectionList = await CollectionsApi.list();
-        const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
-        this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
+        this.props.changePublicSpaceCollectionId(40);
+        // const collectionList = await CollectionsApi.list();
+        // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
+        // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
 
 
     }

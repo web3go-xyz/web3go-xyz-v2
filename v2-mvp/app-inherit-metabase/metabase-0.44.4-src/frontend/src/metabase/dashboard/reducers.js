@@ -37,7 +37,6 @@ import {
   SET_SHOW_LOADING_COMPLETE_FAVICON,
   RESET,
   SET_PARAMETER_VALUES,
-  SET_ID_FOR_NEW_DASHBOARD,
 } from "./actions";
 
 import { isVirtualDashCard, syncParametersAndEmbeddingParams } from "./utils";
@@ -49,11 +48,6 @@ const dashboardId = handleActions(
       next: (state, { payload: { dashboardId } }) => dashboardId,
     },
     [RESET]: { next: state => null },
-    [SET_ID_FOR_NEW_DASHBOARD]: {
-      next:  (state, { payload: { newId } }) => {
-        return newId;
-      }
-    },
   },
   null,
 );
@@ -100,20 +94,6 @@ const dashboards = handleActions(
         ...state,
         ...payload.entities.dashboard,
       }),
-    },
-    [SET_ID_FOR_NEW_DASHBOARD]: {
-      next: (state, { payload: { id, newId, dashboardName } }) => {
-        if (id === newId) {
-          return state;
-        }
-        const newState = {...state};
-        const oldData = {...state[id]};
-        delete newState[id];
-        oldData.id = newId;
-        oldData.name = dashboardName;
-        newState[newId] = newDashboard(oldData, { }, false);
-        return newState;
-      },
     },
     [SET_DASHBOARD_ATTRIBUTES]: {
       next: (state, { payload: { id, attributes, isDirty } }) => {

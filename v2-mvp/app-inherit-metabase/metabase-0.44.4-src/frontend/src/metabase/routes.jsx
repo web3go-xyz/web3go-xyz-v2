@@ -265,7 +265,11 @@ export const getRoutes = store => (
               component={CreatePage}
             />
             <Route
-              path="createcreate/:dashboardSlug/:chartSlug"
+              path="create/question/:chartSlug"
+              component={CreatePage}
+            />
+            <Route
+              path="create/question/:chartSlug/:dashboardSlug"
               component={CreatePage}
             />
           </Route>

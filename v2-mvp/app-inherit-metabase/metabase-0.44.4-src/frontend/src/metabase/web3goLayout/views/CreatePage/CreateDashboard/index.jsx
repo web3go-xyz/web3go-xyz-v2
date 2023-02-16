@@ -67,6 +67,7 @@ class Component extends React.Component {
         this.AddChartModalRef = React.createRef();
     }
     async componentDidMount() {
+        event.on('editChartEvent', this.handleEditChart);
         this.init();
     }
     componentDidUpdate(prevProps) {
@@ -83,7 +84,6 @@ class Component extends React.Component {
                 originDashboardDetail: this.props.dashboard
             });
         }
-
     }
     changeAddFilterDrawerVisible = (value) => {
         this.setState({
@@ -230,6 +230,9 @@ class Component extends React.Component {
     handleAddChart = () => {
         this.AddChartModalRef.init();
     }
+    handleEditChart = (chartObj) => {
+        this.AddChartModalRef.init(chartObj);
+    }
     handleAddFilter = () => {
         this.changeAddFilterDrawerIsEdit(false);
         this.changeAddFilterDrawerVisible(true);
@@ -255,6 +258,13 @@ class Component extends React.Component {
 
     addChartToDashboard = (cardId) => {
         this.props.addCardToDashboard({ dashId: this.state.currentDashboardId, cardId });
+    }
+    removeAndAddChatToDashboard = async (cardId, originCard) => {
+        await this.props.removeCardFromDashboard({
+            dashId: this.state.currentDashboardId,
+            dashcardId: originCard.dashcardId,
+        });
+        await this.props.addToDashboardWithOldPosition({ dashId: this.state.currentDashboardId, cardId, originCard })
     }
     uploadThumbnail = async (id, thumbnailBlob) => {
         const formData = new FormData();
@@ -456,7 +466,7 @@ class Component extends React.Component {
                 <div className="p-main">
                     <DashboardApp isEditing={isEditing} {...this.props} ref={(ref) => this.DashbaordAppRef = ref} />
                 </div>
-                <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} addChartToDashboard={this.addChartToDashboard}></AddChartModal>
+                <AddChartModal {...this.props} onRef={(ref) => this.AddChartModalRef = ref} addChartToDashboard={this.addChartToDashboard} removeAndAddChatToDashboard={this.removeAndAddChatToDashboard}></AddChartModal>
                 <AddFilterDrawer {...this.props}
                     addFilterDrawerVisible={addFilterDrawerVisible}
                     changeAddFilterDrawerVisible={this.changeAddFilterDrawerVisible}

@@ -75,13 +75,13 @@ class View extends React.Component {
     }
     this.addChartSaveHandler = async (chartName, successFn) => {
       let { card, originalCard } = this.props;
-      if (!card) {
+      if (!card && !this.props.params.chartSlug) {
         Message.error('Please select dataset first');
         return;
       }
-      await this.saveOrCreateQuestion(chartName);
+      const cardId = await this.saveOrCreateQuestion(chartName);
       if (successFn) {
-        successFn(this.props.card.id);
+        successFn(cardId);
       }
     }
   }
@@ -113,6 +113,7 @@ class View extends React.Component {
       card.id = this.props.originalCard.id;
       await this.props.onSave(card);
     }
+    return card.id;
   }
   handleAddSeries = e => {
     this.setState({
