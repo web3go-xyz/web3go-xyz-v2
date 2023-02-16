@@ -25,9 +25,30 @@ export default class RemoveFromDashboardModal extends Component {
   }
 
   render() {
-    const { onClose } = this.props;
+    const { onClose, dashcard } = this.props;
+    console.info(dashcard);
+    let type;
+    if (dashcard.visualization_settings.virtual_card) {
+      try {
+        type = dashcard.visualization_settings.virtual_card.display;
+        if (type === 'media') {
+          type = dashcard.visualization_settings.type;
+        }
+      } catch(e) {};
+    }
+    
+    if (type === "media") {
+      type = settings.type;
+    }
+    type = type || 'question';
+    const text = {
+      text: 'Remove this text box?',
+      video: 'Remove this video?',
+      image: 'Remove this image?',
+      question: 'Remove this chart?'
+    }[type];
     return (
-      <ModalContent title={t`Remove this question?`} onClose={() => onClose()}>
+      <ModalContent title={t`${text}`} onClose={() => onClose()}>
         <div className="flex-align-right">
           <Button onClick={onClose}>{t`Cancel`}</Button>
           <Button danger ml={2} onClick={() => this.onRemove()}>
