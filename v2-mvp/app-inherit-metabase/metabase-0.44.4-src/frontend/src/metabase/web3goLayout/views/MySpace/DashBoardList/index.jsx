@@ -110,8 +110,8 @@ class Component extends React.Component {
                     }
                     if (!this.props.userData.account || (record.creatorAccountId !== this.props.userData.account.accountId)) {
                         operationList.pop();
-                        operationList.pop();
-                        operationList.pop();
+                        const editIndex = operationList.findIndex(v => v.name == 'Edit')
+                        operationList.splice(editIndex, 1)
                     }
                     if (!record.publicLink) {
                         operationList.shift();
@@ -391,24 +391,27 @@ class Component extends React.Component {
         const stateObj = this.state.stateList.find(v => v.value == this.state.state);
         return (
             <div className="web3go-layout-myspace-dashbaoard-list">
-                <div className="filter-row">
-                    <Dropdown trigger='click' position="br" droplist={
-                        <Menu onClickMenuItem={(key) => { this.clickDashboardState(key) }}>
-                            {
-                                this.state.stateList.map(v => <Menu.Item key={v.value}>{v.name}</Menu.Item>)
-                            }
-                        </Menu>
-                    }>
-                        <div className="btn hover-primary">
-                            <span>
-                                {stateObj.name}
-                            </span>
-                            <IconDown />
-                        </div>
-                    </Dropdown>
-                </div>
+                {this.props.isMyself ? (
+                    <div className="filter-row">
+                        <Dropdown trigger='click' position="br" droplist={
+                            <Menu onClickMenuItem={(key) => { this.clickDashboardState(key) }}>
+                                {
+                                    this.state.stateList.map(v => <Menu.Item key={v.value}>{v.name}</Menu.Item>)
+                                }
+                            </Menu>
+                        }>
+                            <div className="btn hover-primary">
+                                <span>
+                                    {stateObj.name}
+                                </span>
+                                <IconDown />
+                            </div>
+                        </Dropdown>
+                    </div>
+                ) : null}
+                
                 <Table
-                    className={'pagination-right' + (this.state.ifShowMore ? 'show-more' : '')}
+                    className={'pagination-right' + (this.state.ifShowMore ? ' show-more' : '')}
                     rowKey="id"
                     borderCell={false}
                     border={false}

@@ -143,11 +143,12 @@ class Component extends React.Component {
             <Tabs activeTab={this.state.activeTab} onChange={this.setActiveTab}>
                 <TabPane key='1' title={`Dashboard ${dashboardListCount}`}>
                 </TabPane>
-                <TabPane key='2' title={`${this.state.isMyself?'My Favorites':'Favorites'} ${myFavouriteCount}`}>
+                <TabPane key='2' title={`${this.state.isMyself ? 'My Favorites' : 'Favorites'} ${myFavouriteCount}`}>
                 </TabPane>
             </Tabs>
 
-            <DashBoardList 
+            <DashBoardList
+                isMyself={isMyself}
                 viewType={this.state.viewType}
                 isFavourite={this.state.activeTab == '2'}
                 onRef={(ref) => this.DashboardRef = ref}
@@ -162,7 +163,7 @@ class Component extends React.Component {
                 allowClear
                 onPressEnter={this.handleSearch}
                 prefix={<IconSearch className="hover-item" onClick={this.handleSearch} />}
-                placeholder='Search in my space'
+                placeholder='Search in space'
             />
         </div>);
         if (this.state.viewType == 'followers') {

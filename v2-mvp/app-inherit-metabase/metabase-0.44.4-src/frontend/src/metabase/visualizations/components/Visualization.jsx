@@ -440,13 +440,12 @@ class Visualization extends React.PureComponent {
     const title = settings["card.title"];
     const hasHeaderContent = title || extra;
     const isHeaderEnabled = !(visualization && visualization.noHeader);
-
     const hasHeader =
       (showTitle &&
         hasHeaderContent &&
         (loading || error || noResults || isHeaderEnabled)) ||
       (replacementContent && (dashcard.sizeY !== 1 || isMobile));
-
+    console.log('111', hasHeader, visualization.uiName);
     return (
       <div
         className={cx(className, "flex flex-column full-height")}

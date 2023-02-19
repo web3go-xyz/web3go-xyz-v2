@@ -171,6 +171,10 @@ class Component extends React.Component {
                 visible: false,
                 saveChartLoading: false
             })
+        }, () => {
+            this.setState({
+                saveChartLoading: false
+            });
         });
     }
     handleCancel = () => {

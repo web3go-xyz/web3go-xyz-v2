@@ -73,10 +73,13 @@ class View extends React.Component {
     this.state = {
       ...DEFAULT_POPOVER_STATE,
     }
-    this.addChartSaveHandler = async (chartName, successFn) => {
+    this.addChartSaveHandler = async (chartName, successFn, failFn) => {
       let { card, originalCard } = this.props;
       if (!card && !this.props.params.chartSlug) {
         Message.error('Please select dataset first');
+        if (failFn) {
+          failFn();
+        }
         return;
       }
       await this.saveOrCreateQuestion(chartName);

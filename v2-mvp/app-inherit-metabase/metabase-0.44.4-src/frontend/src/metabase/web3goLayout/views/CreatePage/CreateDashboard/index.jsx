@@ -288,7 +288,9 @@ class Component extends React.Component {
                             isEditing: true
                         });
                         resolve(blob);
-                    });
+                    }).catch(e => {
+                        resolve(undefined)
+                    })
             });
         });
     }
@@ -305,7 +307,9 @@ class Component extends React.Component {
                     return;
                 }
             }
-
+            this.setState({
+                [loadingKey]: true
+            });
             const isDelayDashboardCreation = !this.props.params.dashboardSlug
             let realId = this.props.dashboard.id;
             if (isDelayDashboardCreation) {
@@ -318,9 +322,6 @@ class Component extends React.Component {
                 this.setState({ dashboardId: realId })
             }
 
-            this.setState({
-                [loadingKey]: true
-            });
             let thumbnailBlob;
             if (!isDraft) {
                 thumbnailBlob = await this.createThumbnail();
@@ -333,7 +334,9 @@ class Component extends React.Component {
                         "topic": "dashboard.changed",
                         "data": realId
                     })
-                    await this.uploadThumbnail(realId, thumbnailBlob);
+                    if (thumbnailBlob) {
+                        await this.uploadThumbnail(realId, thumbnailBlob);
+                    }
                 }
                 this.setState({
                     [loadingKey]: false
@@ -430,7 +433,7 @@ class Component extends React.Component {
                         originDashboardDetail.id == -1 || !originDashboardDetail.public_uuid ? (
                             <div className="pt-right">
                                 <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
-                                <Button className="btn" loading={this.state.saveBtnLoading} onClick={() => this.handlePostDashboard(true)}>Save as Draft</Button>
+                                <Button className="btn" loading={this.state.saveBtnLoading} onClick={() => this.handlePostDashboard(true)}>Save Draft</Button>
                                 <Button className="btn" loading={this.state.postBtnLoading} onClick={() => this.handlePostDashboard(false)} type="primary">Post</Button>
                             </div>
                         ) : (
