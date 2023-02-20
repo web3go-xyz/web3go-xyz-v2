@@ -31,6 +31,11 @@
 :local .padded {
   padding: 0.5em 0.75em;
 }
+:local .disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
 
 :local .upload-wrap {
   box-sizing: border-box;
@@ -90,7 +95,6 @@
     background: #f2f3f5;
     border-radius: 6px;
     border: 1px solid #f2f3f5;
-  
   }
 
   textarea {
@@ -103,5 +107,30 @@
     border-color: #615cf6;
     -webkit-transition: border 300ms ease-in-out;
     transition: border 300ms ease-in-out;
+  }
+}
+
+:local .upload-wrap-preview {
+  overflow: hidden;
+  border: none;
+  img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+:local .upload-preview-actions {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  align-items: center;
+  margin-top: 4px;
+  color: #615cf6;
+
+  a {
+    color: #615cf6;
+    width: 63px;
+    display: inline-block;
   }
 }

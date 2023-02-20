@@ -26,7 +26,6 @@ export default class RemoveFromDashboardModal extends Component {
 
   render() {
     const { onClose, dashcard } = this.props;
-    console.info(dashcard);
     let type;
     if (dashcard.visualization_settings.virtual_card) {
       try {
