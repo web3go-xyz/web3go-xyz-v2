@@ -34,7 +34,7 @@ import { getParameterValuesBySlug } from "metabase/parameters/utils/parameter-va
 import Utils from "metabase/lib/utils";
 import { DashCardRoot, WaterMark } from "./DashCard.styled";
 import event from '@/web3goLayout/event';
-
+import CardActionComponent from '@/web3goLayout/components/CardActionComponent';
 
 const DATASET_USUALLY_FAST_THRESHOLD = 15 * 1000;
 
@@ -203,7 +203,33 @@ export default class DashCard extends Component {
         isNightMode={isNightMode}
       >
         <WaterMark></WaterMark>
-        {isEditingDashboardLayout ? (
+        {location.pathname.includes('/layout') ? <CardActionComponent dashcard={dashcard}
+          dashcardData={dashcardData}></CardActionComponent> : isEditingDashboardLayout ? (
+            <DashboardCardActionsPanel onMouseDown={this.preventDragging}>
+              <DashCardActionButtons
+                series={series}
+                isLoading={loading}
+                isVirtualDashCard={isVirtualDashCard(dashcard)}
+                hasError={!!errorMessage}
+                onRemove={onRemove}
+                onAddSeries={onAddSeries}
+                onReplaceAllVisualizationSettings={
+                  this.props.onReplaceAllVisualizationSettings
+                }
+                showClickBehaviorSidebar={() =>
+                  this.props.showClickBehaviorSidebar(dashcard.id)
+                }
+                isPreviewing={this.state.isPreviewingCard}
+                onPreviewToggle={this.handlePreviewToggle}
+                dashboard={dashboard}
+                dashcardId={dashcard.id}
+                onToggleNewCardEditorSidebar={this.props.onToggleNewCardEditorSidebar}
+              />
+            </DashboardCardActionsPanel>
+          ) : null}
+
+
+        {/* {isEditingDashboardLayout ? (
           <DashboardCardActionsPanel onMouseDown={this.preventDragging}>
             <DashCardActionButtons
               series={series}
@@ -225,7 +251,7 @@ export default class DashCard extends Component {
               onToggleNewCardEditorSidebar={this.props.onToggleNewCardEditorSidebar}
             />
           </DashboardCardActionsPanel>
-        ) : null}
+        ) : null} */}
         <WrappedVisualization
           titleOperation={true}
           className={cx("flex-full overflow-hidden", {

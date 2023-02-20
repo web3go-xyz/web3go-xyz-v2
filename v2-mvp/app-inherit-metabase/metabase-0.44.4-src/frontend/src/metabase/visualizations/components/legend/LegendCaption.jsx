@@ -134,7 +134,7 @@ const LegendCaption = ({
   }
   return (
     <LegendCaptionRoot className={className} data-testid="legend-caption">
-      {titleOperation}
+      {/* {titleOperation} */}
       {icon && <LegendLabelIcon {...icon} />}
       <LegendLabel
         className="fullscreen-normal-text fullscreen-night-text"
