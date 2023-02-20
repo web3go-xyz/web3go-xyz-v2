@@ -99,7 +99,31 @@ export default class DashCard extends Component {
   preventDragging = e => {
     e.stopPropagation();
   };
-
+  onEdit = ({
+    series,
+    onReplaceAllVisualizationSettings,
+    dashboard,
+    onToggleNewCardEditorSidebar,
+    dashcardId
+  }) => {
+    if (series[0].card.display === "text" || series[0].card.display === "media") {
+      onToggleNewCardEditorSidebar({
+        type: series[0].card.display,
+        action: 'edit',
+        dashboardId: dashboard.id,
+        dashcardId,
+        onReplaceAllVisualizationSettings,
+        series
+      }
+      );
+    } else {
+      event.emit('editChartEvent', {
+        dashboard,
+        dashcardId,
+        series
+      });
+    }
+  }
   render() {
     const {
       dashcard,
@@ -203,30 +227,43 @@ export default class DashCard extends Component {
         isNightMode={isNightMode}
       >
         <WaterMark></WaterMark>
-        {location.pathname.includes('/layout') ? <CardActionComponent dashcard={dashcard}
-          dashcardData={dashcardData}></CardActionComponent> : isEditingDashboardLayout ? (
-            <DashboardCardActionsPanel onMouseDown={this.preventDragging}>
-              <DashCardActionButtons
-                series={series}
-                isLoading={loading}
-                isVirtualDashCard={isVirtualDashCard(dashcard)}
-                hasError={!!errorMessage}
-                onRemove={onRemove}
-                onAddSeries={onAddSeries}
-                onReplaceAllVisualizationSettings={
-                  this.props.onReplaceAllVisualizationSettings
-                }
-                showClickBehaviorSidebar={() =>
-                  this.props.showClickBehaviorSidebar(dashcard.id)
-                }
-                isPreviewing={this.state.isPreviewingCard}
-                onPreviewToggle={this.handlePreviewToggle}
-                dashboard={dashboard}
-                dashcardId={dashcard.id}
-                onToggleNewCardEditorSidebar={this.props.onToggleNewCardEditorSidebar}
-              />
-            </DashboardCardActionsPanel>
-          ) : null}
+        {location.pathname.includes('/layout') ? <CardActionComponent
+          dashcard={dashcard}
+          dashcardData={dashcardData}
+          onRemove={onRemove}
+          series={series}
+          onEdit={() => {
+            this.onEdit({
+              series,
+              onReplaceAllVisualizationSettings: this.props.onReplaceAllVisualizationSettings,
+              dashboard,
+              onToggleNewCardEditorSidebar: this.props.onToggleNewCardEditorSidebar,
+              dashcardId: dashcard.id
+            })
+          }}
+        ></CardActionComponent> : isEditingDashboardLayout ? (
+          <DashboardCardActionsPanel onMouseDown={this.preventDragging}>
+            <DashCardActionButtons
+              series={series}
+              isLoading={loading}
+              isVirtualDashCard={isVirtualDashCard(dashcard)}
+              hasError={!!errorMessage}
+              onRemove={onRemove}
+              onAddSeries={onAddSeries}
+              onReplaceAllVisualizationSettings={
+                this.props.onReplaceAllVisualizationSettings
+              }
+              showClickBehaviorSidebar={() =>
+                this.props.showClickBehaviorSidebar(dashcard.id)
+              }
+              isPreviewing={this.state.isPreviewingCard}
+              onPreviewToggle={this.handlePreviewToggle}
+              dashboard={dashboard}
+              dashcardId={dashcard.id}
+              onToggleNewCardEditorSidebar={this.props.onToggleNewCardEditorSidebar}
+            />
+          </DashboardCardActionsPanel>
+        ) : null}
 
 
         {/* {isEditingDashboardLayout ? (
@@ -397,16 +434,16 @@ const DashCardActionButtons = ({
       onReplaceAllVisualizationSettings &&
       !getVisualizationRaw(series).visualization.disableSettingsConfig
     ) {
-      buttons.push(
-        <ChartSettingsButton
-          key="chart-settings-button"
-          series={series}
-          onReplaceAllVisualizationSettings={onReplaceAllVisualizationSettings}
-          dashboard={dashboard}
-          dashcardId={dashcardId}
-          onToggleNewCardEditorSidebar={onToggleNewCardEditorSidebar}
-        />,
-      );
+      // buttons.push(
+      //   <ChartSettingsButton
+      //     key="chart-settings-button"
+      //     series={series}
+      //     onReplaceAllVisualizationSettings={onReplaceAllVisualizationSettings}
+      //     dashboard={dashboard}
+      //     dashcardId={dashcardId}
+      //     onToggleNewCardEditorSidebar={onToggleNewCardEditorSidebar}
+      //   />,
+      // );
     }
     // if (!isVirtualDashCard) {
     //   buttons.push(
@@ -451,75 +488,32 @@ const ChartSettingsButton = ({
   onToggleNewCardEditorSidebar,
   dashcardId
 }) => {
-  if (series[0].card.display === "text" || series[0].card.display === "media") {
-    const doEdit = () => {
-      onToggleNewCardEditorSidebar({
-        type: series[0].card.display,
-        action: 'edit',
-        dashboardId: dashboard.id,
-        dashcardId,
-        onReplaceAllVisualizationSettings,
-        series
-      }
-      );
+
+  return <ModalWithTrigger
+    wide
+    tall
+    isInitiallyOpen={false}
+    triggerElement={
+      <Tooltip tooltip={t`Visualization options`}>
+        <Icon
+          name="palette"
+          size={HEADER_ICON_SIZE}
+          style={HEADER_ACTION_STYLE}
+        />
+      </Tooltip>
     }
-    return (
-      <span onClick={() => doEdit({})}>
-        <a className="text-dark-hover drag-disabled">
-          <Tooltip tooltip={t`Visualization options`}>
-            <Icon
-              name="palette"
-              size={HEADER_ICON_SIZE}
-              style={HEADER_ACTION_STYLE}
-            />
-          </Tooltip>
-        </a>
-      </span>)
-  } else {
-    const editChart = () => {
-      event.emit('editChartEvent', {
-        dashboard,
-        dashcardId,
-        series
-      });
-    }
-    return (
-      <span onClick={() => editChart()}>
-        <a className="text-dark-hover drag-disabled">
-          <Tooltip tooltip={t`Visualization options`}>
-            <Icon
-              name="palette"
-              size={HEADER_ICON_SIZE}
-              style={HEADER_ACTION_STYLE}
-            />
-          </Tooltip>
-        </a>
-      </span>)
-    // return <ModalWithTrigger
-    //   wide
-    //   tall
-    //   isInitiallyOpen={false}
-    //   triggerElement={
-    //     <Tooltip tooltip={t`Visualization options`}>
-    //       <Icon
-    //         name="palette"
-    //         size={HEADER_ICON_SIZE}
-    //         style={HEADER_ACTION_STYLE}
-    //       />
-    //     </Tooltip>
-    //   }
-    //   triggerClasses="text-dark-hover cursor-pointer flex align-center flex-no-shrink mr1 drag-disabled"
-    //   enableMouseEvents
-    // >
-    //   <ChartSettingsWithState
-    //     className="spread"
-    //     series={series}
-    //     onChange={onReplaceAllVisualizationSettings}
-    //     isDashboard
-    //     dashboard={dashboard}
-    //   />
-    // </ModalWithTrigger>
-  }
+    triggerClasses="text-dark-hover cursor-pointer flex align-center flex-no-shrink mr1 drag-disabled"
+    enableMouseEvents
+  >
+    <ChartSettingsWithState
+      className="spread"
+      series={series}
+      onChange={onReplaceAllVisualizationSettings}
+      isDashboard
+      dashboard={dashboard}
+    />
+  </ModalWithTrigger>
+
 
 };
 

@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import './index.less';
 import { Button, Modal, Form, Spin, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip, Drawer } from '@arco-design/web-react';
 import { IconSearch, IconPlus } from '@arco-design/web-react/icon';
-import { push } from "react-router-redux";
+import { push, replace } from "react-router-redux";
 import cx from "classnames";
 import QueryBuilder from "metabase/query_builder/containers/QueryBuilder";
 import event from '@/web3goLayout/event';
@@ -33,6 +33,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
     push,
+    replace
 };
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
@@ -73,9 +74,9 @@ class Component extends React.Component {
             const slug = slugg(name);
             const suffix = slug ? `${chartData.card.id}-${slug}` : chartData.card.id;
             if (chartObj.dashboard.id == '-1') {
-                this.props.push({ pathname: `/layout/create/question/${suffix}` });
+                this.props.replace({ pathname: `/layout/create/question/${suffix}` });
             } else {
-                this.props.push({ pathname: `/layout/create/question/${suffix}/${this.props.params.dashboardSlug}` });
+                this.props.replace({ pathname: `/layout/create/question/${suffix}/${this.props.params.dashboardSlug}` });
             }
             this.setState({
                 refreshFlag: false
@@ -148,7 +149,7 @@ class Component extends React.Component {
             hash: urlParsed.hash,
             state: newState
         };
-        this.props.push(locationDescriptor);
+        this.props.replace(locationDescriptor);
         this.setState({
             refreshFlag: false
         }, () => {
@@ -167,14 +168,9 @@ class Component extends React.Component {
             } else {
                 await this.props.removeAndAddChatToDashboard(cardId, this.state.currentModifyChart);
             }
-            this.setState({
-                visible: false,
-                saveChartLoading: false
-            })
+            this.handleCancel();
         }, () => {
-            this.setState({
-                saveChartLoading: false
-            });
+            this.handleCancel();
         });
     }
     handleCancel = () => {
@@ -182,7 +178,7 @@ class Component extends React.Component {
             visible: false,
             datasetList: []
         });
-        this.props.push({
+        this.props.replace({
             pathname: this.props.params.dashboardSlug ? `/layout/create/${this.props.params.dashboardSlug}` : '/layout/create',
             hash: '',
             query: this.props.location.query,

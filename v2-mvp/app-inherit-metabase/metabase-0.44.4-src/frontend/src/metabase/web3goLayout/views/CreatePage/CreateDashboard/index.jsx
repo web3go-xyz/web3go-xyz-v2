@@ -188,7 +188,7 @@ class Component extends React.Component {
         })
     }
     handleCancel = () => {
-        this.props.router.goBack();
+        this.props.replace('/layout/mySpace');
     }
     saveTag = (newDashbarodId) => {
         const { tagList, savedAllTagList, savedCurrentTagList } = this.state;
@@ -342,7 +342,7 @@ class Component extends React.Component {
                     [loadingKey]: false
                 });
                 if (!isDraft) {
-                    this.props.push('/');
+                    this.props.replace('/');
                 } else if (isDelayDashboardCreation) {
                     const slug = slugg(this.state.dashboardName);
                     const dashboardSlug = `${realId}-${slug}`;
