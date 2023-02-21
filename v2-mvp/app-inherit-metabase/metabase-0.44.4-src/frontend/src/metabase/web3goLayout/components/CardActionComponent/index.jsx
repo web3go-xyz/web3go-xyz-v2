@@ -55,6 +55,7 @@ class Component extends React.Component {
                 event.emit('goSignIn');
                 return;
             }
+            // console.info(dashcard)
             if (dashcard.card_id) {
                 if (location.pathname.includes('/layout/create')) {
                     this.props.addCardToDashboard({ dashId: dashcard.dashboard_id, cardId: dashcard.card_id })
@@ -62,10 +63,16 @@ class Component extends React.Component {
                     this.DuplicateModalRef.init({ ...cardData, card_id: dashcard.card_id });
                 }
             } else {
-                // this.props.addDashCardToDashboard({
-                //     dashId: dashcard.dashboard_id,
-                //     dashcardOverrides,
-                // });
+                const deepCopiedDashcard = JSON.parse(JSON.stringify(dashcard));
+                delete deepCopiedDashcard.id;
+                delete deepCopiedDashcard.isAdded;
+                delete deepCopiedDashcard.justAdded;
+                delete deepCopiedDashcard.col;
+                console.info(deepCopiedDashcard);
+                this.props.addDashCardToDashboard({
+                    dashId: dashcard.dashboard_id,
+                    dashcardOverrides: deepCopiedDashcard,
+                });
             }
         } else if (key == 'Download') {
             this.DownloadModalRef.init({ ...cardData, card_id: dashcard.card_id });
@@ -117,7 +124,7 @@ class Component extends React.Component {
         }
 
         let operationList = []
-        if (dashcard.card_id) {
+        // if (dashcard.card_id) {
             operationList.unshift({
                 icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6.66666 2H12.6667C12.8435 2 13.013 2.07024 13.1381 2.19526C13.2631 2.32029 13.3333 2.48986 13.3333 2.66667V10" stroke="#6B7785" strokeWidth="1.33333" />
@@ -125,7 +132,7 @@ class Component extends React.Component {
                 </svg>,
                 name: 'Duplicate'
             })
-        }
+        // }
         if (cardData.rows) {
             operationList.unshift({
                 icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
