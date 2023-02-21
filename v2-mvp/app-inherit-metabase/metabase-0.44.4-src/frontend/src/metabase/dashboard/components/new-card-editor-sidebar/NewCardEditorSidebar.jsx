@@ -129,18 +129,31 @@ export class NewCardEditorSidebar extends React.Component {
         );
       }
       return (
-        <CommonDrawer
-          className={cx(styles["new-wrap"])}
-          visible={true}
-          title={title}
-          onOk={() => {
-            done();
-          }}
-          onCancel={() => {
-            handleCancel();
-          }}
-          {...props}
-        ></CommonDrawer>
+        // <CommonDrawer
+        //   className={cx(styles["new-wrap"])}
+        //   visible={true}
+        //   title={title}
+        //   onOk={() => {
+        //     done();
+        //   }}
+        //   onCancel={() => {
+        //     handleCancel();
+        //   }}
+        //   {...props}
+        // ></CommonDrawer>
+        <div>
+          <div className="d-title">
+            <span>{title}</span>
+            <img className="close hover-item" onClick={() => { handleCancel() }} src={require("@/web3goLayout/assets/dashboardCreate/close.png")} alt="" />
+          </div>
+          <div className="d-main">
+            {props.children}
+          </div>
+          <div className="d-footer">
+            <Button className="btn" type="secondary" onClick={() => { handleCancel() }}>Cancel</Button>
+            <Button className="btn" type="primary" onClick={() => { done(); }}>OK</Button>
+          </div>
+        </div>
       );
     };
 
@@ -189,7 +202,6 @@ export class NewCardEditorSidebar extends React.Component {
         </div>
       );
     };
-
     return (
       <StyleComponent>
         <div
