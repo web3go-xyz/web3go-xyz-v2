@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import Sidebar from "metabase/dashboard/components/Sidebar";
-import { Button, Switch, Form, Radio, Drawer } from "@arco-design/web-react";
+import { Button, Switch, Form, Radio, Drawer, Spin } from "@arco-design/web-react";
 import cx from "classnames";
 import { t } from "ttag";
 import Text from "../../../visualizations/visualizations/Text/Text";
@@ -10,85 +10,101 @@ import { newDashboardConfigTmpl } from "../../actions";
 import Media from "../../../visualizations/visualizations/Media/Media";
 import styles from "./Style.less";
 import { IconClose } from "@arco-design/web-react/icon";
-import CommonDrawer from "@/web3goLayout/components/CommonDrawer";
+import CommonDrawer  from "../../../web3goLayout/components/CommonDrawer";
+// import CommonDrawer from "@/web3goLayout/components/CommonDrawer";
 
 export class NewCardEditorSidebar extends React.Component {
   constructor(props) {
     super(props);
     //this.props = props;
 
+    this.state = {
+      //show: -1,
+      sidebar: null,
+      // saveLoading: false,
+      // : null,
+    };
+
     NewCardEditorSidebar.propTypes = {
       sidebar: PropTypes.object,
       onUpdateDashCardVisualizationSettings: PropTypes.func,
     };
+
+    this.drawerComponentRef = null;
+
+    this.imageComponentRef = React.createRef();
+  }
+
+  doShow(sidebar) {
+    this.setState({
+      //show: true,
+      sidebar
+    })
   }
 
   render() {
-    const { action, vanillaMode } = this.props.sidebar.props.params;
-    const series =
-      action === "add"
-        ? [newDashboardConfigTmpl(this.props.sidebar.props.params.type)]
-        : this.props.sidebar.props.params.series;
-    let settings = series[0].card.visualization_settings;
-    let type = this.props.sidebar.props.params.type;
-    if (type === "media") {
-      type = settings.type;
+    console.info(this.props.sidebar, this.state)
+    if (!this.props.sidebar && !this.state.sidebar) {
+      return null;
     }
-    const componentAdapter = {
-      text: {
-        contentKey: "text",
-        render: props => <Text {...props} />,
-        uiSettings: { ...Text.settings },
-      },
-      image: {
-        contentKey: "url",
-        render: props => <Media {...props} />,
-        uiSettings: { ...Media.settings },
-      },
-      video: {
-        contentKey: "url",
-        render: props => <Media {...props} />,
-        uiSettings: { ...Media.settings },
-      },
-    }[type];
-    const title =
-      (action === "add" ? "Add" : "Edit") +
-      " " +
-      (type[0].toUpperCase() + type.substring(1));
+    const rawData =  this.state.sidebar? this.state.sidebar.params : this.props.sidebar.props.params;
+    const { action, vanillaMode } = rawData;
+    // debugger;
+    // if (preload === true) {
+    //   return <></>;
+    // }
 
-    if (action === "add") {
-      Object.keys(componentAdapter.uiSettings).forEach(key => {
-        if (componentAdapter.uiSettings[key].default) {
-          settings[key] = componentAdapter.uiSettings[key].default;
-        }
-      });
+    const handleCancel = () => {
+      console.info('.....')
+      if (this.state.sidebar) {
+        this.setState({sidebar: null});
+      } else if (this.props.closeSidebar) {
+        this.props.closeSidebar();
+      }
     }
-
-    const onUpdateVisualizationSettings = ({ text, url }) => {
-      /// console.info("editing.." + (url || text));
-      settings[componentAdapter.contentKey] = url || text || "";
-    };
-
-    const handleCancel = () => this.props.closeSidebar();
+    let setDrawerLoadingStatus = null;
     const done = () => {
       // '[{"card":{"query_average_duration":null,"name":null,"display":"text","visualization_settings":{},"dataset_query":{},"archived":false}}]'
       // '[{"card":{"query_average_duration":null,"name":null,"display":"media","visualization_settings":{},"dataset_query":{},"archived":false}}]'
-      if (action === "add") {
-        this.props.doSave(series[0]);
+      const proxy = () => {
+        if (action === "add") {
+          if (this.props.doSave) { // legacy ui
+            this.props.doSave(series[0]);
+          } else { // new ui
+            this.props.addDashCardToDashboard({
+                  dashId: rawData.dashboardId,
+                  dashcardOverrides: series[0],
+            });
+          }
+        } else {
+          console.info(settings);
+          this.props.onUpdateDashCardVisualizationSettings(
+            this.props.sidebar.props.params.dashcardId,
+            settings,
+          );
+          // this.props.sidebar.props.onReplaceAllVisualizationSettings(
+          //   this.props.sidebar.props.params.dashcardId,
+          //   settings,
+          // );
+        }
+        handleCancel();
+      };
+      if (
+        this.imageComponentRef &&
+        this.imageComponentRef.current &&
+        this.imageComponentRef.current.done
+      ) {
+        const setSaveStatus = status =>
+        setDrawerLoadingStatus && setDrawerLoadingStatus(status || false );
+        this.imageComponentRef.current.done({ setSaveStatus }).then(status => {
+          if (status) {
+            proxy();
+          }
+        });
       } else {
-        this.props.onUpdateDashCardVisualizationSettings(
-          this.props.sidebar.props.params.dashcardId,
-          settings,
-        );
-        // this.props.sidebar.props.onReplaceAllVisualizationSettings(
-        //   this.props.sidebar.props.params.dashcardId,
-        //   settings,
-        // );
+        proxy();
       }
-      this.props.closeSidebar();
     };
-
-    const Component = props => componentAdapter.render(props);
 
     const StyleComponent = props => {
       if (vanillaMode) {
@@ -129,33 +145,92 @@ export class NewCardEditorSidebar extends React.Component {
         );
       }
       return (
-        // <CommonDrawer
-        //   className={cx(styles["new-wrap"])}
-        //   visible={true}
-        //   title={title}
-        //   onOk={() => {
-        //     done();
-        //   }}
-        //   onCancel={() => {
-        //     handleCancel();
-        //   }}
-        //   {...props}
-        // ></CommonDrawer>
-        <div>
-          <div className="d-title">
-            <span>{title}</span>
-            <img className="close hover-item" onClick={() => { handleCancel() }} src={require("@/web3goLayout/assets/dashboardCreate/close.png")} alt="" />
-          </div>
-          <div className="d-main">
-            {props.children}
-          </div>
-          <div className="d-footer">
-            <Button className="btn" type="secondary" onClick={() => { handleCancel() }}>Cancel</Button>
-            <Button className="btn" type="primary" onClick={() => { done(); }}>OK</Button>
-          </div>
-        </div>
+        <CommonDrawer
+          className={cx(styles["new-wrap"])}
+          visible={true}
+          title={title}
+          onOk={done}
+          onCancel={handleCancel}
+          doMount={ ({setLoadingStatus}) => {
+            // this.setState({drawerComponentRef});
+            setDrawerLoadingStatus = setLoadingStatus;
+          }}
+          // saveLoading={this.state.saveLoading}
+          {...props}
+        ></CommonDrawer>
       );
     };
+
+    const series =
+      action === "add"
+        ? [newDashboardConfigTmpl(rawData.type)]
+        : rawData.series;
+    let settings = series[0].card.visualization_settings;
+    let type = rawData.type;
+    if (type === "media") {
+      type = settings.type;
+    }
+    const componentAdapter = {
+      text: {
+        contentKey: "text",
+        render: props => <Text {...props} />,
+        uiSettings: { ...Text.settings },
+      },
+      image: {
+        contentKey: "url",
+        render: props => <Media {...props} ref={this.imageComponentRef} />,
+        uiSettings: { ...Media.settings },
+      },
+      video: {
+        contentKey: "url",
+        render: props => <Media {...props} />,
+        uiSettings: { ...Media.settings },
+      },
+    }[type];
+    const title =
+      (action === "add" ? "Add" : "Edit") +
+      " " +
+      (type[0].toUpperCase() + type.substring(1));
+    
+    // let isPreload = false;
+    // if (!vanillaMode && !window.FIRST_NEW_CARD_SHOW) {
+    //   window.FIRST_NEW_CARD_SHOW = true;
+    //   isPreload = true;
+    //   // return (
+    //   //   <StyleComponent>
+    //   //   <Spin loading={true}></Spin>
+    //   //   </StyleComponent>
+    //   // )
+    // } else {
+    //   window.FIRST_NEW_CARD_SHOW = true;
+    // }
+
+    // if (!vanillaMode && typeof window.FIRST_NEW_CARD_SHOW === 'undefined') {
+    //   window.FIRST_NEW_CARD_SHOW = true;
+    //   return null;
+    // } else if (window.FIRST_NEW_CARD_SHOW === true){
+    //   window.FIRST_NEW_CARD_SHOW = false;
+    //   return null;
+    // } else {
+    //   window.FIRST_NEW_CARD_SHOW = false;
+    // }
+
+
+    if (action === "add") {
+      Object.keys(componentAdapter.uiSettings).forEach(key => {
+        if (componentAdapter.uiSettings[key].default) {
+          settings[key] = componentAdapter.uiSettings[key].default;
+        }
+      });
+    }
+
+    const onUpdateVisualizationSettings = ({ text, url }) => {
+      /// console.info("editing.." + (url || text));
+      settings[componentAdapter.contentKey] = url || text || "";
+    };
+
+
+    const Component = props => componentAdapter.render(props);
 
     const Settings = props => {
       const settingsUiConfigs = componentAdapter.uiSettings;
@@ -202,6 +277,7 @@ export class NewCardEditorSidebar extends React.Component {
         </div>
       );
     };
+
     return (
       <StyleComponent>
         <div
@@ -210,6 +286,7 @@ export class NewCardEditorSidebar extends React.Component {
             styles[vanillaMode ? "vanilla-wrap-content" : "new-wrap-content"],
           )}
         >
+          {/* <Spin loading={isPreload}> */}
           <Settings />
           <Component
             series={series}
@@ -218,6 +295,7 @@ export class NewCardEditorSidebar extends React.Component {
             isEditing={true}
             isSettings={true}
           />
+          {/* </Spin> */}
         </div>
       </StyleComponent>
     );

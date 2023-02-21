@@ -12,7 +12,6 @@ import { AddCardSidebar } from "./add-card-sidebar/AddCardSidebar";
 
 import * as MetabaseAnalytics from "metabase/lib/analytics";
 import { NewCardEditorSidebar } from "./new-card-editor-sidebar/NewCardEditorSidebar";
-import BlankDrawer from "../../web3goLayout/components/BlankDrawer";
 
 DashboardSidebars.propTypes = {
   dashboard: PropTypes.object,
@@ -99,22 +98,22 @@ export function DashboardSidebars({
     },
     [addDashCardToDashboard, dashboard.id],
   );
-  let modalContent;
+
   if (isFullscreen) {
-    modalContent = null;
+    return null;
   }
+
   switch (sidebar.name) {
     // TODO ADD A TEXT
     case SIDEBAR_NAME.addQuestion:
-      modalContent = (
+      return (
         <AddCardSidebar
           initialCollection={dashboard.collection_id}
           onSelect={handleAddCard}
         />
       );
-      break;
     case SIDEBAR_NAME.clickBehavior:
-      modalContent = (
+      return (
         <ClickBehaviorSidebar
           dashboard={dashboard}
           dashcard={clickBehaviorSidebarDashcard}
@@ -130,7 +129,6 @@ export function DashboardSidebars({
           }
         />
       );
-      break;
     case SIDEBAR_NAME.editParameter: {
       const { id: editingParameterId } = editingParameter || {};
       const [[parameter], otherParameters] = _.partition(
@@ -138,42 +136,39 @@ export function DashboardSidebars({
         p => p.id === editingParameterId,
       );
       if (location.pathname.includes('/layout')) {
-        modalContent = null;
-      } else {
-        modalContent = (
-          <ParameterSidebar
-            parameter={parameter}
-            otherParameters={otherParameters}
-            remove={() => {
-              closeSidebar();
-              removeParameter(editingParameterId);
-            }}
-            done={() => closeSidebar()}
-            showAddParameterPopover={showAddParameterPopover}
-            setParameter={setParameter}
-            setName={name => setParameterName(editingParameterId, name)}
-            setDefaultValue={value =>
-              setParameterDefaultValue(editingParameterId, value)
-            }
-            setFilteringParameters={ids =>
-              setParameterFilteringParameters(editingParameterId, ids)
-            }
-          />
-        );
+        return null;
       }
-      break;
+      return (
+        <ParameterSidebar
+          parameter={parameter}
+          otherParameters={otherParameters}
+          remove={() => {
+            closeSidebar();
+            removeParameter(editingParameterId);
+          }}
+          done={() => closeSidebar()}
+          showAddParameterPopover={showAddParameterPopover}
+          setParameter={setParameter}
+          setName={name => setParameterName(editingParameterId, name)}
+          setDefaultValue={value =>
+            setParameterDefaultValue(editingParameterId, value)
+          }
+          setFilteringParameters={ids =>
+            setParameterFilteringParameters(editingParameterId, ids)
+          }
+        />
+      );
     }
     case SIDEBAR_NAME.sharing:
-      modalContent = (
+      return (
         <SharingSidebar
           dashboard={dashboard}
           params={params}
           onCancel={onCancel}
         />
       );
-      break;
     case SIDEBAR_NAME.info:
-      modalContent = (
+      return (
         <aside data-testid="sidebar-right">
           <DashboardInfoSidebar
             dashboard={dashboard}
@@ -182,9 +177,24 @@ export function DashboardSidebars({
           />
         </aside>
       );
-      break;
     case SIDEBAR_NAME.newCardEditor:
-      modalContent = (
+
+      // const { vanillaMode } = sidebar.props.params;
+      // // alert(1);
+
+      // if (!vanillaMode && typeof window.FIRST_NEW_CARD_SHOW === 'undefined') {
+      //   window.FIRST_NEW_CARD_SHOW = true;
+      //   return null;
+      // } 
+      // // else if (window.FIRST_NEW_CARD_SHOW === true){
+      // //   window.FIRST_NEW_CARD_SHOW = false;
+      // //   return null;
+      // // } 
+      // else {
+      //   window.FIRST_NEW_CARD_SHOW = false;
+      // }
+        console.info(JSON.stringify(sidebar), isEditingParameter)
+      return (
         <NewCardEditorSidebar
           sidebar={sidebar}
           // dashcardId={dashboard.collection_id}
@@ -197,20 +207,7 @@ export function DashboardSidebars({
         />
 
       );
-      break;
     default:
-      modalContent = null;
-      break;
+      return null;
   }
-  if (location.pathname.includes('/layout')) {
-    return (
-      <BlankDrawer
-        visible={sidebar.name}
-        onCancel={closeSidebar}
-      >
-        {modalContent}
-      </BlankDrawer>
-    )
-  }
-  return modalContent;
 }

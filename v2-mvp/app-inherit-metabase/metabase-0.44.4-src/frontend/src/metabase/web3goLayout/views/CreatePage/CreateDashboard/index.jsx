@@ -18,10 +18,11 @@ import domtoimage from 'dom-to-image';
 import event from '@/web3goLayout/event';
 import { LayoutDashboardApi } from "../../../../services";
 
-//import { addTextDashCardToDashboard, addImageDashCardToDashboard, addVideoDashCardToDashboard } from "../../../../dashboard/actions";
+import { addTextDashCardToDashboard, addImageDashCardToDashboard, addVideoDashCardToDashboard } from "../../../../dashboard/actions";
 import {
     getDashboardComplete,
 } from "@/dashboard/selectors";
+import { NewCardEditorSidebar } from "../../../../dashboard/components/new-card-editor-sidebar/NewCardEditorSidebar";
 const mapStateToProps = (state, props) => {
     return {
         key: props.location.params,
@@ -65,10 +66,14 @@ class Component extends React.Component {
         this.dashboardNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
         this.AddChartModalRef = React.createRef();
+        this.NewCardEditorRef = React.createRef();
     }
     async componentDidMount() {
         event.on('editChartEvent', this.handleEditChart);
         this.init();
+        // setTimeout(() => {
+        //     this.onAddImageBox({preload: true});
+        // }, 1000)
     }
     componentDidUpdate(prevProps) {
         if (prevProps.params !== this.props.params) {
@@ -240,19 +245,34 @@ class Component extends React.Component {
     onAddTextBox = () => {
         const { dispatch, getState } = this.DashbaordAppRef.store;
         //addTextDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
-        this.DashbaordAppRef.props.openNewCardEditorSidebar({ type: 'text', dashId: getState().dashboard.dashboardId });
+        //this.props.openNewCardEditorSidebar({ type: 'text', dashId: getState().dashboard.dashboardId });
+        const dashboardId = getState().dashboard.dashboardId;
+        this.NewCardEditorRef.doShow({
+            dashboardId,
+            params: {type: 'text', action: 'add', dashboardId,}
+          });
     }
 
-    onAddImageBox = () => {
+    onAddImageBox = ({preload}) => {
         const { dispatch, getState } = this.DashbaordAppRef.store;
-        // addImageDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
-        this.DashbaordAppRef.props.openNewCardEditorSidebar({ type: 'image', dashId: getState().dashboard.dashboardId });
+        // this.props.openNewCardEditorSidebar({ type: 'image', dashId: getState().dashboard.dashboardId, preload });
+        const dashboardId = getState().dashboard.dashboardId;
+        this.NewCardEditorRef.doShow({
+            dashboardId,
+            params: {type: 'image', action: 'add', dashboardId,}
+          });
     }
 
     onAddVideoBox = () => {
         const { dispatch, getState } = this.DashbaordAppRef.store;
         //addVideoDashCardToDashboard({ dashId: getState().dashboard.dashboardId })(dispatch, getState);
-        this.DashbaordAppRef.props.openNewCardEditorSidebar({ type: 'video', dashId: getState().dashboard.dashboardId });
+        // this.props.openNewCardEditorSidebar({ type: 'video', dashId: getState().dashboard.dashboardId });
+        const dashboardId = getState().dashboard.dashboardId;
+        this.NewCardEditorRef.doShow({
+            dashboardId,
+            params: {type: 'video', action: 'add', dashboardId,}
+          });
+
 
     }
 
@@ -476,6 +496,12 @@ class Component extends React.Component {
                     addFilterDrawerIsEdit={addFilterDrawerIsEdit}
                     changeAddFilterDrawerIsEdit={this.changeAddFilterDrawerIsEdit}
                 ></AddFilterDrawer>
+                <NewCardEditorSidebar {...this.props}  ref={(ref) => this.NewCardEditorRef = ref} 
+                    addFilterDrawerVisible={addFilterDrawerVisible}
+                    changeAddFilterDrawerVisible={this.changeAddFilterDrawerVisible}
+                    addFilterDrawerIsEdit={addFilterDrawerIsEdit}
+                    changeAddFilterDrawerIsEdit={this.changeAddFilterDrawerIsEdit}
+                ></NewCardEditorSidebar>
             </div >
         )
     }
