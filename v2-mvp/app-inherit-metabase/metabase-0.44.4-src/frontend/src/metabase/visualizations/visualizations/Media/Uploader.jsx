@@ -8,11 +8,11 @@ import { IconPlus } from "@arco-design/web-react/icon";
 import { LayoutDashboardApi } from "../../../services";
 import PropTypes from "prop-types";
 
-export default function Uploader(props) {
+Uploader.propTypes = {
+  doMount: PropTypes.func,
+};
 
-  Uploader.propTypes = {
-    doMount: PropTypes.func
-  }
+export default function Uploader(props) {
   let [file, setFile] = useState();
   let [fileBlob, setFileBlob] = useState();
   const uploadRef = React.useRef();
@@ -73,20 +73,23 @@ export default function Uploader(props) {
     setFileBlob(null);
     setFile(null);
     props.updateEditStatus(true);
-    props.onUploadSuccess('');
+    props.onUploadSuccess("");
   };
-  const onPreviewImgLoadError = (e)=> {
+  const onPreviewImgLoadError = e => {
     console.info(e);
-  }
+  };
 
   const Component = () => {
-    console.info('.........')
     return fileBlob || props.url ? (
       <>
         <div
           className={cx(styles["upload-wrap"], styles["upload-wrap-preview"])}
         >
-          <img src={file ? fileBlob : props.url} onError={ (e) => e.target.style.display='none' } styles={ {display: ''}} />
+          <img
+            src={file ? fileBlob : props.url}
+            onError={e => (e.target.style.display = "none")}
+            styles={{ display: "" }}
+          />
         </div>
         <div className={cx(styles["upload-preview-actions"])}>
           <a onClick={letsUpload}>Reupload</a> |{" "}
