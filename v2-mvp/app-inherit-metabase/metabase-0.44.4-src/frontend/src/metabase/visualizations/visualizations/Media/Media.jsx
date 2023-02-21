@@ -28,9 +28,14 @@ export default class Media extends Component {
   constructor(props) {
     super(props);
 
+    const { settings } = this.props;
+
     this.state = {
-      url: "",
+      url: settings.url || '',
+      editable: true,
     };
+
+    this.doSyncUploader = null;
   }
 
   static uiName = "Media";
@@ -71,20 +76,34 @@ export default class Media extends Component {
     },
   };
 
+  done = async ({ setSaveStatus }) => {
+    setSaveStatus(true);
+    this.handleTextChange(this.state.url);
+    if (this.doSyncUploader) {
+      await this.doSyncUploader().catch(e => {
+        setSaveStatus(false);
+        console.debug(e);
+        throw e;
+      });
+      return true;
+    }
+    return false;
+  };
+
   handleTextChange(url) {
-    this.setState({url})
+    this.setState({ url });
     this.props.onUpdateVisualizationSettings({ url });
   }
 
-  componentDidMount() {
-    this.setState({url: this.props.settings.url})
-  }
+  // componentDidUpdate() {
+  //   this.setState({ url: this.props.settings.url || "" });
+  // }
 
   preventDragging = e => e.stopPropagation();
   handleImgClick = e => {
-    const candinateEle = e.target.querySelector('img');
+    const candinateEle = e.target.querySelector("img");
     candinateEle && candinateEle.click && candinateEle.click();
-  }
+  };
 
   render() {
     const {
@@ -119,23 +138,18 @@ export default class Media extends Component {
       }, {});
     }
 
-    let content = settings["url"];
-    if (!_.isEmpty(parametersByTag)) {
-      // Temporarily override language to use site language, so that all viewers of a dashboard see parameter values
-      // translated the same way.
-      content = withInstanceLanguage(() =>
-        substitute_tags(content, parametersByTag, siteLocale()),
-      );
-    }
-    const type =( this.props.card ? 
-      this.props.card.visualization_settings.type : this.props.series[0].card.visualization_settings.type) ||
-      this.props.series[0].visualization_settings.type
-      ;
-
-    const onUploadSuccess = (url) => {
+    const type =
+      (this.props.card
+        ? this.props.card.visualization_settings.type
+        : this.props.series[0].card.visualization_settings.type) ||
+      this.props.series[0].visualization_settings.type;
+    const onUploadSuccess = url => {
       this.handleTextChange(url);
-    }
-    
+    };
+
+    const updateEditStatus = status => {
+      this.setState({ editable: status || false });
+    };
     if (type === "image") {
       if (!isSettings) {
         return (
@@ -145,8 +159,8 @@ export default class Media extends Component {
             })}
             onClick={this.handleImgClick}
           >
-            {content ? (
-              <Image src={this.state.url} loader={true} width={'100%'}/>
+            {this.state.url ? (
+              <Image src={settings.url || this.state.url} loader={true} width={"100%"} />
             ) : (
               <></>
             )}
@@ -160,13 +174,28 @@ export default class Media extends Component {
             })}
           >
             <>
-              <Uploader onUploadSuccess={onUploadSuccess} />
-              <div className={cx(styles["split-title"])}>
+              <Uploader
+                onUploadSuccess={onUploadSuccess}
+                url={this.state.url}
+                updateEditStatus={updateEditStatus}
+                doMount={({ doSync }) => {
+                  // this.setState({drawerComponentRef});
+                  this.doSyncUploader = doSync;
+                }}
+              />
+              <div
+                className={cx(styles["split-title"], {
+                  [styles.disabled]: !this.state.editable,
+                })}
+              >
                 Or put your image URL here
               </div>
               <Input
-                className={cx(styles["my-input"])}
+                className={cx(styles["my-input"], {
+                  [styles.disabled]: !this.state.editable,
+                })}
                 value={this.state.url}
+                disabled={!this.state.editable}
                 onChange={e => this.handleTextChange(e.target.value)}
                 placeholder="e.g. https://example.com/image.png"
               />
@@ -183,8 +212,13 @@ export default class Media extends Component {
             })}
             onMouseDown={this.preventDragging}
           >
-            {content ? (
-              <ReactPlayer url={this.state.url} controls={true} width="100%" height="100%" />
+            {this.state.url ? (
+              <ReactPlayer
+                url={settings.url || this.state.url}
+                controls={true}
+                width="100%"
+                height="100%"
+              />
             ) : (
               <></>
             )}
@@ -193,14 +227,17 @@ export default class Media extends Component {
       } else {
         return (
           <div
-            className={cx(styles.Text, {
-              [styles.padded]: !isEditing,
-            }, cx(styles["my-input"]))}
+            className={cx(
+              styles.Text,
+              {
+                [styles.padded]: !isEditing,
+              },
+              cx(styles["my-input"]),
+            )}
           >
             <>
               <textarea
-                fullWidth
-                value={this.state.url}
+                value={settings.url || this.state.url}
                 placeholder="Type or paste video url here, only YouTube videos are supported now, e.g. https://www.youtube.com/watch?v=yL1o7axk1pg"
                 onChange={e => this.handleTextChange(e.target.value)}
               />
