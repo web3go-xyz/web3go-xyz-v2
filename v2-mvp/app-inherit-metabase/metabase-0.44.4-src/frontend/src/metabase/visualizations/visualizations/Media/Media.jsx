@@ -159,7 +159,7 @@ export default class Media extends Component {
             })}
             onClick={this.handleImgClick}
           >
-            {this.state.url ? (
+            {(settings.url || this.state.url) ? (
               <Image src={settings.url || this.state.url} loader={true} width={"100%"} />
             ) : (
               <></>
@@ -212,7 +212,7 @@ export default class Media extends Component {
             })}
             onMouseDown={this.preventDragging}
           >
-            {this.state.url ? (
+            {(settings.url || this.state.url) ? (
               <ReactPlayer
                 url={settings.url || this.state.url}
                 controls={true}
