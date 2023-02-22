@@ -50,7 +50,7 @@ const dashboardId = handleActions(
     },
     [RESET]: { next: state => null },
     [SET_ID_FOR_NEW_DASHBOARD]: {
-      next:  (state, { payload: { newId } }) => {
+      next: (state, { payload: { newId } }) => {
         return newId;
       }
     },
@@ -106,12 +106,12 @@ const dashboards = handleActions(
         if (id === newId) {
           return state;
         }
-        const newState = {...state};
-        const oldData = {...state[id]};
+        const newState = { ...state };
+        const oldData = { ...state[id] };
         delete newState[id];
         oldData.id = newId;
         oldData.name = dashboardName;
-        newState[newId] = newDashboard(oldData, { }, false);
+        newState[newId] = newDashboard(oldData, {}, false);
         return newState;
       },
     },
@@ -321,9 +321,9 @@ const parameterValuesSearchCache = handleActions(
       next: (state, { payload }) =>
         payload
           ? assoc(state, payload.cacheKey, {
-              results: payload.results,
-              has_more_values: payload.has_more_values,
-            })
+            results: payload.results,
+            has_more_values: payload.has_more_values,
+          })
           : state,
     },
     [RESET]: { next: state => ({}) },
@@ -358,8 +358,8 @@ const loadingDashCards = handleActions(
         loadingStatus: state.dashcardIds.length > 0 ? "running" : "idle",
         startTime:
           state.dashcardIds.length > 0 &&
-          // check that performance is defined just in case
-          typeof performance === "object"
+            // check that performance is defined just in case
+            typeof performance === "object"
             ? performance.now()
             : null,
       }),
@@ -408,10 +408,12 @@ const sidebar = handleActions(
       next: () => DEFAULT_SIDEBAR,
     },
     [SET_SIDEBAR]: {
-      next: (state, { payload: { name, props } }) => ({
-        name,
-        props: props || {},
-      }),
+      next: (state, { payload: { name, props } }) => {
+        return {
+          name,
+          props: props || {},
+        }
+      },
     },
     [CLOSE_SIDEBAR]: {
       next: () => DEFAULT_SIDEBAR,

@@ -50,7 +50,7 @@ class Component extends React.Component {
             chartName: 'New Chart',
             datasetList: [],
             refreshFlag: true,
-            ifAdd: true
+            ifAdd: true,
         }
         this.ChartNameInputRef = React.createRef();
 
@@ -221,6 +221,7 @@ class Component extends React.Component {
                         <div className="dml-title">Dataset</div>
                         <div className="search-wrap">
                             <Input
+                                allowClear
                                 onChange={this.changeSearchKey}
                                 prefix={<IconSearch />}
                                 placeholder='Search dataset…'

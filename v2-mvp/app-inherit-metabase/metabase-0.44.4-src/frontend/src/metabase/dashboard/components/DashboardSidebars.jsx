@@ -78,6 +78,7 @@ export function DashboardSidebars({
   setDashboardAttribute,
   saveDashboardAndCards,
 }) {
+  console.log('111', dashboard);
   const handleAddCard = useCallback(
     cardId => {
       addCardToDashboard({
