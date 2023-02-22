@@ -198,10 +198,54 @@ body[arco-theme="dark"] .web3go-dataset-create-page {}
     }
 
     .p-main {
+        height: calc(100vh - 224px);
+        background: #FAFBFC;
+        display: flex;
+
+        &.s-hide {
+            .side-hide-icon {
+                left: 40px;
+                transform: none;
+            }
+
+            .side {
+                transform: translateX(-100%);
+                width: 0;
+
+                .scroll {
+                    padding: 20px 0;
+                }
+
+            }
+        }
+
+        .side-hide-icon {
+            transition: all 0.2s;
+            z-index: 4;
+            width: 16px;
+            position: fixed;
+            left: 308px;
+            top: 240px;
+            transform: rotateY(180deg);
+        }
         .side {
+            flex: none;
+            transform-origin: 0;
+            transition: all 0.2s;
+            background: #FFFFFF;
+            height: 100%;
             width: 268px;
-            padding: 20px;
-            box-sizing: border-box;
+            position: relative;
+
+            &>.scroll {
+                transition: all 0.2s;
+                box-sizing: border-box;
+                padding: 20px;
+                height: 100%;
+                overflow: auto;
+            }
+
+
 
             .search-item {
                 &+.search-item {
@@ -251,7 +295,8 @@ body[arco-theme="dark"] .web3go-dataset-create-page {}
                 padding: 0;
             }
 
-            .dataset-list {
+            .dataset-list,
+            .raw-data-list {
                 .item {
                     padding: 0 16px;
                     height: 40px;
@@ -281,6 +326,10 @@ body[arco-theme="dark"] .web3go-dataset-create-page {}
                     }
                 }
             }
+        }
+
+        .r-main {
+            flex: 1;
         }
     }
 }

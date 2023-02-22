@@ -6,7 +6,10 @@ import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typogr
 import { IconSearch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
 import { push } from "react-router-redux";
 import cx from "classnames";
-import { LayoutDashboardApi } from '@/services'
+import { LayoutDashboardApi, MetabaseApi } from '@/services'
+import event from '@/web3goLayout/event';
+
+import DatasetRightMain from "./DatasetRightMain";
 import {
     getDatabasesList,
 } from "@/query_builder/selectors";
@@ -17,7 +20,7 @@ const mapStateToProps = state => {
         currentUser: state.currentUser,
         isDark: state.app.isDark,
         userData: state.app.userData,
-        // databaseList: state.entities.,
+        databaseList: state.entities.databases,
     }
 };
 const mapDispatchToProps = {
@@ -30,9 +33,10 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            hideSideBar: false,
             tabIndex: '1',
-            ifEditDashboardName: false,
-            dashboardName: 'New dataset',
+            ifEditDatasetName: false,
+            datasetName: 'New dataset',
             tagList: [],
             savedCurrentTagList: [],
             ifEditTag: false,
@@ -40,6 +44,7 @@ class Component extends React.Component {
             allTagList: [],
             searchKey: '',
             datasetList: [],
+            rawDataList: [],
             savedAllTagList: [],
             saveBtnLoading: false,
             postBtnLoading: false,
@@ -47,17 +52,47 @@ class Component extends React.Component {
             isEditing: true,
             options: ['Beijing', 'Shanghai', 'Guangzhou', 'Disabled']
         }
-        this.dashboardNameInputRef = React.createRef();
+        this.datasetNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
+        this.DatasetRightMainRef = React.createRef();
     }
     componentDidMount() {
         // this.getDashboardTags(currentDashboardId);
         // this.getAllTagList();
         this.getDatasetList();
-        this.getAllRawData();
     }
-    getAllRawData = () => {
-
+    componentDidUpdate(prevProp) {
+        if (prevProp.databaseList !== this.props.databaseList) {
+            this.getAllRawData();
+        }
+    }
+    getAllRawData = async () => {
+        const { databaseList } = this.props;
+        const databaserIdList = Object.keys(databaseList);
+        const promiseArr = [];
+        for (const v of databaserIdList) {
+            promiseArr.push(MetabaseApi.db_schemas({ dbId: v }))
+        }
+        const schemasResult = await Promise.all(promiseArr);
+        const promiseArr2 = [];
+        for (const [i, v] of schemasResult.entries()) {
+            for (const sv of v) {
+                promiseArr2.push(MetabaseApi.db_schema_tables({ dbId: databaserIdList[i], schemaName: sv }))
+            }
+        }
+        const tableResults = await Promise.all(promiseArr2);
+        let rawDataList = [];
+        tableResults.forEach(v => {
+            rawDataList = [...rawDataList, ...v]
+        })
+        this.setState({
+            rawDataList
+        });
+    }
+    changeSearchKey = (value) => {
+        this.setState({
+            searchKey: value
+        })
     }
     getDatasetList = () => {
         this.setState({
@@ -86,19 +121,19 @@ class Component extends React.Component {
             });
         });
     }
-    changeDashboardName = (value) => {
+    changeDataset = (value) => {
         this.setState({
-            dashboardName: value
+            datasetName: value
         })
     }
-    handleEditDashboardName = () => {
-        this.setState({ ifEditDashboardName: true }, () => {
-            this.dashboardNameInputRef.current.focus();
+    handleEditDatasetName = () => {
+        this.setState({ ifEditDatasetName: true }, () => {
+            this.datasetNameInputRef.current.focus();
         });
     }
-    finishEditDashboardName = () => {
+    finishEditDatasetName = () => {
         this.setState({
-            ifEditDashboardName: false
+            ifEditDatasetName: false
         })
     }
     handleEditTag = () => {
@@ -170,51 +205,41 @@ class Component extends React.Component {
             })
         }
     }
-    handlePostDashboard = () => {
+    handlePostDashboard = (isDraft) => {
+        if (this.state.saveBtnLoading || this.state.postBtnLoading) {
+            return;
+        }
+        const loadingKey = isDraft ? 'saveBtnLoading' : 'postBtnLoading';
+        // 改了名字，得先触发blur事件再保存
+        setTimeout(async () => {
+            this.setState({
+                [loadingKey]: true
+            });
+            event.emit('addChartSave', this.state.datasetName, async (cardId) => {
 
+            });
+        }, 0);
     }
     changeTab = (key) => {
         this.setState({ tabIndex: key });
     }
+    clickRowDataItem = (v) => {
+        this.DatasetRightMainRef.init(v);
+    }
     clickDatasetItem = (v) => {
-        // const newState = {
-        //     "card": {
-        //         "dataset_query": {
-        //             "database": v.db_id,
-        //             "type": "query",
-        //             "query": {
-        //                 "source-table": v.id
-        //             }
-        //         },
-        //         "visualization_settings": {},
-        //         "display": "table"
-        //     }
-        // };
-        // const url = getURLForCardState(newState, true, {}, undefined);
-        // const urlParsed = parseUrl(url);
-        // const locationDescriptor = {
-        //     pathname: window.location.pathname,
-        //     search: urlParsed.search,
-        //     // hash: encodeURIComponent(urlParsed.hash),
-        //     hash: urlParsed.hash,
-        //     state: newState
-        // };
-        // this.props.replace(locationDescriptor);
-        // this.setState({
-        //     refreshFlag: false
-        // }, () => {
-        //     this.setState({
-        //         refreshFlag: true
-        //     })
-        // });
+        this.DatasetRightMainRef.init(v);
     }
     get formatDatasetList() {
         const { datasetList, searchKey } = this.state;
-        return datasetList.filter(v => v.display_name.includes(searchKey));
+        return datasetList.filter(v => v.display_name.toLowerCase().includes(searchKey.toLowerCase()));
+    }
+    get formatRowDataList() {
+        const { rawDataList, searchKey } = this.state;
+        return rawDataList.filter(v => v.display_name.toLowerCase().includes(searchKey.toLowerCase()));
     }
     render() {
-        console.log('111', this.props);
-        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, allTagList, isEditing, originDashboardDetail, options, collapseLoading } = this.state;
+        const { tagList, datasetName, ifEditDatasetName, ifEditTag, allTagList,
+            isEditing, originDashboardDetail, options, collapseLoading, hideSideBar } = this.state;
         return (
             <div className="web3go-dataset-create-page">
                 <div className="p-top">
@@ -223,12 +248,12 @@ class Component extends React.Component {
                             <img src={require("@/web3goLayout/assets/dashboardCreate/Dashboard-line1.png")} alt="" />
                         </div>
                         <div className="ptl-right">
-                            <div className={cx("title", { edit: ifEditDashboardName })}>
-                                <Input ref={this.dashboardNameInputRef} className="input" type="text" value={dashboardName} onChange={this.changeDashboardName} onBlur={this.finishEditDashboardName} onPressEnter={this.finishEditDashboardName} />
-                                <span className="text">{dashboardName}</span>
-                                {ifEditDashboardName ?
+                            <div className={cx("title", { edit: ifEditDatasetName })}>
+                                <Input ref={this.datasetNameInputRef} className="input" type="text" value={datasetName} onChange={this.changeDataset} onBlur={this.finishEditDatasetName} onPressEnter={this.finishEditDatasetName} />
+                                <span className="text">{datasetName}</span>
+                                {ifEditDatasetName ?
                                     null :
-                                    <img onClick={this.handleEditDashboardName} className="hover-item" src={require("@/web3goLayout/assets/dashboardCreate/edit.png")} alt="" />
+                                    <img onClick={this.handleEditDatasetName} className="hover-item" src={require("@/web3goLayout/assets/dashboardCreate/edit.png")} alt="" />
                                 }
                             </div>
                             <div className="tag-list">
@@ -258,7 +283,7 @@ class Component extends React.Component {
                             <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
                             <Button className="btn" loading={this.state.saveBtnLoading} onClick={() => this.handlePostDashboard(true)}>Save Draft</Button>
                             <Button className="btn" loading={this.state.postBtnLoading} onClick={() => this.handlePostDashboard(false)} type="primary">Post</Button>
-                            <Button disabled className="btn" loading={this.state.postBtnLoading} onClick={() => this.handlePostDashboard(false)} type="primary">Build Dashboard</Button>
+                            <Button disabled className="btn" onClick={() => this.handlePostDashboard(false)} type="primary">Build Dashboard</Button>
                         </div>
                         // <div className="pt-right">
                         //     <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
@@ -274,74 +299,83 @@ class Component extends React.Component {
                         </TabPane>
                     </Tabs>
                 </div>
-                <div className="p-main">
-                    <div className="side">
-                        <div className="search-item">
-                            <Input
-                                allowClear
-                                onChange={this.changeSearchKey}
-                                prefix={<IconSearch />}
-                                placeholder='Search dataset…'
-                            />
-                        </div>
-                        <div className="search-item">
-                            <Select
-                                allowClear
-                                placeholder='All dataset tags'
-                                onChange={(value) => { }}
-                            >
-                                {options.map((option, index) => (
-                                    <Option key={option} value={option}>
-                                        {option}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </div>
-                        <div className="search-item">
-                            <Select
-                                allowClear
-                                placeholder='Created by following creator'
-                                onChange={(value) => { }}
-                            >
-                                {options.map((option, index) => (
-                                    <Option key={option} value={option}>
-                                        {option}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </div>
-                        <div className="search-item switch-wrap">
-                            <span>My favorite</span>
-                            <Switch />
-                        </div>
-                        <Spin loading={collapseLoading} style={{ display: 'block', minHeight: 100 }}>
-                            <Collapse
-                                bordered={false}
-                                defaultActiveKey={['1']}
-                            >
-                                <CollapseItem header='Community datasets' name='1'>
-                                    <div className="dataset-list">
-                                        {this.formatDatasetList.map(v => (
-                                            <div className="item" key={v.id} onClick={() => { this.clickDatasetItem(v) }}>
-                                                <img src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
-                                                <div title={v.display_name} className="text">{v.display_name}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CollapseItem>
-                                <CollapseItem header='Raw data' name='2'>
-                                    <div className="raw-data-list">
-                                        <div className="item">
-
+                <div className={cx("p-main", { 's-hide': hideSideBar ? true : false })}>
+                    <img onClick={() => { this.setState({ hideSideBar: !hideSideBar }) }} className="side-hide-icon hover-item" src={require("@/web3goLayout/assets/dashboardCreate/right_circle.png")} alt="" />
+                    <div className={cx("side")}>
+                        <div className="scroll">
+                            <div className="search-item">
+                                <Input
+                                    allowClear
+                                    onChange={this.changeSearchKey}
+                                    prefix={<IconSearch />}
+                                    placeholder='Search dataset…'
+                                />
+                            </div>
+                            <div className="search-item">
+                                <Select
+                                    allowClear
+                                    placeholder='All dataset tags'
+                                    onChange={(value) => { }}
+                                >
+                                    {options.map((option, index) => (
+                                        <Option key={option} value={option}>
+                                            {option}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </div>
+                            <div className="search-item">
+                                <Select
+                                    allowClear
+                                    placeholder='Created by following creator'
+                                    onChange={(value) => { }}
+                                >
+                                    {options.map((option, index) => (
+                                        <Option key={option} value={option}>
+                                            {option}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </div>
+                            <div className="search-item switch-wrap">
+                                <span>My favorite</span>
+                                <Switch />
+                            </div>
+                            <Spin loading={collapseLoading} style={{ display: 'block', minHeight: 100 }}>
+                                <Collapse
+                                    bordered={false}
+                                    defaultActiveKey={['1']}
+                                >
+                                    <CollapseItem header='Community datasets' name='1'>
+                                        <div className="dataset-list">
+                                            {this.formatDatasetList.map(v => (
+                                                <div className="item" key={v.id} onClick={() => { this.clickDatasetItem(v) }}>
+                                                    <img src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
+                                                    <Tooltip content={v.display_name}>
+                                                        <div className="text">{v.display_name}</div>
+                                                    </Tooltip>
+                                                </div>
+                                            ))}
                                         </div>
-                                    </div>
-                                </CollapseItem>
-
-                            </Collapse>
-                        </Spin>
+                                    </CollapseItem>
+                                    <CollapseItem header='Raw data' name='2'>
+                                        <div className="raw-data-list">
+                                            {this.formatRowDataList.map(v => (
+                                                <div className="item" key={v.id} onClick={() => { this.clickRowDataItem(v) }}>
+                                                    <img src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
+                                                    <Tooltip content={v.display_name}>
+                                                        <div className="text">{v.display_name}</div>
+                                                    </Tooltip>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </CollapseItem>
+                                </Collapse>
+                            </Spin>
+                        </div>
                     </div>
                     <div className="r-main">
-
+                        <DatasetRightMain {...this.props} onRef={(ref) => this.DatasetRightMainRef = ref}></DatasetRightMain>
                     </div>
                 </div>
             </div >

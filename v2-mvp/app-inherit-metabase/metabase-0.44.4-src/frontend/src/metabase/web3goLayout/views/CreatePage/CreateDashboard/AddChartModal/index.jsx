@@ -188,7 +188,7 @@ class Component extends React.Component {
     }
     get formatDatasetList() {
         const { datasetList, searchKey } = this.state;
-        return datasetList.filter(v => v.display_name.includes(searchKey));
+        return datasetList.filter(v => v.display_name.toLowerCase().includes(searchKey.toLowerCase()));
     }
     render() {
         const { chartName, ifEditChartName, visible, refreshFlag, saveChartLoading } = this.state;

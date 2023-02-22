@@ -46,11 +46,12 @@ export default function Notebook({ className, ...props }) {
   return (
     <NotebookRoot className={className}>
       <NotebookSteps {...props} />
-      {hasVisualizeButton && isRunnable && (
+
+      {location.pathname.includes('/layout') ? null : (hasVisualizeButton && isRunnable && (
         <Button medium primary style={{ minWidth: 220 }} onClick={visualize}>
           {t`Visualize`}
         </Button>
-      )}
+      ))}
     </NotebookRoot>
   );
 }

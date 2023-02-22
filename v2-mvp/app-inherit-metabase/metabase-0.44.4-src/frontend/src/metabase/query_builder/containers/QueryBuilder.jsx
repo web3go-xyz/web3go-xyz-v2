@@ -224,6 +224,7 @@ function QueryBuilder(props) {
     showTimelinesForCollection,
     card,
     isLoadingComplete,
+    notebook
   } = props;
 
   const forceUpdate = useForceUpdate();
@@ -303,7 +304,7 @@ function QueryBuilder(props) {
     ],
   );
   useOnMount(() => {
-    initializeQB(location, params);
+    initializeQB(location, params, notebook);
   }, []);
 
   useOnMount(() => {

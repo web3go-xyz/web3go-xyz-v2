@@ -190,15 +190,15 @@ async function handleQBInit(
     location,
     params,
   }: { location: LocationDescriptorObject; params: QueryParams },
+  notebook
 ) {
   dispatch(resetQB());
   dispatch(cancelQuery());
   const queryParams = location.query;
   const cardId = Urls.extractEntityId(location.pathname.includes('/layout') ? params.chartSlug : params.slug);
-  const uiControls: UIControls = getQueryBuilderModeFromLocation(location);
+  const uiControls: UIControls = notebook ? { queryBuilderMode: "notebook" } : getQueryBuilderModeFromLocation(location);
   const { options, serializedCard } = parseHash(location.hash);
   const hasCard = cardId || serializedCard;
-
   if (
     !hasCard &&
     !options.db &&
@@ -302,7 +302,6 @@ async function handleQBInit(
       objectId,
     },
   });
-
   if (uiControls.queryBuilderMode !== "notebook") {
     if (question.canRun()) {
       // Timeout to allow Parameters widget to set parameterValues
@@ -322,10 +321,10 @@ async function handleQBInit(
 }
 
 export const initializeQB =
-  (location: LocationDescriptorObject, params: QueryParams) =>
+  (location: LocationDescriptorObject, params: QueryParams, notebook) =>
     async (dispatch: Dispatch, getState: GetState) => {
       try {
-        await handleQBInit(dispatch, getState, { location, params });
+        await handleQBInit(dispatch, getState, { location, params }, notebook);
       } catch (error) {
         console.warn("initializeQB failed because of an error:", error);
         dispatch(setErrorPage(error));
