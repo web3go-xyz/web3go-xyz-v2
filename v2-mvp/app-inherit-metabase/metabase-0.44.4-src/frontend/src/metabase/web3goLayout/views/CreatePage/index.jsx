@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import './index.less';
 import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Spin, Tabs, Typography, Tooltip } from '@arco-design/web-react';
 import { IconLaunch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
-import { push } from "react-router-redux";
+import { push, replace } from "react-router-redux";
 import cx from "classnames";
 import CreateDataset from './CreateDataset';
 import CreateDashboard from './CreateDashboard';
@@ -24,6 +24,7 @@ const mapStateToProps = state => {
 };
 const mapDispatchToProps = {
     push,
+    replace,
     changePublicSpaceCollectionId
 };
 const FormItem = Form.Item;
@@ -41,11 +42,14 @@ class Component extends React.Component {
         this.setState({
             tabIndex
         });
+        this.props.replace({
+            pathname: this.props.params.dashboardSlug ? `/layout/create/${this.props.params.dashboardSlug}` : '/layout/create',
+        });
     }
     async componentDidMount() {
         // addChart后没关闭弹窗直接刷新，导致参数残留
-        if (this.props.params.chartSlug || this.props.location.hash) {
-            this.props.push({
+        if (!location.pathname.includes('/dataset') && (this.props.params.chartSlug || this.props.location.hash)) {
+            this.props.replace({
                 pathname: '/layout/create',
             });
             return;

@@ -272,6 +272,14 @@ export const getRoutes = store => (
               path="create/question/:chartSlug/:dashboardSlug"
               component={CreatePage}
             />
+            <Route
+              path="create/dataset/:chartSlug"
+              component={CreatePage}
+            />
+            <Route
+              path="create/dataset/:chartSlug/:dashboardSlug"
+              component={CreatePage}
+            />
           </Route>
         </Route>
       </Route>

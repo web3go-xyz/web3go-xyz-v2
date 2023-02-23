@@ -73,18 +73,18 @@ class View extends React.Component {
     this.state = {
       ...DEFAULT_POPOVER_STATE,
     }
-    this.addChartSaveHandler = async (chartName, successFn, failFn) => {
+    this.addChartSaveHandler = async (chartName, successFn, failFn, isDataset) => {
       let { card, originalCard } = this.props;
       if (!card && !this.props.params.chartSlug) {
-        Message.error('Please select dataset first');
+        Message.error('Please select dataset or raw data first');
         if (failFn) {
           failFn();
         }
         return;
       }
-      await this.saveOrCreateQuestion(chartName);
+      await this.saveOrCreateQuestion(chartName, isDataset);
       if (successFn) {
-        successFn(this.props.card.id);
+        successFn(this.props.card.id, this.props.card);
       }
     }
   }
@@ -98,14 +98,14 @@ class View extends React.Component {
   componentWillUnmount() {
     event.off('addChartSave', this.addChartSaveHandler)
   }
-  saveOrCreateQuestion = async (chartName) => {
+  saveOrCreateQuestion = async (chartName, isDataset) => {
     let { card, originalCard } = this.props;
     const saveType = originalCard && !originalCard.dataset && originalCard.can_write
       ? "overwrite"
       : "create"
-
     card = {
       ...card,
+      dataset: isDataset ? true : undefined,
       name: chartName,
       description: null,
       collection_id: this.props.publicSpaceCollectionId,

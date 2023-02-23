@@ -4,19 +4,24 @@ import { connect } from "react-redux";
 import './index.less';
 import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip, Select, Spin, Switch, Collapse } from '@arco-design/web-react';
 import { IconSearch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
-import { push } from "react-router-redux";
+import { push, replace } from "react-router-redux";
 import cx from "classnames";
 import { LayoutDashboardApi, MetabaseApi } from '@/services'
 import event from '@/web3goLayout/event';
+import slugg from "slugg";
 
 import DatasetRightMain from "./DatasetRightMain";
 import {
+    getCard,
+    getQuestion,
     getDatabasesList,
 } from "@/query_builder/selectors";
 const CollapseItem = Collapse.Item;
 const Option = Select.Option;
 const mapStateToProps = state => {
     return {
+        question: getQuestion(state),
+        card: getCard(state),
         currentUser: state.currentUser,
         isDark: state.app.isDark,
         userData: state.app.userData,
@@ -25,6 +30,7 @@ const mapStateToProps = state => {
 };
 const mapDispatchToProps = {
     push,
+    replace
 };
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
@@ -48,7 +54,7 @@ class Component extends React.Component {
             savedAllTagList: [],
             saveBtnLoading: false,
             postBtnLoading: false,
-            collapseLoading: false,
+            rawDataLoading: false,
             isEditing: true,
             options: ['Beijing', 'Shanghai', 'Guangzhou', 'Disabled']
         }
@@ -67,6 +73,9 @@ class Component extends React.Component {
         }
     }
     getAllRawData = async () => {
+        this.setState({
+            rawDataLoading: true
+        });
         const { databaseList } = this.props;
         const databaserIdList = Object.keys(databaseList);
         const promiseArr = [];
@@ -86,7 +95,8 @@ class Component extends React.Component {
             rawDataList = [...rawDataList, ...v]
         })
         this.setState({
-            rawDataList
+            rawDataList,
+            rawDataLoading: false
         });
     }
     changeSearchKey = (value) => {
@@ -215,9 +225,23 @@ class Component extends React.Component {
             this.setState({
                 [loadingKey]: true
             });
-            event.emit('addChartSave', this.state.datasetName, async (cardId) => {
-
-            });
+            event.emit('addChartSave', this.state.datasetName, async (cardId, card) => {
+                this.setState({
+                    chartName: card.name
+                });
+                const slug = slugg(card.name);
+                const suffix = slug ? `${cardId}-${slug}` : cardId;
+                const dashboardSlug = this.props.params.dashboardSlug;
+                if (!dashboardSlug) {
+                    this.props.replace({ pathname: `/layout/create/dataset/${suffix}` });
+                } else {
+                    this.props.replace({ pathname: `/layout/create/dataset/${suffix}/${this.props.params.dashboardSlug}` });
+                }
+                this.DatasetRightMainRef.refreshQueryBuilder();
+                this.setState({
+                    [loadingKey]: false
+                });
+            }, () => { }, true);
         }, 0);
     }
     changeTab = (key) => {
@@ -239,7 +263,7 @@ class Component extends React.Component {
     }
     render() {
         const { tagList, datasetName, ifEditDatasetName, ifEditTag, allTagList,
-            isEditing, originDashboardDetail, options, collapseLoading, hideSideBar } = this.state;
+            isEditing, originDashboardDetail, options, rawDataLoading, hideSideBar } = this.state;
         return (
             <div className="web3go-dataset-create-page">
                 <div className="p-top">
@@ -341,24 +365,24 @@ class Component extends React.Component {
                                 <span>My favorite</span>
                                 <Switch />
                             </div>
-                            <Spin loading={collapseLoading} style={{ display: 'block', minHeight: 100 }}>
-                                <Collapse
-                                    bordered={false}
-                                    defaultActiveKey={['1']}
-                                >
-                                    <CollapseItem header='Community datasets' name='1'>
-                                        <div className="dataset-list">
-                                            {this.formatDatasetList.map(v => (
-                                                <div className="item" key={v.id} onClick={() => { this.clickDatasetItem(v) }}>
-                                                    <img src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
-                                                    <Tooltip content={v.display_name}>
-                                                        <div className="text">{v.display_name}</div>
-                                                    </Tooltip>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </CollapseItem>
-                                    <CollapseItem header='Raw data' name='2'>
+                            <Collapse
+                                bordered={false}
+                                defaultActiveKey={['1']}
+                            >
+                                <CollapseItem header='Community datasets' name='1'>
+                                    <div className="dataset-list">
+                                        {this.formatDatasetList.map(v => (
+                                            <div className="item" key={v.id} onClick={() => { this.clickDatasetItem(v) }}>
+                                                <img src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
+                                                <Tooltip content={v.display_name}>
+                                                    <div className="text">{v.display_name}</div>
+                                                </Tooltip>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CollapseItem>
+                                <CollapseItem header='Raw data' name='2'>
+                                    <Spin loading={rawDataLoading} style={{ display: 'block', minHeight: 100 }}>
                                         <div className="raw-data-list">
                                             {this.formatRowDataList.map(v => (
                                                 <div className="item" key={v.id} onClick={() => { this.clickRowDataItem(v) }}>
@@ -369,9 +393,9 @@ class Component extends React.Component {
                                                 </div>
                                             ))}
                                         </div>
-                                    </CollapseItem>
-                                </Collapse>
-                            </Spin>
+                                    </Spin>
+                                </CollapseItem>
+                            </Collapse>
                         </div>
                     </div>
                     <div className="r-main">

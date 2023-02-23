@@ -103,9 +103,11 @@ function deserializeCard(serializedCard: string) {
 }
 
 async function fetchAndPrepareSavedQuestionCards(cardId: number) {
-  const card = await loadCard(cardId);
+  // const card = await loadCard(cardId);
+  // const originalCard = { ...card };
+  const _card = await loadCard(cardId);
+  const card = location.pathname.includes('/dataset') ? { ..._card, dataset: false } : _card;
   const originalCard = { ...card };
-
   // for showing the "started from" lineage correctly when adding filters/breakouts and when going back and forth
   // in browser history, the original_card_id has to be set for the current card (simply the id of card itself for now)
   card.original_card_id = card.id;
@@ -122,7 +124,6 @@ async function fetchAndPrepareAdHocQuestionCards(deserializedCard: Card) {
   }
 
   const originalCard = await loadCard(deserializedCard.original_card_id);
-
   if (cardIsEquivalent(deserializedCard, originalCard)) {
     return {
       card: { ...originalCard },
@@ -213,7 +214,6 @@ async function handleQBInit(
   const deserializedCard = serializedCard
     ? deserializeCard(serializedCard)
     : null;
-
   const { card, originalCard } = await resolveCards({
     cardId,
     deserializedCard,
