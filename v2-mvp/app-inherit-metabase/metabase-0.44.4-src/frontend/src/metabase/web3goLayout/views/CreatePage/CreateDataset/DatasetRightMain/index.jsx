@@ -36,7 +36,7 @@ class Component extends React.Component {
     componentDidMount() {
         this.props.onRef(this);
     }
-    init(v) {
+    async init(v) {
         const newState = {
             "card": {
                 "dataset_query": {
@@ -59,17 +59,19 @@ class Component extends React.Component {
             hash: urlParsed.hash,
             state: newState
         };
+        await this.hideQueryBuilder();
         this.props.replace(locationDescriptor);
-        this.refreshQueryBuilder();
+        await this.showQueryBuilder();
     }
-    refreshQueryBuilder() {
-        this.setState({
+    hideQueryBuilder = async () => {
+        await this.setState({
             refreshFlag: false
-        }, () => {
-            this.setState({
-                refreshFlag: true
-            })
-        });
+        })
+    }
+    showQueryBuilder = async () => {
+        await this.setState({
+            refreshFlag: true
+        })
     }
     render() {
         const { refreshFlag } = this.state;

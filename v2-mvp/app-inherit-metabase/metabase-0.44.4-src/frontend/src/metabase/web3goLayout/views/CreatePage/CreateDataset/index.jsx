@@ -71,6 +71,11 @@ class Component extends React.Component {
         if (prevProp.databaseList !== this.props.databaseList) {
             this.getAllRawData();
         }
+        if ((prevProp.card !== this.props.card) && this.props.card && this.props.card.name) {
+            this.setState({
+                datasetName: this.props.card.name
+            })
+        }
     }
     getAllRawData = async () => {
         this.setState({
@@ -232,12 +237,13 @@ class Component extends React.Component {
                 const slug = slugg(card.name);
                 const suffix = slug ? `${cardId}-${slug}` : cardId;
                 const dashboardSlug = this.props.params.dashboardSlug;
+                await this.DatasetRightMainRef.hideQueryBuilder();
                 if (!dashboardSlug) {
                     this.props.replace({ pathname: `/layout/create/dataset/${suffix}` });
                 } else {
                     this.props.replace({ pathname: `/layout/create/dataset/${suffix}/${this.props.params.dashboardSlug}` });
                 }
-                this.DatasetRightMainRef.refreshQueryBuilder();
+                await this.DatasetRightMainRef.showQueryBuilder();
                 this.setState({
                     [loadingKey]: false
                 });

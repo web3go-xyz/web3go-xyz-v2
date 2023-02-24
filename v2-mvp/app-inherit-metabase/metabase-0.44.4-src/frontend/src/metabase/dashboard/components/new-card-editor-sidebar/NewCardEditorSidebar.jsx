@@ -43,7 +43,6 @@ export class NewCardEditorSidebar extends React.Component {
   }
 
   render() {
-    console.info(this.props.sidebar, this.state)
     if (!this.props.sidebar && !this.state.sidebar) {
       return null;
     }

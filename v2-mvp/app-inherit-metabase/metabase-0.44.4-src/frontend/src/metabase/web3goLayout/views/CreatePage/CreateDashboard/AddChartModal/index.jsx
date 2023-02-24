@@ -58,7 +58,7 @@ class Component extends React.Component {
     componentDidMount() {
         this.props.onRef(this);
     }
-    init = (chartObj) => {
+    init = async (chartObj) => {
         this.setState({
             visible: true,
             ifAdd: chartObj ? false : true,
@@ -73,17 +73,16 @@ class Component extends React.Component {
             });
             const slug = slugg(name);
             const suffix = slug ? `${chartData.card.id}-${slug}` : chartData.card.id;
+            await this.setState({
+                refreshFlag: false
+            });
             if (chartObj.dashboard.id == '-1') {
                 this.props.replace({ pathname: `/layout/create/question/${suffix}` });
             } else {
                 this.props.replace({ pathname: `/layout/create/question/${suffix}/${this.props.params.dashboardSlug}` });
             }
-            this.setState({
-                refreshFlag: false
-            }, () => {
-                this.setState({
-                    refreshFlag: true
-                })
+            await this.setState({
+                refreshFlag: true
             });
         }
     }
