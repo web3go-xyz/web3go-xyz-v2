@@ -2,5 +2,45 @@ body[arco-theme="dark"] .web3go-dataset-create-right-main {}
 
 .web3go-dataset-create-right-main {
     height: 100%;
+    overflow: auto;
 
+    .query-build {
+        height: 100%;
+    }
+
+    .preview {
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+
+        background: white;
+
+        .preview-header {
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .title {
+                font-weight: 600;
+                font-size: 16px;
+                line-height: 24px;
+                color: #4E5969;
+            }
+
+            .right-btn {
+                display: flex;
+                align-items: center;
+
+                img {
+                    margin-left: 12px;
+                    width: 24px;
+                }
+            }
+        }
+
+        .preview-params {
+            margin-bottom: 16px;
+        }
+    }
 }

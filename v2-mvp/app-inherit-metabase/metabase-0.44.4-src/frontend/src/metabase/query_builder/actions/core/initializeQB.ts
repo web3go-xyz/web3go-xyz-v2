@@ -191,7 +191,7 @@ async function handleQBInit(
     location,
     params,
   }: { location: LocationDescriptorObject; params: QueryParams },
-  notebook
+  notebook,
 ) {
   dispatch(resetQB());
   dispatch(cancelQuery());
@@ -321,10 +321,11 @@ async function handleQBInit(
 }
 
 export const initializeQB =
-  (location: LocationDescriptorObject, params: QueryParams, notebook) =>
+  (location: LocationDescriptorObject, params: QueryParams, notebook, queryBuilderInitSuccess) =>
     async (dispatch: Dispatch, getState: GetState) => {
       try {
         await handleQBInit(dispatch, getState, { location, params }, notebook);
+        queryBuilderInitSuccess();
       } catch (error) {
         console.warn("initializeQB failed because of an error:", error);
         dispatch(setErrorPage(error));

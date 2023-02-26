@@ -13,10 +13,10 @@ export default class NotebookSteps extends React.Component {
     this.state = {
       openSteps: isNew
         ? {
-            "0:filter": true,
-            // "0:aggregate": true,
-            "0:summarize": true,
-          }
+          "0:filter": true,
+          // "0:aggregate": true,
+          "0:summarize": true,
+        }
         : {},
       lastOpenedStep: null,
     };
@@ -44,7 +44,6 @@ export default class NotebookSteps extends React.Component {
     if (!question) {
       return null;
     }
-
     const steps = getQuestionSteps(question, openSteps);
 
     return (

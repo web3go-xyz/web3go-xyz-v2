@@ -268,6 +268,7 @@ class Component extends React.Component {
         return rawDataList.filter(v => v.display_name.toLowerCase().includes(searchKey.toLowerCase()));
     }
     render() {
+        
         const { tagList, datasetName, ifEditDatasetName, ifEditTag, allTagList,
             isEditing, originDashboardDetail, options, rawDataLoading, hideSideBar } = this.state;
         return (
