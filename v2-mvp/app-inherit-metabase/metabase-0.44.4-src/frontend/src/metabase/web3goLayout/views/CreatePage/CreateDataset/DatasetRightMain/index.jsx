@@ -39,7 +39,8 @@ class Component extends React.Component {
         super(props);
         this.state = {
             refreshFlag: true,
-            question: null
+            question: null,
+            previewFullScreen: false
         }
     }
     componentDidMount() {
@@ -110,6 +111,7 @@ class Component extends React.Component {
         });
     }
     render() {
+        const { refreshFlag, previewFullScreen } = this.state;
         let showPreviewComponent = true;
         const preferReducedMotion = isReducedMotionPreferred();
         const springOpts = preferReducedMotion
@@ -119,7 +121,6 @@ class Component extends React.Component {
         if (!this.state.question) {
             showPreviewComponent = false;
         }
-        const { refreshFlag } = this.state;
         return (
             <div className="web3go-dataset-create-right-main">
                 <ResizeBox.Split
@@ -129,7 +130,7 @@ class Component extends React.Component {
                         width: '100%',
                         border: '1px solid #F2F3F5',
                     }}
-                    // icon={require("@/web3goLayout/assets/dashboardCreate/Group46.png")}
+                    icon={<img className="split-icon" src={require("@/web3goLayout/assets/dashboardCreate/Group46.png")} alt="" />}
                     max={0.8}
                     min={0.2}
                     panes={[
@@ -138,12 +139,14 @@ class Component extends React.Component {
                                 refreshFlag ? <QueryBuilder queryBuilderInitSuccess={this.queryBuilderInitSuccess} notebook={true} {...this.props}></QueryBuilder> : null
                             }
                         </div>,
-                        <div className="preview">
+                        <div className={cx("preview", {
+                            'full-screen': previewFullScreen,
+                        })} >
                             <div className="preview-header">
                                 <span className="title">Preview</span>
                                 <div className="right-btn">
                                     <img className="hover-item" src={require("@/web3goLayout/assets/dashboardCreate/Frame2186.png")} alt="" />
-                                    <img className="hover-item" src={require("@/web3goLayout/assets/dashboardCreate/Frame2187.png")} alt="" />
+                                    <img onClick={() => { this.setState({ previewFullScreen: !previewFullScreen }) }} className="hover-item" src={require("@/web3goLayout/assets/dashboardCreate/Frame2187.png")} alt="" />
                                 </div>
 
                             </div>

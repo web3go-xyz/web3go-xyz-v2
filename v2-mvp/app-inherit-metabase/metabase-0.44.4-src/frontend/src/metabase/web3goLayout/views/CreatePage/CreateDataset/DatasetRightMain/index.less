@@ -8,12 +8,28 @@ body[arco-theme="dark"] .web3go-dataset-create-right-main {}
         height: 100%;
     }
 
+    .split-icon {
+        width: 52px;
+        position: relative;
+        display: block;
+        pointer-events: none;
+        user-select: none;
+    }
+
     .preview {
         height: 100%;
         padding: 20px;
         box-sizing: border-box;
-
         background: white;
+
+        &.full-screen {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 99;
+        }
 
         .preview-header {
             margin-bottom: 16px;

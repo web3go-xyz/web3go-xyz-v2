@@ -325,7 +325,9 @@ export const initializeQB =
     async (dispatch: Dispatch, getState: GetState) => {
       try {
         await handleQBInit(dispatch, getState, { location, params }, notebook);
-        queryBuilderInitSuccess();
+        if (queryBuilderInitSuccess) {
+          queryBuilderInitSuccess();
+        }
       } catch (error) {
         console.warn("initializeQB failed because of an error:", error);
         dispatch(setErrorPage(error));
