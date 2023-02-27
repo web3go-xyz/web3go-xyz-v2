@@ -2,7 +2,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip, Select, Spin, Switch, Collapse, Tag } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip, Select, Spin, Switch, Collapse, Tag, InputNumber } from '@arco-design/web-react';
 import { push, replace } from "react-router-redux";
 import { IconSync } from '@arco-design/web-react/icon';
 import QueryBuilder from "metabase/query_builder/containers/QueryBuilder";
@@ -40,7 +40,9 @@ class Component extends React.Component {
         this.state = {
             refreshFlag: true,
             question: null,
-            previewFullScreen: false
+            previewFullScreen: false,
+            resizeDirection: 'vertical',
+            previewLimit: 10
         }
     }
     componentDidMount() {
@@ -91,7 +93,7 @@ class Component extends React.Component {
     getPreviewQuestion(step) {
         const query = step.previewQuery;
         return Question.create()
-            .setQuery(query.limit() < 10 ? query : query.updateLimit(10))
+            .setQuery(query.limit() < this.state.previewLimit ? query : query.updateLimit(this.state.previewLimit))
             .setDisplay("table")
             .setSettings({ "table.pivot": false });
     }
@@ -111,7 +113,7 @@ class Component extends React.Component {
         });
     }
     render() {
-        const { refreshFlag, previewFullScreen } = this.state;
+        const { refreshFlag, previewFullScreen, resizeDirection, previewLimit } = this.state;
         let showPreviewComponent = true;
         const preferReducedMotion = isReducedMotionPreferred();
         const springOpts = preferReducedMotion
@@ -124,13 +126,13 @@ class Component extends React.Component {
         return (
             <div className="web3go-dataset-create-right-main">
                 <ResizeBox.Split
-                    direction='vertical'
+                    direction={resizeDirection}
                     style={{
                         height: '100%',
                         width: '100%',
                         border: '1px solid #F2F3F5',
                     }}
-                    icon={<img className="split-icon" src={require("@/web3goLayout/assets/dashboardCreate/Group46.png")} alt="" />}
+                    icon={<img className="split-icon" style={{ transform: resizeDirection == 'horizontal' ? 'rotate(90deg)' : 'initial' }} src={require("@/web3goLayout/assets/dashboardCreate/Group46.png")} alt="" />}
                     max={0.8}
                     min={0.2}
                     panes={[
@@ -145,45 +147,54 @@ class Component extends React.Component {
                             <div className="preview-header">
                                 <span className="title">Preview</span>
                                 <div className="right-btn">
-                                    <img className="hover-item" src={require("@/web3goLayout/assets/dashboardCreate/Frame2186.png")} alt="" />
+                                    <img onClick={() => { this.setState({ resizeDirection: resizeDirection == 'horizontal' ? 'vertical' : 'horizontal' }) }} className="hover-item" src={resizeDirection == 'horizontal' ? require("@/web3goLayout/assets/dashboardCreate/Frame21.png") : require("@/web3goLayout/assets/dashboardCreate/Frame2186.png")} alt="" />
                                     <img onClick={() => { this.setState({ previewFullScreen: !previewFullScreen }) }} className="hover-item" src={require("@/web3goLayout/assets/dashboardCreate/Frame2187.png")} alt="" />
                                 </div>
 
                             </div>
-                            <div className="preview-params">
-                                <Button type="primary" onClick={() => { this.refresh() }}>
-                                    <IconSync style={{ fontSize: 16 }} />
-                                    <span>Refresh</span>
-                                </Button>
-                            </div>
+
                             {showPreviewComponent ? (
-                                <QuestionResultLoader question={this.state.question}>
-                                    {({ rawSeries, result }) => (
-                                        <Motion
-                                            defaultStyle={{ height: 36 }}
-                                            style={{
-                                                height: spring(this.getPreviewHeightForResult(result), springOpts),
-                                            }}
-                                        >
-                                            {({ height }) => {
-                                                const targetHeight = this.getPreviewHeightForResult(result);
-                                                const snapHeight =
-                                                    height > targetHeight / 2 ? targetHeight : 0;
-                                                const minHeight = preferReducedMotion ? snapHeight : height;
-                                                return (
-                                                    <Visualization
-                                                        rawSeries={rawSeries}
-                                                        error={result && result.error}
-                                                        className={cx("bordered shadowed rounded bg-white", {
-                                                            p2: result && result.error,
-                                                        })}
-                                                        style={{ minHeight }}
-                                                    />
-                                                );
-                                            }}
-                                        </Motion>
-                                    )}
-                                </QuestionResultLoader>) : null}
+                                <div>
+                                    <div className="preview-params">
+                                        <div className="limit">
+                                            <div className="prefix">Show</div>
+                                            <InputNumber value={previewLimit} onChange={(value) => { this.setState({ previewLimit: value }) }} style={{ width: 117 }} />
+                                            <div className="suffix">rows</div>
+                                        </div>
+                                        <Button type="primary" onClick={() => { this.refresh() }}>
+                                            <IconSync style={{ fontSize: 16 }} />
+                                            <span>Refresh</span>
+                                        </Button>
+                                    </div>
+                                    <QuestionResultLoader question={this.state.question}>
+                                        {({ rawSeries, result }) => (
+                                            <Motion
+                                                defaultStyle={{ height: 36 }}
+                                                style={{
+                                                    height: spring(this.getPreviewHeightForResult(result), springOpts),
+                                                }}
+                                            >
+                                                {({ height }) => {
+                                                    const targetHeight = this.getPreviewHeightForResult(result);
+                                                    const snapHeight =
+                                                        height > targetHeight / 2 ? targetHeight : 0;
+                                                    const minHeight = preferReducedMotion ? snapHeight : height;
+                                                    return (
+                                                        <Visualization
+                                                            rawSeries={rawSeries}
+                                                            error={result && result.error}
+                                                            className={cx("bordered shadowed rounded bg-white", {
+                                                                p2: result && result.error,
+                                                            })}
+                                                            style={{ minHeight }}
+                                                        />
+                                                    );
+                                                }}
+                                            </Motion>
+                                        )}
+                                    </QuestionResultLoader>
+                                </div>
+                            ) : <div className="none-wrap">Here's where your results will appear</div>}
                         </div>,
                     ]}
                 />

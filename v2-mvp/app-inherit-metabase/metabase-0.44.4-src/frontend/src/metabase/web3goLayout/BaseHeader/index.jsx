@@ -191,7 +191,14 @@ class Component extends React.Component {
                                 <img className="light" src={require('@/web3goLayout/assets/layout/light.png')} alt="" />}
                         </div>
                         <Link
-                            to="/layout/create"
+                            to={
+                                {
+                                    pathname: "/layout/create",
+                                    state: {
+                                        refresh: true
+                                    }
+                                }
+                            }
                         >
                             <Button className="btn" type='primary'>Create</Button>
                         </Link>

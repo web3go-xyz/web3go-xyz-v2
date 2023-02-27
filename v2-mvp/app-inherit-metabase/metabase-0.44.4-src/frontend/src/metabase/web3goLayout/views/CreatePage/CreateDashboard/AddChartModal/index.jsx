@@ -175,6 +175,7 @@ class Component extends React.Component {
     handleCancel = () => {
         this.setState({
             visible: false,
+            saveChartLoading: false,
             datasetList: []
         });
         this.props.replace({

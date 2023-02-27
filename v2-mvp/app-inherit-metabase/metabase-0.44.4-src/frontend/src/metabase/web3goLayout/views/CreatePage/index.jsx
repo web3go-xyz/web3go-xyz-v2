@@ -35,6 +35,7 @@ class Component extends React.Component {
         super(props);
         this.state = {
             tabIndex: 0,
+            refreshFlag: true
         }
         this.ShareModalRef = React.createRef();
     }
@@ -64,11 +65,19 @@ class Component extends React.Component {
         // const collectionList = await CollectionsApi.list();
         // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
         // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
-
-
+    }
+    async componentDidUpdate(prevProps) {
+        // 处理在create页面再次点击create， 刷新页面
+        if ((this.props.location !== prevProps.location) && this.props.location.state && this.props.location.state.refresh) {
+            await this.setState({ refreshFlag: false, tabIndex: 0 });
+            this.props.replace({
+                pathname: '/layout/create',
+            });
+            await this.setState({ refreshFlag: true });
+        }
     }
     render() {
-        if (!this.props.publicSpaceCollectionId) {
+        if (!this.props.publicSpaceCollectionId || !this.state.refreshFlag) {
             return <Spin style={
                 {
                     display: 'block', minHeight: 100, display: 'flex',
