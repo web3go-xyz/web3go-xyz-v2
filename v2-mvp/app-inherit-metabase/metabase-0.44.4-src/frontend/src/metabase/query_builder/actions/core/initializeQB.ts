@@ -210,7 +210,6 @@ async function handleQBInit(
     // dispatch(redirectToNewQuestionFlow());
     return;
   }
-
   const deserializedCard = serializedCard
     ? deserializeCard(serializedCard)
     : null;
@@ -256,7 +255,6 @@ async function handleQBInit(
   if (isSavedCard(card)) {
     dispatch(fetchAlertsForQuestion(card.id));
   }
-
   await dispatch(loadMetadataForCard(card));
   const metadata = getMetadata(getState());
 

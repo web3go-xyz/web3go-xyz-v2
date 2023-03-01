@@ -10,14 +10,21 @@ import { getQuestionSteps } from "@/query_builder/components/notebook/lib/steps"
 import {
     getURLForCardState,
 } from "@/query_builder/utils";
+import { loadCard } from "metabase/lib/card";
+
 import cx from "classnames";
 import { isReducedMotionPreferred } from "metabase/lib/dom";
 import { parse as parseUrl } from "url";
 import QuestionResultLoader from "metabase/containers/QuestionResultLoader";
 import Visualization from "metabase/visualizations/components/Visualization";
+import NewNativeQueryEditor from "@/query_builder/components/NewNativeQueryEditor";
 import Question from "metabase-lib/lib/Question";
 import { Motion, spring } from "react-motion";
 import { ResizeBox } from '@arco-design/web-react';
+import QueryValidationError from "metabase/query_builder/components/QueryValidationError";
+import QueryVisualization from "@/query_builder/components/QueryVisualization";
+import { loadMetadataForCard, resetQB } from "@/query_builder/actions/core/core";
+
 const CollapseItem = Collapse.Item;
 const Option = Select.Option;
 const mapStateToProps = state => {
@@ -29,6 +36,7 @@ const mapStateToProps = state => {
     }
 };
 const mapDispatchToProps = {
+    loadMetadataForCard,
     push,
     replace
 };
@@ -38,6 +46,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            splitSize: 0.5,
             refreshFlag: true,
             question: null,
             previewFullScreen: false,
@@ -48,11 +57,44 @@ class Component extends React.Component {
     componentDidMount() {
         this.props.onRef(this);
     }
+    componentDidUpdate(prevProps) {
+        if (prevProps.tabIndex !== this.props.tabIndex) {
+            this.setState({
+                splitSize: 0.5,
+                question: null
+            });
+            this.props.setIsNativeEditorOpen(true);
+        }
+    }
     getPreviewHeightForResult(result) {
         const rowCount = result ? result.data.rows.length : 1;
         return rowCount * 36 + 36 + 2;
     }
+    previewDatasetInSqlMode = async (v) => {
+        const card = {
+            "dataset_query": {
+                "database": v.db_id,
+                "type": "query",
+                "query": {
+                    "source-table": v.id
+                }
+            },
+            "visualization_settings": {},
+            "display": "table"
+        };
+        await this.props.loadMetadataForCard(card);
+        const metadata = this.props.metadata;
+        let question = new Question(card, metadata);
+        this.setState({
+            question,
+        });
+        console.log('111', question);
+    }
     async init(v) {
+        if (this.props.tabIndex == '2') {
+            this.previewDatasetInSqlMode(v);
+            return;
+        }
         const newState = {
             "card": {
                 "dataset_query": {
@@ -107,13 +149,31 @@ class Component extends React.Component {
         }
         const steps = getQuestionSteps(question);
         const step = steps[steps.length - 1];
+        if (!step) {
+            return;
+        }
         const previewQuestion = this.getPreviewQuestion(step);
         this.setState({
             question: previewQuestion,
         });
     }
+    executeSql = () => {
+        const { question } = this.props;
+        if (!question) {
+            return;
+        }
+        this.setState({
+            question,
+        });
+    }
+
     render() {
-        const { refreshFlag, previewFullScreen, resizeDirection, previewLimit } = this.state;
+        const { refreshFlag, previewFullScreen, resizeDirection, previewLimit, splitSize } = this.state;
+        const {
+            query,
+            mode,
+            isNativeEditorOpen
+        } = this.props;
         let showPreviewComponent = true;
         const preferReducedMotion = isReducedMotionPreferred();
         const springOpts = preferReducedMotion
@@ -123,6 +183,9 @@ class Component extends React.Component {
         if (!this.state.question) {
             showPreviewComponent = false;
         }
+
+        const queryMode = mode && mode.queryMode();
+        const validationError = !query ? true : _.first(query.validate?.());
         return (
             <div className="web3go-dataset-create-right-main">
                 <ResizeBox.Split
@@ -133,68 +196,120 @@ class Component extends React.Component {
                         border: '1px solid #F2F3F5',
                     }}
                     icon={<img className="split-icon" style={{ transform: resizeDirection == 'horizontal' ? 'rotate(90deg)' : 'initial' }} src={require("@/web3goLayout/assets/dashboardCreate/Group46.png")} alt="" />}
-                    max={0.8}
-                    min={0.2}
+                    size={this.props.tabIndex == '2' && !isNativeEditorOpen ? '48px' : splitSize}
+                    disabled={this.props.tabIndex == '2' && !isNativeEditorOpen}
+                    onMoving={(e, size) => {
+                        this.setState({ splitSize: size });
+                    }}
                     panes={[
-                        <div className="query-build">
-                            {
-                                refreshFlag ? <QueryBuilder queryBuilderInitSuccess={this.queryBuilderInitSuccess} notebook={true} {...this.props}></QueryBuilder> : null
-                            }
-                        </div>,
+                        this.props.tabIndex == '1' ? (
+                            <div className="query-build">
+                                {
+                                    refreshFlag ? <QueryBuilder queryBuilderInitSuccess={this.queryBuilderInitSuccess} notebook={true} {...this.props}></QueryBuilder> : null
+                                }
+                            </div>
+                        ) : (
+                            <div className={cx("query-build sql", !isNativeEditorOpen ? 'editor-hide' : '')} >
+                                <QueryBuilder executeSql={this.executeSql} sqlEditor={true} {...this.props}></QueryBuilder>
+                            </div>
+                        ),
                         <div className={cx("preview", {
                             'full-screen': previewFullScreen,
                         })} >
                             <div className="preview-header">
                                 <span className="title">Preview</span>
                                 <div className="right-btn">
-                                    <img onClick={() => { this.setState({ resizeDirection: resizeDirection == 'horizontal' ? 'vertical' : 'horizontal' }) }} className="hover-item" src={resizeDirection == 'horizontal' ? require("@/web3goLayout/assets/dashboardCreate/Frame21.png") : require("@/web3goLayout/assets/dashboardCreate/Frame2186.png")} alt="" />
+                                    {
+                                        previewFullScreen ? null : <img onClick={() => { this.setState({ resizeDirection: resizeDirection == 'horizontal' ? 'vertical' : 'horizontal' }) }} className="hover-item" src={resizeDirection == 'horizontal' ? require("@/web3goLayout/assets/dashboardCreate/Frame21.png") : require("@/web3goLayout/assets/dashboardCreate/Frame2186.png")} alt="" />
+                                    }
+
                                     <img onClick={() => { this.setState({ previewFullScreen: !previewFullScreen }) }} className="hover-item" src={require("@/web3goLayout/assets/dashboardCreate/Frame2187.png")} alt="" />
                                 </div>
 
                             </div>
-
-                            {showPreviewComponent ? (
-                                <div>
-                                    <div className="preview-params">
-                                        <div className="limit">
-                                            <div className="prefix">Show</div>
-                                            <InputNumber value={previewLimit} onChange={(value) => { this.setState({ previewLimit: value }) }} style={{ width: 117 }} />
-                                            <div className="suffix">rows</div>
+                            {this.props.tabIndex == '1' ? (
+                                showPreviewComponent ? (
+                                    <div>
+                                        <div className="preview-params">
+                                            <div className="limit">
+                                                <div className="prefix">Show</div>
+                                                <InputNumber value={previewLimit} onChange={(value) => { this.setState({ previewLimit: value }) }} style={{ width: 117 }} />
+                                                <div className="suffix">rows</div>
+                                            </div>
+                                            <Button type="primary" onClick={() => { this.refresh() }}>
+                                                <IconSync style={{ fontSize: 16 }} />
+                                                <span>Refresh</span>
+                                            </Button>
                                         </div>
-                                        <Button type="primary" onClick={() => { this.refresh() }}>
-                                            <IconSync style={{ fontSize: 16 }} />
-                                            <span>Refresh</span>
-                                        </Button>
+                                        <QuestionResultLoader question={this.state.question}>
+                                            {({ rawSeries, result }) => (
+                                                <Motion
+                                                    defaultStyle={{ height: 36 }}
+                                                    style={{
+                                                        height: spring(this.getPreviewHeightForResult(result), springOpts),
+                                                    }}
+                                                >
+                                                    {({ height }) => {
+                                                        const targetHeight = this.getPreviewHeightForResult(result);
+                                                        const snapHeight =
+                                                            height > targetHeight / 2 ? targetHeight : 0;
+                                                        const minHeight = preferReducedMotion ? snapHeight : height;
+                                                        return (
+                                                            <Visualization
+                                                                rawSeries={rawSeries}
+                                                                error={result && result.error}
+                                                                className={cx("bordered shadowed rounded bg-white", {
+                                                                    p2: result && result.error,
+                                                                })}
+                                                                style={{ minHeight }}
+                                                            />
+                                                        );
+                                                    }}
+                                                </Motion>
+                                            )}
+                                        </QuestionResultLoader>
                                     </div>
-                                    <QuestionResultLoader question={this.state.question}>
-                                        {({ rawSeries, result }) => (
-                                            <Motion
-                                                defaultStyle={{ height: 36 }}
-                                                style={{
-                                                    height: spring(this.getPreviewHeightForResult(result), springOpts),
-                                                }}
-                                            >
-                                                {({ height }) => {
-                                                    const targetHeight = this.getPreviewHeightForResult(result);
-                                                    const snapHeight =
-                                                        height > targetHeight / 2 ? targetHeight : 0;
-                                                    const minHeight = preferReducedMotion ? snapHeight : height;
-                                                    return (
-                                                        <Visualization
-                                                            rawSeries={rawSeries}
-                                                            error={result && result.error}
-                                                            className={cx("bordered shadowed rounded bg-white", {
-                                                                p2: result && result.error,
-                                                            })}
-                                                            style={{ minHeight }}
-                                                        />
-                                                    );
-                                                }}
-                                            </Motion>
-                                        )}
-                                    </QuestionResultLoader>
-                                </div>
-                            ) : <div className="none-wrap">Here's where your results will appear</div>}
+                                ) : <div className="none-wrap">The data you have selected will be presented here</div>
+                            ) : (
+                                showPreviewComponent ? (
+                                    <div style={{ height: '100%', width: '100%', position: 'relative' }}>
+                                        {
+                                            validationError ? (
+                                                <QueryValidationError error={validationError} />
+                                            ) : (
+                                                <QuestionResultLoader question={this.state.question}>
+                                                    {({ rawSeries, result }) => (
+                                                        <Motion
+                                                            defaultStyle={{ height: 36 }}
+                                                            style={{
+                                                                height: spring(this.getPreviewHeightForResult(result), springOpts),
+                                                            }}
+                                                        >
+                                                            {({ height }) => {
+                                                                const targetHeight = this.getPreviewHeightForResult(result);
+                                                                const snapHeight =
+                                                                    height > targetHeight / 2 ? targetHeight : 0;
+                                                                const minHeight = preferReducedMotion ? snapHeight : height;
+                                                                return (
+                                                                    <Visualization
+                                                                        rawSeries={rawSeries}
+                                                                        error={result && result.error}
+                                                                        className={cx("bordered shadowed rounded bg-white", {
+                                                                            p2: result && result.error,
+                                                                        })}
+                                                                        style={{ minHeight }}
+                                                                    />
+                                                                );
+                                                            }}
+                                                        </Motion>
+                                                    )}
+                                                </QuestionResultLoader>
+                                            )
+                                        }
+                                    </div>
+                                ) : <div className="none-wrap">Here's where your results will appear</div>
+                            )}
+
                         </div>,
                     ]}
                 />

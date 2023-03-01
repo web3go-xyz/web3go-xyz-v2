@@ -8,20 +8,45 @@ import { push, replace } from "react-router-redux";
 import cx from "classnames";
 import { LayoutDashboardApi, MetabaseApi } from '@/services'
 import event from '@/web3goLayout/event';
+import { getMetadata } from "metabase/selectors/metadata";
 import slugg from "slugg";
+import * as query_builderActions from "@/query_builder/actions";
 
 import DatasetRightMain from "./DatasetRightMain";
 import {
     getCard,
+    getQuery,
     getQuestion,
-    getDatabasesList,
+    getMode,
+    getParameterValues,
+    getFirstQueryResult,
+    getIsObjectDetail,
+    getIsNativeEditorOpen,
+    getIsResultDirty,
+    getIsDirty,
+    getRawSeries,
+    getVisibleTimelineEvents,
+    getSelectedTimelineEventIds,
 } from "@/query_builder/selectors";
 const CollapseItem = Collapse.Item;
 const Option = Select.Option;
 const mapStateToProps = state => {
     return {
+        ...state.qb.uiControls,
+        metadata: getMetadata(state),
+        isDirty: getIsDirty(state),
+        timelineEvents: getVisibleTimelineEvents(state),
+        selectedTimelineEventIds: getSelectedTimelineEventIds(state),
+        rawSeries: getRawSeries(state),
         question: getQuestion(state),
+        parameterValues: getParameterValues(state),
         card: getCard(state),
+        query: getQuery(state),
+        mode: getMode(state),
+        result: getFirstQueryResult(state),
+        isObjectDetail: getIsObjectDetail(state),
+        isNativeEditorOpen: getIsNativeEditorOpen(state),
+        isResultDirty: getIsResultDirty(state),
         currentUser: state.currentUser,
         isDark: state.app.isDark,
         userData: state.app.userData,
@@ -29,6 +54,7 @@ const mapStateToProps = state => {
     }
 };
 const mapDispatchToProps = {
+    ...query_builderActions,
     push,
     replace
 };
@@ -56,6 +82,7 @@ class Component extends React.Component {
             postBtnLoading: false,
             rawDataLoading: false,
             isEditing: true,
+            alreadyInitRawData: false,
             options: ['Beijing', 'Shanghai', 'Guangzhou', 'Disabled']
         }
         this.datasetNameInputRef = React.createRef();
@@ -69,7 +96,9 @@ class Component extends React.Component {
     }
     componentDidUpdate(prevProp) {
         if (prevProp.databaseList !== this.props.databaseList) {
-            this.getAllRawData();
+            if (!this.state.alreadyInitRawData) {
+                this.getAllRawData();
+            }
         }
         if ((prevProp.card !== this.props.card) && this.props.card && this.props.card.name) {
             this.setState({
@@ -101,7 +130,8 @@ class Component extends React.Component {
         })
         this.setState({
             rawDataList,
-            rawDataLoading: false
+            rawDataLoading: false,
+            alreadyInitRawData: true
         });
     }
     changeSearchKey = (value) => {
@@ -250,7 +280,18 @@ class Component extends React.Component {
             }, () => { }, true);
         }, 0);
     }
-    changeTab = (key) => {
+    changeTab = async (key) => {
+        if (key == 2) {
+            await this.props.replace({
+                pathname: location.pathname,
+                hash: '#eyJkYXRhc2V0X3F1ZXJ5Ijp7ImRhdGFiYXNlIjpudWxsLCJuYXRpdmUiOnsicXVlcnkiOiIiLCJ0ZW1wbGF0ZS10YWdzIjp7fX0sInR5cGUiOiJuYXRpdmUifSwiZGlzcGxheSI6InRhYmxlIiwicGFyYW1ldGVycyI6W10sInZpc3VhbGl6YXRpb25fc2V0dGluZ3MiOnt9fQ==',
+            })
+        } else {
+            await this.props.replace({
+                pathname: location.pathname,
+                hash: '',
+            })
+        }
         this.setState({ tabIndex: key });
     }
     clickRowDataItem = (v) => {
@@ -268,9 +309,9 @@ class Component extends React.Component {
         return rawDataList.filter(v => v.display_name.toLowerCase().includes(searchKey.toLowerCase()));
     }
     render() {
-        
+
         const { tagList, datasetName, ifEditDatasetName, ifEditTag, allTagList,
-            isEditing, originDashboardDetail, options, rawDataLoading, hideSideBar } = this.state;
+            isEditing, originDashboardDetail, options, rawDataLoading, hideSideBar, tabIndex } = this.state;
         return (
             <div className="web3go-dataset-create-page">
                 <div className="p-top">
@@ -332,7 +373,7 @@ class Component extends React.Component {
                 </div>
                 <div className={cx("p-main", { 's-hide': hideSideBar ? true : false })}>
                     <img onClick={() => { this.setState({ hideSideBar: !hideSideBar }) }} className="side-hide-icon hover-item" src={require("@/web3goLayout/assets/dashboardCreate/right_circle.png")} alt="" />
-                    <div className={cx("side")}>
+                    <div className={cx("side", tabIndex == '2' ? 'sql' : '')}>
                         <div className="scroll">
                             <div className="search-item">
                                 <Input
@@ -380,10 +421,11 @@ class Component extends React.Component {
                                     <div className="dataset-list">
                                         {this.formatDatasetList.map(v => (
                                             <div className="item" key={v.id} onClick={() => { this.clickDatasetItem(v) }}>
-                                                <img src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
+                                                <img className="dataset-icon" src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
                                                 <Tooltip content={v.display_name}>
                                                     <div className="text">{v.display_name}</div>
                                                 </Tooltip>
+                                                <img className="view-icon" src={require("@/web3goLayout/assets/dashboardCreate/view.png")} alt="" />
                                             </div>
                                         ))}
                                     </div>
@@ -393,10 +435,11 @@ class Component extends React.Component {
                                         <div className="raw-data-list">
                                             {this.formatRowDataList.map(v => (
                                                 <div className="item" key={v.id} onClick={() => { this.clickRowDataItem(v) }}>
-                                                    <img src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
+                                                    <img className="dataset-icon" src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
                                                     <Tooltip content={v.display_name}>
                                                         <div className="text">{v.display_name}</div>
                                                     </Tooltip>
+                                                    <img className="view-icon" src={require("@/web3goLayout/assets/dashboardCreate/view.png")} alt="" />
                                                 </div>
                                             ))}
                                         </div>
@@ -406,7 +449,7 @@ class Component extends React.Component {
                         </div>
                     </div>
                     <div className="r-main">
-                        <DatasetRightMain {...this.props} onRef={(ref) => this.DatasetRightMainRef = ref}></DatasetRightMain>
+                        <DatasetRightMain {...this.props} tabIndex={tabIndex} onRef={(ref) => this.DatasetRightMainRef = ref}></DatasetRightMain>
                     </div>
                 </div>
             </div >

@@ -16,11 +16,20 @@ import "ace/snippets/pgsql";
 import "ace/snippets/sqlserver";
 import "ace/snippets/json";
 import _ from "underscore";
+import { PLUGIN_SELECTORS } from "metabase/plugins";
 import { ResizableBox } from "react-resizable";
-
+import { connect } from "react-redux";
+import { getMetadata } from "metabase/selectors/metadata";
+import {
+  getUser,
+  getUserIsAdmin,
+  canManageSubscriptions,
+} from "metabase/selectors/user";
+import Collections from "metabase/entities/collections";
 import { isEventOverElement } from "metabase/lib/dom";
 import { SQLBehaviour } from "metabase/lib/ace/sql_behaviour";
 import ExplicitSize from "metabase/components/ExplicitSize";
+import { push } from "react-router-redux";
 
 import Snippets from "metabase/entities/snippets";
 import SnippetCollections from "metabase/entities/snippet-collections";
@@ -36,12 +45,162 @@ import {
   getEditorLineHeight,
   getMaxAutoSizeLines,
 } from "./NativeQueryEditor/utils";
-
+import {
+  getCard,
+  getDatabasesList,
+  getOriginalCard,
+  getLastRunCard,
+  getFirstQueryResult,
+  getQueryResults,
+  getParameterValues,
+  getIsDirty,
+  getIsNew,
+  getIsObjectDetail,
+  getTables,
+  getTableMetadata,
+  getTableForeignKeys,
+  getTableForeignKeyReferences,
+  getUiControls,
+  getParameters,
+  getDatabaseFields,
+  getSampleDatabaseId,
+  getNativeDatabases,
+  getIsRunnable,
+  getIsResultDirty,
+  getMode,
+  getModalSnippet,
+  getSnippetCollectionId,
+  getQuery,
+  getQuestion,
+  getOriginalQuestion,
+  getSettings,
+  getQueryStartTime,
+  getRawSeries,
+  getQuestionAlerts,
+  getVisualizationSettings,
+  getIsNativeEditorOpen,
+  getIsPreviewing,
+  getIsPreviewable,
+  getIsVisualized,
+  getIsLiveResizable,
+  getNativeEditorCursorOffset,
+  getNativeEditorSelectedText,
+  getVisibleTimelineIds,
+  getVisibleTimelineEvents,
+  getSelectedTimelineEventIds,
+  getFilteredTimelines,
+  getTimeseriesXDomain,
+  getIsAnySidebarOpen,
+  getDocumentTitle,
+  getPageFavicon,
+  getIsTimeseries,
+  getIsLoadingComplete,
+  getIsHeaderVisible,
+  getIsActionListVisible,
+  getIsAdditionalInfoVisible,
+  getAutocompleteResultsFn,
+} from "../selectors";
+import { closeNavbar, getIsNavbarOpen } from "metabase/redux/app";
+import * as actions from "../actions";
 import "./NativeQueryEditor.css";
 
 const AUTOCOMPLETE_DEBOUNCE_DURATION = 700;
 const AUTOCOMPLETE_CACHE_DURATION = AUTOCOMPLETE_DEBOUNCE_DURATION * 1.2; // tolerate 20%
+const mapStateToProps = (state, props) => {
+  return {
+    user: getUser(state, props),
+    canManageSubscriptions: canManageSubscriptions(state, props),
+    isAdmin: getUserIsAdmin(state, props),
+    fromUrl: props.location.query.from,
 
+    mode: getMode(state),
+
+    question: getQuestion(state),
+    originalQuestion: getOriginalQuestion(state),
+    lastRunCard: getLastRunCard(state),
+
+    parameterValues: getParameterValues(state),
+
+    tableForeignKeys: getTableForeignKeys(state),
+    tableForeignKeyReferences: getTableForeignKeyReferences(state),
+
+    card: getCard(state),
+    originalCard: getOriginalCard(state),
+    databases: getDatabasesList(state),
+    nativeDatabases: getNativeDatabases(state),
+    tables: getTables(state),
+    tableMetadata: getTableMetadata(state),
+
+    query: getQuery(state),
+    metadata: getMetadata(state),
+
+    timelines: getFilteredTimelines(state),
+    timelineEvents: getVisibleTimelineEvents(state),
+    visibleTimelineIds: getVisibleTimelineIds(state),
+    selectedTimelineEventIds: getSelectedTimelineEventIds(state),
+    xDomain: getTimeseriesXDomain(state),
+
+    result: getFirstQueryResult(state),
+    results: getQueryResults(state),
+    rawSeries: getRawSeries(state),
+
+    uiControls: getUiControls(state),
+    // includes isShowingDataReference, isEditing, isRunning, etc
+    // NOTE: should come before other selectors that override these like getIsPreviewing and getIsNativeEditorOpen
+    ...state.qb.uiControls,
+    isAnySidebarOpen: getIsAnySidebarOpen(state),
+
+    isDirty: getIsDirty(state),
+    isNew: getIsNew(state),
+    isObjectDetail: getIsObjectDetail(state),
+    isPreviewing: getIsPreviewing(state),
+    isPreviewable: getIsPreviewable(state),
+    isNativeEditorOpen: getIsNativeEditorOpen(state),
+    isNavBarOpen: getIsNavbarOpen(state),
+    isVisualized: getIsVisualized(state),
+    isLiveResizable: getIsLiveResizable(state),
+    isTimeseries: getIsTimeseries(state),
+    isHeaderVisible: getIsHeaderVisible(state),
+    isActionListVisible: getIsActionListVisible(state),
+    isAdditionalInfoVisible: getIsAdditionalInfoVisible(state),
+
+    parameters: getParameters(state),
+    databaseFields: getDatabaseFields(state),
+    sampleDatabaseId: getSampleDatabaseId(state),
+
+    isRunnable: getIsRunnable(state),
+    isResultDirty: getIsResultDirty(state),
+
+    questionAlerts: getQuestionAlerts(state),
+    visualizationSettings: getVisualizationSettings(state),
+
+    autocompleteResultsFn: getAutocompleteResultsFn(state),
+
+    instanceSettings: getSettings(state),
+
+    initialCollectionId: Collections.selectors.getInitialCollectionId(
+      state,
+      props,
+    ),
+    queryStartTime: getQueryStartTime(state),
+    nativeEditorCursorOffset: getNativeEditorCursorOffset(state),
+    nativeEditorSelectedText: getNativeEditorSelectedText(state),
+    modalSnippet: getModalSnippet(state),
+    snippetCollectionId: getSnippetCollectionId(state),
+    documentTitle: getDocumentTitle(state),
+    pageFavicon: getPageFavicon(state),
+    isLoadingComplete: getIsLoadingComplete(state),
+    loadingMessage: PLUGIN_SELECTORS.getLoadingMessage(state),
+  };
+};
+
+const mapDispatchToProps = {
+  ...actions,
+  closeNavbar,
+  onChangeLocation: push,
+  createBookmark: id => Bookmark.actions.create({ id, type: "card" }),
+  deleteBookmark: id => Bookmark.actions.delete({ id, type: "card" }),
+};
 class NativeQueryEditor extends Component {
   _localUpdate = false;
 
@@ -74,6 +233,7 @@ class NativeQueryEditor extends Component {
   }
 
   componentDidMount() {
+    console.log('433434');
     this.loadAceEditor();
     document.addEventListener("keydown", this.handleKeyDown);
     document.addEventListener("contextmenu", this.handleRightClick);
@@ -186,7 +346,7 @@ class NativeQueryEditor extends Component {
     }
   };
 
-  runQuery = async () => {
+  runQuery = () => {
     this.props.cancelQuery();
     const { query, runQuestionQuery } = this.props;
 
@@ -201,10 +361,7 @@ class NativeQueryEditor extends Component {
         shouldUpdateUrl: false,
       });
     } else if (query.canRun()) {
-      await runQuestionQuery();
-      if (location.pathname.includes('/layout')) {
-        this.props.executeSql();
-      }
+      runQuestionQuery();
     }
   };
 
@@ -354,9 +511,7 @@ class NativeQueryEditor extends Component {
   onChange() {
     const { query } = this.props;
     if (this._editor && !this._localUpdate) {
-      if (!location.pathname.includes('/layout')) {
-        this._updateSize();
-      }
+      this._updateSize();
       if (query.queryText() !== this._editor.getValue()) {
         query
           .setQueryText(this._editor.getValue())
@@ -422,7 +577,9 @@ class NativeQueryEditor extends Component {
       resizableBoxProps = {},
       snippetCollections = [],
     } = this.props;
-
+    if (!query) {
+      return null;
+    }
     const parameters = query.question().parameters();
 
     const dragHandle = (
@@ -434,39 +591,7 @@ class NativeQueryEditor extends Component {
     const canSaveSnippets = snippetCollections.some(
       collection => collection.can_write,
     );
-    const newEditorBox = (
-      <div className="new-editor-box">
-        <div className="flex-full" id="id_sql" ref={this.editor} />
-        <RightClickPopover
-          isOpen={this.state.isSelectedTextPopoverOpen}
-          openSnippetModalWithSelectedText={openSnippetModalWithSelectedText}
-          runQuery={this.runQuery}
-          target={() => this.editor.current.querySelector(".ace_selection")}
-          canSaveSnippets={canSaveSnippets}
-        />
-        {this.props.modalSnippet && (
-          <SnippetModal
-            onSnippetUpdate={(newSnippet, oldSnippet) => {
-              if (newSnippet.name !== oldSnippet.name) {
-                query
-                  .updateQueryTextWithNewSnippetNames([newSnippet])
-                  .update(this.props.setDatasetQuery);
-              }
-            }}
-            snippet={this.props.modalSnippet}
-            insertSnippet={this.props.insertSnippet}
-            closeModal={this.props.closeSnippetModal}
-          />
-        )}
-        {/* {hasEditingSidebar && !readOnly && (
-          <NativeQueryEditorSidebar
-            runQuery={this.runQuery}
-            {...this.props}
-          />
-        )} */}
-        <img className="run-icon hover-item" onClick={this.runQuery} src={require("@/web3goLayout/assets/dashboardCreate/Frame2203.png")} alt="" />
-      </div>
-    )
+
     return (
       <div className="NativeQueryEditor bg-light full">
         {hasTopBar && (
@@ -487,70 +612,64 @@ class NativeQueryEditor extends Component {
                 setParameterIndex={this.setParameterIndex}
               />
             )}
-            {location.pathname.includes('/layout') ? <img className="hide-editor-icon hover-item" onClick={this.toggleEditor} src={require("@/web3goLayout/assets/dashboardCreate/Frame2202.png")} alt="" /> : (
-              query.hasWritePermission() && (
-                <VisibilityToggler
-                  className={!isNativeEditorOpen ? "hide sm-show" : ""}
-                  isOpen={isNativeEditorOpen}
-                  readOnly={!!readOnly}
-                  toggleEditor={this.toggleEditor}
-                />
-              )
+            {query.hasWritePermission() && (
+              <VisibilityToggler
+                className={!isNativeEditorOpen ? "hide sm-show" : ""}
+                isOpen={isNativeEditorOpen}
+                readOnly={!!readOnly}
+                toggleEditor={this.toggleEditor}
+              />
             )}
           </div>
         )}
-        {
-          location.pathname.includes('/layout') ? newEditorBox : (
-            <ResizableBox
-              ref={this.resizeBox}
-              className={cx("border-top flex ", { hide: !isNativeEditorOpen })}
-              height={this.state.initialHeight}
-              minConstraints={[Infinity, getEditorLineHeight(MIN_HEIGHT_LINES)]}
-              axis="y"
-              handle={dragHandle}
-              resizeHandles={["s"]}
-              {...resizableBoxProps}
-              onResizeStop={(e, data) => {
-                this.props.handleResize();
-                if (typeof resizableBoxProps?.onResizeStop === "function") {
-                  resizableBoxProps.onResizeStop(e, data);
+        <ResizableBox
+          ref={this.resizeBox}
+          className={cx("border-top flex ", { hide: !isNativeEditorOpen })}
+          height={this.state.initialHeight}
+          minConstraints={[Infinity, getEditorLineHeight(MIN_HEIGHT_LINES)]}
+          axis="y"
+          handle={dragHandle}
+          resizeHandles={["s"]}
+          {...resizableBoxProps}
+          onResizeStop={(e, data) => {
+            this.props.handleResize();
+            if (typeof resizableBoxProps?.onResizeStop === "function") {
+              resizableBoxProps.onResizeStop(e, data);
+            }
+            this._editor.resize();
+          }}
+        >
+          <div className="flex-full" id="id_sql" ref={this.editor} />
+
+          <RightClickPopover
+            isOpen={this.state.isSelectedTextPopoverOpen}
+            openSnippetModalWithSelectedText={openSnippetModalWithSelectedText}
+            runQuery={this.runQuery}
+            target={() => this.editor.current.querySelector(".ace_selection")}
+            canSaveSnippets={canSaveSnippets}
+          />
+
+          {this.props.modalSnippet && (
+            <SnippetModal
+              onSnippetUpdate={(newSnippet, oldSnippet) => {
+                if (newSnippet.name !== oldSnippet.name) {
+                  query
+                    .updateQueryTextWithNewSnippetNames([newSnippet])
+                    .update(this.props.setDatasetQuery);
                 }
-                this._editor.resize();
               }}
-            >
-              <div className="flex-full" id="id_sql" ref={this.editor} />
-
-              <RightClickPopover
-                isOpen={this.state.isSelectedTextPopoverOpen}
-                openSnippetModalWithSelectedText={openSnippetModalWithSelectedText}
-                runQuery={this.runQuery}
-                target={() => this.editor.current.querySelector(".ace_selection")}
-                canSaveSnippets={canSaveSnippets}
-              />
-
-              {this.props.modalSnippet && (
-                <SnippetModal
-                  onSnippetUpdate={(newSnippet, oldSnippet) => {
-                    if (newSnippet.name !== oldSnippet.name) {
-                      query
-                        .updateQueryTextWithNewSnippetNames([newSnippet])
-                        .update(this.props.setDatasetQuery);
-                    }
-                  }}
-                  snippet={this.props.modalSnippet}
-                  insertSnippet={this.props.insertSnippet}
-                  closeModal={this.props.closeSnippetModal}
-                />
-              )}
-              {hasEditingSidebar && !readOnly && (
-                <NativeQueryEditorSidebar
-                  runQuery={this.runQuery}
-                  {...this.props}
-                />
-              )}
-            </ResizableBox>
-          )
-        }
+              snippet={this.props.modalSnippet}
+              insertSnippet={this.props.insertSnippet}
+              closeModal={this.props.closeSnippetModal}
+            />
+          )}
+          {hasEditingSidebar && !readOnly && (
+            <NativeQueryEditorSidebar
+              runQuery={this.runQuery}
+              {...this.props}
+            />
+          )}
+        </ResizableBox>
       </div>
     );
   }
@@ -560,4 +679,5 @@ export default _.compose(
   ExplicitSize(),
   Snippets.loadList({ loadingAndErrorWrapper: false }),
   SnippetCollections.loadList({ loadingAndErrorWrapper: false }),
+  connect(mapStateToProps, mapDispatchToProps),
 )(NativeQueryEditor);

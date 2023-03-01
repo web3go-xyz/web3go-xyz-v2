@@ -228,6 +228,7 @@ body[arco-theme="dark"] .web3go-dataset-create-page {}
             top: 240px;
             transform: rotateY(180deg);
         }
+
         .side {
             flex: none;
             transform-origin: 0;
@@ -245,6 +246,15 @@ body[arco-theme="dark"] .web3go-dataset-create-page {}
                 overflow: auto;
             }
 
+            &.sql {
+                .arco-collapse-item {
+                    .item:hover {
+                        .view-icon {
+                            display: block;
+                        }
+                    }
+                }
+            }
 
 
             .search-item {
@@ -307,11 +317,18 @@ body[arco-theme="dark"] .web3go-dataset-create-page {}
                     &:hover {
                         background: #EDE8FF;
                         border-radius: 4px;
+
+
                     }
 
-                    img {
+                    .dataset-icon {
                         margin-right: 4px;
                         width: 16px;
+                    }
+
+                    .view-icon {
+                        width: 16px;
+                        display: none;
                     }
 
                     .text {

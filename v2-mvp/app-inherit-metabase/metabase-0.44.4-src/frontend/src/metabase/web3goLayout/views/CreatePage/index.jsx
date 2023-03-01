@@ -48,6 +48,12 @@ class Component extends React.Component {
         });
     }
     async componentDidMount() {
+        //测试用，加快速度
+        this.props.changePublicSpaceCollectionId(40);
+        // const collectionList = await CollectionsApi.list();
+        // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
+        // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
+        
         // addChart后没关闭弹窗直接刷新，导致参数残留
         if (!location.pathname.includes('/dataset') && (this.props.params.chartSlug || this.props.location.hash)) {
             this.props.replace({
@@ -60,11 +66,6 @@ class Component extends React.Component {
                 tabIndex: this.props.location.state.tabIndex
             });
         }
-        //测试用，加快速度
-        this.props.changePublicSpaceCollectionId(40);
-        // const collectionList = await CollectionsApi.list();
-        // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
-        // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
     }
     async componentDidUpdate(prevProps) {
         // 处理在create页面再次点击create， 刷新页面

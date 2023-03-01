@@ -381,7 +381,6 @@ class View extends React.Component {
       setParameterValue,
       setIsPreviewing,
     } = this.props;
-
     const queryMode = mode && mode.queryMode();
     const ModeFooter = queryMode && queryMode.ModeFooter;
     const isStructured = query instanceof StructuredQuery;
@@ -400,7 +399,21 @@ class View extends React.Component {
       topQuery && topQuery.hasBreakouts() ? this.handleEditBreakout : null;
 
     const isSidebarOpen = leftSidebar || rightSidebar;
-
+    if (location.pathname.includes('/layout')) {
+      return (
+        <QueryBuilderMain isSidebarOpen={isSidebarOpen}>
+          {isNative ? (
+            this.renderNativeQueryEditor()
+          ) : (
+            <StyledSyncedParametersList
+              parameters={parameters}
+              setParameterValue={setParameterValue}
+              commitImmediately
+            />
+          )}
+        </QueryBuilderMain>
+      )
+    }
     return (
       <QueryBuilderMain isSidebarOpen={isSidebarOpen}>
         {isNative ? (
@@ -412,7 +425,6 @@ class View extends React.Component {
             commitImmediately
           />
         )}
-
         <ViewSubHeader
           isPreviewable={isPreviewable}
           isPreviewing={isPreviewing}
