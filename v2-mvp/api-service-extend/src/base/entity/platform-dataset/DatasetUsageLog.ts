@@ -22,7 +22,7 @@ export class DatasetUsageLog {
     })
     accountId: string;
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "created_at"
     })
     createdAt: Date;

@@ -20,12 +20,12 @@ export class Dataset {
     })
     creatorAccountId: string;
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "created_at"
     })
     createdAt: Date;
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "updated_at"
     })
     updatedAt: Date;
