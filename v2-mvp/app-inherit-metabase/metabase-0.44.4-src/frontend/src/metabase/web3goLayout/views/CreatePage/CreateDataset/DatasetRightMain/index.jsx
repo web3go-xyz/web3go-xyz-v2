@@ -88,7 +88,6 @@ class Component extends React.Component {
         this.setState({
             question,
         });
-        console.log('111', question);
     }
     async init(v) {
         if (this.props.tabIndex == '2') {
@@ -104,6 +103,7 @@ class Component extends React.Component {
                         "source-table": v.id
                     }
                 },
+                original_card_id: this.props.card && this.props.card.id ? this.props.card.id : undefined,
                 "visualization_settings": {},
                 "display": "table"
             }
@@ -203,14 +203,16 @@ class Component extends React.Component {
                     }}
                     panes={[
                         this.props.tabIndex == '1' ? (
-                            <div className="query-build">
+                            <div className="query-build" key="1">
                                 {
                                     refreshFlag ? <QueryBuilder queryBuilderInitSuccess={this.queryBuilderInitSuccess} notebook={true} {...this.props}></QueryBuilder> : null
                                 }
                             </div>
                         ) : (
-                            <div className={cx("query-build sql", !isNativeEditorOpen ? 'editor-hide' : '')} >
-                                <QueryBuilder executeSql={this.executeSql} sqlEditor={true} {...this.props}></QueryBuilder>
+                            <div className={cx("query-build sql", !isNativeEditorOpen ? 'editor-hide' : '')} key="2">
+                                {
+                                    refreshFlag ? <QueryBuilder queryBuilderInitSuccess={() => { this.executeSql() }} executeSql={this.executeSql} sqlEditor={true} {...this.props}></QueryBuilder> : null
+                                }
                             </div>
                         ),
                         <div className={cx("preview", {

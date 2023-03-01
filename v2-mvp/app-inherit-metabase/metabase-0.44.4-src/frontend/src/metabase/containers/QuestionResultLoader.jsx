@@ -117,7 +117,6 @@ export class QuestionResultLoader extends React.Component {
   render() {
     const { question, children } = this.props;
     const { results, loading, error } = this.state;
-    console.log('222', results, question);
     return (
       children &&
       children({

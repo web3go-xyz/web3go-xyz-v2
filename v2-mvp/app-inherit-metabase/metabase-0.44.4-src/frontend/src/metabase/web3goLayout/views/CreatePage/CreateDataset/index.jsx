@@ -83,6 +83,7 @@ class Component extends React.Component {
             rawDataLoading: false,
             isEditing: true,
             alreadyInitRawData: false,
+            alreadyInitEditData: false,
             options: ['Beijing', 'Shanghai', 'Guangzhou', 'Disabled']
         }
         this.datasetNameInputRef = React.createRef();
@@ -101,9 +102,15 @@ class Component extends React.Component {
             }
         }
         if ((prevProp.card !== this.props.card) && this.props.card && this.props.card.name) {
-            this.setState({
-                datasetName: this.props.card.name
-            })
+            if (!this.state.alreadyInitEditData) {
+                if (this.props.card.query_type == "native") {
+                    this.setState({ tabIndex: '2' });
+                }
+                this.setState({
+                    datasetName: this.props.card.name,
+                    alreadyInitEditData: true
+                })
+            }
         }
     }
     getAllRawData = async () => {
@@ -309,9 +316,9 @@ class Component extends React.Component {
         return rawDataList.filter(v => v.display_name.toLowerCase().includes(searchKey.toLowerCase()));
     }
     render() {
-
         const { tagList, datasetName, ifEditDatasetName, ifEditTag, allTagList,
             isEditing, originDashboardDetail, options, rawDataLoading, hideSideBar, tabIndex } = this.state;
+        const ifEdit = this.props.card && (this.props.card.id || this.props.card.original_card_id)
         return (
             <div className="web3go-dataset-create-page">
                 <div className="p-top">
@@ -364,10 +371,10 @@ class Component extends React.Component {
                     }
                 </div>
                 <div className="tabs">
-                    <Tabs defaultActiveTab='1' onChange={this.changeTab}>
-                        <TabPane key='1' title='Data Editor'>
+                    <Tabs activeTab={tabIndex} onChange={this.changeTab}>
+                        <TabPane key='1' title='Data Editor' disabled={ifEdit && tabIndex == '2'}>
                         </TabPane>
-                        <TabPane key='2' title='SQL'>
+                        <TabPane key='2' title='SQL' disabled={ifEdit && tabIndex == '1'}>
                         </TabPane>
                     </Tabs>
                 </div>
