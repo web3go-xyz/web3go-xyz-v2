@@ -7,10 +7,12 @@ import { push, replace } from "react-router-redux";
 import { IconSync } from '@arco-design/web-react/icon';
 import QueryBuilder from "metabase/query_builder/containers/QueryBuilder";
 import { getQuestionSteps } from "@/query_builder/components/notebook/lib/steps";
+import _ from "underscore";
 import {
     getURLForCardState,
 } from "@/query_builder/utils";
 import { loadCard } from "metabase/lib/card";
+import { getIn } from "icepick";
 
 import cx from "classnames";
 import { isReducedMotionPreferred } from "metabase/lib/dom";
@@ -24,7 +26,7 @@ import { ResizeBox } from '@arco-design/web-react';
 import QueryValidationError from "metabase/query_builder/components/QueryValidationError";
 import QueryVisualization from "@/query_builder/components/QueryVisualization";
 import { loadMetadataForCard, resetQB } from "@/query_builder/actions/core/core";
-
+import { adjustPositions, stripRemarks } from '@/query_builder/components/VisualizationError'
 const CollapseItem = Collapse.Item;
 const Option = Select.Option;
 const mapStateToProps = state => {
@@ -171,7 +173,7 @@ class Component extends React.Component {
         const { refreshFlag, previewFullScreen, resizeDirection, previewLimit, splitSize } = this.state;
         const {
             query,
-            mode,
+            result,
             isNativeEditorOpen
         } = this.props;
         let showPreviewComponent = true;
@@ -183,9 +185,20 @@ class Component extends React.Component {
         if (!this.state.question) {
             showPreviewComponent = false;
         }
-
-        const queryMode = mode && mode.queryMode();
-        const validationError = !query ? true : _.first(query.validate?.());
+        let processedError;
+        if (result) {
+            const error = result.error;
+            const via = result.via;
+            processedError = error;
+            const origSql = getIn(via, [(via || "").length - 1, "ex-data", "sql"]);
+            if (typeof error === "string" && typeof origSql === "string") {
+                processedError = adjustPositions(error, origSql);
+            }
+            if (typeof error === "string") {
+                processedError = stripRemarks(processedError);
+            }
+        }
+        console.log('342', processedError);
         return (
             <div className="web3go-dataset-create-right-main">
                 <ResizeBox.Split
@@ -211,7 +224,7 @@ class Component extends React.Component {
                         ) : (
                             <div className={cx("query-build sql", !isNativeEditorOpen ? 'editor-hide' : '')} key="2">
                                 {
-                                    refreshFlag ? <QueryBuilder queryBuilderInitSuccess={() => { this.executeSql() }} executeSql={this.executeSql} sqlEditor={true} {...this.props}></QueryBuilder> : null
+                                    refreshFlag ? <QueryBuilder queryBuilderInitSuccess={() => { this.props.ifEdit && this.executeSql() }} executeSql={this.executeSql} sqlEditor={true} {...this.props}></QueryBuilder> : null
                                 }
                             </div>
                         ),
@@ -276,8 +289,8 @@ class Component extends React.Component {
                                 showPreviewComponent ? (
                                     <div style={{ height: '100%', width: '100%', position: 'relative' }}>
                                         {
-                                            validationError ? (
-                                                <QueryValidationError error={validationError} />
+                                            processedError ? (
+                                                <QueryValidationError error={{ message: processedError }} />
                                             ) : (
                                                 <QuestionResultLoader question={this.state.question}>
                                                     {({ rawSeries, result }) => (

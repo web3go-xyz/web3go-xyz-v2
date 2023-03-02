@@ -387,7 +387,6 @@ class View extends React.Component {
     const isNative = query instanceof NativeQuery;
 
     const validationError = _.first(query.validate?.());
-
     const topQuery = isStructured && query.topLevelQuery();
 
     // only allow editing of series for structured queries

@@ -11,6 +11,8 @@ import event from '@/web3goLayout/event';
 import { getMetadata } from "metabase/selectors/metadata";
 import slugg from "slugg";
 import * as query_builderActions from "@/query_builder/actions";
+import * as Urls from "metabase/lib/urls";
+import { parse as parseUrl } from "url";
 
 import DatasetRightMain from "./DatasetRightMain";
 import {
@@ -289,9 +291,14 @@ class Component extends React.Component {
     }
     changeTab = async (key) => {
         if (key == 2) {
+            const url = Urls.newQuestion({
+                type: "native",
+                creationType: "native_question",
+            });
+            const urlParsed = parseUrl(url);
             await this.props.replace({
                 pathname: location.pathname,
-                hash: '#eyJkYXRhc2V0X3F1ZXJ5Ijp7ImRhdGFiYXNlIjpudWxsLCJuYXRpdmUiOnsicXVlcnkiOiIiLCJ0ZW1wbGF0ZS10YWdzIjp7fX0sInR5cGUiOiJuYXRpdmUifSwiZGlzcGxheSI6InRhYmxlIiwicGFyYW1ldGVycyI6W10sInZpc3VhbGl6YXRpb25fc2V0dGluZ3MiOnt9fQ==',
+                hash: urlParsed.hash
             })
         } else {
             await this.props.replace({
@@ -456,7 +463,7 @@ class Component extends React.Component {
                         </div>
                     </div>
                     <div className="r-main">
-                        <DatasetRightMain {...this.props} tabIndex={tabIndex} onRef={(ref) => this.DatasetRightMainRef = ref}></DatasetRightMain>
+                        <DatasetRightMain {...this.props} ifEdit={ifEdit} tabIndex={tabIndex} onRef={(ref) => this.DatasetRightMainRef = ref}></DatasetRightMain>
                     </div>
                 </div>
             </div >
