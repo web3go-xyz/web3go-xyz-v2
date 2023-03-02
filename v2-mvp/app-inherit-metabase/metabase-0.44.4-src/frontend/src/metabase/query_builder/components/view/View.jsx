@@ -82,6 +82,13 @@ class View extends React.Component {
         }
         return;
       }
+      if (card && card.dataset_query && card.dataset_query.type == 'native' && card.dataset_query.native && !card.dataset_query.native.query) {
+        Message.error('Please input sql first');
+        if (failFn) {
+          failFn();
+        }
+        return;
+      }
       await this.saveOrCreateQuestion(chartName, isDataset);
       if (successFn) {
         successFn(this.props.card.id, this.props.card);
@@ -398,7 +405,7 @@ class View extends React.Component {
       topQuery && topQuery.hasBreakouts() ? this.handleEditBreakout : null;
 
     const isSidebarOpen = leftSidebar || rightSidebar;
-    if (location.pathname.includes('/layout')) {
+    if (this.props.sqlEditor) {
       return (
         <QueryBuilderMain isSidebarOpen={isSidebarOpen}>
           {isNative ? (

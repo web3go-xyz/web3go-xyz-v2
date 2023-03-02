@@ -2,7 +2,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip, Select, Spin, Switch, Collapse } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip, Select, Spin, Switch, Collapse, Notification } from '@arco-design/web-react';
 import { IconSearch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
 import { push, replace } from "react-router-redux";
 import cx from "classnames";
@@ -13,6 +13,7 @@ import slugg from "slugg";
 import * as query_builderActions from "@/query_builder/actions";
 import * as Urls from "metabase/lib/urls";
 import { parse as parseUrl } from "url";
+import { Link } from "react-router";
 
 import DatasetRightMain from "./DatasetRightMain";
 import {
@@ -286,7 +287,35 @@ class Component extends React.Component {
                 this.setState({
                     [loadingKey]: false
                 });
-            }, () => { }, true);
+                const id = `${Date.now()}`;
+                Notification.success({
+                    id,
+                    title: isDraft ? 'Draft saved' : 'Posted',
+                    duration: 5000,
+                    content: (
+                        <div>
+                            <span>
+                                You can start building dashboard now.
+                            </span>
+                            <span className="hover-item" style={{ color: '#615CF6' }} onClick={() => {
+                                this.props.push({
+                                    pathname: "/layout/create",
+                                    state: {
+                                        refresh: true,
+                                        selectDashboardToEdit: true,
+                                        tabIndex: 1
+                                    }
+                                })
+                                Notification.remove(id);
+                            }}>&nbsp;&nbsp;&nbsp;Keep going -&gt;</span>
+                        </div>
+                    ),
+                })
+            }, () => {
+                this.setState({
+                    [loadingKey]: false
+                });
+            }, true);
         }, 0);
     }
     changeTab = async (key) => {
@@ -369,7 +398,6 @@ class Component extends React.Component {
                             <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
                             <Button className="btn" loading={this.state.saveBtnLoading} onClick={() => this.handlePostDashboard(true)}>Save Draft</Button>
                             <Button className="btn" loading={this.state.postBtnLoading} onClick={() => this.handlePostDashboard(false)} type="primary">Post</Button>
-                            <Button disabled className="btn" onClick={() => this.handlePostDashboard(false)} type="primary">Build Dashboard</Button>
                         </div>
                         // <div className="pt-right">
                         //     <Button className="btn" onClick={this.handleCancel}>Cancel</Button>

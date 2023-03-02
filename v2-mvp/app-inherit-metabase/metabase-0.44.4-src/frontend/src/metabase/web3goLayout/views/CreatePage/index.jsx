@@ -8,9 +8,12 @@ import { push, replace } from "react-router-redux";
 import cx from "classnames";
 import CreateDataset from './CreateDataset';
 import CreateDashboard from './CreateDashboard';
+import { toggleDark, changeMyDashboardList } from "metabase/redux/app";
+import { LayoutLoginApi, LayoutDashboardApi } from '@/services'
 import { pseudoStyle } from "styled-system";
 import { CollectionsApi } from '@/services'
 import { publicSpaceCollectionId, changePublicSpaceCollectionId } from "metabase/redux/app";
+import SelectDashboardToEditModal from './SelectDashboardToEditModal';
 
 
 const { Text } = Typography;
@@ -25,7 +28,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
     push,
     replace,
-    changePublicSpaceCollectionId
+    changePublicSpaceCollectionId,
+    changeMyDashboardList
 };
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
@@ -37,7 +41,7 @@ class Component extends React.Component {
             tabIndex: 0,
             refreshFlag: true
         }
-        this.ShareModalRef = React.createRef();
+        this.SelectDashboardToEditModalRef = React.createRef();
     }
     changeTab = (tabIndex) => {
         this.setState({
@@ -53,9 +57,15 @@ class Component extends React.Component {
         // const collectionList = await CollectionsApi.list();
         // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
         // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
-        
+
         // addChart后没关闭弹窗直接刷新，导致参数残留
         if (!location.pathname.includes('/dataset') && (this.props.params.chartSlug || this.props.location.hash)) {
+            this.props.replace({
+                pathname: '/layout/create',
+            });
+            return;
+        }
+        if (this.props.location.state && this.props.location.state.selectDashboardToEdit) {
             this.props.replace({
                 pathname: '/layout/create',
             });
@@ -67,29 +77,45 @@ class Component extends React.Component {
             });
         }
     }
+    getMyDashboards = (cb) => {
+        if (!this.props.userData.account) {
+            this.props.changeMyDashboardList([]);
+            return;
+        }
+        LayoutDashboardApi.list({
+            "pageSize": 999999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "tagIds": [],
+            "searchName": '',
+            "creator": this.props.userData.account.accountId,
+            "dashboardIds": []
+        }).then(d => {
+            this.props.changeMyDashboardList(d.list);
+            if (cb) {
+                cb();
+            }
+        });
+    }
     async componentDidUpdate(prevProps) {
         // 处理在create页面再次点击create， 刷新页面
         if ((this.props.location !== prevProps.location) && this.props.location.state && this.props.location.state.refresh) {
-            await this.setState({ refreshFlag: false, tabIndex: 0 });
+            if (this.props.location.state.selectDashboardToEdit) {
+                this.getMyDashboards(() => {
+                    this.SelectDashboardToEditModalRef.init();
+                });
+            }
+            await this.setState({ refreshFlag: false, tabIndex: this.props.location.state.tabIndex });
             this.props.replace({
-                pathname: '/layout/create',
+                pathname: this.props.location.pathname,
             });
             await this.setState({ refreshFlag: true });
         }
     }
     render() {
-        if (!this.props.publicSpaceCollectionId || !this.state.refreshFlag) {
-            return <Spin style={
-                {
-                    display: 'block', minHeight: 100, display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }
-            }></Spin >
-        }
         return (
             <div className="web3go-create-page common-form">
-                <div className="p-side-bar">
+                {/* <div className="p-side-bar">
                     <div className="item">
                         <div className={cx("icon-wrap hover-item",
                             {
@@ -108,15 +134,28 @@ class Component extends React.Component {
                             <img className="white" src={require("@/web3goLayout/assets/dashboardCreate/Dashboard-w.png")} alt="" />
                         </div>
                     </div>
-                </div>
-                <div className="p-main">
-                    {
-                        this.state.tabIndex == 0 ?
-                            <CreateDataset {...this.props} changeTopTab={this.changeTab}></CreateDataset>
-                            :
-                            <CreateDashboard {...this.props} changeTopTab={this.changeTab}></CreateDashboard>
-                    }
-                </div>
+                </div> */}
+
+                {
+                    !this.props.publicSpaceCollectionId || !this.state.refreshFlag ? <Spin style={
+                        {
+                            display: 'block', minHeight: 100, display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }
+                    }></Spin>
+                        : (
+                            <div className="p-main">
+                                {
+                                    this.state.tabIndex == 0 ?
+                                        <CreateDataset {...this.props} changeTopTab={this.changeTab}></CreateDataset>
+                                        :
+                                        <CreateDashboard {...this.props} changeTopTab={this.changeTab}></CreateDashboard>
+                                }
+                            </div>
+                        )
+                }
+                <SelectDashboardToEditModal {...this.props} onRef={(ref) => this.SelectDashboardToEditModalRef = ref} ></SelectDashboardToEditModal>
             </div >
         )
     }

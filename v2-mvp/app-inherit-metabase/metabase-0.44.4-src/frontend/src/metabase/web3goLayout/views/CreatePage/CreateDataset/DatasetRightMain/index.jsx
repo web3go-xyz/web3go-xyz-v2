@@ -198,7 +198,6 @@ class Component extends React.Component {
                 processedError = stripRemarks(processedError);
             }
         }
-        console.log('342', processedError);
         return (
             <div className="web3go-dataset-create-right-main">
                 <ResizeBox.Split

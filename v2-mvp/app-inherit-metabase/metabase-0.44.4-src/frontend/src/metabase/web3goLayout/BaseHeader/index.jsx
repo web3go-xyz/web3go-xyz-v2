@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import './index.less';
 import { Button, AutoComplete, Menu, Dropdown, Modal } from '@arco-design/web-react';
 import { toggleDark, changeGlobalSearchValue } from "metabase/redux/app";
+import { IconDown } from '@arco-design/web-react/icon';
 import { changeUserData } from "metabase/redux/app";
 import { push, replace } from "react-router-redux";
 import SignInOrUp from './SignInOrUp';
@@ -125,7 +126,32 @@ class Component extends React.Component {
     handleSearch = () => {
         this.props.push('/layout/globalSearch');
     }
+    clickCreate = (key) => {
+        if (key == '1') {
+            this.props.push({
+                pathname: "/layout/create",
+                state: {
+                    refresh: true,
+                    tabIndex: 0
+                }
+            })
+        } else {
+            this.props.push({
+                pathname: "/layout/create",
+                state: {
+                    refresh: true,
+                    tabIndex: 1
+                }
+            })
+        }
+    }
     render() {
+        const dropList = (
+            <Menu onClickMenuItem={(key) => { this.clickCreate(key) }}>
+                <Menu.Item key='1'>Dataset</Menu.Item>
+                <Menu.Item key='2'>Dashboard</Menu.Item>
+            </Menu>
+        );
         return (
             // <div className={'web3go-layout-baseheader-component' + (this.state.ifScroll ? ' scroll' : '')}>
             <div className='web3go-layout-baseheader-component scroll'>
@@ -190,7 +216,7 @@ class Component extends React.Component {
                                 </svg>) :
                                 <img className="light" src={require('@/web3goLayout/assets/layout/light.png')} alt="" />}
                         </div>
-                        <Link
+                        {/* <Link
                             to={
                                 {
                                     pathname: "/layout/create",
@@ -201,7 +227,13 @@ class Component extends React.Component {
                             }
                         >
                             <Button className="btn" type='primary'>Create</Button>
-                        </Link>
+                        </Link> */}
+                        <Dropdown trigger='click' droplist={dropList} position='bl'>
+                            <Button className="btn" type='primary'>
+                                <span>Create</span>
+                                <IconDown />
+                            </Button>
+                        </Dropdown>
                         <Link
                             to="/home"
                         >
