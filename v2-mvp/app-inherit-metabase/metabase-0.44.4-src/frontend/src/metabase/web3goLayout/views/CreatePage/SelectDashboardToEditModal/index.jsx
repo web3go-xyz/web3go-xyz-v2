@@ -73,25 +73,34 @@ class Component extends React.Component {
                         layout="vertical"
                         requiredSymbol={{ position: 'end' }}
                         ref={this.formRef}
-                        initialValues={{ type: 'My Dashboard-Posted' }}
+                        initialValues={{ type: 1 }}
                         autoComplete='off'
+                        onChange={(v) => {
+                            if (v.type) {
+                                this.formRef.current.setFieldValue('dashboardId', null);
+                            }
+                        }}
                     >
                         <Form.Item label='Add to my existing danshboard ' required style={{ marginBottom: 0 }}>
                             <Grid.Row gutter={8}>
                                 <Grid.Col span={12}>
                                     <Form.Item field='type' rules={[{ required: true }]}>
-                                        <Select placeholder='please select' options={['My Dashboard-Posted']}></Select>
+                                    <Select placeholder='please select' options={[{ label: 'My Dashboard-Posted', value: 1 }, { label: 'My Dashboard-Draft', value: 2 }]}></Select>
                                     </Form.Item>
                                 </Grid.Col>
                                 <Grid.Col span={12}>
-                                    <Form.Item field='dashboardId' rules={[{ required: true }]}>
-                                        <Select placeholder='please select'>
-                                            {this.props.myDashboardList.map((v, i) => (
-                                                <Option key={v.id} value={v.id}>
-                                                    {v.name}
-                                                </Option>
-                                            ))}
-                                        </Select>
+                                    <Form.Item shouldUpdate field='dashboardId' rules={[{ required: true }]}>
+                                        {(values) => {
+                                            const filterDashboards = this.props.myDashboardList.filter(v => values.type == 1 ? v.publicUUID : !v.publicUUID)
+                                            return <Select placeholder='please select'>
+                                                {filterDashboards.map((v, i) => (
+                                                    <Option key={v.id} value={v.id}>
+                                                        {v.name}
+                                                    </Option>
+                                                ))}
+                                            </Select>;
+                                        }}
+
                                     </Form.Item>
                                 </Grid.Col>
                             </Grid.Row>
