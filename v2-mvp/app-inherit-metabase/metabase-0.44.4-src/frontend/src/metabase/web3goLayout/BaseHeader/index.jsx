@@ -195,9 +195,9 @@ class Component extends React.Component {
                         </div>
                     </div>
                     <div className="h-right">
-                        <div className="a">Community</div>
-                        <div className="a">Learn</div>
-                        <div className="circle" onClick={this.props.toggleDark}>
+                        {/* <div className="a">Community</div>
+                        <div className="a">Learn</div> */}
+                        {/* <div className="circle" onClick={this.props.toggleDark}>
                             {this.props.isDark ?
                                 (<svg
                                     className="icon"
@@ -215,19 +215,7 @@ class Component extends React.Component {
                                     />
                                 </svg>) :
                                 <img className="light" src={require('@/web3goLayout/assets/layout/light.png')} alt="" />}
-                        </div>
-                        {/* <Link
-                            to={
-                                {
-                                    pathname: "/layout/create",
-                                    state: {
-                                        refresh: true
-                                    }
-                                }
-                            }
-                        >
-                            <Button className="btn" type='primary'>Create</Button>
-                        </Link> */}
+                        </div> */}
                         <Dropdown trigger='click' droplist={dropList} position='bl'>
                             <Button className="btn" type='primary'>
                                 <span>Create</span>

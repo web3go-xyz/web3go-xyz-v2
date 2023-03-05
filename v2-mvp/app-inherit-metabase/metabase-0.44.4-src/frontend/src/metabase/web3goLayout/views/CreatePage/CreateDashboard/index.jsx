@@ -23,6 +23,9 @@ import {
     getDashboardComplete,
 } from "@/dashboard/selectors";
 import { NewCardEditorSidebar } from "../../../../dashboard/components/new-card-editor-sidebar/NewCardEditorSidebar";
+import LinkedDatasetsModal from './LinkedDatasetsModal';
+
+
 const mapStateToProps = (state, props) => {
     return {
         key: props.location.params,
@@ -67,6 +70,7 @@ class Component extends React.Component {
         this.tagInputRef = React.createRef();
         this.AddChartModalRef = React.createRef();
         this.NewCardEditorRef = React.createRef();
+        this.LinkedDatasetsModalRef = React.createRef();
     }
     async componentDidMount() {
         event.on('editChartEvent', this.handleEditChart);
@@ -249,18 +253,18 @@ class Component extends React.Component {
         const dashboardId = getState().dashboard.dashboardId;
         this.NewCardEditorRef.doShow({
             dashboardId,
-            params: {type: 'text', action: 'add', dashboardId,}
-          });
+            params: { type: 'text', action: 'add', dashboardId, }
+        });
     }
 
-    onAddImageBox = ({preload}) => {
+    onAddImageBox = ({ preload }) => {
         const { dispatch, getState } = this.DashbaordAppRef.store;
         // this.props.openNewCardEditorSidebar({ type: 'image', dashId: getState().dashboard.dashboardId, preload });
         const dashboardId = getState().dashboard.dashboardId;
         this.NewCardEditorRef.doShow({
             dashboardId,
-            params: {type: 'image', action: 'add', dashboardId,}
-          });
+            params: { type: 'image', action: 'add', dashboardId, }
+        });
     }
 
     onAddVideoBox = () => {
@@ -270,8 +274,8 @@ class Component extends React.Component {
         const dashboardId = getState().dashboard.dashboardId;
         this.NewCardEditorRef.doShow({
             dashboardId,
-            params: {type: 'video', action: 'add', dashboardId,}
-          });
+            params: { type: 'video', action: 'add', dashboardId, }
+        });
 
 
     }
@@ -313,6 +317,9 @@ class Component extends React.Component {
                     })
             });
         });
+    }
+    clickLinkedDatasets = () => {
+        this.LinkedDatasetsModalRef.init();
     }
     handlePostDashboard = async (isDraft) => {
         if (this.state.saveBtnLoading || this.state.postBtnLoading) {
@@ -400,7 +407,22 @@ class Component extends React.Component {
     //         this.props.push('/');
     //     });
     // }
-
+    get usedDatasetList() {
+        const { dashboard } = this.props;
+        const map = {};
+        if (!dashboard || !dashboard.ordered_cards) {
+            return [];
+        }
+        dashboard.ordered_cards.forEach((v) => {
+            if (v.card && v.card.dataset_query && v.card.dataset_query.query && v.card.dataset_query.query['source-table']) {
+                map[v.card.dataset_query.query['source-table']] = v.card.dataset_query.query['source-table']
+            }
+        });
+        return Object.keys(map).map(key => map[key])
+    }
+    get usedDatasetListCount() {
+        return this.usedDatasetList.length
+    }
     render() {
         const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList, addFilterDrawerVisible, addFilterDrawerIsEdit, isEditing, originDashboardDetail } = this.state;
         if (createDefaultDbLoading) {
@@ -447,6 +469,21 @@ class Component extends React.Component {
                                     )
                                 }
                             </div>
+                            {
+                                this.state.currentDashboardId >= 0 ? (
+                                    <div className="linked-datasets">
+                                        <div onClick={this.clickLinkedDatasets} className="inner hover-primary">
+                                            <span>
+                                                Linked Datasets:
+                                            </span>
+                                            <span className="number">
+                                                {this.usedDatasetListCount}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ) : null
+                            }
+
                         </div>
                     </div>
                     {
@@ -496,12 +533,13 @@ class Component extends React.Component {
                     addFilterDrawerIsEdit={addFilterDrawerIsEdit}
                     changeAddFilterDrawerIsEdit={this.changeAddFilterDrawerIsEdit}
                 ></AddFilterDrawer>
-                <NewCardEditorSidebar {...this.props}  ref={(ref) => this.NewCardEditorRef = ref} 
+                <NewCardEditorSidebar {...this.props} ref={(ref) => this.NewCardEditorRef = ref}
                     addFilterDrawerVisible={addFilterDrawerVisible}
                     changeAddFilterDrawerVisible={this.changeAddFilterDrawerVisible}
                     addFilterDrawerIsEdit={addFilterDrawerIsEdit}
                     changeAddFilterDrawerIsEdit={this.changeAddFilterDrawerIsEdit}
                 ></NewCardEditorSidebar>
+                <LinkedDatasetsModal {...this.props} usedDatasetList={this.usedDatasetList} onRef={(ref) => this.LinkedDatasetsModalRef = ref} ></LinkedDatasetsModal>
             </div >
         )
     }

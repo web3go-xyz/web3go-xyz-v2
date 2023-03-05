@@ -232,6 +232,7 @@ export default class DashCard extends Component {
           dashcardData={dashcardData}
           onRemove={onRemove}
           series={series}
+          dashboard={dashboard}
           onEdit={() => {
             this.onEdit({
               series,

@@ -9,6 +9,7 @@ import { position } from "tether";
 import { LayoutLoginApi, LayoutDashboardApi } from '@/services'
 import ChartInfoModal from "./ChartInfoModal";
 import DownloadModal from "./DownloadModal";
+import DatasetModal from "./DatasetModal";
 import DuplicateModal from "./DuplicateModal";
 import event from '@/web3goLayout/event';
 import * as dashboardActions from "@/dashboard/actions";
@@ -34,6 +35,7 @@ class Component extends React.Component {
         this.ChartInfoModalRef = React.createRef();
         this.DuplicateModalRef = React.createRef();
         this.DownloadModalRef = React.createRef();
+        this.DatasetModalRef = React.createRef();
     }
     componentDidMount() {
     }
@@ -41,7 +43,7 @@ class Component extends React.Component {
 
     }
     clickDropdownIcon = (key) => {
-        const { dashcardData, dashcard } = this.props;
+        const { dashcardData, dashcard, dashboard } = this.props;
         let cardData;
         if (!dashcardData[dashcard.id] || !dashcardData[dashcard.id][dashcard.card_id]) {
             cardData = {}
@@ -76,6 +78,8 @@ class Component extends React.Component {
             }
         } else if (key == 'Download') {
             this.DownloadModalRef.init({ ...cardData, card_id: dashcard.card_id });
+        } else if (key == 'Dataset') {
+            this.DatasetModalRef.init({ ...cardData, card_id: dashcard.card_id });
         } else if (key == 'Edit') {
             this.props.onEdit();
         } else if (key == 'Remove') {
@@ -125,13 +129,13 @@ class Component extends React.Component {
 
         let operationList = []
         // if (dashcard.card_id) {
-            operationList.unshift({
-                icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6.66666 2H12.6667C12.8435 2 13.013 2.07024 13.1381 2.19526C13.2631 2.32029 13.3333 2.48986 13.3333 2.66667V10" stroke="#6B7785" strokeWidth="1.33333" />
-                    <path d="M2.66667 13.3333V5.33329C2.66667 5.15648 2.7369 4.98691 2.86193 4.86189C2.98695 4.73686 3.15652 4.66663 3.33333 4.66663H10C10.3683 4.66663 10.6667 4.96396 10.6667 5.33229V13.336C10.6668 13.4233 10.6496 13.5098 10.6161 13.5906C10.5827 13.6713 10.5336 13.7446 10.4718 13.8063C10.4099 13.868 10.3365 13.9168 10.2557 13.9501C10.1749 13.9833 10.0884 14.0003 10.001 14H3.332C3.24451 14 3.15789 13.9827 3.07708 13.9492C2.99627 13.9157 2.92286 13.8665 2.86106 13.8046C2.79927 13.7427 2.75029 13.6692 2.71693 13.5883C2.68357 13.5074 2.66649 13.4208 2.66667 13.3333V13.3333Z" stroke="#6B7785" strokeWidth="1.33333" />
-                </svg>,
-                name: 'Duplicate'
-            })
+        operationList.unshift({
+            icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.66666 2H12.6667C12.8435 2 13.013 2.07024 13.1381 2.19526C13.2631 2.32029 13.3333 2.48986 13.3333 2.66667V10" stroke="#6B7785" strokeWidth="1.33333" />
+                <path d="M2.66667 13.3333V5.33329C2.66667 5.15648 2.7369 4.98691 2.86193 4.86189C2.98695 4.73686 3.15652 4.66663 3.33333 4.66663H10C10.3683 4.66663 10.6667 4.96396 10.6667 5.33229V13.336C10.6668 13.4233 10.6496 13.5098 10.6161 13.5906C10.5827 13.6713 10.5336 13.7446 10.4718 13.8063C10.4099 13.868 10.3365 13.9168 10.2557 13.9501C10.1749 13.9833 10.0884 14.0003 10.001 14H3.332C3.24451 14 3.15789 13.9827 3.07708 13.9492C2.99627 13.9157 2.92286 13.8665 2.86106 13.8046C2.79927 13.7427 2.75029 13.6692 2.71693 13.5883C2.68357 13.5074 2.66649 13.4208 2.66667 13.3333V13.3333Z" stroke="#6B7785" strokeWidth="1.33333" />
+            </svg>,
+            name: 'Duplicate'
+        })
         // }
         if (cardData.rows) {
             operationList.unshift({
@@ -150,6 +154,12 @@ class Component extends React.Component {
         //         name: 'Chart Info'
         //     });
         // }
+        operationList.push({
+            icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 3.05L11.5875 4.25L8 5.45L4.4125 4.25L8 3.05ZM8 2L2 4V4.5L8 6.5L14 4.5V4L8 2ZM8 7.83731L5.5 7.02481L3 6.21231H2V6.9625L8 8.9625L14 6.9625V6.21231H13L8 7.83731ZM8 10.3557L3 8.73068H2V9.5L8 11.5L14 9.5V8.73068H13L8 10.3557ZM8 12.8593L3 11.2343H2L2 12L8 14L14 12V11.2343H13L8 12.8593Z" fill="#6B7785" />
+            </svg>,
+            name: 'Dataset'
+        });
         if (location.pathname.includes('/layout/create')) {
             operationList.push({
                 icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -170,7 +180,7 @@ class Component extends React.Component {
             return null;
         }
         return (
-            <div className="web3go-card-action-component">
+            <div className="web3go-card-action-component" onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}>
                 <div className="dropdown-wrap">
                     <Dropdown trigger='click' position="bottom" droplist={
                         <Menu className="web3go-layout-myspace-dashboardlist-menu" onClickMenuItem={(key) => { this.clickDropdownIcon(key) }}>
@@ -192,6 +202,7 @@ class Component extends React.Component {
                 <ChartInfoModal onRef={(ref) => this.ChartInfoModalRef = ref} ></ChartInfoModal>
                 <DuplicateModal onRef={(ref) => this.DuplicateModalRef = ref} ></DuplicateModal>
                 <DownloadModal onRef={(ref) => this.DownloadModalRef = ref} ></DownloadModal>
+                <DatasetModal onRef={(ref) => this.DatasetModalRef = ref} ></DatasetModal>
             </div>
         )
     }
