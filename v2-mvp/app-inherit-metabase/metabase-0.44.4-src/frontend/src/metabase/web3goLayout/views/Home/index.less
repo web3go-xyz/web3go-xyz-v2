@@ -226,14 +226,10 @@ body[arco-theme="dark"] .web3go-layout-home-page {
             }
 
             .item {
-                display: inline-block;
-                padding: 24px;
-                margin: 10px;
-                width: 386px;
-                box-sizing: border-box;
-                height: 169px;
-                border-radius: 12px;
-                background: var(--creator-bg-color);
+                margin-top: 32px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
 
                 &:not(.active) {
                     .i-top .it-right .btn:hover {
@@ -249,83 +245,26 @@ body[arco-theme="dark"] .web3go-layout-home-page {
                     }
                 }
 
-                &.active {
-                    background: linear-gradient(282.95deg, #615CF6 1.37%, #818DF8 100%);
-
-                    .it-right .name:hover {
-                        color: white!important;
-                        opacity: .8;
-                    }
-
-                    .i-bottom {
-                        border-color: #EDE8FF;
-                    }
-
-                    .i-top .it-right .name {
-                        color: white;
-
-                    }
-
-                    .i-bottom .label {
-                        color: white;
-                    }
-
-                    .i-bottom .value {
-                        color: white;
-                    }
-
-                    .i-top .it-right .btn {
-                        background: transparent;
-                        border-color: white;
-                    }
-
-                    .i-top .it-right .btn .arco-icon {
-                        stroke: white;
-                    }
-
-                    .i-top .it-right .btn .text {
-                        color: white;
-                    }
-
-                    .headicon {
-                        border-color: white !important;
-                    }
-                }
-
-                .i-top {
-                    padding-bottom: 16px;
+                .i-left {
                     display: flex;
                     align-items: center;
 
+                    .icon {
+                        width: 16px;
+                    }
+
                     .headicon-wrap {
-                        margin-right: 16px;
-                        position: relative;
-
-                        .icon {
-                            position: absolute;
-                            width: 16px;
-                        }
-
-                        .rank {
-                            position: absolute;
-                            font-weight: 400;
-                            font-size: 10px;
-                            line-height: 10px;
-                            color: #FFFFFF;
-                            left: 4px;
-                            top: 5px;
-                            transform: scale(0.8);
-                        }
+                        margin-left: 16px;
+                        margin-right: 8px;
 
                         .headicon {
                             display: block;
                             width: 64px;
                             height: 64px;
-                            border: 2px solid transparent;
                         }
                     }
 
-                    .it-right {
+                    .il-left {
                         .name {
                             font-weight: 600;
                             font-size: 16px;
@@ -348,7 +287,7 @@ body[arco-theme="dark"] .web3go-layout-home-page {
                             background: var(--creator-follow-bg);
                             display: flex;
                             align-items: center;
-                            margin-top: 8px;
+                            margin-top: 4px;
                             cursor: pointer;
 
                             .arco-icon {
@@ -377,6 +316,45 @@ body[arco-theme="dark"] .web3go-layout-home-page {
                         }
                     }
                 }
+
+                .i-right {
+                    display: flex;
+                    align-items: center;
+                    text-align: right;
+
+                    .ir-left,
+                    .ir-right {
+                        // width: 110px;
+                    }
+
+                    .ir-split {
+                        width: 1px;
+                        height: 30px;
+                        background: #C9CDD4;
+                        margin: 12px;
+                    }
+
+
+
+                    .label {
+                        font-weight: 500;
+                        font-size: 12px;
+                        line-height: 20px;
+                        letter-spacing: -0.01em;
+                        color: #86909C;
+
+                    }
+
+                    .value {
+                        font-weight: 600;
+                        font-size: 20px;
+                        line-height: 28px;
+                        color: #4E5969;
+                    }
+
+
+                }
+
 
                 .i-bottom {
                     border-top: 1px dashed var(--creator-split-color);

@@ -349,7 +349,6 @@ class Component extends React.Component {
                         </div>
                     </div>) : null
                 }
-
                 <ShareModal onRef={(ref) => this.ShareModalRef = ref}></ShareModal>
             </div >
         )

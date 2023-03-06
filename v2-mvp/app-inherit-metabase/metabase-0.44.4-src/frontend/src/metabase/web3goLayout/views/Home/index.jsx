@@ -278,63 +278,75 @@ class Component extends React.Component {
                     <div className="section-content">
                         <DashBoardList myFollowingList={this.state.myFollowingList} setMyFavouriteCount={this.setMyFavouriteCount}></DashBoardList>
                     </div>
-                    <div className="section-title">
-                        <span>Top Creators</span>
-                        <svg onClick={() => { this.props.push('/layout/creatorList') }} className="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9.24269 3.75667L13.4854 7.99933L9.24269 12.242M1.66669 8H13.0984" strokeWidth="1.5" />
-                        </svg>
-                    </div>
-                    {
-                        this.state.creatorListLoading ? (
-                            <div className="section-content creator-list spin">
-                                <Spin></Spin>
+                    <div className="section-row">
+                        <div className="section-col">
+                            <div className="section-title">
+                                <span>Top Creators</span>
+                                <svg onClick={() => { this.props.push('/layout/creatorList') }} className="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.24269 3.75667L13.4854 7.99933L9.24269 12.242M1.66669 8H13.0984" strokeWidth="1.5" />
+                                </svg>
                             </div>
-                        ) : (
-                            <div className="section-content creator-list">
-                                {this.state.creatorList.slice(0, 6).map((v, i) => (
-                                    <div key={i} className={"item" + (i == 0 ? ' active' : '')}>
-                                        <div className="i-top">
-                                            <div className="headicon-wrap hover-item" onClick={() => this.goMySpace(v.accountId)}>
-                                                <img className="icon" src={require(`@/web3goLayout/assets/home/${i + 1}.png`)} alt="" />
-                                                <span className="rank">{i + 1}</span>
-                                                <UserHeadIcon className="headicon" iconSize={64} fontSize={18} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
-                                            </div>
-                                            <div className="it-right">
-                                                <div className="name hover-primary" onClick={() => this.goMySpace(v.accountId)} title={v.nickName}>{v.nickName}</div>
-                                                <div className="btn-wrap">
-                                                    {
-                                                        v.loading ? (
-                                                            <div className="btn hover-item spin" >
-                                                                <Spin />
-                                                                <span className="text">loading</span>
-                                                            </div>
-                                                        ) :
-                                                            (
-                                                                this.state.myFollowingList.find(sv => sv.accountId == v.creator_account_id) ? (
-                                                                    <div className="btn hover-item" onClick={() => { this.handleUnfollow(v) }}>
-                                                                        <IconCheck />
-                                                                        <span className="text">Following</span>
+                            {
+                                this.state.creatorListLoading ? (
+                                    <div className="section-content creator-list spin">
+                                        <Spin></Spin>
+                                    </div>
+                                ) : (
+                                    <div className="section-content creator-list">
+                                        {this.state.creatorList.slice(0, 6).map((v, i) => (
+                                            <div key={i} className="item">
+                                                <div className="i-left">
+                                                    <img className="icon" src={require(`@/web3goLayout/assets/home/${i + 1}.png`)} alt="" />
+                                                    <div className="headicon-wrap hover-item" onClick={() => this.goMySpace(v.accountId)}>
+                                                        <UserHeadIcon className="headicon" iconSize={64} fontSize={18} avatar={v.avatar} nickName={v.nickName}></UserHeadIcon>
+                                                    </div>
+                                                    <div className="il-left">
+                                                        <div className="name hover-primary" onClick={() => this.goMySpace(v.accountId)} title={v.nickName}>{v.nickName}</div>
+                                                        <div className="btn-wrap">
+                                                            {
+                                                                v.loading ? (
+                                                                    <div className="btn hover-item spin" >
+                                                                        <Spin />
+                                                                        <span className="text">loading</span>
                                                                     </div>
-                                                                ) : (
-                                                                    <div className="btn hover-item" onClick={() => { this.handleFollow(v) }}>
-                                                                        <IconPlus />
-                                                                        <span className="text">Follow</span>
-                                                                    </div>
-                                                                )
-                                                            )
-                                                    }
+                                                                ) :
+                                                                    (
+                                                                        this.state.myFollowingList.find(sv => sv.accountId == v.creator_account_id) ? (
+                                                                            <div className="btn hover-item" onClick={() => { this.handleUnfollow(v) }}>
+                                                                                <IconCheck />
+                                                                                <span className="text">Following</span>
+                                                                            </div>
+                                                                        ) : (
+                                                                            <div className="btn hover-item" onClick={() => { this.handleFollow(v) }}>
+                                                                                <IconPlus />
+                                                                                <span className="text">Follow</span>
+                                                                            </div>
+                                                                        )
+                                                                    )
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="i-right">
+                                                    <div className="ir-left">
+                                                        <div className="label">Dashboards</div>
+                                                        <div className="value">{numberSplit(v.dashboard_count)}</div>
+                                                    </div>
+                                                    <div className="ir-split"></div>
+                                                    <div className="ir-right">
+                                                        <div className="label">Datasets</div>
+                                                        <div className="value">{numberSplit(v.dashboard_count)}</div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="i-bottom">
-                                            <span className="label">Dashboards</span>
-                                            <span className="value">{numberSplit(v.dashboard_count)}</span>
-                                        </div>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
-                        )
-                    }
+                                )
+                            }
+                        </div>
+                        <div className="section-col"></div>
+                    </div>
+
                 </div >
             </div >
         )
