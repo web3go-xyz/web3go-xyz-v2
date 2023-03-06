@@ -17,6 +17,8 @@ import { ShareReferralCode } from "../entity/platform-dashboard/ShareReferralCod
 import { ReportCard } from "../entity/metabase/ReportCard";
 import { ReportDashboardcard } from "../entity/metabase/ReportDashboardcard";
 import { CoreUser } from "../entity/metabase/CoreUser";
+import { DatasetExt } from "../entity/platform-dataset/DatasetExt";
+import { DatasetViewLog } from "../entity/platform-dataset/DatasetViewLog";
 
 export class RepositoryConsts {
 
@@ -103,6 +105,16 @@ export class RepositoryConsts {
       entityTarget: DashboardTag
     },
 
+    PLATFORM_DATASET_EXT_REPOSITORY: {
+      provide: 'PLATFORM_DATASET_EXT_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: DatasetExt
+    },
+    PLATFORM_DATASET_VIEW_LOG_REPOSITORY: {
+      provide: 'PLATFORM_DATASET_VIEW_LOG_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: DatasetViewLog
+    },
 
     //share
     PLATFORM_SHARE_REFERRAL_CODE_REPOSITORY: {

@@ -17,7 +17,6 @@ import { QueryRelatedDashboardsRequest } from './model/QueryRelatedDashboardsReq
 
 
 import { AppConfig } from 'src/base/setting/appConfig';
-import { Dataset } from 'src/base/entity/platform-dataset/Dataset';
 import { ReportCard } from 'src/base/entity/metabase/ReportCard';
 import { randomUUID } from 'crypto';
 import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
