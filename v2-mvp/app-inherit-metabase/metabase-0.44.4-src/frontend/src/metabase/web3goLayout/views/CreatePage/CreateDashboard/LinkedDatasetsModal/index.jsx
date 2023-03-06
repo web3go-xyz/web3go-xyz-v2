@@ -16,6 +16,9 @@ import { LayoutLoginApi, LayoutDashboardApi, CardApi, MetabaseApi } from '@/serv
 import {
     getDashboardComplete,
 } from "@/dashboard/selectors";
+import Questions from "metabase/entities/questions";
+import * as dashboardActions from "@/dashboard/actions";
+
 const Option = Select.Option;
 const mapStateToProps = (state, props) => {
     return {
@@ -26,8 +29,10 @@ const mapStateToProps = (state, props) => {
     }
 };
 const mapDispatchToProps = {
+    ...dashboardActions,
     toggleDark,
     push,
+    archive: id => Questions.actions.setArchived({ id }, true),
 };
 
 class Component extends React.Component {
@@ -36,7 +41,6 @@ class Component extends React.Component {
         this.state = {
             visible: false,
             loading: false,
-            datasetList: []
         }
     }
     componentDidMount() {
@@ -44,48 +48,60 @@ class Component extends React.Component {
     }
     componentDidUpdate(prevProps) {
         if (JSON.stringify(prevProps.usedDatasetList) !== JSON.stringify(this.props.usedDatasetList)) {
-            this.getDatasetList();
+            this.props.getDatasetList();
         }
     }
-    getDatasetList = async () => {
-        this.setState({
-            loading: true
-        });
-        let promiseArr = [];
-        this.props.usedDatasetList.forEach(v => {
-            let cardId;
-            if (v.startsWith('card__')) {
-                cardId = v.split('__')[1];
-            } else {
-                cardId = v;
-            }
-            promiseArr.push(CardApi.get({
-                cardId: cardId
-            }))
-        });
-        const resultArr = await Promise.all(promiseArr);
-        this.setState({
-            datasetList: resultArr,
-            loading: false
-        });
-    }
+
     init = () => {
         this.setState({
             visible: true
         })
-
     }
     sure = () => {
-
+        this.setState({ visible: false })
     }
-    editDataset = () => {
-
+    refreshDatasetList = () => {
+        this.props.getDatasetList();
     }
-    delDataset = () => {
-
+    editDataset = (v) => {
+        const cardId = v.id;
+        const slug = slugg(v.name);
+        const suffix = slug ? `${cardId}-${slug}` : cardId;
+        window.open(`/layout/create/dataset/${suffix}`);
+    }
+    delDataset = (datasetObj) => {
+        Modal.confirm({
+            wrapClassName: 'common-confirm-modal',
+            closable: true,
+            title: 'Delete',
+            content:
+                'Are you sure to delete ?',
+            cancelText: 'Cancel',
+            onOk: async () => {
+                const linkedDashCardList = this.props.dashboard.ordered_cards.filter(v => {
+                    const str = v.card && v.card.dataset_query && v.card.dataset_query.query && v.card.dataset_query.query['source-table'];
+                    let card_id2;
+                    if (str.startsWith('card__')) {
+                        card_id2 = str.split('__')[1];
+                    } else {
+                        card_id2 = str;
+                    }
+                    if (card_id2 == datasetObj.id) {
+                        return true
+                    }
+                    return false;
+                })
+                for (const v of linkedDashCardList) {
+                    await this.props.removeCardFromDashboard({
+                        dashId: this.props.dashboard.id,
+                        dashcardId: v.id
+                    })
+                }
+            }
+        });
     }
     render() {
-        const { datasetList, loading } = this.state;
+        const { datasetList } = this.props;
         return (
             <Modal
                 autoFocus={false}
@@ -98,14 +114,13 @@ class Component extends React.Component {
             >
                 <div className="modal-content">
                     <div className="btn-wrap">
-                        <Button type='outline' className="btn">
+                        <Button onClick={this.refreshDatasetList} type='outline' className="btn">
                             <IconSync style={{ fontSize: 16 }} />
                             <span>Refresh</span>
                         </Button>
                     </div>
                     {
-
-                        loading ? <Spin style={
+                        this.props.getUsedDatasetListLoading ? <Spin style={
                             {
                                 display: 'block', minHeight: 100, display: 'flex',
                                 justifyContent: 'center',

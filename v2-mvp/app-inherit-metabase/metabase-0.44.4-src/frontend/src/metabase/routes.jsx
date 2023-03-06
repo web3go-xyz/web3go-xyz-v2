@@ -21,6 +21,7 @@ import MySpace from "metabase/web3goLayout/views/MySpace";
 import GlobalSearch from "metabase/web3goLayout/views/GlobalSearch";
 import DashBoardList from "metabase/web3goLayout/views/DashBoardList";
 import DashBoardDetail from "metabase/web3goLayout/views/DashBoardDetail";
+import DatasetDetail from "metabase/web3goLayout/views/DatasetDetail";
 import CreatePage from "metabase/web3goLayout/views/CreatePage";
 
 import CreatorList from "metabase/web3goLayout/views/CreatorList";
@@ -228,6 +229,11 @@ export const getRoutes = store => (
           <Route
             path="dashboardDetail/:uuid"
             component={DashBoardDetail}
+          >
+          </Route>
+          <Route
+            path="datasetDetail/:uuid"
+            component={DatasetDetail}
           >
           </Route>
           <Route

@@ -16,7 +16,7 @@ import * as dashboardActions from "@/dashboard/actions";
 import { publicSpaceCollectionId } from "metabase/redux/app";
 import domtoimage from 'dom-to-image';
 import event from '@/web3goLayout/event';
-import { LayoutDashboardApi } from "../../../../services";
+import { LayoutDashboardApi, CardApi } from "../../../../services";
 
 import { addTextDashCardToDashboard, addImageDashCardToDashboard, addVideoDashCardToDashboard } from "../../../../dashboard/actions";
 import {
@@ -64,7 +64,9 @@ class Component extends React.Component {
             saveBtnLoading: false,
             postBtnLoading: false,
             isEditing: true,
-            originDashboardDetail: {}
+            originDashboardDetail: {},
+            datasetList: [],
+            getUsedDatasetListLoading: false
         }
         this.dashboardNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
@@ -78,6 +80,9 @@ class Component extends React.Component {
         // setTimeout(() => {
         //     this.onAddImageBox({preload: true});
         // }, 1000)
+    }
+    componentWillUnmount() {
+        event.off('editChartEvent', this.handleEditChart)
     }
     componentDidUpdate(prevProps) {
         if (prevProps.params !== this.props.params) {
@@ -276,8 +281,6 @@ class Component extends React.Component {
             dashboardId,
             params: { type: 'video', action: 'add', dashboardId, }
         });
-
-
     }
 
     addChartToDashboard = async (cardId) => {
@@ -407,6 +410,28 @@ class Component extends React.Component {
     //         this.props.push('/');
     //     });
     // }
+    getDatasetList = async () => {
+        this.setState({
+            getUsedDatasetListLoading: true
+        });
+        let promiseArr = [];
+        this.usedDatasetList.forEach(v => {
+            let cardId;
+            if (v.startsWith('card__')) {
+                cardId = v.split('__')[1];
+            } else {
+                cardId = v;
+            }
+            promiseArr.push(CardApi.get({
+                cardId: cardId
+            }))
+        });
+        const resultArr = await Promise.all(promiseArr);
+        this.setState({
+            datasetList: resultArr.filter(v => !v.archived),
+            getUsedDatasetListLoading: false
+        });
+    }
     get usedDatasetList() {
         const { dashboard } = this.props;
         const map = {};
@@ -419,9 +444,6 @@ class Component extends React.Component {
             }
         });
         return Object.keys(map).map(key => map[key])
-    }
-    get usedDatasetListCount() {
-        return this.usedDatasetList.length
     }
     render() {
         const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList, addFilterDrawerVisible, addFilterDrawerIsEdit, isEditing, originDashboardDetail } = this.state;
@@ -470,14 +492,14 @@ class Component extends React.Component {
                                 }
                             </div>
                             {
-                                this.state.currentDashboardId >= 0 ? (
+                                this.state.currentDashboardId >= 0 && !this.state.getUsedDatasetListLoading && this.state.datasetList.length > 0 ? (
                                     <div className="linked-datasets">
                                         <div onClick={this.clickLinkedDatasets} className="inner hover-primary">
                                             <span>
                                                 Linked Datasets:
                                             </span>
                                             <span className="number">
-                                                {this.usedDatasetListCount}
+                                                {this.state.datasetList.length}
                                             </span>
                                         </div>
                                     </div>
@@ -539,7 +561,7 @@ class Component extends React.Component {
                     addFilterDrawerIsEdit={addFilterDrawerIsEdit}
                     changeAddFilterDrawerIsEdit={this.changeAddFilterDrawerIsEdit}
                 ></NewCardEditorSidebar>
-                <LinkedDatasetsModal {...this.props} usedDatasetList={this.usedDatasetList} onRef={(ref) => this.LinkedDatasetsModalRef = ref} ></LinkedDatasetsModal>
+                <LinkedDatasetsModal {...this.props} usedDatasetList={this.usedDatasetList} datasetList={this.state.datasetList} getDatasetList={this.getDatasetList} getUsedDatasetListLoading={this.state.getUsedDatasetListLoading} onRef={(ref) => this.LinkedDatasetsModalRef = ref} ></LinkedDatasetsModal>
             </div >
         )
     }

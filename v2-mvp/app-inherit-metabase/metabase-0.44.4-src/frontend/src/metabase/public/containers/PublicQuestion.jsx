@@ -172,6 +172,7 @@ class PublicQuestion extends Component {
   };
 
   render() {
+    console.log('12412');
     const {
       params: { uuid, token },
       metadata,

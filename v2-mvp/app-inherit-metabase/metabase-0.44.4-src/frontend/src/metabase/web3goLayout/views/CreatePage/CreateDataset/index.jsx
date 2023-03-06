@@ -87,7 +87,8 @@ class Component extends React.Component {
             isEditing: true,
             alreadyInitRawData: false,
             alreadyInitEditData: false,
-            options: ['Beijing', 'Shanghai', 'Guangzhou', 'Disabled']
+            options: ['Beijing', 'Shanghai', 'Guangzhou', 'Disabled'],
+            originCardDetail: {}
         }
         this.datasetNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
@@ -114,6 +115,11 @@ class Component extends React.Component {
                     alreadyInitEditData: true
                 })
             }
+        }
+        if (!prevProp.card && this.props.card) {
+            this.setState({
+                originCardDetail: this.props.card
+            });
         }
     }
     getAllRawData = async () => {
@@ -260,7 +266,7 @@ class Component extends React.Component {
             })
         }
     }
-    handlePostDashboard = (isDraft) => {
+    handlePostDataset = (isDraft) => {
         if (this.state.saveBtnLoading || this.state.postBtnLoading) {
             return;
         }
@@ -271,6 +277,9 @@ class Component extends React.Component {
                 [loadingKey]: true
             });
             event.emit('addChartSave', this.state.datasetName, async (cardId, card) => {
+                if (!isDraft) {
+                    await this.props.createPublicLink({ id: cardId });
+                }
                 this.setState({
                     chartName: card.name
                 });
@@ -353,7 +362,7 @@ class Component extends React.Component {
     }
     render() {
         const { tagList, datasetName, ifEditDatasetName, ifEditTag, allTagList,
-            isEditing, originDashboardDetail, options, rawDataLoading, hideSideBar, tabIndex } = this.state;
+            isEditing, options, rawDataLoading, hideSideBar, tabIndex, originCardDetail } = this.state;
         const ifEdit = this.props.card && (this.props.card.id || this.props.card.original_card_id)
         return (
             <div className="web3go-dataset-create-page">
@@ -393,16 +402,18 @@ class Component extends React.Component {
                         </div>
                     </div>
                     {
-
-                        <div className="pt-right">
-                            <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
-                            <Button className="btn" loading={this.state.saveBtnLoading} onClick={() => this.handlePostDashboard(true)}>Save Draft</Button>
-                            <Button className="btn" loading={this.state.postBtnLoading} onClick={() => this.handlePostDashboard(false)} type="primary">Post</Button>
-                        </div>
-                        // <div className="pt-right">
-                        //     <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
-                        //     <Button className="btn" loading={this.state.postBtnLoading} onClick={() => this.handlePostDashboard(false)} type="primary">Save</Button>
-                        // </div>
+                        !originCardDetail.public_uuid ? (
+                            <div className="pt-right">
+                                <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
+                                <Button className="btn" loading={this.state.saveBtnLoading} onClick={() => this.handlePostDataset(true)}>Save Draft</Button>
+                                <Button className="btn" loading={this.state.postBtnLoading} onClick={() => this.handlePostDataset(false)} type="primary">Post</Button>
+                            </div>
+                        ) : (
+                            <div className="pt-right">
+                                <Button className="btn" onClick={this.handleCancel}>Cancel</Button>
+                                <Button className="btn" loading={this.state.postBtnLoading} onClick={() => this.handlePostDataset(false)} type="primary">Save</Button>
+                            </div>
+                        )
                     }
                 </div>
                 <div className="tabs">

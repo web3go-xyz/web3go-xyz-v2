@@ -12,7 +12,8 @@ import { LayoutDashboardApi, LayoutLoginApi } from '@/services'
 import RelatedDashboardList from './RelatedDashboardList';
 import CreatorList from '@/web3goLayout/components/CreatorList';
 import event from '@/web3goLayout/event';
-import PublicDashboard from "metabase/public/containers/PublicDashboard";
+import PublicQuestion from "@/public/containers/PublicQuestion";
+
 import moment from 'moment';
 import ShareModal from "@/web3goLayout/components/ShareModal";
 import domtoimage from 'dom-to-image';
@@ -39,7 +40,7 @@ class Component extends React.Component {
         super(props);
         this.state = {
             // 用来刷新
-            showPublicDashboard: true,
+            showPublicDataset: true,
             screenShortLoading: false,
             myFollowingList: [],
             favouriteList: [],
@@ -196,16 +197,16 @@ class Component extends React.Component {
             "dashboardIds": [this.state.detailData.id]
         }).then(d => {
             this.setState({
-                showPublicDashboard: false
+                showPublicDataset: false
             }, () => {
                 this.setState({
-                    showPublicDashboard: true,
+                    showPublicDataset: true,
                     refreshTime: moment().format('YYYY-MM-DD HH:mm')
                 });
             })
         });
     }
-    getDashboardOriginId = (id) => {
+    getDatasetOriginId = (id) => {
         this.setState({
             dashboardId: id
         });
@@ -229,7 +230,7 @@ class Component extends React.Component {
     render() {
         const { detailData, refreshTime } = this.state;
         return (
-            <div className="web3go-dashboardDetail-page">
+            <div className="web3go-datasetDetail-page">
                 {detailData.name ? (
                     <div className="white-bg">
                         <div className="common-layout">
@@ -308,16 +309,16 @@ class Component extends React.Component {
                                 <IconSync style={{ fontSize: 16 }} />
                                 <span>Refresh</span>
                             </Button>
-                            <Button type="secondary" onClick={this.handleScreenshot}>
+                            {/* <Button type="secondary" onClick={this.handleScreenshot}>
                                 <IconCamera style={{ fontSize: 16 }} />
                                 <span>Screenshot</span>
-                            </Button>
+                            </Button> */}
                         </div>
-                        <span className="time">Last run time:  {refreshTime}</span>
+                        <span className="time">Last run time:   {refreshTime}</span>
                     </div>
                     <div id="dashboard-detail-screenshort" className="dashboard-wrap">
-                        {this.state.showPublicDashboard ?
-                            <PublicDashboard getDashboardOriginId={this.getDashboardOriginId} {...this.props}></PublicDashboard>
+                        {this.state.showPublicDataset ?
+                            <PublicQuestion getDatasetOriginId={this.getDatasetOriginId} {...this.props}></PublicQuestion>
                             : ''
                         }
                     </div>

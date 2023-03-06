@@ -1,10 +1,10 @@
-body[arco-theme="dark"] .web3go-dashboardDetail-page {
+body[arco-theme="dark"] .web3go-datasetDetail-page {
     --tag-item-bg: #2A2A2B;
     --tag-item-color: #6B7785;
-    min-height: calc(100vh - 332px);
 }
 
-.web3go-dashboardDetail-page {
+.web3go-datasetDetail-page {
+    min-height: calc(100vh - 332px);
     background: rgb(250, 251, 252);
     --tag-item-color: #4E5969;
     --tag-item-bg: #F2F3F5;
@@ -227,13 +227,17 @@ body[arco-theme="dark"] .web3go-dashboardDetail-page {
     .dashboard-wrap {
         position: relative;
 
+        .scroll-show {
+            position: relative;
+        }
+
         &>.EmbedFrame {
             background: transparent;
             position: initial;
 
             .EmbedFrame-header {
                 background: transparent;
-
+                padding: 0;
                 &>.my2 {
                     display: none;
                 }
@@ -250,9 +254,7 @@ body[arco-theme="dark"] .web3go-dashboardDetail-page {
                 display: none;
             }
 
-            .Dashboard {
-                padding: 0;
-            }
+
         }
     }
 
