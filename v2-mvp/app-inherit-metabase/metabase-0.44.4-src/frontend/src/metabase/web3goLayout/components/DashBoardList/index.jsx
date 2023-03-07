@@ -238,20 +238,6 @@ class Component extends React.Component {
             this.getList(true);
         });
     }
-    onChangeTable = (pagination, sorter) => {
-        const { current } = pagination;
-        this.setState((state) => {
-            return {
-                tableSort: sorter,
-                pagination: {
-                    ...state.pagination,
-                    current
-                }
-            }
-        }, () => {
-            this.getList();
-        });
-    }
     clickFilter = () => {
         if (!this.props.userData.account) {
             event.emit('goSignIn');

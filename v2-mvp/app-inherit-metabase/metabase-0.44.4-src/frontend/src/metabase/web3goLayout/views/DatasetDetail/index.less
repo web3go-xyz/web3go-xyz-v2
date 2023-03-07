@@ -9,6 +9,12 @@ body[arco-theme="dark"] .web3go-datasetDetail-page {
     --tag-item-color: #4E5969;
     --tag-item-bg: #F2F3F5;
 
+    .common-layout {
+        padding: 0 120px;
+        width: auto;
+        margin: 0;
+    }
+
     .loading-wrap {
         z-index: 9999;
         background-color: var(--color-mask-bg);
@@ -191,70 +197,132 @@ body[arco-theme="dark"] .web3go-datasetDetail-page {
         }
     }
 
-    .dashboard-top {
-        padding: 24px 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        .left {
-            .arco-btn {
-                height: 32px;
-                border-radius: 6px;
 
-                &+.arco-btn {
-                    margin-left: 12px;
-                }
-
-                svg {
-                    display: inline-block;
-                    vertical-align: middle;
-                }
-
-                span {
-                    vertical-align: middle;
-                }
-            }
-        }
-
-        .time {
-            font-weight: 400;
-            font-size: 12px;
-            line-height: 20px;
-            color: #86909C;
-        }
-    }
 
     .dashboard-wrap {
-        position: relative;
+        .tab {
+            display: flex;
+            align-items: center;
 
-        .scroll-show {
-            position: relative;
+            .item {
+                padding: 2px 8px;
+                font-weight: 500;
+                font-size: 12px;
+                line-height: 20px;
+                text-align: center;
+                color: #6B7785;
+                border: 1px solid #C9CDD4;
+                border-radius: 4px;
+                margin-right: 8px;
+
+                &.active {
+                    font-weight: 600;
+                    font-size: 16px;
+                    line-height: 24px;
+                    color: #4E5969;
+                    border: 0;
+
+                }
+            }
         }
 
-        &>.EmbedFrame {
-            background: transparent;
-            position: initial;
+        .dashboard-top {
+            padding: 24px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
 
-            .EmbedFrame-header {
-                background: transparent;
-                padding: 0;
-                &>.my2 {
-                    display: none;
+            .left {
+                display: flex;
+                align-items: center;
+
+                .search-item {
+                    width: 240px;
+                    margin-right: 12px;
+
+                    .arco-input {
+                        height: 31px;
+                    }
                 }
 
-                &>.flex>.mt1 {
-                    margin-top: 0;
-                    margin-bottom: 10px;
+                .limit {
+                    margin-right: 12px;
+                    height: 32px;
+                    display: flex;
+                    align-items: center;
+
+                    .prefix,
+                    .suffix {
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 61px;
+                        font-weight: 400;
+                        font-size: 14px;
+                        color: #4E5969;
+                        background: #F2F3F5;
+                    }
+
+                    .prefix {
+                        border-top-left-radius: 6px;
+                        border-bottom-left-radius: 6px;
+                        border-right: 1px solid #E5E6E8;
+                    }
+
+                    .suffix {
+                        border-top-right-radius: 6px;
+                        border-bottom-right-radius: 6px;
+                        border-left: 1px solid #E5E6E8;
+                    }
+
+                    .arco-input-inner-wrapper {
+                        border-radius: 0;
+                    }
+
+                    .arco-input {
+                        height: 31px;
+                    }
                 }
 
-                // display: none;
+                .arco-btn {
+                    height: 32px;
+                    border-radius: 6px;
+
+                    &+.arco-btn {
+                        margin-left: 12px;
+                    }
+
+                    svg {
+                        display: inline-block;
+                        vertical-align: middle;
+                    }
+
+                    span {
+                        vertical-align: middle;
+                    }
+                }
             }
 
-            .EmbedFrame-footer {
-                display: none;
+            .time {
+                font-weight: 400;
+                font-size: 12px;
+                line-height: 20px;
+                color: #86909C;
             }
+        }
 
-
+        .sql-mode {
+            white-space: pre-wrap;
+            margin-top: 24px;
+            width: 100%;
+            height: 433px;
+            background: #E5E6E8;
+            padding: 20px;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 22px;
+            color: #6B7785;
         }
     }
 
@@ -269,6 +337,7 @@ body[arco-theme="dark"] .web3go-datasetDetail-page {
             color: var(--4eColor);
             display: flex;
             align-items: center;
+            margin-bottom: 24px;
 
             span {
                 margin-right: 4px;

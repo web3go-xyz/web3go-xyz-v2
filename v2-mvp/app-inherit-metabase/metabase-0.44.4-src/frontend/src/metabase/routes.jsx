@@ -232,7 +232,7 @@ export const getRoutes = store => (
           >
           </Route>
           <Route
-            path="datasetDetail/:uuid"
+            path="datasetDetail/:id"
             component={DatasetDetail}
           >
           </Route>

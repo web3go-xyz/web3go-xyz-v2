@@ -1,14 +1,15 @@
 /* eslint-disable react/prop-types */
 import React from "react";
 import slugg from "slugg";
+import cx from "classnames";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip } from '@arco-design/web-react';
-import { IconLaunch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
+import { Button, Modal, Form, Input, Upload, Spin, Message, AutoComplete, Tabs, Typography, Tooltip, InputNumber, Table } from '@arco-design/web-react';
+import { IconLaunch, IconSync, IconStar, IconCamera, IconInfoCircle, IconSearch } from '@arco-design/web-react/icon';
 import { push } from "react-router-redux";
 import { changeUserData, changeMyDashboardList } from "metabase/redux/app";
 import { changeGlobalSearchValue } from "metabase/redux/app";
-import { LayoutDashboardApi, LayoutLoginApi } from '@/services'
+import { LayoutDashboardApi, LayoutLoginApi, CardApi, MetabaseApi } from '@/services'
 import RelatedDashboardList from './RelatedDashboardList';
 import CreatorList from '@/web3goLayout/components/CreatorList';
 import event from '@/web3goLayout/event';
@@ -39,6 +40,10 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            ifTableMode: true,
+            previewLimit: null,
+            searchKey: '',
+            loading: false,
             // 用来刷新
             showPublicDataset: true,
             screenShortLoading: false,
@@ -50,10 +55,35 @@ class Component extends React.Component {
                 nickName: '',
                 createdAt: undefined
             },
+            datasetData: {},
             dashboardId: '',
-            refreshTime: moment().format('YYYY-MM-DD HH:mm')
+            refreshTime: moment().format('YYYY-MM-DD HH:mm'),
+            pagination: {
+                showJumper: true,
+                total: 0,
+                pageSize: 10,
+                current: 1,
+            },
+            tableLoading: false
         }
         this.ShareModalRef = React.createRef();
+    }
+    onChangeTable = (pagination, sorter) => {
+        const { current } = pagination;
+        this.setState((state) => {
+            return {
+                tableSort: sorter,
+                pagination: {
+                    ...state.pagination,
+                    current
+                }
+            }
+        });
+    }
+    switchToTableMode = (flag) => {
+        this.setState({
+            ifTableMode: flag
+        });
     }
     openShareModal() {
         this.ShareModalRef.init(this.state.detailData);
@@ -74,23 +104,48 @@ class Component extends React.Component {
             });
         });
     }
-    getAccountList = (accountIdList) => {
-        LayoutLoginApi.searchAccountInfo({
-            accountIds: accountIdList,
-            includeExtraInfo: false
-        }).then(d => {
-            this.setState({
-                accountList: d.map(v => v.account),
-                tableData: d.list,
-                detailData: {
-                    ...d.list[0],
-                    nickName: nickName
-                }
-            });
-        });
-    }
     componentDidMount() {
         this.getMyDashboards();
+        this.getDatasetTable();
+    }
+    getDatasetTable = async () => {
+        this.setState({
+            loading: true
+        });
+        const id = this.props.params.id;
+        const d = await CardApi.get({
+            cardId: id
+        })
+        const obj = {
+            "database": d.database_id,
+            "type": "query",
+            "query": { "source-table": 'card__' + id },
+            "parameters": []
+        }
+        const d2 = await MetabaseApi.dataset(obj);
+        this.setState({
+            datasetData: { ...d, data: d2 },
+            loading: false
+        });
+    }
+    handleRefresh = async () => {
+        this.setState({
+            tableLoading: true
+        });
+        const id = this.props.params.id;
+        const obj = {
+            "database": this.state.datasetData.database_id,
+            "type": "query",
+            "query": { "source-table": 'card__' + id },
+            "parameters": []
+        }
+        const d = await MetabaseApi.dataset(obj);
+        this.setState({
+            datasetData: { ...this.state.datasetData, data: d },
+            loading: false,
+            tableLoading: false,
+            refreshTime: moment().format('YYYY-MM-DD HH:mm')
+        });
     }
     getMyDashboards = () => {
         if (!this.props.userData.account) {
@@ -141,96 +196,46 @@ class Component extends React.Component {
             this.getMyFavourites();
         });
     }
-    handleScreenshot = () => {
-        this.setState({
-            screenShortLoading: true
-        });
-        const el = document.getElementById('dashboard-detail-screenshort');
-        domtoimage.toPng(el, {
-            bgcolor: 'rgb(250,251,252)',
-        })
-            .then((dataUrl) => {
-                var link = document.createElement('a');
-                link.download = this.state.detailData.name + '.png';
-                link.href = dataUrl;
-                link.click();
-                this.setState({
-                    screenShortLoading: false
-                });
-                // const canvas1 = document.createElement("canvas");
-                // // const canvas1 = document.getElementById("myCanvas");
-                // // 设置宽高
-                // canvas1.width = el.offsetWidth; //注意：没有单位
-                // canvas1.height = el.offsetHeight; //注意：没有单位
-                // const initalImg = new Image();
-                // initalImg.crossOrigin = "anonymous"
-                // initalImg.src = dataUrl; //由于图片异步加载，一定要等initalImg加载好，再设置src属性
-                // initalImg.onload = () => {
-                //     const iconImg = new Image();
-                //     iconImg.crossOrigin = "anonymous"
-                //     iconImg.src = require("@/web3goLayout/assets/layout/logo-white.png");
-                //     iconImg.onload = () => {
-                //         const ctx = canvas1.getContext("2d");
-                //         // 绘制图片
-                //         ctx.drawImage(initalImg, 0, 0);
-                //         //水印文字添加
-                //         // ctx.font = "14px Calibri";
-                //         // ctx.fillStyle = "rgba(0,0,0,0.8)";
-                //         // ctx.fillText("水印文字", 0, 14);
-                //         // 绘制水印
-                //         ctx.globalAlpha = 0.2;
-                //         ctx.drawImage(iconImg, 0, el.offsetHeight - 68, 255, 68);
-                //         const url = canvas1.toDataURL();
-                //         var link = document.createElement('a');
-                //         link.download = this.state.detailData.name + '.png';
-                //         link.href = url;
-                //         link.click();
-                //         this.setState({
-                //             screenShortLoading: false
-                //         });
-                //     };
-                // };
-            });
-    }
-    handleRefresh = () => {
-        LayoutDashboardApi.refresh({
-            "dashboardIds": [this.state.detailData.id]
-        }).then(d => {
-            this.setState({
-                showPublicDataset: false
-            }, () => {
-                this.setState({
-                    showPublicDataset: true,
-                    refreshTime: moment().format('YYYY-MM-DD HH:mm')
-                });
-            })
-        });
-    }
-    getDatasetOriginId = (id) => {
-        this.setState({
-            dashboardId: id
-        });
-        this.getMyFavourites();
-        LayoutDashboardApi.detail({
-            "dashboardIds": [id]
-        }).then(d => {
-            LayoutLoginApi.searchAccountInfo({
-                accountIds: d.list.map(v => v.creatorAccountId),
-                includeExtraInfo: false
-            }).then(data => {
-                this.setState({
-                    detailData: {
-                        ...d.list[0],
-                        nickName: data[0].account.nickName
-                    }
-                });
-            });
-        });
-    }
+
+
+
     render() {
-        const { detailData, refreshTime } = this.state;
+        const { detailData, refreshTime, previewLimit, searchKey, ifTableMode, datasetData, loading, tableLoading } = this.state;
+        let columns = [];
+        let formatTableData = [];
+        if (datasetData.data && datasetData.data.data) {
+            columns = datasetData.data.data.cols.map((v, i) => {
+                return {
+                    title: v.display_name,
+                    dataIndex: i,
+                }
+            })
+            formatTableData = datasetData.data.data.rows.map((v, i) => {
+                const obj = {}
+                obj.key = i;
+                v.forEach((sv, si) => {
+                    obj[si] = sv;
+                });
+                return obj
+            });
+        }
+
+        formatTableData = formatTableData.filter((v, i) => {
+            let limitFlag = true;
+
+            if (previewLimit && i >= previewLimit) {
+                limitFlag = false
+            }
+            let hasKey = false;
+            for (const sv of Object.keys(v)) {
+                if (v[sv] && String(v[sv]).includes(searchKey)) {
+                    hasKey = true;
+                }
+            }
+            return limitFlag && hasKey
+        })
         return (
-            <div className="web3go-datasetDetail-page">
+            <div className="web3go-datasetDetail-page common-form">
                 {detailData.name ? (
                     <div className="white-bg">
                         <div className="common-layout">
@@ -303,25 +308,52 @@ class Component extends React.Component {
                 ) : null}
 
                 <div className="common-layout">
-                    <div className="dashboard-top">
-                        <div className="left">
-                            <Button type="primary" onClick={this.handleRefresh}>
-                                <IconSync style={{ fontSize: 16 }} />
-                                <span>Refresh</span>
-                            </Button>
-                            {/* <Button type="secondary" onClick={this.handleScreenshot}>
-                                <IconCamera style={{ fontSize: 16 }} />
-                                <span>Screenshot</span>
-                            </Button> */}
+                    <Spin loading={loading} style={{ display: 'block', minHeight: 300 }}>
+                        <div className="dashboard-wrap">
+                            <div className="tab">
+                                <div className={cx("item hover-item", { active: ifTableMode })} onClick={() => { this.switchToTableMode(true) }}>Table</div>
+                                {
+                                    datasetData.query_type == 'native' ? <div className={cx("item hover-item", { active: !ifTableMode })} onClick={() => { this.switchToTableMode(false) }}>SQL</div> : null
+                                }
+                            </div>
+                            {
+                                ifTableMode ? (
+                                    <div className="table-mode">
+                                        <div className="dashboard-top">
+                                            <div className="left">
+                                                <div className="search-item">
+                                                    <Input
+                                                        allowClear
+                                                        onChange={(value) => { this.setState({ searchKey: value }) }}
+                                                        prefix={<IconSearch />}
+                                                        placeholder='Search in table'
+                                                    />
+                                                </div>
+                                                <div className="limit">
+                                                    <div className="prefix">Show</div>
+                                                    <InputNumber min={0} value={previewLimit} onChange={(value) => { this.setState({ previewLimit: value }) }} style={{ width: 117 }} />
+                                                    <div className="suffix">rows</div>
+                                                </div>
+                                                <Button type="primary" onClick={this.handleRefresh}>
+                                                    <IconSync style={{ fontSize: 16 }} />
+                                                    <span>Refresh</span>
+                                                </Button>
+
+                                            </div>
+                                            <span className="time">Last run time:   {refreshTime}</span>
+                                        </div>
+
+                                        <Table loading={tableLoading} scroll={{ x: 'max-content' }} borderCell columns={columns} data={formatTableData} pagination={{ showTotal: true, showJumper: true, sizeCanChange: true, }} />
+                                    </div>
+                                ) : (
+                                    <div className="sql-mode">
+                                        {datasetData.dataset_query.native.query}
+                                    </div>
+                                )
+                            }
+
                         </div>
-                        <span className="time">Last run time:   {refreshTime}</span>
-                    </div>
-                    <div id="dashboard-detail-screenshort" className="dashboard-wrap">
-                        {this.state.showPublicDataset ?
-                            <PublicQuestion getDatasetOriginId={this.getDatasetOriginId} {...this.props}></PublicQuestion>
-                            : ''
-                        }
-                    </div>
+                    </Spin>
                     {detailData.publicUUID ? (
                         <div className="relatedDashboardList-wrap">
                             <div className="r-title">
