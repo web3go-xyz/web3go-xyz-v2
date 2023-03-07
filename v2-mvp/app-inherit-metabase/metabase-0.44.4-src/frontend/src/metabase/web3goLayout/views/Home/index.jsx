@@ -344,7 +344,56 @@ class Component extends React.Component {
                                 )
                             }
                         </div>
-                        <div className="section-col"></div>
+                        <div className="section-col">
+                            <div className="section-title">
+                                <span>Top Datasets</span>
+                                <svg onClick={() => { this.props.push('/layout/creatorList') }} className="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.24269 3.75667L13.4854 7.99933L9.24269 12.242M1.66669 8H13.0984" strokeWidth="1.5" />
+                                </svg>
+                            </div>
+                            {
+                                this.state.creatorListLoading ? (
+                                    <div className="section-content dataset-list spin">
+                                        <Spin></Spin>
+                                    </div>
+                                ) : (
+                                    <div className="section-content dataset-list">
+                                        {this.state.creatorList.slice(0, 6).map((v, i) => (
+                                            <div key={i} className="item">
+                                                <div className="i-left">
+                                                    <img className="icon" src={require(`@/web3goLayout/assets/home/${i + 1}.png`)} alt="" />
+                                                    <div className="il-left">
+                                                        <div className="name hover-primary" onClick={() => this.goMySpace(v.accountId)} title={v.nickName}>{v.nickName}</div>
+                                                        <div className="info-wrap">
+                                                            <div className="info-item">
+                                                                <img className="icon" src={require(`@/web3goLayout/assets/home/favor.png`)} alt="" />
+                                                                <span>{numberSplit(v.dashboard_count)}</span>
+                                                            </div>
+                                                            <div className="info-item">
+                                                                <img className="icon" src={require(`@/web3goLayout/assets/home/share.png`)} alt="" />
+                                                                <span>{numberSplit(v.dashboard_count)}</span>
+                                                            </div>
+                                                            <div className="info-item">
+                                                                <img className="icon" src={require(`@/web3goLayout/assets/home/fork.png`)} alt="" />
+                                                                <span>{numberSplit(v.dashboard_count)}</span>
+                                                            </div>
+                                                            <div className="info-item">
+                                                                <img className="icon" src={require(`@/web3goLayout/assets/home/Dashboard-fill.png`)} alt="" />
+                                                                <span>{numberSplit(v.dashboard_count)}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <Button className='btn'>
+                                                    <img className="icon" src={require(`@/web3goLayout/assets/home/fork1.png`)} alt="" />
+                                                    <span>Forks</span>
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )
+                            }
+                        </div>
                     </div>
 
                 </div >

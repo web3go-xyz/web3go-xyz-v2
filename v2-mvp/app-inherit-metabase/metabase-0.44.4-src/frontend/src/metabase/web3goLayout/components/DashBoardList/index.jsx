@@ -352,6 +352,37 @@ class Component extends React.Component {
                     </div>
                 </div>
                 <div className={"search-params-wrap" + (this.state.paramsShow ? ' open' : '')}>
+                    <div className="Dashboard-tag">
+                        <div className="label">Dashboard tags</div>
+                        <Select
+                            placeholder='Please select tags'
+                            style={{ width: 386 }}
+                            allowClear
+                            onChange={(value) => {
+                                this.setState({
+                                    params: {
+                                        ...this.state.params,
+                                        createBy: value
+                                    }
+                                }, () => {
+                                    this.getList(true);
+                                });
+                            }
+                            }
+                        >
+                            {/* {this.props.myFollowingList.map((v, i) => (
+                                <Option key={i} value={v.accountId}>
+                                    {v.nickName}
+                                </Option>
+                            ))} */}
+                            <Option value="1">
+                                My following creators
+                            </Option>
+                            <Option value="2">
+                                Created by myself
+                            </Option>
+                        </Select>
+                    </div>
                     <div className="createby">
                         <div className="label">Created by</div>
                         <Select
