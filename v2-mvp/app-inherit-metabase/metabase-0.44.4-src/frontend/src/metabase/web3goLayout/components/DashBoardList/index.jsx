@@ -202,6 +202,20 @@ class Component extends React.Component {
             this.refreshTableAndFavourites();
         });
     }
+    onChangeTable = (pagination, sorter) => {
+        const { current } = pagination;
+        this.setState((state) => {
+            return {
+                tableSort: sorter,
+                pagination: {
+                    ...state.pagination,
+                    current
+                }
+            }
+        }, () => {
+            this.getList();
+        });
+    }
     getMyFavourites = () => {
         if (!this.props.currentUser) {
             return;
