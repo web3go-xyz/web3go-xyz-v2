@@ -266,6 +266,34 @@ class Component extends React.Component {
             })
         }
     }
+    uploadThumbnail = async (id, thumbnailBlob) => {
+        const formData = new FormData();
+        formData.append('file', thumbnailBlob);
+        await LayoutDashboardApi.previewUrl(id)(formData, { isUpload: true })
+    }
+    createThumbnail() {
+        return new Promise((resolve) => {
+            this.setState({
+                isEditing: false
+            }, () => {
+                const el = document.getElementById('dashboard-thumbnail');
+                domtoimage.toBlob(el, {
+                    quality: 0.2,
+                    width: 1200,
+                    height: 630,
+                    bgcolor: 'rgb(250,251,252)',
+                })
+                    .then((blob) => {
+                        this.setState({
+                            isEditing: true
+                        });
+                        resolve(blob);
+                    }).catch(e => {
+                        resolve(undefined)
+                    })
+            });
+        });
+    }
     handlePostDataset = (isDraft) => {
         if (this.state.saveBtnLoading || this.state.postBtnLoading) {
             return;
@@ -276,9 +304,20 @@ class Component extends React.Component {
             this.setState({
                 [loadingKey]: true
             });
+            let thumbnailBlob;
+            if (!isDraft) {
+                // thumbnailBlob = await this.createThumbnail();
+            }
             event.emit('addChartSave', this.state.datasetName, async (cardId, card) => {
                 if (!isDraft) {
                     await this.props.createPublicLink({ id: cardId });
+                    await LayoutDashboardApi.externalEvent({
+                        "topic": "dataset.changed",
+                        "data": cardId
+                    })
+                    if (thumbnailBlob) {
+                        // await this.uploadThumbnail(realId, thumbnailBlob);
+                    }
                 }
                 this.setState({
                     chartName: card.name

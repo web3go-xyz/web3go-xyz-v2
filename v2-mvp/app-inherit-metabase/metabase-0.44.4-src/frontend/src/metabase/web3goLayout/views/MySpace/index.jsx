@@ -2,15 +2,16 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Upload, Message, Tabs, Typography } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Upload, Message, Tabs, Typography, Dropdown, Menu } from '@arco-design/web-react';
 import { push } from "react-router-redux";
-import { IconEdit, IconSearch, IconArrowLeft, IconPlus, IconCheck } from '@arco-design/web-react/icon';
+import { IconEdit, IconSearch, IconArrowLeft, IconPlus, IconCheck, IconDown, IconMoreVertical } from '@arco-design/web-react/icon';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { LayoutLoginApi, LayoutCreatorApi } from '@/services'
 import event from '@/web3goLayout/event';
 import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 import DashBoardList from './DashBoardList';
+import DatasetList from './DatasetList';
 import FollowersList from './FollowersList';
 import moment from 'moment';
 import { numberSplit } from '@/web3goLayout/utils';
@@ -32,8 +33,17 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // default,followers,following
-            viewType: 'default',
+            state: 1,
+            stateList: [{
+                name: 'Dashboard',
+                value: 1
+            }, {
+                name: 'Dataset',
+                value: 2
+            }],
+            // dashboard,dataset,followers,following
+            viewType: 'dashboard',
+            ifDashboardInFavourite: true,
             activeTab: '1',
             isMyself: true,
             userInfo: {},
@@ -43,6 +53,7 @@ class Component extends React.Component {
             allFollowingList: []
         }
         this.DashboardRef = React.createRef();
+        this.DatasetRef = React.createRef();
     }
     componentDidMount() {
         this.getUserInfo();
@@ -66,6 +77,11 @@ class Component extends React.Component {
     setDashboardListCount = (dashboardListCount) => {
         this.setState({
             dashboardListCount
+        });
+    }
+    setDatasetListCount = (datasetListCount) => {
+        this.setState({
+            datasetListCount
         });
     }
     setMyFavouriteCount = (myFavouriteCount) => {
@@ -135,28 +151,68 @@ class Component extends React.Component {
         });
     }
     handleSearch = () => {
-        this.DashboardRef.getList(true);
+        if (this.state.activeTab == 1 || (this.state.activeTab == 3 && this.state.state == 1)) {
+            this.DashboardRef.getList(true);
+        } else {
+            this.DatasetRef.getList(true);
+        }
     }
     render() {
+        const stateObj = this.state.stateList.find(v => v.value == this.state.state);
         const { userInfo, isMyself, dashboardListCount, myFavouriteCount } = this.state;
         let main = (<div className="table-header">
             <Tabs activeTab={this.state.activeTab} onChange={this.setActiveTab}>
                 <TabPane key='1' title={`Dashboard ${dashboardListCount}`}>
                 </TabPane>
-                <TabPane key='2' title={`${this.state.isMyself ? 'My Favorites' : 'Favorites'} ${myFavouriteCount}`}>
+                <TabPane key='2' title={`Datasets ${dashboardListCount}`}>
+                </TabPane>
+                <TabPane key='3' title={`${this.state.isMyself ? 'My Favorites' : 'Favorites'} ${myFavouriteCount}`}>
                 </TabPane>
             </Tabs>
+            {this.state.activeTab == '3' ? (
+                <div className="filter-row">
+                    <Dropdown trigger='click' position="br" droplist={
+                        <Menu onClickMenuItem={(key) => {
+                            this.setState({
+                                state: key
+                            })
+                        }}>
+                            {
+                                this.state.stateList.map(v => <Menu.Item key={v.value}>{v.name}</Menu.Item>)
+                            }
+                        </Menu>
+                    }>
+                        <div className="btn hover-primary">
+                            <span>
+                                {stateObj.name}
+                            </span>
+                            <IconDown />
+                        </div>
+                    </Dropdown>
+                </div>
+            ) : null}
+            {this.state.activeTab == 1 || (this.state.activeTab == 3 && this.state.state == 1) ?
+                <DashBoardList
+                    isMyself={isMyself}
+                    isFavourite={this.state.activeTab == '3'}
+                    onRef={(ref) => this.DashboardRef = ref}
+                    accountId={userInfo.accountId}
+                    searchValue={this.state.searchValue}
+                    setDashboardListCount={this.setDashboardListCount}
+                    setMyFavouriteCount={this.setMyFavouriteCount}
+                ></DashBoardList>
+                :
+                <DatasetList
+                    isMyself={isMyself}
+                    isFavourite={this.state.activeTab == '3'}
+                    onRef={(ref) => this.DatasetRef = ref}
+                    accountId={userInfo.accountId}
+                    searchValue={this.state.searchValue}
+                    setDashboardListCount={this.setDatasetListCount}
+                    setMyFavouriteCount={this.setMyFavouriteCount}
+                ></DatasetList>
+            }
 
-            <DashBoardList
-                isMyself={isMyself}
-                viewType={this.state.viewType}
-                isFavourite={this.state.activeTab == '2'}
-                onRef={(ref) => this.DashboardRef = ref}
-                accountId={userInfo.accountId}
-                searchValue={this.state.searchValue}
-                setDashboardListCount={this.setDashboardListCount}
-                setMyFavouriteCount={this.setMyFavouriteCount}
-            ></DashBoardList>
             <Input
                 onChange={(value) => { this.setState({ searchValue: value }) }}
                 className="search-input"
@@ -170,7 +226,7 @@ class Component extends React.Component {
             main = (
                 <div className="list-wrap">
                     <div className="l-header">
-                        <IconArrowLeft onClick={() => { this.setState({ viewType: 'default' }) }} className="hover-item" />
+                        <IconArrowLeft onClick={() => { this.setState({ viewType: 'dashboard' }) }} className="hover-item" />
                         <span>Followers {numberSplit(userInfo.followedAccountCount)}</span>
                     </div>
                     <FollowersList getUserInfo={this.getUserInfo} allFollowingList={this.state.allFollowingList} getAllFollowingList={this.getAllFollowingList} viewType={this.state.viewType} accountId={userInfo.accountId}></FollowersList>
@@ -180,7 +236,7 @@ class Component extends React.Component {
             main = (
                 <div className="list-wrap">
                     <div className="l-header">
-                        <IconArrowLeft onClick={() => { this.setState({ viewType: 'default' }) }} className="hover-item" />
+                        <IconArrowLeft onClick={() => { this.setState({ viewType: 'dashboard' }) }} className="hover-item" />
                         <span>Following {numberSplit(userInfo.followingAccountCount)}</span>
                     </div>
                     <FollowersList getUserInfo={this.getUserInfo} allFollowingList={this.state.allFollowingList} getAllFollowingList={this.getAllFollowingList} viewType={this.state.viewType} accountId={userInfo.accountId}></FollowersList>

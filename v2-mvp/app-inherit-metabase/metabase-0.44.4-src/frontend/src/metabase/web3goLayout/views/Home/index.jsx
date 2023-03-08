@@ -2,7 +2,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Upload, Carousel, Spin } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Upload, Carousel, Spin, Menu, Dropdown } from '@arco-design/web-react';
 import { push } from "react-router-redux";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
@@ -168,7 +168,25 @@ class Component extends React.Component {
             this.listMyFollows();
         });
     }
-
+    clickCreate = (key) => {
+        if (key == '1') {
+            this.props.push({
+                pathname: "/layout/create",
+                state: {
+                    refresh: true,
+                    tabIndex: 0
+                }
+            })
+        } else {
+            this.props.push({
+                pathname: "/layout/create",
+                state: {
+                    refresh: true,
+                    tabIndex: 1
+                }
+            })
+        }
+    }
     render() {
         return (
             <div className="web3go-layout-home-page">
@@ -229,18 +247,18 @@ class Component extends React.Component {
                                             <img src={require("@/web3goLayout/assets/home/info11.png")} alt="" />
                                     }
                                 </div >
-                                {/* <div className="info-item hover-item">
+                                <div className="info-item">
                                     <div className="i-left">
                                         <div className="circle">
                                             <img src={require("@/web3goLayout/assets/home/info2.png")} alt="" />
                                         </div>
                                         <div className="text-wrap">
                                             <div className="label">Datasets</div>
-                                            <div className="value">800,246</div>
+                                            <div className="value">{numberSplit(this.state.dashboardListCount)}</div>
                                         </div>
                                     </div>
                                     <img src={require("@/web3goLayout/assets/home/info22.png")} alt="" />
-                                </div> */}
+                                </div>
                                 <div className="info-item">
                                     <div className="i-left">
                                         <div className="circle">
@@ -258,14 +276,15 @@ class Component extends React.Component {
                                             <img src={require("@/web3goLayout/assets/home/info33.png")} alt="" />
                                     }
                                 </div>
-                                <Link
-                                    to="/home"
-                                >
+                                <Dropdown trigger='click' droplist={<Menu style={{ width: 167 }} onClickMenuItem={(key) => { this.clickCreate(key) }}>
+                                    <Menu.Item key='1'>Dataset</Menu.Item>
+                                    <Menu.Item key='2'>Dashboard</Menu.Item>
+                                </Menu>} position='bottom'>
                                     <div className="btn hover-item">
-                                        <img src={require("@/web3goLayout/assets/home/add.png")} alt="" />
-                                        <span>New Dashboard</span>
+                                        <img src={require("@/web3goLayout/assets/home/add(1).png")} alt="" />
+                                        <span>Create</span>
                                     </div>
-                                </Link>
+                                </Dropdown>
                             </div >
                         )
                     }

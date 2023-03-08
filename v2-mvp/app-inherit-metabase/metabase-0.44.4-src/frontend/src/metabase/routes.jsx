@@ -20,6 +20,7 @@ import AccountSetting from "metabase/web3goLayout/views/AccountSetting";
 import MySpace from "metabase/web3goLayout/views/MySpace";
 import GlobalSearch from "metabase/web3goLayout/views/GlobalSearch";
 import DashBoardList from "metabase/web3goLayout/views/DashBoardList";
+import DatasetList from "metabase/web3goLayout/views/DatasetList";
 import DashBoardDetail from "metabase/web3goLayout/views/DashBoardDetail";
 import DatasetDetail from "metabase/web3goLayout/views/DatasetDetail";
 import CreatePage from "metabase/web3goLayout/views/CreatePage";
@@ -257,6 +258,11 @@ export const getRoutes = store => (
           >
           </Route>
           <Route
+            path="datasetList"
+            component={DatasetList}
+          >
+          </Route>
+          <Route
             path="creatorList"
             component={CreatorList}
           >
@@ -268,6 +274,14 @@ export const getRoutes = store => (
             />
             <Route
               path="create/:dashboardSlug"
+              component={CreatePage}
+            />
+            <Route
+              path="create/dashboard"
+              component={CreatePage}
+            />
+            <Route
+              path="create/dataset"
               component={CreatePage}
             />
             <Route

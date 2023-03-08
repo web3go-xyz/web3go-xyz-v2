@@ -6,8 +6,8 @@ import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typogr
 import { push } from "react-router-redux";
 import { changeUserData } from "metabase/redux/app";
 import { changeGlobalSearchValue } from "metabase/redux/app";
-import { LayoutLoginApi } from '@/services'
-import DashBoardList from '@/web3goLayout/components/DashBoardList';
+import { LayoutLoginApi, LayoutCreatorApi } from '@/services'
+import DatasetList from '@/web3goLayout/components/DatasetList';
 import CreatorList from '@/web3goLayout/components/CreatorList';
 import event from '@/web3goLayout/event';
 
@@ -30,40 +30,61 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            autoCompleteList: []
+            autoCompleteList: [],
+            myFollowingList: []
         }
+    }
+
+    componentDidMount() {
+        this.listMyFollows();
+    }
+
+    listMyFollows = () => {
+        if (!this.props.userData.account) {
+            return;
+        }
+        LayoutCreatorApi.listFollowing({
+            "pageSize": 9999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "account_id": this.props.userData.account.accountId,
+            "includeDetail": true
+        }).then(d => {
+            this.setState({
+                myFollowingList: d.list
+            })
+        });
     }
     changeTab = (key) => {
         if (key == 1) {
             this.props.push('/layout/dashboardList')
-        } else if (key == 2) {
-            this.props.push('/layout/datasetList')
+        } else if (key == 3) {
+            this.props.push('/layout/creatorList')
         }
     }
     render() {
         return (
-            <div className="web3go-creatorlist-page">
+            <div className="web3go-dashboardlist-page">
                 <div className="common-layout">
                     <div className="common-bread">
                         <div className="item hover-primary" onClick={() => { this.props.push('/') }}>Home</div>
                         <div className="split">/</div>
-                        <div className="item active">Creators</div>
+                        <div className="item active">Dashboard</div>
                     </div>
                 </div>
                 <div className="common-layout">
-                    <Tabs defaultActiveTab="3" onChange={this.changeTab}>
+                    <Tabs defaultActiveTab="2" onChange={this.changeTab}>
                         <TabPane key='1' title={'Dashboard'}>
-
                         </TabPane>
                         <TabPane key='2' title={'Datasets'}>
-
-                        </TabPane>
-                        <TabPane key='3' title={'Creators'}>
                             <Typography.Paragraph>
-                                <div className="createlist-wrap">
-                                    <CreatorList></CreatorList>
+                                <div className="dashboardlist-wrap">
+                                    <DatasetList myFollowingList={this.state.myFollowingList}></DatasetList>
                                 </div>
                             </Typography.Paragraph>
+                        </TabPane>
+                        <TabPane key='3' title={'Creators'}>
+
                         </TabPane>
                     </Tabs>
                 </div>

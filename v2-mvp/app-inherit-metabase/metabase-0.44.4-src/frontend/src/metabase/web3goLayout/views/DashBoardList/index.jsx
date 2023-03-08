@@ -55,6 +55,13 @@ class Component extends React.Component {
             })
         });
     }
+    changeTab = (key) => {
+        if (key == 2) {
+            this.props.push('/layout/datasetList')
+        } else if (key == 3) {
+            this.props.push('/layout/creatorList')
+        }
+    }
     render() {
         return (
             <div className="web3go-dashboardlist-page">
@@ -66,7 +73,7 @@ class Component extends React.Component {
                     </div>
                 </div>
                 <div className="common-layout">
-                    <Tabs defaultActiveTab="1" onChange={() => { this.props.push('/layout/creatorList') }}>
+                    <Tabs defaultActiveTab="1" onChange={this.changeTab}>
                         <TabPane key='1' title={'Dashboard'}>
                             <Typography.Paragraph>
                                 <div className="dashboardlist-wrap">
@@ -74,7 +81,10 @@ class Component extends React.Component {
                                 </div>
                             </Typography.Paragraph>
                         </TabPane>
-                        <TabPane key='2' title={'Creators'}>
+                        <TabPane key='2' title={'Datasets'}>
+
+                        </TabPane>
+                        <TabPane key='3' title={'Creators'}>
 
                         </TabPane>
                     </Tabs>

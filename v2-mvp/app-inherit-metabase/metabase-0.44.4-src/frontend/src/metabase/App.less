@@ -272,13 +272,23 @@ body[arco-theme="dark"] {
     }
 }
 
-.arco-select-size-default.arco-select-single .arco-select-view {
+.arco-select-size-default.arco-select-single .arco-select-view,
+.arco-select-size-default.arco-select-multiple .arco-select-view {
     border-radius: 12px;
     height: 48px;
     line-height: 48px;
     padding: 0 16px;
 }
-
+.arco-select-size-default.arco-select-multiple{
+   
+    .arco-tag{
+        height: 32px;
+        border-radius: 4px;
+    }
+    .arco-input-tag-inner{
+        height: 48px;
+    }
+}
 .arco-select-arrow-icon {
     font-size: 16px;
 }
@@ -526,6 +536,7 @@ thead>.arco-table-tr>.arco-table-th {
 }
 
 .common-form {
+
     .arco-btn {
         height: 32px;
         border-radius: 6px;

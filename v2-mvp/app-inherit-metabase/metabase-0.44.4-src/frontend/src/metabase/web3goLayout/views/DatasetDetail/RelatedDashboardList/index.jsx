@@ -304,7 +304,7 @@ class Component extends React.Component {
     }
     render() {
         return (
-            <div className="web3go-layout-home-dashbaoard-list">
+            <div className="web3go-layout-relate-dataset-list">
                 {/* <div className="total-wrap">123 dashboards with selected label on Web3go</div> */}
                 <Table
                     className={this.props.route.pathname == '/layout/home' ? '' : 'pagination-right'}

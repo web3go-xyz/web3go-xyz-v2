@@ -8,6 +8,7 @@ import { changeUserData } from "metabase/redux/app";
 import { changeGlobalSearchValue } from "metabase/redux/app";
 import { LayoutLoginApi } from '@/services'
 import DashBoardList from '@/web3goLayout/components/DashBoardList';
+import DatasetList from '@/web3goLayout/components/DatasetList';
 import CreatorList from '@/web3goLayout/components/CreatorList';
 import event from '@/web3goLayout/event';
 
@@ -30,11 +31,29 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            autoCompleteList: []
+            autoCompleteList: [],
+            myFollowingList: []
         }
     }
     handleSearch = () => {
 
+
+    }
+    listMyFollows = () => {
+        if (!this.props.userData.account) {
+            return;
+        }
+        LayoutCreatorApi.listFollowing({
+            "pageSize": 9999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "account_id": this.props.userData.account.accountId,
+            "includeDetail": true
+        }).then(d => {
+            this.setState({
+                myFollowingList: d.list
+            })
+        });
     }
     render() {
         return (
@@ -68,11 +87,18 @@ class Component extends React.Component {
                         <TabPane key='1' title={'Dashboard 40'}>
                             <Typography.Paragraph>
                                 <div className="dashboardlist-wrap">
-                                    <DashBoardList></DashBoardList>
+                                    <DashBoardList myFollowingList={this.state.myFollowingList}></DashBoardList>
                                 </div>
                             </Typography.Paragraph>
                         </TabPane>
-                        <TabPane key='2' title={'Creators 3'}>
+                        <TabPane key='2' title={'Dashboard 3'}>
+                            <Typography.Paragraph>
+                                <div className="createlist-wrap">
+                                    <DatasetList myFollowingList={this.state.myFollowingList}></DatasetList>
+                                </div>
+                            </Typography.Paragraph>
+                        </TabPane>
+                        <TabPane key='3' title={'Creators 3'}>
                             <Typography.Paragraph>
                                 <div className="createlist-wrap">
                                     <CreatorList></CreatorList>
