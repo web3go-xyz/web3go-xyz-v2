@@ -14,6 +14,7 @@ import * as query_builderActions from "@/query_builder/actions";
 import * as Urls from "metabase/lib/urls";
 import { parse as parseUrl } from "url";
 import { Link } from "react-router";
+import { publicSpaceCollectionId, changePublicSpaceCollectionId } from "metabase/redux/app";
 
 import DatasetRightMain from "./DatasetRightMain";
 import {
@@ -54,12 +55,14 @@ const mapStateToProps = state => {
         isDark: state.app.isDark,
         userData: state.app.userData,
         databaseList: state.entities.databases,
+        publicSpaceCollectionId: state.app.publicSpaceCollectionId,
     }
 };
 const mapDispatchToProps = {
     ...query_builderActions,
     push,
-    replace
+    replace,
+    changePublicSpaceCollectionId
 };
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
@@ -94,7 +97,13 @@ class Component extends React.Component {
         this.tagInputRef = React.createRef();
         this.DatasetRightMainRef = React.createRef();
     }
-    componentDidMount() {
+    async componentDidMount() {
+        //测试用，加快速度
+        this.props.changePublicSpaceCollectionId(40);
+        // const collectionList = await CollectionsApi.list();
+        // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
+        // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
+
         // this.getDashboardTags(currentDashboardId);
         // this.getAllTagList();
         this.getDatasetList();
@@ -324,13 +333,8 @@ class Component extends React.Component {
                 });
                 const slug = slugg(card.name);
                 const suffix = slug ? `${cardId}-${slug}` : cardId;
-                const dashboardSlug = this.props.params.dashboardSlug;
                 await this.DatasetRightMainRef.hideQueryBuilder();
-                if (!dashboardSlug) {
-                    this.props.replace({ pathname: `/layout/create/dataset/${suffix}` });
-                } else {
-                    this.props.replace({ pathname: `/layout/create/dataset/${suffix}/${this.props.params.dashboardSlug}` });
-                }
+                this.props.replace({ pathname: `/layout/create/dataset/${suffix}` });
                 await this.DatasetRightMainRef.showQueryBuilder();
                 this.setState({
                     [loadingKey]: false
@@ -347,11 +351,9 @@ class Component extends React.Component {
                             </span>
                             <span className="hover-item" style={{ color: '#615CF6' }} onClick={() => {
                                 this.props.push({
-                                    pathname: "/layout/create",
+                                    pathname: "/layout/create/dashboard",
                                     state: {
-                                        refresh: true,
                                         selectDashboardToEdit: true,
-                                        tabIndex: 1
                                     }
                                 })
                                 Notification.remove(id);
@@ -403,6 +405,15 @@ class Component extends React.Component {
         const { tagList, datasetName, ifEditDatasetName, ifEditTag, allTagList,
             isEditing, options, rawDataLoading, hideSideBar, tabIndex, originCardDetail } = this.state;
         const ifEdit = this.props.card && (this.props.card.id || this.props.card.original_card_id)
+        if (!this.props.publicSpaceCollectionId) {
+            return <Spin style={
+                {
+                    display: 'block', minHeight: 100, display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }
+            }></Spin>;
+        }
         return (
             <div className="web3go-dataset-create-page">
                 <div className="p-top">

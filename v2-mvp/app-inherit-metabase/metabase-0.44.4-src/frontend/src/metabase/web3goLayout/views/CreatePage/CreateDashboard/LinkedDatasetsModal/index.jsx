@@ -149,7 +149,7 @@ class Component extends React.Component {
                         <span className="text">or</span>
                         <span className="line"></span>
                     </div>
-                    <Link target="_blank" to={{ pathname: '/layout/create' }}>
+                    <Link target="_blank" to={{ pathname: '/layout/create/dataset' }}>
                         <Button className="create" type='primary' icon={<IconPlus />}>
                             Add new datasets
                         </Button>

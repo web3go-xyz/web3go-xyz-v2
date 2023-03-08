@@ -179,7 +179,7 @@ class Component extends React.Component {
             datasetList: []
         });
         this.props.replace({
-            pathname: this.props.params.dashboardSlug ? `/layout/create/${this.props.params.dashboardSlug}` : '/layout/create',
+            pathname: this.props.params.dashboardSlug ? `/layout/create/dashboard/${this.props.params.dashboardSlug}` : '/layout/create/dashboard',
             hash: '',
             query: this.props.location.query,
             search: this.props.location.search,

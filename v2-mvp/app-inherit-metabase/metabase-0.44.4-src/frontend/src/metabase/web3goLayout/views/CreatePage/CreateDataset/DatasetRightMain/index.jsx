@@ -113,7 +113,7 @@ class Component extends React.Component {
         const url = getURLForCardState(newState, true, {}, undefined);
         const urlParsed = parseUrl(url);
         const locationDescriptor = {
-            pathname: this.props.params.dashboardSlug ? `/layout/create/${this.props.params.dashboardSlug}` : '/layout/create',
+            pathname: '/layout/create/dataset',
             search: urlParsed.search,
             // hash: encodeURIComponent(urlParsed.hash),
             hash: urlParsed.hash,

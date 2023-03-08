@@ -171,19 +171,12 @@ class Component extends React.Component {
     clickCreate = (key) => {
         if (key == '1') {
             this.props.push({
-                pathname: "/layout/create",
-                state: {
-                    refresh: true,
-                    tabIndex: 0
-                }
+                pathname: "/layout/create/dataset",
+
             })
         } else {
             this.props.push({
-                pathname: "/layout/create",
-                state: {
-                    refresh: true,
-                    tabIndex: 1
-                }
+                pathname: "/layout/create/dashboard",
             })
         }
     }

@@ -15,7 +15,9 @@ import App from "metabase/App.tsx";
 
 import ActivityApp from "metabase/home/containers/ActivityApp";
 // web3go
+
 import web3goLayout from "metabase/web3goLayout";
+import RedirectComponent from "metabase/web3goLayout/components/RedirectComponent";
 import AccountSetting from "metabase/web3goLayout/views/AccountSetting";
 import MySpace from "metabase/web3goLayout/views/MySpace";
 import GlobalSearch from "metabase/web3goLayout/views/GlobalSearch";
@@ -24,6 +26,8 @@ import DatasetList from "metabase/web3goLayout/views/DatasetList";
 import DashBoardDetail from "metabase/web3goLayout/views/DashBoardDetail";
 import DatasetDetail from "metabase/web3goLayout/views/DatasetDetail";
 import CreatePage from "metabase/web3goLayout/views/CreatePage";
+import CreateDashboard from "metabase/web3goLayout/views/CreatePage/CreateDashboard";
+import CreateDataset from "metabase/web3goLayout/views/CreatePage/CreateDataset";
 
 import CreatorList from "metabase/web3goLayout/views/CreatorList";
 import Home from "metabase/web3goLayout/views/Home";
@@ -166,6 +170,11 @@ const CanAccessSettings = MetabaseIsSetup(
 
 export const getRoutes = store => (
   <Route title={t`Metabase`} component={App}>
+
+    <Route
+      path="/redirect"
+      component={RedirectComponent}
+    />
     <Route
       path="/verifyEmail"
       component={VerifyEmailPage}
@@ -269,38 +278,31 @@ export const getRoutes = store => (
           </Route>
           <Route component={IsAuthenticated}>
             <Route
-              path="create"
-              component={CreatePage}
-            />
-            <Route
-              path="create/:dashboardSlug"
-              component={CreatePage}
-            />
-            <Route
               path="create/dashboard"
-              component={CreatePage}
+              component={CreateDashboard}
+            />
+            <Route
+              path="create/dashboard/:dashboardSlug"
+              component={CreateDashboard}
             />
             <Route
               path="create/dataset"
-              component={CreatePage}
-            />
-            <Route
-              path="create/question/:chartSlug"
-              component={CreatePage}
-            />
-            <Route
-              path="create/question/:chartSlug/:dashboardSlug"
-              component={CreatePage}
+              component={CreateDataset}
             />
             <Route
               path="create/dataset/:chartSlug"
-              component={CreatePage}
+              component={CreateDataset}
             />
             <Route
-              path="create/dataset/:chartSlug/:dashboardSlug"
-              component={CreatePage}
+              path="create/chart/:chartSlug"
+              component={CreateDashboard}
+            />
+            <Route
+              path="create/chart/:chartSlug/:dashboardSlug"
+              component={CreateDashboard}
             />
           </Route>
+
         </Route>
       </Route>
       {/* AUTH */}

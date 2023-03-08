@@ -11,12 +11,13 @@ import AddFilterDrawer from './AddFilterDrawer';
 import * as Urls from "metabase/lib/urls";
 import { DashboardApi } from '@/services';
 import slugg from "slugg";
+import { toggleDark, changeMyDashboardList } from "metabase/redux/app";
 import DashboardApp from "metabase/dashboard/containers/DashboardApp";
 import * as dashboardActions from "@/dashboard/actions";
-import { publicSpaceCollectionId } from "metabase/redux/app";
 import domtoimage from 'dom-to-image';
 import event from '@/web3goLayout/event';
 import { LayoutDashboardApi, CardApi } from "../../../../services";
+import SelectDashboardToEditModal from './SelectDashboardToEditModal';
 
 import { addTextDashCardToDashboard, addImageDashCardToDashboard, addVideoDashCardToDashboard } from "../../../../dashboard/actions";
 import {
@@ -24,6 +25,7 @@ import {
 } from "@/dashboard/selectors";
 import { NewCardEditorSidebar } from "../../../../dashboard/components/new-card-editor-sidebar/NewCardEditorSidebar";
 import LinkedDatasetsModal from './LinkedDatasetsModal';
+import { publicSpaceCollectionId, changePublicSpaceCollectionId } from "metabase/redux/app";
 
 
 const mapStateToProps = (state, props) => {
@@ -33,25 +35,24 @@ const mapStateToProps = (state, props) => {
         isDark: state.app.isDark,
         userData: state.app.userData,
         publicSpaceCollectionId: state.app.publicSpaceCollectionId,
-        dashboard: getDashboardComplete(state, props)
+        dashboard: getDashboardComplete(state, props),
     }
 };
 const mapDispatchToProps = {
     ...dashboardActions,
     replace,
-
+    changePublicSpaceCollectionId,
+    changeMyDashboardList
 };
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
 
 class Component extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
-            createDefaultDbLoading: false,
             ifEditDashboardName: false,
-            dashboardName: '',
+            dashboardName: 'New dashboard',
             tagList: [],
             savedCurrentTagList: [],
             ifEditTag: false,
@@ -66,20 +67,47 @@ class Component extends React.Component {
             isEditing: true,
             originDashboardDetail: {},
             datasetList: [],
-            getUsedDatasetListLoading: false
+            getUsedDatasetListLoading: false,
+            refreshThisComponentFlag: true,
+            alreadyInitEditData: false,
         }
         this.dashboardNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
         this.AddChartModalRef = React.createRef();
         this.NewCardEditorRef = React.createRef();
         this.LinkedDatasetsModalRef = React.createRef();
+        this.SelectDashboardToEditModalRef = React.createRef();
+
     }
     async componentDidMount() {
+        //测试用，加快速度
+        this.props.changePublicSpaceCollectionId(40);
+        // const collectionList = await CollectionsApi.list();
+        // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
+        // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
+
         event.on('editChartEvent', this.handleEditChart);
         this.init();
         // setTimeout(() => {
         //     this.onAddImageBox({preload: true});
         // }, 1000)
+        // addChart后没关闭弹窗直接刷新，导致参数残留
+        if (!location.pathname.includes('/chart') && (this.props.params.chartSlug || this.props.location.hash)) {
+            this.props.replace({
+                pathname: '/layout/create/dashboard',
+            });
+            return;
+        }
+        if (this.props.location.state && this.props.location.state.selectDashboardToEdit) {
+            this.getMyDashboards(() => {
+                this.SelectDashboardToEditModalRef.init();
+            });
+            this.props.replace({
+                pathname: '/layout/create/dashboard',
+            });
+            return;
+        }
+
     }
     componentWillUnmount() {
         event.off('editChartEvent', this.handleEditChart)
@@ -89,15 +117,38 @@ class Component extends React.Component {
             this.init();
         }
         if ((prevProps.dashboard !== this.props.dashboard) && this.props.dashboard && this.props.dashboard.name) {
-            this.setState({
-                dashboardName: this.state.dashboardName || this.props.dashboard.name || 'New dashboard'
-            })
+            if (!this.state.alreadyInitEditData) {
+                this.setState({
+                    dashboardName: this.props.dashboard.name,
+                    alreadyInitEditData: true
+                })
+            }
         }
         if (!prevProps.dashboard && this.props.dashboard) {
             this.setState({
                 originDashboardDetail: this.props.dashboard
             });
         }
+    }
+    getMyDashboards = (cb) => {
+        if (!this.props.userData.account) {
+            this.props.changeMyDashboardList([]);
+            return;
+        }
+        LayoutDashboardApi.list({
+            "pageSize": 999999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "tagIds": [],
+            "searchName": '',
+            "creator": this.props.userData.account.accountId,
+            "dashboardIds": []
+        }).then(d => {
+            this.props.changeMyDashboardList(d.list);
+            if (cb) {
+                cb();
+            }
+        });
     }
     changeAddFilterDrawerVisible = (value) => {
         this.setState({
@@ -110,27 +161,6 @@ class Component extends React.Component {
         });
     }
     init = async () => {
-        // if (!this.props.params.dashboardSlug) {
-        //     this.setState({
-        //         createDefaultDbLoading: true
-        //     });
-        //     const result = await DashboardApi.create({
-        //         "name": this.state.dashboardName,
-        //         "collection_id": this.props.publicSpaceCollectionId
-        //     });
-        //     const slug = slugg(result.name);
-        //     const dashboardSlug = slug ? `${result.id}-${slug}` : result.id;
-        //     this.setState({
-        //         createDefaultDbLoading: false
-        //     });
-        //     this.props.replace({
-        //         pathname: this.props.location.pathname + '/' + dashboardSlug,
-        //     });
-        //     return;
-        // }
-        // if (!this.props.params.dashboardSlug) {
-        //     this.props.setDashboardAttributes({ id: this.props.dashboard.id, attributes: { parameters: {createPending: true} } });
-        // }
         const slug = this.props.params.dashboardSlug;
         const currentDashboardId = Urls.extractEntityId(slug) || -1;
         this.setState({
@@ -446,15 +476,16 @@ class Component extends React.Component {
         return Object.keys(map).map(key => map[key])
     }
     render() {
-        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, createDefaultDbLoading, allTagList, addFilterDrawerVisible, addFilterDrawerIsEdit, isEditing, originDashboardDetail } = this.state;
-        if (createDefaultDbLoading) {
+        const { tagList, dashboardName, ifEditDashboardName, ifEditTag, allTagList, addFilterDrawerVisible, addFilterDrawerIsEdit, isEditing, originDashboardDetail } = this.state;
+
+        if (!this.props.publicSpaceCollectionId) {
             return <Spin style={
                 {
                     display: 'block', minHeight: 100, display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center'
                 }
-            }></Spin >
+            }></Spin>;
         }
         return (
             <div className="web3go-dashboard-create-page">
@@ -562,6 +593,7 @@ class Component extends React.Component {
                     changeAddFilterDrawerIsEdit={this.changeAddFilterDrawerIsEdit}
                 ></NewCardEditorSidebar>
                 <LinkedDatasetsModal {...this.props} usedDatasetList={this.usedDatasetList} datasetList={this.state.datasetList} getDatasetList={this.getDatasetList} getUsedDatasetListLoading={this.state.getUsedDatasetListLoading} onRef={(ref) => this.LinkedDatasetsModalRef = ref} ></LinkedDatasetsModal>
+                <SelectDashboardToEditModal {...this.props} onRef={(ref) => this.SelectDashboardToEditModalRef = ref} ></SelectDashboardToEditModal>
             </div >
         )
     }

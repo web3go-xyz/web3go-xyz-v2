@@ -256,7 +256,7 @@ class Component extends React.Component {
         }).then(d => {
             const slug = slugg(newName);
             const suffix = slug ? `${d.newDashboardId}-${slug}` : d.newDashboardId;
-            this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1 } });
+            this.props.push({ pathname: `/layout/create/dashboard/${suffix}`, state: { tabIndex: 1 } });
         })
     }
     clickDashboardState = (key) => {
@@ -288,7 +288,7 @@ class Component extends React.Component {
         else if (key == 'Edit') {
             const slug = slugg(record.name);
             const suffix = slug ? `${record.id}-${slug}` : record.id;
-            this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1 } });
+            this.props.push({ pathname: `/layout/create/dashboard/${suffix}`, state: { tabIndex: 1 } });
         }
         else if (key == 'Forks') {
             this.fork(record);

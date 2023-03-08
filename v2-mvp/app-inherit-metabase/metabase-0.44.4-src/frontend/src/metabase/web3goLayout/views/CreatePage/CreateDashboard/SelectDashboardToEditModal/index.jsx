@@ -34,9 +34,6 @@ class Component extends React.Component {
     }
     componentDidMount() {
         this.props.onRef(this);
-        if (this.props.location.state && this.props.location.state.selectDashboardToEdit) {
-            this.getMyDashboards();
-        }
     }
     init = () => {
         this.setState({
@@ -52,7 +49,7 @@ class Component extends React.Component {
             const record = this.props.myDashboardList.find(v => v.id == form.dashboardId);
             const slug = slugg(record.name);
             const suffix = slug ? `${record.id}-${slug}` : record.id;
-            this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1, refresh: true, } });
+            this.props.push({ pathname: '/redirect', state: { pathname: `/layout/create/dashboard/${suffix}` } });
             this.setState({
                 visible: false
             })
@@ -85,7 +82,7 @@ class Component extends React.Component {
                             <Grid.Row gutter={8}>
                                 <Grid.Col span={12}>
                                     <Form.Item field='type' rules={[{ required: true }]}>
-                                    <Select placeholder='please select' options={[{ label: 'My Dashboard-Posted', value: 1 }, { label: 'My Dashboard-Draft', value: 2 }]}></Select>
+                                        <Select placeholder='please select' options={[{ label: 'My Dashboard-Posted', value: 1 }, { label: 'My Dashboard-Draft', value: 2 }]}></Select>
                                     </Form.Item>
                                 </Grid.Col>
                                 <Grid.Col span={12}>

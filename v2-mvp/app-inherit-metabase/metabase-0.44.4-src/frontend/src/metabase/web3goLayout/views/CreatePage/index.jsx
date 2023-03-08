@@ -13,7 +13,7 @@ import { LayoutLoginApi, LayoutDashboardApi } from '@/services'
 import { pseudoStyle } from "styled-system";
 import { CollectionsApi } from '@/services'
 import { publicSpaceCollectionId, changePublicSpaceCollectionId } from "metabase/redux/app";
-import SelectDashboardToEditModal from './SelectDashboardToEditModal';
+import SelectDashboardToEditModal from './CreateDashboard/SelectDashboardToEditModal';
 
 
 const { Text } = Typography;

@@ -128,21 +128,9 @@ class Component extends React.Component {
     }
     clickCreate = (key) => {
         if (key == '1') {
-            this.props.push({
-                pathname: "/layout/create",
-                state: {
-                    refresh: true,
-                    tabIndex: 0
-                }
-            })
+            this.props.push({ pathname: '/redirect', state: { pathname: "/layout/create/dataset" } });
         } else {
-            this.props.push({
-                pathname: "/layout/create",
-                state: {
-                    refresh: true,
-                    tabIndex: 1
-                }
-            })
+            this.props.push({ pathname: '/redirect', state: { pathname: "/layout/create/dashboard" } });
         }
     }
     render() {
