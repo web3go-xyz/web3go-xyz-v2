@@ -77,9 +77,9 @@ class Component extends React.Component {
                 refreshFlag: false
             });
             if (chartObj.dashboard.id == '-1') {
-                this.props.replace({ pathname: `/layout/create/question/${suffix}` });
+                this.props.replace({ pathname: `/layout/create/chart/${suffix}` });
             } else {
-                this.props.replace({ pathname: `/layout/create/question/${suffix}/${this.props.params.dashboardSlug}` });
+                this.props.replace({ pathname: `/layout/create/chart/${suffix}/${this.props.params.dashboardSlug}` });
             }
             await this.setState({
                 refreshFlag: true
