@@ -38,7 +38,7 @@ import { DatasetDetailRequest } from './model/DatasetDetailRequest';
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('/api/v2/dataset')
-@ApiTags('/api/v2/dataset')
+@ApiTags('/api/v2/dataset/')
 export class DatasetController {
   logger: W3Logger;
   constructor(
