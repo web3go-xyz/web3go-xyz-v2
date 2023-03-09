@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, Index } from 'ty
 
 @Entity("dashboard_view_log", { schema: "public" })
 
-@Index("idx_dashboard_view_log_dashboardId", ["dashboardId"], { unique: false }) 
+@Index("idx_dashboard_view_log_dashboardId", ["dashboardId"], { unique: false })
 export class DashboardViewLog {
     @PrimaryGeneratedColumn({
         type: "bigint",
@@ -14,7 +14,7 @@ export class DashboardViewLog {
     @Column({ type: "bigint", name: "dashboard_id", })
     dashboardId: number;
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "created_at"
     })
     createdAt: Date;

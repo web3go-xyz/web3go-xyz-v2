@@ -18,12 +18,18 @@ import { AccountFollower } from "src/base/entity/platform-user/AccountFollower";
 import { Job_SyncDashboardFromMB } from "src/jobs/job.syncDashboardFromMB";
 import { ExternalEventPayload } from "./model/external-notify/ExternalEventPayload";
 import { ExternalEventTopic } from "./model/external-notify/ExternalEventTopic";
+import { DatasetEventPayload } from "./model/dataset/DatasetEventPayload";
+import { DatasetEventTopic} from "./model/dataset/DatasetEventTopic";
+import { DatasetViewLog } from "src/base/entity/platform-dataset/DatasetViewLog";
+import { DatasetExt } from "src/base/entity/platform-dataset/DatasetExt";
+import { Job_SyncDatasetFromMB } from "src/jobs/job.syncDatasetFromMB";
 
 export class EventService {
 
     logger: W3Logger;
     constructor(
         private job_SyncDashboardFromMB: Job_SyncDashboardFromMB,
+        private job_SyncDatasetFromMB : Job_SyncDatasetFromMB,
         private eventEmitter: EventEmitter2,
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
@@ -37,6 +43,11 @@ export class EventService {
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_VIEW_LOG_REPOSITORY.provide)
         private dviewlRepo: Repository<DashboardViewLog>,
+
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_EXT_REPOSITORY.provide)
+        private datasetExtRepo: Repository<DatasetExt>,
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_VIEW_LOG_REPOSITORY.provide)
+        private datasetViewlRepo: Repository<DatasetViewLog>,
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_FOLLOWER_REPOSITORY.provide)
         private afRepo: Repository<AccountFollower>,
@@ -60,7 +71,16 @@ export class EventService {
                     );
                     resp = 'sync.dashboard';
                     break;
-
+                case ExternalEventTopic.DatasetChanged:
+                    let datasetId = Number(param.data.toString());
+                    this.logger.debug(`emit syncDataset events:${datasetId}`);
+                    //emit sync events
+                    this.eventEmitter.emit(
+                        'sync.dataset',
+                        datasetId
+                    );
+                    resp = 'sync.dataset';
+                    break;
                 default:
                     break;
             }
@@ -71,18 +91,16 @@ export class EventService {
     async syncDashboard(dashboard_id: number) {
         this.logger.debug(`process event[syncDashboard]:${dashboard_id}`);
         await this.job_SyncDashboardFromMB.syncDashboardFromMB(dashboard_id);
+        await this.job_SyncDatasetFromMB.syncDashboardCountByDashboardId(dashboard_id);
+    }
+    @OnEvent('sync.dataset', { async: true })
+    async syncDataset(datasetId: number) {
+        this.logger.debug(`process event[syncDashboard]:${datasetId}`);
+        await this.job_SyncDatasetFromMB.syncDatasetFromMB(datasetId);
     }
 
 
-
-
-
-
-
-
-
-
-    fireEvent(payload: DashboardEventPayload | AccountEventPayload) {
+    fireEvent(payload: DashboardEventPayload | AccountEventPayload | DatasetEventPayload) {
         this.logger.debug(`fireEvent:${JSON.stringify(payload)}`);
         //emit events
         this.eventEmitter.emit(
@@ -160,4 +178,38 @@ export class EventService {
                 break;
         }
     }
+
+    @OnEvent('dataset.*', { async: true })
+    async handleDataSetEvents(payload: DatasetEventPayload) {
+        // handle and process an event
+        this.logger.debug(`handleDatasetEvents:${JSON.stringify(payload)}`);
+        switch (payload.topic) {
+            case DatasetEventTopic.logViewDataset:
+
+                let viewCount = await this.datasetViewlRepo.count({
+                    where: { datasetId : payload.data.dataSetId }
+                });
+                await this.datasetExtRepo.update(payload.data.dataSetId, { viewCount: viewCount });
+
+                break;
+            case DatasetEventTopic.logShareDataset:
+                let shareCount = await this.dsharelRepo.count({
+                    where: { dashboardId: payload.data.dataSetId }
+                });
+                await this.datasetExtRepo.update(payload.data.dataSetId, { shareCount: shareCount });
+
+                break;
+
+            case DatasetEventTopic.logFavoriteDataset:
+                let favCount = await this.dfavlRepo.count({
+                    where: { dashboardId: payload.data.dataSetId }
+                });
+                await this.datasetExtRepo.update(payload.data.dataSetId, { favoriteCount: favCount });
+
+                break;
+            default:
+                break;
+        }
+    }
+
 }

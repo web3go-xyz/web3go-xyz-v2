@@ -29,12 +29,12 @@ export class DashboardExt {
     })
     creatorAccountId: string;
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "created_at"
     })
     createdAt: Date;
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "updated_at"
     })
     updatedAt: Date;
@@ -109,7 +109,7 @@ export class DashboardExt {
     })
     previewImg?: string;
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "latest_refresh_time",
         nullable: true,
         comment: 'latest refresh time for the dashboard, not used yet.'

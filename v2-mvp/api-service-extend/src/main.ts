@@ -11,6 +11,8 @@ import { json, urlencoded } from 'express';
 
 async function bootstrap() {
 
+  global.IS_ENABLE_CRON = process.env.IS_ENABLE_CRON || process.env.TERM_PROGRAM !== "vscode";
+
   console.log(`process.env:`, process.env);
   AppConfig.initilize();
 

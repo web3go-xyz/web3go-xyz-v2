@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, Index } from 'ty
 
 @Entity("dashboard_fork_log", { schema: "public" })
 @Index("idx_dashboard_fork_log_accountId", ["accountId"], { unique: false })
-@Index("idx_dashboard_fork_log_originalDashboardId", ["originalDashboardId"], { unique: false }) 
+@Index("idx_dashboard_fork_log_originalDashboardId", ["originalDashboardId"], { unique: false })
 export class DashboardForkLog {
     @PrimaryGeneratedColumn({
         type: "bigint",
@@ -24,7 +24,7 @@ export class DashboardForkLog {
     @Column({ type: "bigint", name: "forked_dashboard_id", comment: 'new dashboard id created' })
     forkedDashboardId: number;
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "created_at"
     })
     createdAt: Date;

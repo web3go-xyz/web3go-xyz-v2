@@ -18,7 +18,7 @@ export class DatasetFavoriteLog {
     })
     accountId: string;
 
-    @Column("timestamp with time zone", {
+    @Column( {
         name: "created_at"
     })
     createdAt: Date;

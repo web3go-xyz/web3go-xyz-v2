@@ -22,7 +22,7 @@ export class DatasetForkLog {
     @Column({ type: "bigint", name: "forked_dataset_id", })
     forkedDatasetId: number;
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "created_at"
     })
     createdAt: Date;

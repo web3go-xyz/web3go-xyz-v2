@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, Index } from 'typeorm';
 
 @Entity("dashboard_tag", { schema: "public" })
-@Index("idx_dashboard_tag_tagId", ["tagId"], { unique: false }) 
+@Index("idx_dashboard_tag_tagId", ["tagId"], { unique: false })
 export class DashboardTag {
 
     @PrimaryColumn({
@@ -17,7 +17,7 @@ export class DashboardTag {
     })
     tagId: number;
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "created_at"
     })
     createdAt: Date;

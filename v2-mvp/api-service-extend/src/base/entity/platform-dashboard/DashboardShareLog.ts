@@ -21,7 +21,7 @@ export class DashboardShareLog {
     })
     accountId: string;
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "created_at"
     })
     createdAt: Date;
@@ -30,7 +30,7 @@ export class DashboardShareLog {
     @Column({
         type: "text",
         name: "share_channel",
-        comment:'eg: twitter, discord, link'
+        comment: 'eg: twitter, discord, link'
     })
     shareChannel: string;
 
