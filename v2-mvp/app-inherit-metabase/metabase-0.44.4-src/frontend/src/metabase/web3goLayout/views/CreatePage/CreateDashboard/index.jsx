@@ -107,7 +107,6 @@ class Component extends React.Component {
             });
             return;
         }
-
     }
     componentWillUnmount() {
         event.off('editChartEvent', this.handleEditChart)

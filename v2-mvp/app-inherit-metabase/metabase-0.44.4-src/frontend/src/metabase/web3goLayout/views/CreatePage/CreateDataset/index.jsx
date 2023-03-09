@@ -15,6 +15,7 @@ import * as Urls from "metabase/lib/urls";
 import { parse as parseUrl } from "url";
 import { Link } from "react-router";
 import { publicSpaceCollectionId, changePublicSpaceCollectionId } from "metabase/redux/app";
+import LinkedDashboardModal from './LinkedDashboardModal';
 
 import DatasetRightMain from "./DatasetRightMain";
 import {
@@ -82,6 +83,7 @@ class Component extends React.Component {
             allTagList: [],
             searchKey: '',
             datasetList: [],
+            usedDashboardList: [],
             rawDataList: [],
             savedAllTagList: [],
             saveBtnLoading: false,
@@ -96,6 +98,8 @@ class Component extends React.Component {
         this.datasetNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
         this.DatasetRightMainRef = React.createRef();
+        this.LinkedDashboardModalRef = React.createRef();
+
     }
     async componentDidMount() {
         //测试用，加快速度
@@ -109,9 +113,13 @@ class Component extends React.Component {
         this.getDatasetList();
     }
     componentDidUpdate(prevProp) {
-        if (prevProp.databaseList !== this.props.databaseList) {
+        if (Object.keys(this.props.databaseList).length) {
             if (!this.state.alreadyInitRawData) {
-                this.getAllRawData();
+                this.setState({
+                    alreadyInitRawData: true
+                }, () => {
+                    this.getAllRawData();
+                });
             }
         }
         if ((prevProp.card !== this.props.card) && this.props.card && this.props.card.name) {
@@ -156,7 +164,6 @@ class Component extends React.Component {
         this.setState({
             rawDataList,
             rawDataLoading: false,
-            alreadyInitRawData: true
         });
     }
     changeSearchKey = (value) => {
@@ -393,6 +400,9 @@ class Component extends React.Component {
     clickDatasetItem = (v) => {
         this.DatasetRightMainRef.init(v);
     }
+    clickLinkedDashboard = () => {
+        this.LinkedDashboardModalRef.init();
+    }
     get formatDatasetList() {
         const { datasetList, searchKey } = this.state;
         return datasetList.filter(v => v.display_name.toLowerCase().includes(searchKey.toLowerCase()));
@@ -449,6 +459,21 @@ class Component extends React.Component {
                                     )
                                 }
                             </div>
+                            {
+                                this.state.usedDashboardList.length > 0 ? (
+                                    <div className="linked-datasets">
+                                        <div onClick={this.clickLinkedDashboard} className="inner hover-primary">
+                                            <span>
+                                                Linked Dashboards:
+                                            </span>
+                                            <span className="number">
+                                                {this.state.usedDashboardList.length}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ) : null
+                            }
+
                         </div>
                     </div>
                     {
@@ -555,6 +580,7 @@ class Component extends React.Component {
                         <DatasetRightMain {...this.props} ifEdit={ifEdit} tabIndex={tabIndex} onRef={(ref) => this.DatasetRightMainRef = ref}></DatasetRightMain>
                     </div>
                 </div>
+                <LinkedDashboardModal {...this.props} usedDashboardList={this.state.usedDashboardList} onRef={(ref) => this.LinkedDashboardModalRef = ref} ></LinkedDashboardModal>
             </div >
         )
     }
