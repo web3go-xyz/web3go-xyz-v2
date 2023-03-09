@@ -4,6 +4,7 @@ import { ReportCard } from 'src/base/entity/metabase/ReportCard';
 import { DatasetExt } from 'src/base/entity/platform-dataset/DatasetExt';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
+import { AppConfig } from 'src/base/setting/appConfig';
 import { CronConstants } from 'src/cron.constants';
 import { MBConnectService } from 'src/mb-connect/mb-connect.service';
 import { In, Repository } from 'typeorm';
@@ -79,6 +80,7 @@ export class Job_SyncDatasetFromMB {
         viewCount: 0,
         shareCount: 0,
         favoriteCount: 0,
+        forkCount: 0,
       });
       if (sqlResult.identifiers && sqlResult.identifiers.length > 0) {
         result.new.push(dataset.id);
@@ -97,6 +99,7 @@ export class Job_SyncDatasetFromMB {
             updatedAt: dataset.updatedAt,
             archived: dataset.archived,
             dashboardCount,
+            publicLink: this.formatlink(dataset.publicUuid)
           })
           .where('id = :id', { id: dataset.id })
           .execute();
@@ -119,5 +122,16 @@ export class Job_SyncDatasetFromMB {
     const data = await this.mbConnectService.countLinkedDashboardOfDataset(datasetId);
     await this.datasetExtRepo.update(datasetId, { dashboardCount: data });
   }
+
+  private formatlink(publicUUID: string): string {
+    //V1 eg: https://dev-v2.web3go.xyz/public/dashboard/dfc5d3a9-1d64-422b-b26f-0367e0fb1170
+    //V2 eg: http://dev-v2.web3go.xyz/layout/dashboardDetail/1a7901e5-c9f4-4c24-ab71-8c70af1e6e0b
+    if (publicUUID) {
+        return `${AppConfig.BASE_WEB_URL}/layout/datasetDetail/${publicUUID.toLowerCase()}`;
+    }
+    else {
+        return '';
+    }
+}
 
 }
