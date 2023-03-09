@@ -11,8 +11,14 @@ import { json, urlencoded } from 'express';
 
 async function bootstrap() {
 
-  global.IS_ENABLE_CRON = process.env.IS_ENABLE_CRON || process.env.TERM_PROGRAM !== "vscode";
-
+  if (process.env.TERM_PROGRAM !== "vscode") { // turn off when it starts with Visual Studio Code
+    global.IS_ENABLE_CRON = false;
+  } else if (typeof process.env.IS_ENABLE_CRON === 'undefined') {
+      global.IS_ENABLE_CRON = true;
+  } else {
+    global.IS_ENABLE_CRON = process.env.IS_ENABLE_CRON === 'true';
+  }
+  
   console.log(`process.env:`, process.env);
   AppConfig.initilize();
 
