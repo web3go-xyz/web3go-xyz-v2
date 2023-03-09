@@ -39,7 +39,8 @@ export class Account {
 
     @ApiProperty()
     @Column({
-        comment: 'account created time', default: '2022-01-01',
+        comment: 'account created time',
+        default: '2022-01-01',
         nullable: false
     })
     created_time: Date;

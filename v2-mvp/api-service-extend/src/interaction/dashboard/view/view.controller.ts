@@ -9,6 +9,8 @@ import { W3Logger } from 'src/base/log/logger.service';
 
 import { Log4ViewDashboardRequest } from './model/Log4ViewDashboardRequest';
 import { Log4ViewDashboardResponse } from './model/Log4ViewDashboardResponse';
+import { Log4ViewDatasetRequest } from './model/Log4ViewDatasetRequest';
+import { Log4ViewDatasetResponse } from './model/Log4ViewDatasetResponse';
 import { ViewService } from './view.service';
 
 @ApiBearerAuth()
@@ -40,5 +42,20 @@ export class ViewController {
         return await this.service.logView(param, accountId || '');
     }
 
+    @AllowAnonymous()
+    @Post('/logView4DataSet')
+    @ApiOperation({ summary: 'create a log when view the specified dataset' })
+    @ApiOkResponse({ type: Log4ViewDatasetResponse })
+    async logView4Dataset(@Req() req,
+        @Body() param: Log4ViewDatasetRequest): Promise<Log4ViewDatasetResponse> {
+
+        let accountId = '';
+        let validateUser: AuthorizedUser = this.jwtService.decodeAuthUserFromHttpRequest(req);
+        if (validateUser) {
+            accountId = validateUser.id;
+        }
+        this.logger.debug(`logDataSet/View:accountId=${accountId},${JSON.stringify(param)}`);
+        return await this.service.logView4Dataset(param, accountId || '');
+    }
 
 }

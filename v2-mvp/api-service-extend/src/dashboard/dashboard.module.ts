@@ -4,12 +4,14 @@ import { MBOrmModule } from 'src/base/orm/mb.orm.module';
 import { PlatformOrmModule } from 'src/base/orm/platoform.orm.module';
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
+import { MBConnectModule } from 'src/mb-connect/mb-connect.module';
 
 @Module({
     imports: [
         PlatformOrmModule,
         MBOrmModule,
-        JWTAuthModule
+        JWTAuthModule,
+        MBConnectModule
     ],
     controllers: [DashboardController],
     providers: [

@@ -44,7 +44,7 @@ export class ShareReferralCode {
     shareChannel: string;
 
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "created_at"
     })
     createdAt: Date;

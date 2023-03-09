@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ca } from 'date-fns/locale';
 import { CoreUser } from 'src/base/entity/metabase/CoreUser';
 import { ReportCard } from 'src/base/entity/metabase/ReportCard';
@@ -7,11 +7,11 @@ import { ReportDashboardcard } from 'src/base/entity/metabase/ReportDashboardcar
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { AppConfig } from 'src/base/setting/appConfig';
-import { ForkDashboardRequest } from 'src/interaction/fork/model/ForkDashboardRequest';
-import { ForkDashboardResponse } from 'src/interaction/fork/model/ForkDashboardResponse';
-import { ForkQuestionRequest } from 'src/interaction/fork/model/ForkQuestionRequest';
-import { ForkQuestionResponse } from 'src/interaction/fork/model/ForkQuestionResponse';
-import { In, Like, Repository } from 'typeorm';
+import { ForkDashboardRequest } from 'src/interaction/dashboard/fork/model/ForkDashboardRequest';
+import { ForkDashboardResponse } from 'src/interaction/dashboard/fork/model/ForkDashboardResponse';
+import { ForkQuestionRequest } from 'src/interaction/dashboard/fork/model/ForkQuestionRequest';
+import { ForkQuestionResponse } from 'src/interaction/dashboard/fork/model/ForkQuestionResponse';
+import { FindManyOptions, FindOptionsWhere, In, LessThan, Like, MoreThan, Repository, SelectQueryBuilder } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class MBConnectService {
@@ -333,4 +333,101 @@ export class MBConnectService {
 
         return resp;
     }
+
+
+
+    async findDatasets(ids: number[], archived: boolean, updateInMins: number): Promise<ReportCard[]> {
+
+        let res = [];
+        const dateBeforeMinutes = new Date(new Date().getTime() - updateInMins * 60 * 1000);
+
+        const where: FindOptionsWhere<ReportCard> = {};
+
+        if (updateInMins) {
+            where.updatedAt = MoreThan(dateBeforeMinutes);
+        }
+        if (ids && ids.length) {
+            where.id = In(ids);
+        }
+        if (typeof archived === 'boolean') {
+            where.archived = archived;
+        }
+        res = await this.mb_rcRepo.find({
+            where
+        });
+        return res;
+    }
+
+    // by given dashboard_id, to find all datasets in the related dashboard 
+    // and to count all linked_dashboard for those datasets
+    async countLinkedDashboardOfDatasetByDashboardId(dashboardId: number): Promise<{[key: number]:number}> {
+        let cards = await this.mb_rdcRepo.createQueryBuilder().addSelect("card_id", "cardId").where({
+            dashboardId
+        }).getRawMany();
+        const result = {};
+        for (const card of cards) {
+            result[card.cardId] = await this.countLinkedDashboardOfDataset(card.cardId);
+        }
+        return result;
+    }
+
+    async countLinkedDashboardOfDataset(datasetId: number): Promise<number> {
+        // select distinct dashboard_id from report_dashboardcard where card_id = 462
+        // TODO exclude the archive=false
+        let count = await this.mb_rdcRepo.createQueryBuilder().select('DISTINCT card_id ').where({
+            cardId: datasetId,
+        }).getCount();
+        return count;
+    }
+
+    async findLinkedDashboardIdOfDataSet(datasetId: number, startPage: number, pageSize: number): Promise<number[]> {
+        // select distinct dashboard_id from report_dashboardcard where card_id = 462
+        const sqlBuilder = this.mb_rdcRepo.createQueryBuilder('n').select('DISTINCT dashboard_id as dashboard_id').where(
+            {
+            cardId: datasetId
+        }); //.addSelect("dashboard_id", "dashboardId");
+
+        if (startPage) {
+            sqlBuilder.skip(startPage);
+        }
+        if (pageSize) {
+            sqlBuilder.take(pageSize);
+        }
+        const rawResult = await sqlBuilder.getRawMany();
+        return rawResult.map(it => it.dashboard_id);
+    }
+
+    async copyDataset(id: number, loginUserEmail: string) {
+        let account = await this.mb_cuRepo.findOne({
+            where: {
+                email: loginUserEmail
+            }
+        });
+        const target = await this.mb_rcRepo.findOne({where: {id}})
+        if (!target || target.archived) {
+            throw new BadRequestException('the dataset is not available');
+        }
+        const now = new Date();
+        const newOne: ReportCard = {
+            ...target,
+            creatorId: account.id,
+            entityId: this.generateRandomEntityId(),
+            createdAt: now,
+            updatedAt: now,
+        }
+
+        delete newOne.id;
+        delete newOne.publicUuid;
+
+        const saveStatus = await this.mb_rcRepo.insert(newOne);
+        return saveStatus.identifiers && saveStatus.identifiers[0].id;
+    }
+    
+    // async findAllDatasets(excludeArchived: boolean): Promise<ReportDashboard[]> {
+    //     return await this.mb_rdRepo.find({
+    //         where: {
+    //             archived: !excludeArchived
+    //         }
+    //     });
+    // }
 }

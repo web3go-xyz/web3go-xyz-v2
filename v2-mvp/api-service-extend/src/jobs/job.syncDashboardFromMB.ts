@@ -6,7 +6,7 @@ import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { AppConfig } from 'src/base/setting/appConfig';
 import { CronConstants } from 'src/cron.constants';
-import { ShareItemType } from 'src/interaction/share/model/ShareItemType';
+import { ShareItemType } from 'src/interaction/dashboard/share/model/ShareItemType';
 import { MBConnectService } from 'src/mb-connect/mb-connect.service';
 import { In, Repository } from 'typeorm';
 

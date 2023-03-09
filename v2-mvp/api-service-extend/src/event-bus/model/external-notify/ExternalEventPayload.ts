@@ -8,7 +8,7 @@ export class ExternalEventPayload {
         description: 'refer to ExternalEventTopic'
     })
     topic: ExternalEventTopic;
-    @ApiProperty({ description: 'dashboard_id when topic=ExternalEventTopic.DashboardChanged', default: 0 })
+    @ApiProperty({ description: 'dashboard_id when topic=ExternalEventTopic.DashboardChanged; dataset_id when topic=ExternalEventTopic.DatasetChanged', default: 0 })
     data: any;
 
 }

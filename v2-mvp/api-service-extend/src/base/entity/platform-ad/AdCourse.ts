@@ -34,7 +34,7 @@ export class AdCourse {
     })
     link: string;
 
-    @Column("timestamp with time zone", {
+    @Column({
         name: "created_at"
     })
     createdAt: Date;
