@@ -17,6 +17,7 @@ import { ForkQuestionRequest } from './model/ForkQuestionRequest';
 import { ForkQuestionResponse } from './model/ForkQuestionResponse';
 import { AccountBaseService } from 'src/account/base/account-base.service';
 import { MBConnectService } from 'src/mb-connect/mb-connect.service';
+import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
 @Injectable()
 export class ForkService {
 
@@ -28,6 +29,9 @@ export class ForkService {
         private readonly jwtService: JWTAuthService,
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_FORK_LOG_REPOSITORY.provide)
         private dforklRepo: Repository<DashboardForkLog>,
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
+        private dextRepo: Repository<DashboardExt>,
+
 
     ) {
         this.logger = new W3Logger(`ForkService`);
@@ -152,6 +156,7 @@ export class ForkService {
             }
 
             //sync dashboard
+            await this.dextRepo.createQueryBuilder().update().set({ forkCount: () => "fork_count + 1" }).execute();
             await this.eventService.syncDashboard(resp.newDashboardId);
             this.logger.log(`syncDashboard ${resp.newDashboardId} finished.`);
 

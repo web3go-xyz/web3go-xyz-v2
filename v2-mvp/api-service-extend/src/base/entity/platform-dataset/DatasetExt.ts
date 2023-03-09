@@ -64,7 +64,7 @@ export class DatasetExt {
   favoriteCount: number;
 
   @ApiProperty({
-    description: 'share count',
+    description: 'dashboard_count count',
   })
   @Column({
     name: 'dashboard_count',
@@ -72,6 +72,16 @@ export class DatasetExt {
     default: 0,
   })
   dashboardCount: number;
+
+  @ApiProperty({
+    description: 'fork count',
+  })
+  @Column({
+    name: 'fork_count',
+    type: 'integer',
+    default: 0,
+  })
+  forkCount: number;
 
   @Column({
     type: 'integer',

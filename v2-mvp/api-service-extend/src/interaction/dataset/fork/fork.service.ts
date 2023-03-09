@@ -41,6 +41,8 @@ export class ForkService {
             throw new BadRequestException('fork failed');
         }
 
+        await this.extRepo.update(datasetId, { forkCount: target.forkCount + 1 });
+
         const sqlResult = await this.extRepo.insert({
             id: newId,
             name: target.name,
@@ -51,6 +53,7 @@ export class ForkService {
             viewCount: 0,
             shareCount: 0,
             favoriteCount: 0,
+            forkCount: 0,
           });
           if (sqlResult.identifiers && sqlResult.identifiers.length > 0) {
             // return sqlResult.identifiers[0].toString();
