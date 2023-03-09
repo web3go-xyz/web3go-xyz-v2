@@ -20,6 +20,7 @@ export class ViewService {
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_VIEW_LOG_REPOSITORY.provide)
         private dviewlRepo: Repository<DashboardViewLog>,
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_VIEW_LOG_REPOSITORY.provide)
         private dataViewRepo: Repository<DatasetViewLog>
 
     ) {

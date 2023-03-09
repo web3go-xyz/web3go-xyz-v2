@@ -1,8 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity("dataset_share_log", { schema: "public" })
-export class DatasetFavoriteLog {
+export class DatasetShareLog { 
     @PrimaryGeneratedColumn({
         type: "bigint",
         name: "id",
@@ -36,6 +35,5 @@ export class DatasetFavoriteLog {
         name: "referral_code",
     })
     referralCode: string;
-
 
 }

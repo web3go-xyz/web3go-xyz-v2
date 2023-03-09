@@ -10,17 +10,24 @@ import { KVModule } from './base/kv/kv.module';
 import { JWTAuthModule } from './base/auth/jwt-auth.module';
 import { HomepageModule } from './homepage/homepage.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { DatasetModule } from './dataset/dataset.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventModule } from './event-bus/event.module';
 import { CreatorModule } from './creator/creator.module';
-import { TagModule } from './interaction/tag/tag.module';
+import { TagModule } from './interaction/dashboard/tag/tag.module';
 import { PlatformOrmModule } from './base/orm/platoform.orm.module';
-import { ShareModule } from './interaction/share/share.module';
-import { ViewModule } from './interaction/view/view.module';
-import { ForkModule } from './interaction/fork/fork.module';
-import { FavoriteModule } from './interaction/favorite/favorite.module';
-import { FollowModule } from './interaction/follow/follow.module';
+import { ShareModule } from './interaction/dashboard/share/share.module';
+import { ViewModule } from './interaction/dashboard/view/view.module';
+import { ForkModule } from './interaction/dashboard/fork/fork.module';
+import { FavoriteModule } from './interaction/dashboard/favorite/favorite.module';
+import { FollowModule } from './interaction/account/follow/follow.module';
+import { ShareModule as  DatasetShareModule } from './interaction/dataset/share/share.module';
+import { ViewModule as DatasetViewModule } from './interaction/dataset/view/view.module';
+import { ForkModule  as DatasetForkModule} from './interaction/dataset/fork/fork.module';
+import { FavoriteModule as DatasetFavoriteModule } from './interaction/dataset/favorite/favorite.module';
+
+
 import { MBConnectModule } from './mb-connect/mb-connect.module';
 import { MBOrmModule } from './base/orm/mb.orm.module';
 
@@ -46,13 +53,18 @@ import { MBOrmModule } from './base/orm/mb.orm.module';
     DebugModule,
     HomepageModule,
     DashboardModule,
+    DatasetModule,
     CreatorModule,
     TagModule,
     ShareModule,
     ViewModule,
     ForkModule,
     FavoriteModule,
-    FollowModule
+    FollowModule,
+    DatasetShareModule,
+    DatasetViewModule,
+    DatasetFavoriteModule,
+    DatasetForkModule,
   ],
   controllers: [AppController],
   providers: [AppService],

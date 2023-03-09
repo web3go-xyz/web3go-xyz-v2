@@ -22,12 +22,14 @@ import { DatasetEventPayload } from "./model/dataset/DatasetEventPayload";
 import { DatasetEventTopic} from "./model/dataset/DatasetEventTopic";
 import { DatasetViewLog } from "src/base/entity/platform-dataset/DatasetViewLog";
 import { DatasetExt } from "src/base/entity/platform-dataset/DatasetExt";
+import { Job_SyncDatasetFromMB } from "src/jobs/job.syncDatasetFromMB";
 
 export class EventService {
 
     logger: W3Logger;
     constructor(
         private job_SyncDashboardFromMB: Job_SyncDashboardFromMB,
+        private job_SyncDatasetFromMB : Job_SyncDatasetFromMB,
         private eventEmitter: EventEmitter2,
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
@@ -69,7 +71,16 @@ export class EventService {
                     );
                     resp = 'sync.dashboard';
                     break;
-
+                case ExternalEventTopic.DatasetChanged:
+                    let datasetId = Number(param.data.toString());
+                    this.logger.debug(`emit syncDataset events:${datasetId}`);
+                    //emit sync events
+                    this.eventEmitter.emit(
+                        'sync.dataset',
+                        datasetId
+                    );
+                    resp = 'sync.dataset';
+                    break;
                 default:
                     break;
             }
@@ -80,18 +91,16 @@ export class EventService {
     async syncDashboard(dashboard_id: number) {
         this.logger.debug(`process event[syncDashboard]:${dashboard_id}`);
         await this.job_SyncDashboardFromMB.syncDashboardFromMB(dashboard_id);
+        await this.job_SyncDatasetFromMB.syncDashboardCountByDashboardId(dashboard_id);
+    }
+    @OnEvent('sync.dataset', { async: true })
+    async syncDataset(datasetId: number) {
+        this.logger.debug(`process event[syncDashboard]:${datasetId}`);
+        await this.job_SyncDatasetFromMB.syncDatasetFromMB(datasetId);
     }
 
 
-
-
-
-
-
-
-
-
-    fireEvent(payload: DashboardEventPayload | AccountEventPayload |DatasetEventPayload) {
+    fireEvent(payload: DashboardEventPayload | AccountEventPayload | DatasetEventPayload) {
         this.logger.debug(`fireEvent:${JSON.stringify(payload)}`);
         //emit events
         this.eventEmitter.emit(

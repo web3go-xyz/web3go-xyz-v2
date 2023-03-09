@@ -14,6 +14,8 @@ import { FindManyOptions, FindOptionsWhere, In, Like, Not, Raw, Repository } fro
 import { QueryRelatedDashboardsRequest } from './model/QueryRelatedDashboardsRequest';
 import { ReportCard } from 'src/base/entity/metabase/ReportCard';
 import { Collection } from 'src/base/entity/metabase/Collection';
+import { MBConnectService } from 'src/mb-connect/mb-connect.service';
+import { QueryDashboardByDataset } from './model/QueryDashboardByDataset';
 
 @Injectable()
 export class DashboardService {
@@ -31,7 +33,9 @@ export class DashboardService {
         private dtagRepo: Repository<DashboardTag>,
 
         @Inject(RepositoryConsts.REPOSITORYS_METABASE.MB_REPORT_CARD_REPOSITORY.provide)
-        private dataSet: Repository<ReportCard>
+        private dataSet: Repository<ReportCard>,
+
+        private readonly mbConnectService: MBConnectService,
     ) {
         this.logger = new W3Logger(`DashboardService`);
     }
@@ -268,6 +272,29 @@ export class DashboardService {
         }, userSession);
 
         return resp;
+    }
+
+    async searchDataset(param: QueryDashboardByDataset, userSession): Promise<QueryDashboardListResponse> {
+        param.pageIndex = param.pageIndex || 1;
+        param.pageSize = param.pageSize || 100;
+        const dashboardIds = await this.mbConnectService.findLinkedDashboardIdOfDataSet(param.datasetId, 
+            (param.pageIndex - 1)*param.pageSize, param.pageSize);
+        if (!dashboardIds.length) {
+            return new QueryDashboardListResponse();
+        }
+        let resp = await this.list({
+            tagIds: null,
+            searchName: '',
+            creator: '',
+            dashboardIds,
+            pageSize: param.pageSize,
+            pageIndex: param.pageIndex,
+            orderBys: param.orderBys,
+            // TODO TEST
+            draftStatus: null
+        }, userSession);
+
+        return resp;    
     }
 
     async findDashboardExtByPK(id: number): Promise<DashboardExt> {

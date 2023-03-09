@@ -22,6 +22,7 @@ import { VerifyCodePurpose, VerifyCodeType, VerifyFlag } from 'src/account/model
 import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
 import { AccountStatisticResponse, } from '../model/info/AccountStatisticResponse';
 import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
+import { DatasetExt } from 'src/base/entity/platform-dataset/DatasetExt';
 
 
 
@@ -48,6 +49,9 @@ export class AccountInfoService {
 
     @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
     private dextRepo: Repository<DashboardExt>,
+
+    @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_EXT_REPOSITORY.provide)
+    private datasetExtRepo: Repository<DatasetExt>,
 
 
   ) {
@@ -346,7 +350,7 @@ export class AccountInfoService {
   }
 
 
-  async getAccountStatistic(accountIds: string[]): Promise<AccountStatisticResponse[]> {
+  async getAccountStatistic(accountIds: string[], type="dashboard"): Promise<AccountStatisticResponse[]> {
 
     let accounts = await this.accountRepository.find({
       where: {
@@ -360,37 +364,63 @@ export class AccountInfoService {
       throw new Error(`accounts not found`);
     }
 
-    let query = await this.dextRepo.createQueryBuilder("d")
-      .where("d.creator_account_id IN( :...creator_account_id)", { creator_account_id: accountIds })
-      .where("d.public_link != ''")
-      .select("creator_account_id", "creator_account_id")
-      .addSelect("count(1)", "dashboard_count")
-      .addSelect("SUM( d.view_count )", "total_view_count")
-      .addSelect("SUM( d.share_count ) ", "total_share_count")
-      .addSelect("SUM( d.fork_count )", "total_fork_count")
-      .addSelect("SUM( d.favorite_count )", "total_favorite_count")
-      .groupBy("d.creator_account_id");
+    const bridge = {
+      dashboard: {
+        key: 'dashboard_count',
+        getQuery: () => {
+          return  this.dextRepo.createQueryBuilder("d")
+          .where("d.creator_account_id IN( :...creator_account_id)", { creator_account_id: accountIds })
+          .where("d.public_link != ''")
+          .select("creator_account_id", "creator_account_id")
+          .addSelect("count(1)", "dashboard_count")
+          .addSelect("SUM( d.view_count )", "total_view_count")
+          .addSelect("SUM( d.share_count ) ", "total_share_count")
+          .addSelect("SUM( d.fork_count )", "total_fork_count")
+          .addSelect("SUM( d.favorite_count )", "total_favorite_count")
+          .groupBy("d.creator_account_id");
+        }
+      },
+      dataset: {
+        key: 'dataset_count',
+        getQuery: () => {
+          return  this.datasetExtRepo.createQueryBuilder("d")
+          .where("d.creator_account_id IN( :...creator_account_id)", { creator_account_id: accountIds })
+          //.where("d.public_link != ''")
+          .select("creator_account_id", "creator_account_id")
+          .addSelect("count(1)", "dashboard_count")
+          .addSelect("SUM( d.view_count )", "total_view_count")
+          .addSelect("SUM( d.share_count ) ", "total_share_count")
+          .addSelect("SUM( d.fork_count )", "total_fork_count")
+          .addSelect("SUM( d.favorite_count )", "total_favorite_count")
+          .groupBy("d.creator_account_id");
+        }
+      }
+    }[type];
+
+    let query =  bridge.getQuery();
 
     let statisticRecords = await query.getRawMany();
     let resp: AccountStatisticResponse[] = [];
 
 
     for (const d of accounts) {
-      let newItem: AccountStatisticResponse = {
+      let newItem : AccountStatisticResponse = {
         accountId: d.accountId,
         followedAccountCount: d.followedAccountCount,
         followingAccountCount: d.followingAccountCount,
-        dashboard_count: 0,
         total_share_count: 0,
         total_view_count: 0,
         total_favorite_count: 0,
-        total_fork_count: 0
+        total_fork_count: 0,
+        dashboard_count: 0,
+        dataset_count: 0,
       }
+      //newItem[bridge.key] = 0;
       if (statisticRecords && statisticRecords.length > 0) {
 
         let findStatistic = statisticRecords.find(t => t.creator_account_id == d.accountId);
         if (findStatistic) {
-          newItem.dashboard_count = Number(findStatistic.dashboard_count);
+          newItem[bridge.key] = Number(findStatistic.dashboard_count);
           newItem.total_view_count = Number(findStatistic.total_view_count);
           newItem.total_share_count = Number(findStatistic.total_share_count);
           newItem.total_fork_count = Number(findStatistic.total_fork_count);

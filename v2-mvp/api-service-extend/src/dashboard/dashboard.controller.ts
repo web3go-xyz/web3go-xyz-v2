@@ -20,7 +20,7 @@ import { AppConfig } from 'src/base/setting/appConfig';
 import { ReportCard } from 'src/base/entity/metabase/ReportCard';
 import { randomUUID } from 'crypto';
 import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
-
+import { QueryDashboardByDataset } from './model/QueryDashboardByDataset';
 
 
 
@@ -30,7 +30,8 @@ import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
 @ApiTags('/api/v2/dashboard')
 export class DashboardController {
   logger: W3Logger;
-  constructor(private readonly service: DashboardService,
+  constructor(
+    private readonly service: DashboardService,
     private readonly jwtService: JWTAuthService) {
     this.logger = new W3Logger(`DashboardController`);
   }
@@ -83,6 +84,14 @@ export class DashboardController {
 
     this.logger.debug(`searchRelatedDashboards:${JSON.stringify(param)}`);
     return await this.service.searchRelatedDashboards(param, this.getUserSession(rawRequest));
+  }
+
+  @Get('/searchDataset')
+  @ApiOperation({ summary: 'search related dashboards which has similar tags' })
+  @ApiOkResponse({ type: QueryDashboardListResponse })
+  async searchDataset(@Body() param: QueryDashboardByDataset, @Request() rawRequest): Promise<QueryDashboardListResponse> {
+    this.logger.debug(`searchRelatedDashboards:${JSON.stringify(param)}`);
+    return await this.service.searchDataset(param, this.getUserSession(rawRequest));
   }
 
 

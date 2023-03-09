@@ -13,7 +13,7 @@ import { W3Logger } from 'src/base/log/logger.service';
 import { DashboardGetShareUrlRequest } from './model/DashboardGetShareUrlRequest';
 import { KVService } from 'src/base/kv/kv.service';
 import { randomUUID } from 'crypto';
-import { DashboardService } from '../../dashboard/dashboard.service';
+import { DashboardService } from '../../../dashboard/dashboard.service';
 
 import { AppConfig } from 'src/base/setting/appConfig';
 import { AllowAnonymous } from 'src/base/auth/decorator/AllowAnonymous';

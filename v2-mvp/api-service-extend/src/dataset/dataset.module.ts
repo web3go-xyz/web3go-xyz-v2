@@ -2,23 +2,27 @@ import { Module } from '@nestjs/common';
 import { JWTAuthModule } from 'src/base/auth/jwt-auth.module';
 import { MBOrmModule } from 'src/base/orm/mb.orm.module';
 import { PlatformOrmModule } from 'src/base/orm/platoform.orm.module';
-import { DashboardController } from './dashboard.controller';
-import { DashboardService } from './dashboard.service';
-import { MBConnectModule } from 'src/mb-connect/mb-connect.module';
+import { DatasetController } from './dataset.controller';
+import { DatasetService } from './dataset.service';
+
 
 @Module({
     imports: [
         PlatformOrmModule,
         MBOrmModule,
         JWTAuthModule,
-        MBConnectModule
+        // ShareModule,
+        // ViewModule,
+        // ForkModule,
+        // FavoriteModule,
+        // FollowModule
     ],
-    controllers: [DashboardController],
+    controllers: [DatasetController],
     providers: [
-        DashboardService,
+        DatasetService,
     ],
-    exports: [DashboardService]
+    exports: [DatasetService]
 })
-export class DashboardModule { }
+export class DatasetModule { }
 
 

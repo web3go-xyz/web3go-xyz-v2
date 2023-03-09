@@ -21,6 +21,9 @@ export class AccountStatisticResponse {
     dashboard_count: number;
 
     @ApiProperty()
+    dataset_count: number;
+
+    @ApiProperty()
     total_share_count: number;
 
     @ApiProperty()
