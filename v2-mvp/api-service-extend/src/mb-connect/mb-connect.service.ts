@@ -65,17 +65,14 @@ export class MBConnectService {
         });
     }
 
-    async findDashboardCreator(dashboard_id: number): Promise<string> {
+    async findCreatorAccountIdByUserId(userId: number): Promise<string> {
         let creatorAccountId = '';
         let query = `
                             SELECT
-                                d."id", 
-                                d.creator_id,
                                 u.login_attributes :: json ->> 'id' AS "creatorAccountId" 
                             FROM
-                                report_dashboard d
-                                LEFT JOIN core_user u ON d.creator_id = u."id"
-                            WHERE d."id"=${dashboard_id}`;
+                                core_user u
+                            WHERE u."id"=${userId}`;
 
         let findCreatorResult = await this.mb_rdRepo.query(query);
         if (findCreatorResult && findCreatorResult.length > 0) {
