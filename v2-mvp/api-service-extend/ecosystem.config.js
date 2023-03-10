@@ -23,7 +23,9 @@ module.exports = {
             BASE_API_URL: "https://dev-v2.web3go.xyz/api-ext",       // api prefix of api extend service
             BASE_WEB_URL: "https://dev-v2.web3go.xyz",              // domain of web page
             BASE_METABASE_API_URL: "https://dev-v2.web3go.xyz/api", // api prefix of metabase service
-            DASHBOARD_PUBLIC_COLLECTION_ID: 40   //all dashboards will be placed under this public collection.
+            DASHBOARD_PUBLIC_COLLECTION_ID: 40,   //all dashboards will be placed under this public collection.
+
+            IS_ENABLE_CRON: true
         }
     }]
 } 

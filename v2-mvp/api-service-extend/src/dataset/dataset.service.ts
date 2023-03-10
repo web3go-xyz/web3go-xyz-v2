@@ -91,7 +91,7 @@ export class DatasetService {
         if (request.creator) {
             where.creatorAccountId = request.creator;
         } else {
-            // where.publicLink = Not(''); //Not(Raw('NULL'));
+            // where.publicUUid = Not(''); //Not(Raw('NULL'));
             // My Space Page may vary by the log-in status
         }
         const isAllowShowingDraft = userSession && userSession.id && userSession.id === request.creator;
@@ -103,13 +103,13 @@ export class DatasetService {
                 // to make the query dismatch any records
                 where.id = -11;
             } else {
-                where.publicLink = '';
+                where.publicUUID = '';
             } 
         } else if (request.draftStatus === 2) {         // only posted
-            where.publicLink = Not(''); //Not(Raw('NULL'));
+            where.publicUUID = Not(''); //Not(Raw('NULL'));
         } else {  // mixed
             if (!isAllowShowingDraft) { // if no auth, only show posted
-                where.publicLink = Not('')
+                where.publicUUID = Not('')
             } 
         }
         
