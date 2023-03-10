@@ -67,13 +67,19 @@ export class Job_SyncDatasetFromMB {
     // unless specified isSyncAll=true(only when initiated) to fetch all, we will fetch the data with update time within 5mins.
     // when dataset_id is presented, the record with the dataset_id has been updated and the update_time must be within 5mins.
     const list = await this.mbConnectService.findDatasets(ids, false, isSyncAll ? undefined: 5);
+    const creatorIdMap = {};
     const insertAnyway = async (dataset: ReportCard, dashboardCount) => {
+      let creatorAccountId = creatorIdMap[dataset.creatorId];
+      if (!creatorIdMap[dataset.creatorId]) {
+        creatorIdMap[dataset.creatorId] = creatorAccountId = await this.mbConnectService.findCreatorAccountIdByUserId(dataset.creatorId);
+      }
+
       // Allow failed items to be retried, so no transaction manager here
       // Not use upsert because i don't want the field, viewCount eg., to be overwrited with 0.
       const sqlResult = await this.datasetExtRepo.insert({
         id: dataset.id,
         name: dataset.name,
-        creatorAccountId: dataset.creatorId + '',
+        creatorAccountId: creatorAccountId,
         createdAt: dataset.createdAt,
         updatedAt: dataset.updatedAt,
         dashboardCount,
@@ -82,6 +88,7 @@ export class Job_SyncDatasetFromMB {
         favoriteCount: 0,
         forkCount: 0,
         publicUUID: dataset.publicUuid,
+        publicLink: this.formatlink(dataset.publicUuid)
       });
       if (sqlResult.identifiers && sqlResult.identifiers.length > 0) {
         result.new.push(dataset.id);

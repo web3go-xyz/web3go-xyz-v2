@@ -88,7 +88,7 @@ export class Job_SyncDashboardFromMB {
 
             if (newDashboards) {
                 for (const newD of newDashboards) {
-                    let creatorAccountId = await this.mbConnectService.findDashboardCreator(newD.id);
+                    let creatorAccountId = await this.mbConnectService.findCreatorAccountIdByUserId(newD.creatorId);
 
                     let newDashboard: DashboardExt = {
                         id: newD.id,
