@@ -156,7 +156,6 @@ export class ForkService {
             }
 
             //sync dashboard
-            await this.dextRepo.createQueryBuilder().update().set({ forkCount: () => "fork_count + 1" }).execute();
             await this.eventService.syncDashboard(resp.newDashboardId);
             this.logger.log(`syncDashboard ${resp.newDashboardId} finished.`);
 
@@ -184,7 +183,6 @@ export class ForkService {
             //sync dashboard
             await this.eventService.syncDashboard(resp.newDashboardId);
             this.logger.log(`syncDashboard ${resp.newDashboardId} finished.`);
-
             await this.logFork({
                 originalDashboardId: param.originalDashboardId,
                 forkedDashboardId: resp.newDashboardId
