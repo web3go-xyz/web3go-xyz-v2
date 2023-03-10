@@ -209,7 +209,7 @@ class Component extends React.Component {
     render() {
         return (
             <div className="web3go-layout-home-page">
-                <div className="banner-wrap">
+                {/* <div className="banner-wrap">
                     <div className="common-layout">
                         <Carousel
                             showArrow='never'
@@ -224,7 +224,7 @@ class Component extends React.Component {
                             ))}
                         </Carousel>
                     </div>
-                </div >
+                </div > */}
                 <div className="home-main common-layout">
                     <div className="section-title">
                         <span>My Space</span>

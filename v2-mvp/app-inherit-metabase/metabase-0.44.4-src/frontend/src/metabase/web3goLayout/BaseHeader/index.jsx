@@ -210,11 +210,11 @@ class Component extends React.Component {
                                 <IconDown />
                             </Button>
                         </Dropdown>
-                        <Link
+                        {/* <Link
                             to="/home"
                         >
                             <Button className="btn" style={{ marginLeft: '8px' }} type='primary'>OldCreate</Button>
-                        </Link>
+                        </Link> */}
                         {this.props.currentUser ?
                             (
                                 <Dropdown trigger='click' position="br" droplist={

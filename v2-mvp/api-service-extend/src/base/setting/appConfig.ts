@@ -7,7 +7,7 @@ export class AppConfig {
     username: process.env.DB_USERNAME || 'postgres',
     password: process.env.DB_PASSWORD || 'Dev123!@#',
     synchronize: false,
-    logging: true,
+    logging: false,
   }
 
   public static typeOrmOption4PlatformDB = {
@@ -27,16 +27,16 @@ export class AppConfig {
   public static DASHBOARD_PUBLIC_COLLECTION_ID: number = Number(process.env.DASHBOARD_PUBLIC_COLLECTION_ID || '1');
 
   public static redisOption = {
-    port: Number(process.env.REDIS_PORT || 6389),
+    port: Number(process.env.REDIS_PORT || 6379),
     host: process.env.REDIS_HOST || 'localhost',
-    password: process.env.REDIS_PASSWORD || 'web3go#r1e2d3i4s5',
+    password: process.env.REDIS_PASSWORD || 'redis#123',
     db: 0,
   };
 
   public static STATIC_ASSET_DIR: string = 'static/';
   public static STATIC_ASSET_PREFIX: string = '';
 
-  public static IMG_UPLOAD_DIR: string = process.env.IMG_UPLOAD_DIR || './';
+  public static IMG_UPLOAD_DIR: string = process.env.IMG_UPLOAD_DIR || '/var/www/html/web3go/imgUpload/';
 
   public static initilize() {
     AppConfig.STATIC_ASSET_PREFIX = AppConfig.BASE_API_URL + '/' + AppConfig.STATIC_ASSET_DIR;
