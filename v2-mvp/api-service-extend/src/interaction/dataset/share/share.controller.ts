@@ -16,8 +16,8 @@ import { ShareService } from './share.service';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('/api/v2/share')
-@ApiTags('/api/v2/share')
+@Controller('/api/v2/dataset/share')
+@ApiTags('/api/v2/dataset/')
 export class ShareController {
     logger: W3Logger;
     constructor(private readonly service: ShareService,
