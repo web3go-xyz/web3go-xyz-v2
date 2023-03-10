@@ -81,6 +81,7 @@ export class Job_SyncDatasetFromMB {
         shareCount: 0,
         favoriteCount: 0,
         forkCount: 0,
+        publicUUID: dataset.publicUuid,
       });
       if (sqlResult.identifiers && sqlResult.identifiers.length > 0) {
         result.new.push(dataset.id);
@@ -99,6 +100,7 @@ export class Job_SyncDatasetFromMB {
             updatedAt: dataset.updatedAt,
             archived: dataset.archived,
             dashboardCount,
+            publicUUID: dataset.publicUuid,
             publicLink: this.formatlink(dataset.publicUuid)
           })
           .where('id = :id', { id: dataset.id })
