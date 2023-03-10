@@ -92,7 +92,7 @@ class Component extends React.Component {
         if (!this.props.currentUser) {
             return;
         }
-        LayoutDashboardApi.listMyFavorites({
+        LayoutDashboardApi.listMyFavoritesDS({
             "pageSize": 9999999999,
             "pageIndex": 1,
             "orderBys": [],
@@ -107,6 +107,16 @@ class Component extends React.Component {
     componentDidMount() {
         this.getMyDashboards();
         this.getDatasetTable();
+        this.getDatasetDetail();
+    }
+    getDatasetDetail = () => {
+        LayoutDashboardApi.datasetDetail({ datasetIds: [this.props.params.id] }).then(d => {
+            if (d.list.length) {
+                this.setState({
+                    detailData: d.list[0]
+                });
+            }
+        })
     }
     getDatasetTable = async () => {
         this.setState({
@@ -152,14 +162,13 @@ class Component extends React.Component {
             this.props.changeMyDashboardList([]);
             return;
         }
-        LayoutDashboardApi.list({
+        LayoutDashboardApi.datasetList({
             "pageSize": 999999999999,
             "pageIndex": 1,
             "orderBys": [],
             "tagIds": [],
             "searchName": '',
             "creator": this.props.userData.account.accountId,
-            "dashboardIds": []
         }).then(d => {
             this.props.changeMyDashboardList(d.list);
         });
@@ -167,20 +176,16 @@ class Component extends React.Component {
     goMySpace = (accountId) => {
         this.props.push(`/layout/mySpace?accountId=${accountId}`);
     }
-    fork = () => {
+    fork = (record) => {
         if (!this.props.currentUser) {
             event.emit('goSignIn');
             return;
         }
-        const newName = this.state.detailData.name + '-fork';
-        LayoutDashboardApi.forkDashboard({
-            originalDashboardId: this.state.detailData.id,
-            description: newName,
-            new_dashboard_name: newName
-        }).then(d => {
+        const newName = record.name;
+        LayoutDashboardApi.forkDS(record.id)().then(d => {
             const slug = slugg(newName);
-            const suffix = slug ? `${d.newDashboardId}-${slug}` : d.newDashboardId;
-            this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1 } });
+            const suffix = slug ? `${d.newId}-${slug}` : d.newId;
+            this.props.push({ pathname: `/layout/create/dataset/${suffix}` });
         })
     }
     toggleFavourite = () => {
@@ -188,9 +193,9 @@ class Component extends React.Component {
             event.emit('goSignIn');
             return;
         }
-        const find = this.state.favouriteList.find(v => v.dashboardId == this.state.detailData.id);
-        LayoutDashboardApi.logFavorite({
-            "dashboardId": this.state.detailData.id,
+        const find = this.state.favouriteList.find(v => v.datasetId == this.state.detailData.id);
+        LayoutDashboardApi.logFavoriteDS({
+            "dataSetId": this.state.detailData.id,
             "operationFlag": find ? 'cancel' : 'add'
         }).then(d => {
             this.getMyFavourites();
@@ -297,7 +302,7 @@ class Component extends React.Component {
                                             <span>Fork</span>
                                         </Button>
                                         <Button onClick={() => { this.toggleFavourite() }}>
-                                            <IconStar style={{ fontSize: 16 }} className={this.state.favouriteList.find(v => v.dashboardId == this.state.detailData.id) ? 'star active' : 'star'} />
+                                            <IconStar style={{ fontSize: 16 }} className={this.state.favouriteList.find(v => v.datasetId == this.state.detailData.id) ? 'star active' : 'star'} />
                                             <span>Favorite</span>
                                         </Button>
                                     </div>
@@ -365,7 +370,7 @@ class Component extends React.Component {
                                 </Tooltip>
                             </div>
                             {
-                                detailData.id ? <RelatedDashboardList detailData={detailData} myFollowingList={this.state.myFollowingList}></RelatedDashboardList> : null
+                                // detailData.id ? <RelatedDashboardList detailData={detailData} myFollowingList={this.state.myFollowingList}></RelatedDashboardList> : null
                             }
 
                         </div>

@@ -401,7 +401,7 @@ class Component extends React.Component {
                                                 <div className="i-left">
                                                     <img className="icon" src={require(`@/web3goLayout/assets/home/${i + 1}.png`)} alt="" />
                                                     <div className="il-left">
-                                                        <div className="name hover-primary" onClick={() => { }} title={v.name}>{v.name}</div>
+                                                        <div className="name hover-primary" onClick={() => { this.props.push(`/layout/datasetDetail/${v.id}`) }} title={v.name}>{v.name}</div>
                                                         <div className="info-wrap">
                                                             <div className="info-item">
                                                                 <img className="icon" src={require(`@/web3goLayout/assets/home/favor.png`)} alt="" />
