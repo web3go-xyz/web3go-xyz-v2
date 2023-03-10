@@ -16,7 +16,7 @@ import event from '@/web3goLayout/event';
 import PublicQuestion from "@/public/containers/PublicQuestion";
 
 import moment from 'moment';
-import ShareModal from "@/web3goLayout/components/ShareModal";
+import ShareModalDS from "@/web3goLayout/components/ShareModalDS";
 import domtoimage from 'dom-to-image';
 const { Text } = Typography;
 const mapStateToProps = state => {
@@ -386,7 +386,7 @@ class Component extends React.Component {
                         </div>
                     </div>) : null
                 }
-                <ShareModal onRef={(ref) => this.ShareModalRef = ref}></ShareModal>
+                <ShareModalDS onRef={(ref) => this.ShareModalRef = ref}></ShareModalDS>
             </div >
         )
     }
