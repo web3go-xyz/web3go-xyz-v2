@@ -56,11 +56,13 @@ class Component extends React.Component {
             chooseWalletLoading: false,
             visible: false,
             polkadotAccountList: [],
-            networkList: [{
-                name: 'BNB Chain',
-                key: 'BSC',
-                icon: require('@/web3goLayout/assets/layout/bnb.png'),
-            }, {
+            networkList: [
+            //     {
+            //     name: 'BNB Chain',
+            //     key: 'BSC',
+            //     icon: require('@/web3goLayout/assets/layout/bnb.png'),
+            // }, 
+            {
                 name: 'Polkadot',
                 key: 'Polkadot',
                 icon: require('@/web3goLayout/assets/layout/boka.png'),
@@ -89,11 +91,13 @@ class Component extends React.Component {
             chooseWalletLoading: false,
             visible: false,
             polkadotAccountList: [],
-            networkList: [{
-                name: 'BNB Chain',
-                key: 'BSC',
-                icon: require('@/web3goLayout/assets/layout/bnb.png'),
-            }, {
+            networkList: [
+            //     {
+            //     name: 'BNB Chain',
+            //     key: 'BSC',
+            //     icon: require('@/web3goLayout/assets/layout/bnb.png'),
+            // },
+             {
                 name: 'Polkadot',
                 key: 'Polkadot',
                 icon: require('@/web3goLayout/assets/layout/boka.png'),

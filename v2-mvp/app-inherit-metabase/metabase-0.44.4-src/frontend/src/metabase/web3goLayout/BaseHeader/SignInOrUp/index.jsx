@@ -254,12 +254,12 @@ class Component extends React.Component {
                         <div className="split"></div>
                     </div>
                     <div className="wallet-wrap">
-                        <div className="item hover-item" onClick={this.openConnectWalletModal}>
+                        {/* <div className="item hover-item" onClick={this.openConnectWalletModal}>
                             {this.props.isDark ? <img
                                 src={require('@/web3goLayout/assets/layout/metamaskicon.png')}
                                 alt=""
                             /> : <img className="white" src={require('@/web3goLayout/assets/account/metamask.png')} alt="" />}
-                        </div>
+                        </div> */}
                         <div className="item hover-item" onClick={this.openConnectWalletModal}>
                             {this.props.isDark ? <img
                                 src={require('@/web3goLayout/assets/layout/polkadoticon.png')}

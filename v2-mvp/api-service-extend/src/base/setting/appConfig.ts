@@ -21,10 +21,10 @@ export class AppConfig {
   };
 
   public static PORT = process.env.PORT || 12350;
-  public static BASE_API_URL = process.env.BASE_API_URL || "http://localhost:12350";
-  public static BASE_WEB_URL = process.env.BASE_WEB_URL || "http://localhost:3000";
-  public static BASE_METABASE_API_URL = process.env.BASE_METABASE_API_URL || "http://localhost:3000/api";
-  public static DASHBOARD_PUBLIC_COLLECTION_ID: number = Number(process.env.DASHBOARD_PUBLIC_COLLECTION_ID || '1');
+  public static BASE_API_URL = process.env.BASE_API_URL || "http://localhost:20080/api-ext";
+  public static BASE_WEB_URL = process.env.BASE_WEB_URL || "http://localhost:20080";
+  public static BASE_METABASE_API_URL = process.env.BASE_METABASE_API_URL || "http://localhost:20080/api";
+  public static DASHBOARD_PUBLIC_COLLECTION_ID: number = Number(process.env.DASHBOARD_PUBLIC_COLLECTION_ID || '40');
 
   public static redisOption = {
     port: Number(process.env.REDIS_PORT || 6379),
@@ -36,7 +36,7 @@ export class AppConfig {
   public static STATIC_ASSET_DIR: string = 'static/';
   public static STATIC_ASSET_PREFIX: string = '';
 
-  public static IMG_UPLOAD_DIR: string = process.env.IMG_UPLOAD_DIR || '/var/www/html/web3go/imgUpload/';
+  public static IMG_UPLOAD_DIR: string = process.env.IMG_UPLOAD_DIR || '/var/www/html/web3go/';
 
   public static initilize() {
     AppConfig.STATIC_ASSET_PREFIX = AppConfig.BASE_API_URL + '/' + AppConfig.STATIC_ASSET_DIR;

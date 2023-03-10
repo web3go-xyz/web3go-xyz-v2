@@ -30,12 +30,12 @@ export class Web3SignController {
   getSupportedWallet(
   ): any {
     return [
-      {
-        wallet: WalletSupported.Metamask.toString(),
-        chains: [
-          BlockChainSupported.BSC.toString()
-        ]
-      },
+      // {
+      //   wallet: WalletSupported.Metamask.toString(),
+      //   chains: [
+      //     BlockChainSupported.BSC.toString()
+      //   ]
+      // },
       {
         wallet: WalletSupported.Polkadot_JS.toString(),
         chains: [
