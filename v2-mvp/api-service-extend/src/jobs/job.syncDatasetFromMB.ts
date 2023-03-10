@@ -88,7 +88,7 @@ export class Job_SyncDatasetFromMB {
         favoriteCount: 0,
         forkCount: 0,
         publicUUID: dataset.publicUuid,
-        publicLink: this.formatlink(dataset.publicUuid)
+        publicLink: this.formatlink(dataset.id)
       });
       if (sqlResult.identifiers && sqlResult.identifiers.length > 0) {
         result.new.push(dataset.id);
@@ -108,7 +108,7 @@ export class Job_SyncDatasetFromMB {
             archived: dataset.archived,
             dashboardCount,
             publicUUID: dataset.publicUuid,
-            publicLink: this.formatlink(dataset.publicUuid)
+            publicLink: this.formatlink(dataset.id)
           })
           .where('id = :id', { id: dataset.id })
           .execute();
@@ -132,11 +132,11 @@ export class Job_SyncDatasetFromMB {
     await this.datasetExtRepo.update(datasetId, { dashboardCount: data });
   }
 
-  private formatlink(publicUUID: string): string {
+  private formatlink(datasetId: number): string {
     //V1 eg: https://dev-v2.web3go.xyz/public/dashboard/dfc5d3a9-1d64-422b-b26f-0367e0fb1170
     //V2 eg: http://dev-v2.web3go.xyz/layout/dashboardDetail/1a7901e5-c9f4-4c24-ab71-8c70af1e6e0b
-    if (publicUUID) {
-        return `${AppConfig.BASE_WEB_URL}/layout/datasetDetail/${publicUUID.toLowerCase()}`;
+    if (datasetId) {
+        return `${AppConfig.BASE_WEB_URL}/layout/datasetDetail/${datasetId}`;
     }
     else {
         return '';

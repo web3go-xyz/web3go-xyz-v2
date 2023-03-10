@@ -338,7 +338,9 @@ export class MBConnectService {
         let res = [];
         const dateBeforeMinutes = new Date(new Date().getTime() - updateInMins * 60 * 1000);
 
-        const where: FindOptionsWhere<ReportCard> = {};
+        const where: FindOptionsWhere<ReportCard> = {
+            dataset: true
+        };
 
         if (updateInMins) {
             where.updatedAt = MoreThan(dateBeforeMinutes);

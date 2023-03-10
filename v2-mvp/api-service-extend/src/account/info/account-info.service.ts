@@ -385,9 +385,9 @@ export class AccountInfoService {
         getQuery: () => {
           return  this.datasetExtRepo.createQueryBuilder("d")
           .where("d.creator_account_id IN( :...creator_account_id)", { creator_account_id: accountIds })
-          //.where("d.public_link != ''")
+          .where("d.public_link != ''")
           .select("creator_account_id", "creator_account_id")
-          .addSelect("count(1)", "dashboard_count")
+          .addSelect("count(1)", "dataset_count")
           .addSelect("SUM( d.view_count )", "total_view_count")
           .addSelect("SUM( d.share_count ) ", "total_share_count")
           .addSelect("SUM( d.fork_count )", "total_fork_count")
@@ -396,6 +396,10 @@ export class AccountInfoService {
         }
       }
     }[type];
+    /*
+        const creator2ForkCountMap = {};
+    (await bridge.dataset.getQuery().getRawMany()).forEach(it => creator2ForkCountMap[it.creator_account_id] = parseInt(it.total_fork_count) || 0);
+*/
 
     let query =  bridge.getQuery();
 
@@ -412,15 +416,15 @@ export class AccountInfoService {
         total_view_count: 0,
         total_favorite_count: 0,
         total_fork_count: 0,
-        dashboard_count: 0,
-        dataset_count: 0,
+        dashboard_count: undefined,
+        dataset_count: undefined,
       }
       //newItem[bridge.key] = 0;
       if (statisticRecords && statisticRecords.length > 0) {
 
         let findStatistic = statisticRecords.find(t => t.creator_account_id == d.accountId);
         if (findStatistic) {
-          newItem[bridge.key] = Number(findStatistic.dashboard_count);
+          newItem[bridge.key] = Number(findStatistic[bridge.key]) || 0;
           newItem.total_view_count = Number(findStatistic.total_view_count);
           newItem.total_share_count = Number(findStatistic.total_share_count);
           newItem.total_fork_count = Number(findStatistic.total_fork_count);
