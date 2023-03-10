@@ -136,6 +136,7 @@ export class EventService {
 
                 break;
             case DashboardEventTopic.logForkDashboard:
+                // await this.dextRepo.manager.increment(DashboardExt, {id: param.originalDashboardId},  "forkCount", 1);
                 let forkCount = await this.dforklRepo.count({
                     where: { originalDashboardId: payload.data.dashboardId }
                 });
