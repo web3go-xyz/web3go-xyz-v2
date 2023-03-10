@@ -26,6 +26,7 @@ import { ShareModule as  DatasetShareModule } from './interaction/dataset/share/
 import { ViewModule as DatasetViewModule } from './interaction/dataset/view/view.module';
 import { ForkModule  as DatasetForkModule} from './interaction/dataset/fork/fork.module';
 import { FavoriteModule as DatasetFavoriteModule } from './interaction/dataset/favorite/favorite.module';
+import { TagModule as DatasetTagModule } from './interaction/dataset/tag/tag.module';
 
 
 import { MBConnectModule } from './mb-connect/mb-connect.module';
@@ -65,6 +66,7 @@ import { MBOrmModule } from './base/orm/mb.orm.module';
     DatasetViewModule,
     DatasetFavoriteModule,
     DatasetForkModule,
+    DatasetTagModule,
   ],
   controllers: [AppController],
   providers: [AppService],

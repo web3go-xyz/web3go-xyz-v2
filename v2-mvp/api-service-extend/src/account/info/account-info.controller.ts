@@ -45,7 +45,8 @@ export class AccountInfoController {
   })
   @ApiOkResponse({ type: AccountStatisticResponse, isArray: true })
   async getAccountStatistic(@Body() param: AccountStatisticRequest): Promise<AccountStatisticResponse[]> {
-    return await this.accountInfoService.getAccountStatistic(param.accountIds);
+    param.type = param.type || 'dashboard';
+    return await this.accountInfoService.getAccountStatistic(param.accountIds, param.type );
   }
 
   @Post('/getAccountInfo')
