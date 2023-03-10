@@ -7,7 +7,7 @@ import { Button, Modal, Form, Input, Upload, Select, Checkbox, Table, TableColum
 import { push } from "react-router-redux";
 import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 import { numberSplit } from '@/web3goLayout/utils';
-import ShareModal from "@/web3goLayout/components/ShareModal";
+import ShareModalDS from "@/web3goLayout/components/ShareModalDS";
 import { LayoutDashboardApi, LayoutLoginApi, WEB3GO_BASE_URL } from '@/services'
 import event from '@/web3goLayout/event';
 import cx from 'classnames'
@@ -87,6 +87,20 @@ class Component extends React.Component {
                     render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.viewCount)}</span>
                 },
                 {
+                    title: 'Dashboards',
+                    dataIndex: 'dashboardCount',
+                    align: 'right',
+                    sorter: true,
+                    render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.dashboardCount)}</span>
+                },
+                {
+                    title: 'Forks',
+                    dataIndex: 'forkCount',
+                    align: 'right',
+                    sorter: true,
+                    render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.forkCount)}</span>
+                },
+                {
                     title: 'Favorites',
                     dataIndex: 'favoriteCount',
                     align: 'right',
@@ -157,15 +171,11 @@ class Component extends React.Component {
             event.emit('goSignIn');
             return;
         }
-        const newName = record.name + '-fork';
-        LayoutDashboardApi.forkDashboard({
-            originalDashboardId: record.id,
-            description: newName,
-            new_dashboard_name: newName
-        }).then(d => {
+        const newName = record.name;
+        LayoutDashboardApi.forkDS(record.id)().then(d => {
             const slug = slugg(newName);
-            const suffix = slug ? `${d.newDashboardId}-${slug}` : d.newDashboardId;
-            this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1 } });
+            const suffix = slug ? `${d.newId}-${slug}` : d.newId;
+            this.props.push({ pathname: `/layout/create/dataset/${suffix}` });
         })
     }
     goMySpace = (accountId) => {
@@ -196,8 +206,8 @@ class Component extends React.Component {
             event.emit('goSignIn');
             return;
         }
-        LayoutDashboardApi.logFavorite({
-            "dashboardId": record.id,
+        LayoutDashboardApi.logFavoriteDS({
+            "dataSetId": record.id,
             "operationFlag": record.hasFavourite ? 'cancel' : 'add'
         }).then(d => {
             this.refreshTableAndFavourites();
@@ -221,7 +231,7 @@ class Component extends React.Component {
         if (!this.props.currentUser) {
             return;
         }
-        LayoutDashboardApi.listMyFavorites({
+        LayoutDashboardApi.listMyFavoritesDS({
             "pageSize": 9999999999,
             "pageIndex": 1,
             "orderBys": [],
@@ -309,7 +319,7 @@ class Component extends React.Component {
             return;
         }
         this.setState({ loading: true });
-        LayoutDashboardApi.list({
+        LayoutDashboardApi.datasetList({
             "pageSize": this.state.pagination.pageSize,
             "pageIndex": turnFirstPage ? 1 : this.state.pagination.current,
             "orderBys": this.state.tableSort.field ? [{
@@ -319,7 +329,7 @@ class Component extends React.Component {
             "tagIds": this.state.currentTagList.map(v => v.id),
             "searchName": "",
             "creator": this.state.params.createBy,
-            "dashboardIds": this.state.showMyFavorite ? this.state.favouriteList.map(v => v.dashboardId) : []
+            "datasetIds": this.state.showMyFavorite ? this.state.favouriteList.map(v => v.datasetId) : []
         }).then(d => {
             if (!d.list) {
                 d.list = [];
@@ -347,7 +357,7 @@ class Component extends React.Component {
     get formatTableData() {
         let newTableData = JSON.parse(JSON.stringify(this.state.tableData));
         newTableData.forEach(v => {
-            if (this.state.favouriteList.find(sv => sv.dashboardId == v.id)) {
+            if (this.state.favouriteList.find(sv => sv.datasetId == v.id)) {
                 v.hasFavourite = true;
             }
         });
@@ -457,7 +467,7 @@ class Component extends React.Component {
                     onChange={this.onChangeTable}
                     columns={this.state.columns}
                     data={this.formatTableData} />
-                <ShareModal onRef={(ref) => this.ShareModalRef = ref}></ShareModal>
+                <ShareModalDS onRef={(ref) => this.ShareModalRef = ref}></ShareModalDS>
             </div >
         )
     }

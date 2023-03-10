@@ -87,6 +87,13 @@ class Component extends React.Component {
                     render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.viewCount)}</span>
                 },
                 {
+                    title: 'Forks',
+                    dataIndex: 'forkCount',
+                    align: 'right',
+                    sorter: true,
+                    render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.forkCount)}</span>
+                },
+                {
                     title: 'Favorites',
                     dataIndex: 'favoriteCount',
                     align: 'right',

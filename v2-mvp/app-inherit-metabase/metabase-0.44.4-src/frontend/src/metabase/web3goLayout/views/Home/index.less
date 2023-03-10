@@ -440,7 +440,11 @@ body[arco-theme="dark"] .web3go-layout-home-page {
                             .info-item {
                                 display: flex;
                                 align-items: center;
-
+                                &:last-child{
+                                    &::after{
+                                        display: none;
+                                    }
+                                }
                                 &::after {
                                     content: '';
                                     display: block;

@@ -166,7 +166,7 @@ class Component extends React.Component {
                 </TabPane>
                 <TabPane key='2' title={`Datasets ${dashboardListCount}`}>
                 </TabPane>
-                <TabPane key='3' title={`${this.state.isMyself ? 'My Favorites' : 'Favorites'} ${myFavouriteCount}`}>
+                <TabPane key='3' title={`${this.state.isMyself ? 'My Favorites' : 'Favorites'}`}>
                 </TabPane>
             </Tabs>
             {this.state.activeTab == '3' ? (

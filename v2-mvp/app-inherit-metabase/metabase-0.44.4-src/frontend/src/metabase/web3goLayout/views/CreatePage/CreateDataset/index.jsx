@@ -16,7 +16,6 @@ import { parse as parseUrl } from "url";
 import { Link } from "react-router";
 import { publicSpaceCollectionId, changePublicSpaceCollectionId } from "metabase/redux/app";
 import LinkedDashboardModal from './LinkedDashboardModal';
-
 import DatasetRightMain from "./DatasetRightMain";
 import {
     getCard,
@@ -327,14 +326,14 @@ class Component extends React.Component {
             event.emit('addChartSave', this.state.datasetName, async (cardId, card) => {
                 if (!isDraft) {
                     await this.props.createPublicLink({ id: cardId });
-                    await LayoutDashboardApi.externalEvent({
-                        "topic": "dataset.changed",
-                        "data": cardId
-                    })
                     if (thumbnailBlob) {
                         // await this.uploadThumbnail(realId, thumbnailBlob);
                     }
                 }
+                await LayoutDashboardApi.externalEvent({
+                    "topic": "dataset.changed",
+                    "data": cardId
+                })
                 this.setState({
                     chartName: card.name
                 });

@@ -13,6 +13,7 @@ import { numberSplit } from '@/web3goLayout/utils';
 import { LayoutLoginApi, LayoutDashboardApi, LayoutCreatorApi } from '@/services';
 import DashBoardList from '@/web3goLayout/components/DashBoardList';
 import { Link } from "react-router";
+import slugg from "slugg";
 
 
 const mapStateToProps = state => {
@@ -41,19 +42,32 @@ class Component extends React.Component {
             ],
             creatorList: [],
             myFollowingList: [],
-            creatorListLoading: false
+            creatorListLoading: false,
+            datasetList: []
         }
     }
     componentDidMount() {
         this.getDashboardListCount();
         this.getCreatorList();
         this.listMyFollows();
+        this.getDatasetList();
     }
     // componentDidUpdate(prevProps) {
     //     if (JSON.stringify(this.props.userData) !== JSON.stringify(prevProps.userData)) {
     //         this.getDashboardListCount();
     //     }
     // }
+    getDatasetList = () => {
+        LayoutDashboardApi.datasetList({
+            "pageSize": 5,
+            "pageIndex": 1,
+            "orderBys": [],
+        }).then(d => {
+            this.setState({
+                datasetList: d.list
+            });
+        })
+    }
     listMyFollows = () => {
         if (!this.props.userData.account) {
             return;
@@ -76,7 +90,7 @@ class Component extends React.Component {
             creatorListLoading: true
         });
         LayoutCreatorApi.listCreators({
-            "pageSize": 6,
+            "pageSize": 5,
             "pageIndex": 1,
             "orderBys": [{
                 sort: 'dashboard_count',
@@ -167,6 +181,18 @@ class Component extends React.Component {
         }).then(d => {
             this.listMyFollows();
         });
+    }
+    fork = (record) => {
+        if (!this.props.currentUser) {
+            event.emit('goSignIn');
+            return;
+        }
+        const newName = record.name;
+        LayoutDashboardApi.forkDS(record.id)().then(d => {
+            const slug = slugg(newName);
+            const suffix = slug ? `${d.newId}-${slug}` : d.newId;
+            this.props.push({ pathname: `/layout/create/dataset/${suffix}` });
+        })
     }
     clickCreate = (key) => {
         if (key == '1') {
@@ -359,7 +385,7 @@ class Component extends React.Component {
                         <div className="section-col">
                             <div className="section-title">
                                 <span>Top Datasets</span>
-                                <svg onClick={() => { this.props.push('/layout/creatorList') }} className="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg onClick={() => { this.props.push('/layout/datasetList') }} className="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M9.24269 3.75667L13.4854 7.99933L9.24269 12.242M1.66669 8H13.0984" strokeWidth="1.5" />
                                 </svg>
                             </div>
@@ -370,33 +396,33 @@ class Component extends React.Component {
                                     </div>
                                 ) : (
                                     <div className="section-content dataset-list">
-                                        {this.state.creatorList.slice(0, 6).map((v, i) => (
+                                        {this.state.datasetList.map((v, i) => (
                                             <div key={i} className="item">
                                                 <div className="i-left">
                                                     <img className="icon" src={require(`@/web3goLayout/assets/home/${i + 1}.png`)} alt="" />
                                                     <div className="il-left">
-                                                        <div className="name hover-primary" onClick={() => this.goMySpace(v.accountId)} title={v.nickName}>{v.nickName}</div>
+                                                        <div className="name hover-primary" onClick={() => { }} title={v.name}>{v.name}</div>
                                                         <div className="info-wrap">
                                                             <div className="info-item">
                                                                 <img className="icon" src={require(`@/web3goLayout/assets/home/favor.png`)} alt="" />
-                                                                <span>{numberSplit(v.dashboard_count)}</span>
+                                                                <span>{numberSplit(v.favoriteCount)}</span>
                                                             </div>
                                                             <div className="info-item">
                                                                 <img className="icon" src={require(`@/web3goLayout/assets/home/share.png`)} alt="" />
-                                                                <span>{numberSplit(v.dashboard_count)}</span>
+                                                                <span>{numberSplit(v.shareCount)}</span>
                                                             </div>
                                                             <div className="info-item">
                                                                 <img className="icon" src={require(`@/web3goLayout/assets/home/fork.png`)} alt="" />
-                                                                <span>{numberSplit(v.dashboard_count)}</span>
+                                                                <span>{numberSplit(v.forkCount)}</span>
                                                             </div>
                                                             <div className="info-item">
                                                                 <img className="icon" src={require(`@/web3goLayout/assets/home/Dashboard-fill.png`)} alt="" />
-                                                                <span>{numberSplit(v.dashboard_count)}</span>
+                                                                <span>{numberSplit(v.dashboardCount)}</span>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <Button className='btn'>
+                                                <Button className='btn' onClick={() => { this.fork(v) }}>
                                                     <img className="icon" src={require(`@/web3goLayout/assets/home/fork1.png`)} alt="" />
                                                     <span>Forks</span>
                                                 </Button>

@@ -11,18 +11,19 @@ import { numberSplit } from '@/web3goLayout/utils';
 import ShareModal from "@/web3goLayout/components/ShareModal";
 import { LayoutDashboardApi } from '@/services'
 import Dashboard from "metabase/entities/dashboards";
+import Questions from "metabase/entities/questions";
 
 const Option = Select.Option;
 
 const mapStateToProps = state => {
     return {
         isDark: state.app.isDark,
-        userData: state.app.userData
+        userData: state.app.userData,
     }
 };
 const mapDispatchToProps = {
     push,
-    setDashboardArchived: Dashboard.actions.setArchived,
+    archive: id => Questions.actions.setArchived({ id }, true),
 };
 const FormItem = Form.Item;
 
@@ -77,6 +78,13 @@ class Component extends React.Component {
                     sorter: true,
                     render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.viewCount)}</span>
                 },
+                {
+                    title: 'Dashboards',
+                    dataIndex: 'dashboardCount',
+                    align: 'right',
+                    sorter: true,
+                    render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.dashboardCount)}</span>
+                },
 
                 {
                     title: 'Shares',
@@ -99,7 +107,7 @@ class Component extends React.Component {
                 width: 50,
                 render: (col, record, index) => {
                     let operationList = [...this.state.operationList];
-                    if (this.state.favouriteList.find(v => v.dashboardId == record.id)) {
+                    if (this.state.favouriteList.find(v => v.datasetId == record.id)) {
                         operationList.shift();
                         operationList.unshift({
                             icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -204,7 +212,7 @@ class Component extends React.Component {
     }
     getMyFavourites = () => {
         // 查该用户的总收藏数
-        LayoutDashboardApi.listFavorites({
+        LayoutDashboardApi.listFavoritesDS({
             "pageSize": 9999999999,
             "pageIndex": 1,
             "orderBys": [],
@@ -220,7 +228,7 @@ class Component extends React.Component {
             return;
         }
         // 查自己的总收藏数
-        LayoutDashboardApi.listFavorites({
+        LayoutDashboardApi.listFavoritesDS({
             "pageSize": 9999999999,
             "pageIndex": 1,
             "orderBys": [],
@@ -248,15 +256,11 @@ class Component extends React.Component {
         });
     }
     fork = (record) => {
-        const newName = record.name + '-fork';
-        LayoutDashboardApi.forkDashboard({
-            originalDashboardId: record.id,
-            description: newName,
-            new_dashboard_name: newName
-        }).then(d => {
+        const newName = record.name;
+        LayoutDashboardApi.forkDS(record.id)().then(d => {
             const slug = slugg(newName);
-            const suffix = slug ? `${d.newDashboardId}-${slug}` : d.newDashboardId;
-            this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1 } });
+            const suffix = slug ? `${d.newId}-${slug}` : d.newId;
+            this.props.push({ pathname: `/layout/create/dataset/${suffix}` });
         })
     }
     clickDashboardState = (key) => {
@@ -268,15 +272,15 @@ class Component extends React.Component {
     }
     clickDropdownIcon = (key, record) => {
         if (key == 'Favorite') {
-            LayoutDashboardApi.logFavorite({
-                "dashboardId": record.id,
+            LayoutDashboardApi.logFavoriteDS({
+                "dataSetId": record.id,
                 "operationFlag": 'add'
             }).then(d => {
                 this.getMyFavourites();
             });
         } else if (key == 'Unfavorite') {
-            LayoutDashboardApi.logFavorite({
-                "dashboardId": record.id,
+            LayoutDashboardApi.logFavoriteDS({
+                "dataSetId": record.id,
                 "operationFlag": 'cancel'
             }).then(d => {
                 this.getMyFavourites();
@@ -288,7 +292,7 @@ class Component extends React.Component {
         else if (key == 'Edit') {
             const slug = slugg(record.name);
             const suffix = slug ? `${record.id}-${slug}` : record.id;
-            this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1 } });
+            this.props.push({ pathname: `/layout/create/dataset/${suffix}` });
         }
         else if (key == 'Forks') {
             this.fork(record);
@@ -297,12 +301,16 @@ class Component extends React.Component {
             Modal.confirm({
                 wrapClassName: 'common-confirm-modal',
                 closable: true,
-                title: 'Delete Dashboard',
+                title: 'Delete Dataset',
                 content:
-                    'Are you sure to delete this dashboard ?',
+                    'Are you sure to delete this dataset ?',
                 cancelText: 'Cancel',
                 onOk: async () => {
-                    await this.props.setDashboardArchived({ id: record.id }, true);
+                    await this.props.archive(record.id);
+                    await LayoutDashboardApi.externalEvent({
+                        "topic": "dataset.changed",
+                        "data": record.id
+                    })
                     this.getMyFavourites();
                 }
             });
@@ -337,7 +345,7 @@ class Component extends React.Component {
         //     return;
         // }
         this.setState({ loading: true });
-        const request = this.props.isFavourite ? LayoutDashboardApi.listFavorites : LayoutDashboardApi.list;
+        const request = this.props.isFavourite ? LayoutDashboardApi.listFavoritesDS : LayoutDashboardApi.datasetList;
         request({
             "pageSize": this.state.pagination.pageSize,
             "pageIndex": turnFirstPage ? 1 : this.state.pagination.current,
@@ -348,7 +356,6 @@ class Component extends React.Component {
             "tagIds": [],
             "searchName": this.props.searchValue,
             "creator": this.props.isFavourite ? '' : this.props.accountId,
-            "dashboardIds": [],
             "accountId": this.props.isFavourite ? this.props.accountId : "",
             "draftStatus": this.props.isFavourite ? "" : Number(this.state.state)
         }).then(d => {
@@ -367,14 +374,14 @@ class Component extends React.Component {
                     resolveDashboardData([]);
                     return;
                 }
-                LayoutDashboardApi.list({
+                LayoutDashboardApi.datasetList({
                     "pageSize": 999999999,
                     "pageIndex": 1,
                     "orderBys": [],
                     "tagIds": [],
                     "searchName": '',
                     "creator": '',
-                    "dashboardIds": d.list.map(v => v.dashboardId),
+                    "datasetIds": d.list.map(v => v.datasetId),
                 }).then(d2 => {
                     resolveDashboardData(d2.list);
                 })
