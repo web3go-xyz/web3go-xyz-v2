@@ -56,7 +56,7 @@ class Component extends React.Component {
 
     }
     componentDidMount() {
-        this.props.onRef(this); 
+        this.props.onRef(this);
     }
     init = async (chartObj) => {
         this.setState({
@@ -148,6 +148,9 @@ class Component extends React.Component {
             hash: urlParsed.hash,
             state: newState
         };
+        this.setState({
+            chartName: v.display_name
+        });
         this.props.replace(locationDescriptor);
         this.setState({
             refreshFlag: false

@@ -143,7 +143,7 @@ class Component extends React.Component {
             rawDataLoading: true
         });
         const { databaseList } = this.props;
-        const databaserIdList = Object.keys(databaseList);
+        const databaserIdList = Object.keys(databaseList).filter(v => v != -1337);
         const promiseArr = [];
         for (const v of databaserIdList) {
             promiseArr.push(MetabaseApi.db_schemas({ dbId: v }))
@@ -395,9 +395,15 @@ class Component extends React.Component {
     }
     clickRowDataItem = (v) => {
         this.DatasetRightMainRef.init(v);
+        this.setState({
+            datasetName: v.display_name
+        });
     }
     clickDatasetItem = (v) => {
         this.DatasetRightMainRef.init(v);
+        this.setState({
+            datasetName: v.display_name
+        });
     }
     clickLinkedDashboard = () => {
         this.LinkedDashboardModalRef.init();
@@ -510,7 +516,7 @@ class Component extends React.Component {
                                     placeholder='Search dataset…'
                                 />
                             </div>
-                            <div className="search-item">
+                            {/* <div className="search-item">
                                 <Select
                                     allowClear
                                     placeholder='All dataset tags'
@@ -535,11 +541,11 @@ class Component extends React.Component {
                                         </Option>
                                     ))}
                                 </Select>
-                            </div>
-                            <div className="search-item switch-wrap">
+                            </div> */}
+                            {/* <div className="search-item switch-wrap">
                                 <span>My favorite</span>
                                 <Switch />
-                            </div>
+                            </div> */}
                             <Collapse
                                 bordered={false}
                                 defaultActiveKey={['1']}
