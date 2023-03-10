@@ -159,12 +159,12 @@ class Component extends React.Component {
     }
     render() {
         const stateObj = this.state.stateList.find(v => v.value == this.state.state);
-        const { userInfo, isMyself, dashboardListCount, myFavouriteCount } = this.state;
+        const { userInfo, isMyself, dashboardListCount,datasetListCount, myFavouriteCount } = this.state;
         let main = (<div className="table-header">
             <Tabs activeTab={this.state.activeTab} onChange={this.setActiveTab}>
                 <TabPane key='1' title={`Dashboard ${dashboardListCount}`}>
                 </TabPane>
-                <TabPane key='2' title={`Datasets ${dashboardListCount}`}>
+                <TabPane key='2' title={`Datasets ${datasetListCount}`}>
                 </TabPane>
                 <TabPane key='3' title={`${this.state.isMyself ? 'My Favorites' : 'Favorites'}`}>
                 </TabPane>

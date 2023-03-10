@@ -15,7 +15,6 @@ import { CollectionsApi } from '@/services'
 import { publicSpaceCollectionId, changePublicSpaceCollectionId } from "metabase/redux/app";
 import SelectDashboardToEditModal from './CreateDashboard/SelectDashboardToEditModal';
 
-
 const { Text } = Typography;
 const mapStateToProps = state => {
     return {

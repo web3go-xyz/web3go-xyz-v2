@@ -56,7 +56,7 @@ class Component extends React.Component {
 
     }
     componentDidMount() {
-        this.props.onRef(this); 
+        this.props.onRef(this);
     }
     init = async (chartObj) => {
         this.setState({
@@ -148,6 +148,9 @@ class Component extends React.Component {
             hash: urlParsed.hash,
             state: newState
         };
+        this.setState({
+            chartName: v.display_name
+        });
         this.props.replace(locationDescriptor);
         this.setState({
             refreshFlag: false
@@ -227,12 +230,12 @@ class Component extends React.Component {
                                 placeholder='Search dataset…'
                             />
                         </div>
-                        <div className="add-btn-wrap">
+                        {/* <div className="add-btn-wrap">
                             <Button className="btn" type="primary">
                                 <IconPlus />
                                 <span>Add NewDataset</span>
                             </Button>
-                        </div>
+                        </div> */}
                         <div className="dataset-list">
                             <Spin loading={this.state.datasetLoading} style={{ display: 'block', minHeight: 100 }}>
                                 {this.formatDatasetList.map(v => (
@@ -243,9 +246,9 @@ class Component extends React.Component {
                                 ))}
                             </Spin>
                         </div>
-                        <div className="manage-wrap">
+                        {/* <div className="manage-wrap">
                             <Button className="btn" type='outline' onClick={() => { this.props.changeTopTab(0) }}>Manage dataset</Button>
-                        </div>
+                        </div> */}
                     </div>
                     <div className="dm-middle">
                         {

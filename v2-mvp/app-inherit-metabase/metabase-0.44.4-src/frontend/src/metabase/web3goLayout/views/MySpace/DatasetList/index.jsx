@@ -8,7 +8,7 @@ import { Button, Modal, Form, Input, Upload, Select, Checkbox, Table, TableColum
 import { push } from "react-router-redux";
 import moment from 'moment';
 import { numberSplit } from '@/web3goLayout/utils';
-import ShareModal from "@/web3goLayout/components/ShareModal";
+import ShareModalDS from "@/web3goLayout/components/ShareModalDS";
 import { LayoutDashboardApi } from '@/services'
 import Dashboard from "metabase/entities/dashboards";
 import Questions from "metabase/entities/questions";
@@ -428,7 +428,7 @@ class Component extends React.Component {
                     onChange={this.onChangeTable}
                     columns={columns}
                     data={this.state.tableData} />
-                <ShareModal onRef={(ref) => this.ShareModalRef = ref}></ShareModal>
+                <ShareModalDS onRef={(ref) => this.ShareModalRef = ref}></ShareModalDS>
             </div >
         )
     }
