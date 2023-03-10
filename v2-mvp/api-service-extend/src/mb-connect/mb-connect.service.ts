@@ -338,7 +338,9 @@ export class MBConnectService {
         let res = [];
         const dateBeforeMinutes = new Date(new Date().getTime() - updateInMins * 60 * 1000);
 
-        const where: FindOptionsWhere<ReportCard> = {};
+        const where: FindOptionsWhere<ReportCard> = {
+            dataset: true
+        };
 
         if (updateInMins) {
             where.updatedAt = MoreThan(dateBeforeMinutes);
@@ -357,7 +359,7 @@ export class MBConnectService {
 
     // by given dashboard_id, to find all datasets in the related dashboard 
     // and to count all linked_dashboard for those datasets
-    async countLinkedDashboardOfDatasetByDashboardId(dashboardId: number): Promise<{[key: number]:number}> {
+    async countLinkedDashboardOfDatasetByDashboardId(dashboardId: number): Promise<{ [key: number]: number }> {
         let cards = await this.mb_rdcRepo.createQueryBuilder().addSelect("card_id", "cardId").where({
             dashboardId
         }).getRawMany();
@@ -381,8 +383,8 @@ export class MBConnectService {
         // select distinct dashboard_id from report_dashboardcard where card_id = 462
         const sqlBuilder = this.mb_rdcRepo.createQueryBuilder('n').select('DISTINCT dashboard_id as dashboard_id').where(
             {
-            cardId: datasetId
-        }); //.addSelect("dashboard_id", "dashboardId");
+                cardId: datasetId
+            }); //.addSelect("dashboard_id", "dashboardId");
 
         if (startPage) {
             sqlBuilder.skip(startPage);
@@ -400,7 +402,7 @@ export class MBConnectService {
                 email: loginUserEmail
             }
         });
-        const target = await this.mb_rcRepo.findOne({where: {id}})
+        const target = await this.mb_rcRepo.findOne({ where: { id } })
         if (!target || target.archived) {
             throw new BadRequestException('the dataset is not available');
         }
@@ -419,7 +421,7 @@ export class MBConnectService {
         const saveStatus = await this.mb_rcRepo.insert(newOne);
         return saveStatus.identifiers && saveStatus.identifiers[0].id;
     }
-    
+
     // async findAllDatasets(excludeArchived: boolean): Promise<ReportDashboard[]> {
     //     return await this.mb_rdRepo.find({
     //         where: {
