@@ -21,10 +21,10 @@ export class ShareService {
     constructor(
         private readonly eventService: EventService,
 
-        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_EXT_REPOSITORY.provide)
         private dextRepo: Repository<DatasetExt>,
 
-        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_SHARE_LOG_REPOSITORY.provide)
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_SHARE_LOG_REPOSITORY.provide)
         private dsharelRepo: Repository<DatasetShareLog>,
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_SHARE_REFERRAL_CODE_REPOSITORY.provide)
