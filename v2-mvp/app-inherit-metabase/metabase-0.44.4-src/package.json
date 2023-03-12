@@ -1,10 +1,10 @@
 {
-  "name": "metabase",
+  "name": "app",
   "private": true,
   "version": "0.0.0",
-  "description": "Metabase Analytics Report Server",
-  "repository": "https://github.com/metabase/metabase",
-  "license": "private",
+  "description": "App Analytics Report Server",
+  "repository": "",
+  "license": "Apache 2.0",
   "engines": {
     "node": ">=14.2",
     "yarn": ">=1.12.3"
