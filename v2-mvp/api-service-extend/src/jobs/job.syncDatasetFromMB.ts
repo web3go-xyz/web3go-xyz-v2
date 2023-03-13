@@ -26,7 +26,7 @@ export class Job_SyncDatasetFromMB {
     this.logger = new W3Logger(`Job_SyncDatasetFromMB`);
  
     // for the first execution, do syncrhonization all data, after that everytime we only update the data with update_time in 5mins
-    this.cron_syncDatasetFromMB(CronConstants.DEBUG_SYNC_DATASET_FROM_MB_INTERVAL.enabled);
+    this.cron_syncDatasetFromMB(true || CronConstants.DEBUG_SYNC_DATASET_FROM_MB_INTERVAL.enabled);
   }
   @Cron(CronConstants.DEBUG_SYNC_DATASET_FROM_MB_INTERVAL.cron)
   async cron_syncDatasetFromMB(isSyncAll = false): Promise<any> {
@@ -61,6 +61,7 @@ export class Job_SyncDatasetFromMB {
       update: [],
       remove: [],
     };
+    this.logger.log('debuing..cron_syncDatasetFromMB started..' + new Date().toLocaleTimeString());
 
     const ids = !!dataset_id ? [dataset_id] : null;
 
@@ -88,7 +89,7 @@ export class Job_SyncDatasetFromMB {
         favoriteCount: 0,
         forkCount: 0,
         publicUUID: dataset.publicUuid,
-        publicLink: this.formatlink(dataset.id)
+        publicLink: !dataset.publicUuid ? '' : this.formatlink(dataset.id)
       });
       if (sqlResult.identifiers && sqlResult.identifiers.length > 0) {
         result.new.push(dataset.id);
@@ -108,7 +109,7 @@ export class Job_SyncDatasetFromMB {
             archived: dataset.archived,
             dashboardCount,
             publicUUID: dataset.publicUuid,
-            publicLink: this.formatlink(dataset.id)
+            publicLink: !dataset.publicUuid ? '' : this.formatlink(dataset.id)
           })
           .where('id = :id', { id: dataset.id })
           .execute();
@@ -116,6 +117,20 @@ export class Job_SyncDatasetFromMB {
           result.update.push(dataset.id);
         }
       }
+    }
+    // to sync deleted dashboard
+    if (ids) {
+      list && list.forEach(existed => {
+        ids.splice(ids.indexOf(existed.database_id), 1);
+      })
+      for (const toDeleteId of ids) {
+        await this.datasetExtRepo.delete(toDeleteId);
+        result.remove.push(toDeleteId);
+      };
+    } else if (isSyncAll) {
+      const ids = list.map(it => it.id);
+      const result = await this.datasetExtRepo.createQueryBuilder().delete().where(`id NOT IN(${ids.toString()})`).execute();
+      console.info(result);
     }
 
     return result;

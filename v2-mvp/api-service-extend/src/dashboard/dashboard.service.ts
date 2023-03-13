@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigTag } from 'src/base/entity/platform-config/ConfigTag';
 import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
 import { DashboardTag } from 'src/base/entity/platform-dashboard/DashboradTag';
@@ -16,6 +16,7 @@ import { ReportCard } from 'src/base/entity/metabase/ReportCard';
 import { Collection } from 'src/base/entity/metabase/Collection';
 import { MBConnectService } from 'src/mb-connect/mb-connect.service';
 import { QueryDashboardByDataset } from './model/QueryDashboardByDataset';
+import { AccountFollower } from 'src/base/entity/platform-user/AccountFollower';
 
 @Injectable()
 export class DashboardService {
@@ -35,11 +36,23 @@ export class DashboardService {
         @Inject(RepositoryConsts.REPOSITORYS_METABASE.MB_REPORT_CARD_REPOSITORY.provide)
         private dataSet: Repository<ReportCard>,
 
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_FOLLOWER_REPOSITORY.provide)
+        private accountFollowerRepo: Repository<AccountFollower>,
+
         private readonly mbConnectService: MBConnectService,
     ) {
         this.logger = new W3Logger(`DashboardService`);
     }
 
+    async getAllFollowed(accountId) {
+       const data = await this.accountFollowerRepo.find({
+            where: {
+                accountId
+            },
+            select: ['followedAccountId'],
+        })
+        return data.map(it => it.followedAccountId);
+    }
 
     async list(request: QueryDashboardListRequest, userSession): Promise<QueryDashboardListResponse> {
 
@@ -94,13 +107,25 @@ export class DashboardService {
         if (request.searchName) {
             where.name = Like(`%${request.searchName}%`);
         }
+        const logginUserId = userSession && userSession.id;
+        let isAllowShowingDraft = logginUserId === request.creator;
+        if (request.creatorFilterBy) {
+            // if notNull(request.creator) && notNull(userSession) && request.creator !== request.creator, raise the EXP
+            if (request.creatorFilterBy === 'ME' && request.creator && logginUserId !== request.creator) {
+                throw new BadRequestException('permission failed, creatorFilterBy is ME but creator is not consistent with the user session');
+            }
+            if (logginUserId && request.creatorFilterBy === 'ME') {
+                request.creator = userSession.id;
+            }
+            if (request.creatorFilterBy === 'FOLLOWING') {
+                isAllowShowingDraft = false;
+                request.creator = '';
+                where.creatorAccountId = In(await this.getAllFollowed(logginUserId));
+            }
+        }
         if (request.creator) {
             where.creatorAccountId = request.creator;
-        } else {
-            // where.publicLink = Not(''); //Not(Raw('NULL'));
-            // My Space Page may vary by the log-in status
-        }
-        const isAllowShowingDraft = userSession && userSession.id && userSession.id === request.creator;
+        } 
         // specified the defat status of a dashboard, 0 or default: not limited(mixed the drafted and the posted);  1: draft data only 2: only posted(no drafts)
 
          if (request.draftStatus === 1) { // draft data only
@@ -118,6 +143,7 @@ export class DashboardService {
                 where.publicLink = Not('')
             } 
         }
+
         
         let options: FindManyOptions<DashboardExt> = {
             where: where,
