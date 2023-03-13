@@ -338,7 +338,9 @@ export class MBConnectService {
         let res = [];
         const dateBeforeMinutes = new Date(new Date().getTime() - updateInMins * 60 * 1000);
 
-        const where: FindOptionsWhere<ReportCard> = {};
+        const where: FindOptionsWhere<ReportCard> = {
+            dataset: true
+        };
 
         if (updateInMins) {
             where.updatedAt = MoreThan(dateBeforeMinutes);
@@ -359,8 +361,8 @@ export class MBConnectService {
     // and to count all linked_dashboard for those datasets
     async countLinkedDashboardOfDatasetByDashboardId(dashboardId: number): Promise<{[key: number]:number}> {
         let cards = await this.mb_rdcRepo.createQueryBuilder().addSelect("card_id", "cardId").where({
-            dashboardId
-        }).getRawMany();
+            dashboardId,
+        }).andWhere('card_id IS NOT NULL').getRawMany();
         const result = {};
         for (const card of cards) {
             result[card.cardId] = await this.countLinkedDashboardOfDataset(card.cardId);

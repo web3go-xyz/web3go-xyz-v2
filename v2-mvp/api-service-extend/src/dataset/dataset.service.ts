@@ -103,13 +103,13 @@ export class DatasetService {
                 // to make the query dismatch any records
                 where.id = -11;
             } else {
-                where.publicUUID = '';
+                where.publicLink = '';
             } 
         } else if (request.draftStatus === 2) {         // only posted
-            where.publicUUID = Not(''); //Not(Raw('NULL'));
+            where.publicLink = Not(''); //Not(Raw('NULL'));
         } else {  // mixed
             if (!isAllowShowingDraft) { // if no auth, only show posted
-                where.publicUUID = Not('')
+                where.publicLink = Not('')
             } 
         }
         
