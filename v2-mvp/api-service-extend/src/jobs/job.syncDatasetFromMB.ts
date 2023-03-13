@@ -26,7 +26,7 @@ export class Job_SyncDatasetFromMB {
     this.logger = new W3Logger(`Job_SyncDatasetFromMB`);
  
     // for the first execution, do syncrhonization all data, after that everytime we only update the data with update_time in 5mins
-    this.cron_syncDatasetFromMB(true || CronConstants.DEBUG_SYNC_DATASET_FROM_MB_INTERVAL.enabled);
+    this.cron_syncDatasetFromMB(CronConstants.DEBUG_SYNC_DATASET_FROM_MB_INTERVAL.enabled);
   }
   @Cron(CronConstants.DEBUG_SYNC_DATASET_FROM_MB_INTERVAL.cron)
   async cron_syncDatasetFromMB(isSyncAll = false): Promise<any> {
