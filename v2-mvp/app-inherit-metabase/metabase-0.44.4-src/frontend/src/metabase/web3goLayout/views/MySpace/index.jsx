@@ -7,7 +7,7 @@ import { push } from "react-router-redux";
 import { IconEdit, IconSearch, IconArrowLeft, IconPlus, IconCheck, IconDown, IconMoreVertical } from '@arco-design/web-react/icon';
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import { LayoutLoginApi, LayoutCreatorApi } from '@/services'
+import { LayoutLoginApi, LayoutCreatorApi, LayoutDashboardApi } from '@/services'
 import event from '@/web3goLayout/event';
 import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
 import DashBoardList from './DashBoardList';
@@ -58,6 +58,17 @@ class Component extends React.Component {
     componentDidMount() {
         this.getUserInfo();
         this.getAllFollowingList();
+        this.getDatasetListCount();
+    }
+    getDatasetListCount = () => {
+        LayoutDashboardApi.datasetList({
+            "pageSize": 1,
+            "pageIndex": 1,
+            "creator": this.state.userInfo.accountId,
+            "draftStatus": 'Posted'
+        }).then(d => {
+            this.setDatasetListCount(d.totalCount);
+        })
     }
     getAllFollowingList = () => {
         if (this.props.userData.account) {
@@ -159,12 +170,12 @@ class Component extends React.Component {
     }
     render() {
         const stateObj = this.state.stateList.find(v => v.value == this.state.state);
-        const { userInfo, isMyself, dashboardListCount, myFavouriteCount } = this.state;
+        const { userInfo, isMyself, dashboardListCount, datasetListCount, myFavouriteCount } = this.state;
         let main = (<div className="table-header">
             <Tabs activeTab={this.state.activeTab} onChange={this.setActiveTab}>
                 <TabPane key='1' title={`Dashboard ${dashboardListCount}`}>
                 </TabPane>
-                <TabPane key='2' title={`Datasets ${dashboardListCount}`}>
+                <TabPane key='2' title={`Datasets ${datasetListCount}`}>
                 </TabPane>
                 <TabPane key='3' title={`${this.state.isMyself ? 'My Favorites' : 'Favorites'}`}>
                 </TabPane>

@@ -12,6 +12,7 @@ import { getMetadata } from "metabase/selectors/metadata";
 import slugg from "slugg";
 import * as query_builderActions from "@/query_builder/actions";
 import * as Urls from "metabase/lib/urls";
+import domtoimage from 'dom-to-image';
 import { parse as parseUrl } from "url";
 import { Link } from "react-router";
 import { publicSpaceCollectionId, changePublicSpaceCollectionId } from "metabase/redux/app";
@@ -106,9 +107,15 @@ class Component extends React.Component {
         // const collectionList = await CollectionsApi.list();
         // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
         // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);
-
-        // this.getDashboardTags(currentDashboardId);
-        // this.getAllTagList();
+        const slug = this.props.params.chartSlug;
+        const currentDashboardId = Urls.extractEntityId(slug) || -1;
+        this.setState({
+            currentDashboardId
+        });
+        if (this.props.params.chartSlug) {
+            this.getDashboardTags(currentDashboardId);
+        }
+        this.getAllTagList();
         this.getDatasetList();
     }
     componentDidUpdate(prevProp) {
@@ -130,6 +137,7 @@ class Component extends React.Component {
                     datasetName: this.props.card.name,
                     alreadyInitEditData: true
                 })
+                this.getLinkedDashboards(this.props.card.id);
             }
         }
         if (!prevProp.card && this.props.card) {
@@ -137,6 +145,17 @@ class Component extends React.Component {
                 originCardDetail: this.props.card
             });
         }
+    }
+    getLinkedDashboards = (cardId) => {
+        LayoutDashboardApi.list({
+            "pageSize": 99999999,
+            "pageIndex": 1,
+            "datasetId": cardId,
+        }).then(d => {
+            this.setState({
+                usedDashboardList: d.list
+            });
+        });
     }
     getAllRawData = async () => {
         this.setState({
@@ -182,7 +201,7 @@ class Component extends React.Component {
         })
     }
     getDashboardTags = (currentDashboardId) => {
-        LayoutDashboardApi.listDashboardTags(currentDashboardId)().then(d => {
+        LayoutDashboardApi.listDatasetTags(currentDashboardId)().then(d => {
             this.setState({
                 tagList: d.map(v => v.tag_name),
                 savedCurrentTagList: d
@@ -190,7 +209,7 @@ class Component extends React.Component {
         })
     }
     getAllTagList = () => {
-        LayoutDashboardApi.listAllTags().then(d => {
+        LayoutDashboardApi.listAllTagsDS().then(d => {
             this.setState({
                 savedAllTagList: d,
                 allTagList: d.map(v => v.tagName)
@@ -256,8 +275,8 @@ class Component extends React.Component {
                     markTagList.push(find);
 
                 } else {
-                    LayoutDashboardApi.AddTag({
-                        "dashboardId": currentDashboardId,
+                    LayoutDashboardApi.AddTagDS({
+                        "datasetId": currentDashboardId,
                         "tagName": v
                     })
                 }
@@ -269,14 +288,14 @@ class Component extends React.Component {
             }
         })
         if (markTagList.length) {
-            LayoutDashboardApi.markTags({
-                "dashboardId": currentDashboardId,
+            LayoutDashboardApi.markTagsDS({
+                "datasetId": currentDashboardId,
                 "tagIds": markTagList.map(v => v.id)
             })
         }
         if (removeTagList.length) {
-            LayoutDashboardApi.removeTags({
-                "dashboardId": currentDashboardId,
+            LayoutDashboardApi.removeTagsDS({
+                "datasetId": currentDashboardId,
                 "tagIds": removeTagList.map(v => v.id)
             })
         }
@@ -284,29 +303,22 @@ class Component extends React.Component {
     uploadThumbnail = async (id, thumbnailBlob) => {
         const formData = new FormData();
         formData.append('file', thumbnailBlob);
-        await LayoutDashboardApi.previewUrl(id)(formData, { isUpload: true })
+        await LayoutDashboardApi.datasetPreviewUrl(id)(formData, { isUpload: true })
     }
     createThumbnail() {
         return new Promise((resolve) => {
-            this.setState({
-                isEditing: false
-            }, () => {
-                const el = document.getElementById('dashboard-thumbnail');
-                domtoimage.toBlob(el, {
-                    quality: 0.2,
-                    width: 1200,
-                    height: 630,
-                    bgcolor: 'rgb(250,251,252)',
+            const el = document.getElementById('dataset-thumbnail');
+            domtoimage.toBlob(el, {
+                quality: 0.2,
+                width: 1200,
+                height: 630,
+                bgcolor: 'rgb(250,251,252)',
+            })
+                .then((blob) => {
+                    resolve(blob);
+                }).catch(e => {
+                    resolve(undefined)
                 })
-                    .then((blob) => {
-                        this.setState({
-                            isEditing: true
-                        });
-                        resolve(blob);
-                    }).catch(e => {
-                        resolve(undefined)
-                    })
-            });
         });
     }
     handlePostDataset = (isDraft) => {
@@ -321,13 +333,14 @@ class Component extends React.Component {
             });
             let thumbnailBlob;
             if (!isDraft) {
-                // thumbnailBlob = await this.createThumbnail();
+                thumbnailBlob = await this.createThumbnail();
             }
             event.emit('addChartSave', this.state.datasetName, async (cardId, card) => {
+                this.saveTag(cardId);
                 if (!isDraft) {
                     await this.props.createPublicLink({ id: cardId });
                     if (thumbnailBlob) {
-                        // await this.uploadThumbnail(realId, thumbnailBlob);
+                        await this.uploadThumbnail(cardId, thumbnailBlob);
                     }
                 }
                 await LayoutDashboardApi.externalEvent({

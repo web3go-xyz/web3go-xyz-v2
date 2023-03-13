@@ -386,7 +386,7 @@ class Component extends React.Component {
                 thumbnailBlob = await this.createThumbnail();
             }
             event.emit('saveDashboard', this.state.dashboardName, async () => {
-                this.saveTag();
+                this.saveTag(realId);
                 if (!isDraft) {
                     await this.props.createPublicLink({ id: realId });
                     await LayoutDashboardApi.externalEvent({

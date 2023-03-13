@@ -328,7 +328,7 @@ class Component extends React.Component {
             }] : [],
             "tagIds": this.state.currentTagList.map(v => v.id),
             "searchName": "",
-            "creator": this.state.params.createBy,
+            "creatorFilterBy": this.state.params.createBy,
             "datasetIds": this.state.showMyFavorite ? this.state.favouriteList.map(v => v.datasetId) : []
         }).then(d => {
             if (!d.list) {
@@ -439,10 +439,10 @@ class Component extends React.Component {
                                         {v.nickName}
                                     </Option>
                                 ))} */}
-                                        <Option value="1">
+                                        <Option value="FOLLOWING">
                                             My following creators
                                         </Option>
-                                        <Option value="2">
+                                        <Option value="ME">
                                             Created by myself
                                         </Option>
                                     </Select>

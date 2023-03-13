@@ -65,7 +65,7 @@ class Component extends React.Component {
             <Modal
                 autoFocus={false}
                 style={{ width: '635px' }}
-                wrapClassName="common-form-modal create-dashboard-link-datasets-modal"
+                wrapClassName="common-form-modal create-link-dashboard-modal"
                 title='Linked Dashboards'
                 visible={this.state.visible}
                 onCancel={() => this.setState({ visible: false })}
@@ -75,7 +75,7 @@ class Component extends React.Component {
                     <div className="list">
                         {
                             usedDashboardList.map(v => (
-                                <div className="item" key={v.id}>
+                                <div className="item hover-item" key={v.id} onClick={() => { window.open(v.publicLink ? v.publicLink : `/layout/dashboardDetail/${v.id}`) }}>
                                     <span>{v.name}</span>
                                 </div>
                             )

@@ -56,7 +56,7 @@ class Component extends React.Component {
                 const title = `Check out ${this.state.record.name} on Web3go! Here is the link:`;
                 let metaArr = {
                     "platform": "twitter",
-                    "dashboardId": this.state.record.id,
+                    "datasetId": this.state.record.id,
                     "metaData": [
                         { "key": "twitter:card", "value": "summary_large_image" },
                         { "key": "twitter:site", "value": "https://web3go.xyz" },
@@ -64,7 +64,7 @@ class Component extends React.Component {
                         { "key": "twitter:title", "value": title }
                     ]
                 };
-                LayoutDashboardApi.getShareUrl(metaArr).then(backInterfaceUrl => {
+                LayoutDashboardApi.getShareUrlDS(metaArr).then(backInterfaceUrl => {
                     const url = `https://twitter.com/share?text=${title}&url=${backInterfaceUrl}&via=web3go&hashtags=blockChain%2Cweb3go`;
                     window.open(url);
                 });
@@ -93,8 +93,8 @@ class Component extends React.Component {
         this.addShareLog('link');
     }
     addShareLog = (shareChannel) => {
-        LayoutDashboardApi.logShare({
-            "dashboardId": this.state.record.id,
+        LayoutDashboardApi.logShareDS({
+            "datasetId": this.state.record.id,
             "shareChannel": shareChannel,
             "referralCode": this.state.publicUrlOfLinkObj.referralCode
         });

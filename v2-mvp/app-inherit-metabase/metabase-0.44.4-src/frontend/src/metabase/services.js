@@ -41,6 +41,7 @@ export const LayoutLoginApi = {
 };
 export const LayoutDashboardApi = {
   listAllTags: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/listAllTags"),
+  listAllTagsDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/tag/listAllTags"),
   list: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/list"),
   listMyFavorites: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/listMyFavorites"),
   listMyFavoritesDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/favorite/listMyFavorites"),
@@ -53,6 +54,7 @@ export const LayoutDashboardApi = {
   logView: WPOST(WEB3GO_BASE_URL + "/api/v2/view/logView"),
   externalEvent: WPOST(WEB3GO_BASE_URL + "/api/v2/event/externalEvent"),
   logShare: WPOST(WEB3GO_BASE_URL + "/api/v2/share/logShare"),
+  logShareDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/share/logShare"),
   generateDashboardShareLink: WPOST(WEB3GO_BASE_URL + "/api/v2/share/generateDashboardShareLink"),
   generateDatasetShareLink: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/share/generateDatasetShareLink"),
   forkDashboard: WPOST(WEB3GO_BASE_URL + "/api/v2/fork/forkDashboard"),
@@ -69,10 +71,14 @@ export const LayoutDashboardApi = {
   removeTags: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/removeTags"),
   listDashboardTags: (id) => WGET(WEB3GO_BASE_URL + `/api/v2/tag/listDashboardTags/${id}`),
   AddTag: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/AddTag"),
+  markTagsDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/tag/markTags"),
+  removeTagsDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/tag/removeTags"),
+  listDatasetTags: (id) => WGET(WEB3GO_BASE_URL + `/api/v2/dataset/tag/listDatasetTags/${id}`),
+  AddTagDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/tag/AddTag"),
   uploadPublicImg: WPOST(WEB3GO_BASE_URL + '/api/v2/dashboard/uploadPublicImg'),
   datasetList: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/list"),
   datasetDetail: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/detail"),
-  datasetPreviewUrl: (id) => WGET(WEB3GO_BASE_URL + `/api/v2/dataset/update/preview-url/${id}`),
+  datasetPreviewUrl: (id) => WPOST(WEB3GO_BASE_URL + `/api/v2/dataset/update/preview-url/${id}`),
   uploadDatasetPublicImg: WPOST(WEB3GO_BASE_URL + '/api/v2/dataset/uploadPublicImg'),
 };
 export const LayoutCreatorApi = {

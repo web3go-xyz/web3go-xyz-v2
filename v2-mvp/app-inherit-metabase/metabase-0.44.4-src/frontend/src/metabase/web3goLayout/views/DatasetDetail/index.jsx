@@ -112,8 +112,16 @@ class Component extends React.Component {
     getDatasetDetail = () => {
         LayoutDashboardApi.datasetDetail({ datasetIds: [this.props.params.id] }).then(d => {
             if (d.list.length) {
-                this.setState({
-                    detailData: d.list[0]
+                LayoutLoginApi.searchAccountInfo({
+                    accountIds: d.list.map(v => v.creatorAccountId),
+                    includeExtraInfo: false
+                }).then(data => {
+                    this.setState({
+                        detailData: {
+                            ...d.list[0],
+                            nickName: data[0].account.nickName
+                        }
+                    });
                 });
             }
         })

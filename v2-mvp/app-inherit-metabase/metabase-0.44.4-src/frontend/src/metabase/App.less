@@ -279,16 +279,19 @@ body[arco-theme="dark"] {
     line-height: 48px;
     padding: 0 16px;
 }
-.arco-select-size-default.arco-select-multiple{
-   
-    .arco-tag{
+
+.arco-select-size-default.arco-select-multiple {
+
+    .arco-tag {
         height: 32px;
         border-radius: 4px;
     }
-    .arco-input-tag-inner{
+
+    .arco-input-tag-inner {
         height: 48px;
     }
 }
+
 .arco-select-arrow-icon {
     font-size: 16px;
 }
@@ -401,6 +404,15 @@ thead>.arco-table-tr>.arco-table-th {
     background: transparent;
     color: var(--4eColor);
 
+}
+
+.arco-table-border-cell {
+    .arco-table-content-scroll::before{
+        display: none;
+    }
+    .arco-table-td {
+        border-bottom: 1px solid var(--color-neutral-3);
+    }
 }
 
 .arco-table-th.arco-table-col-sorted {
