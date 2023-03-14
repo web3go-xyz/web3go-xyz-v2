@@ -370,7 +370,7 @@ export class AccountInfoService {
         getQuery: () => {
           return  this.dextRepo.createQueryBuilder("d")
           .where("d.creator_account_id IN( :...creator_account_id)", { creator_account_id: accountIds })
-          .where("d.public_link != ''")
+          .andWhere("d.public_link != ''")
           .select("creator_account_id", "creator_account_id")
           .addSelect("count(1)", "dashboard_count")
           .addSelect("SUM( d.view_count )", "total_view_count")
@@ -385,7 +385,7 @@ export class AccountInfoService {
         getQuery: () => {
           return  this.datasetExtRepo.createQueryBuilder("d")
           .where("d.creator_account_id IN( :...creator_account_id)", { creator_account_id: accountIds })
-          .where("d.public_link != ''")
+          .andWhere("d.public_link != ''")
           .select("creator_account_id", "creator_account_id")
           .addSelect("count(1)", "dataset_count")
           .addSelect("SUM( d.view_count )", "total_view_count")
