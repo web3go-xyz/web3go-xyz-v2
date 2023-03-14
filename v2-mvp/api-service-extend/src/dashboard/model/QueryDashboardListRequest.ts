@@ -35,6 +35,11 @@ export class QueryDashboardListRequest extends PageRequest {
     })
     draftStatus: number;
 
+    @ApiProperty({
+        description: 'filter creator account, FOLLOWING(My following creators), ME(Created by myself)', 
+        default: ''
+    })
+    creatorFilterBy?: 'FOLLOWING' | 'ME';
 
 }
 

@@ -24,6 +24,7 @@ export class AppConfig {
   public static BASE_API_URL = process.env.BASE_API_URL || "http://localhost:12350";
   public static BASE_WEB_URL = process.env.BASE_WEB_URL || "http://localhost:3000";
   public static BASE_METABASE_API_URL = process.env.BASE_METABASE_API_URL || "http://localhost:3000/api";
+  public static IS_ENABLE_CRON = process.env.IS_ENABLE_CRON === 'true' || false;
   public static DASHBOARD_PUBLIC_COLLECTION_ID: number = Number(process.env.DASHBOARD_PUBLIC_COLLECTION_ID || '1');
 
   public static redisOption = {
