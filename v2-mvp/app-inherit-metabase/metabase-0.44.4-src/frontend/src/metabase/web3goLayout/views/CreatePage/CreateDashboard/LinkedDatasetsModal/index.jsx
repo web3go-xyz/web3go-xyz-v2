@@ -22,6 +22,7 @@ import * as dashboardActions from "@/dashboard/actions";
 const Option = Select.Option;
 const mapStateToProps = (state, props) => {
     return {
+        currentUser: state.currentUser,
         isDark: state.app.isDark,
         userData: state.app.userData,
         myDashboardList: state.app.myDashboardList,
@@ -101,7 +102,7 @@ class Component extends React.Component {
         });
     }
     render() {
-        const { datasetList } = this.props;
+        const { datasetList, currentUser } = this.props;
         return (
             <Modal
                 autoFocus={false}
@@ -126,24 +127,26 @@ class Component extends React.Component {
                                 justifyContent: 'center',
                                 alignItems: 'center'
                             }
-                        }></Spin >
+                        }></Spin>
                             : !datasetList.length ? null : <div className="list">
                                 {
                                     datasetList.map(v => (
                                         <div className="item" key={v.id}>
-                                            <span>{v.name}</span>
-                                            <div className="i-right">
-                                                <IconEdit className="hover-item" onClick={() => { this.editDataset(v) }} />
-                                                <div className="split"></div>
-                                                <IconMinusCircle className="hover-item" onClick={() => { this.delDataset(v) }} />
-                                            </div>
+                                            <span className="hover-item" onClick={() => { window.open(`/layout/datasetDetail/${v.id}`); }}>{v.name}</span>
+                                            {currentUser.id == v.creator_id ? (
+                                                <div className="i-right">
+                                                    <IconEdit className="hover-item" onClick={() => { this.editDataset(v) }} />
+                                                    <div className="split"></div>
+                                                    <IconMinusCircle className="hover-item" onClick={() => { this.delDataset(v) }} />
+                                                </div>
+                                            ) : null
+                                            }
                                         </div>
                                     )
                                     )
                                 }
                             </div>
                     }
-
                     <div className="split-wrap">
                         <span className="line"></span>
                         <span className="text">or</span>

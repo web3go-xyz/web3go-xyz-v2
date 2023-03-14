@@ -99,7 +99,7 @@ class Component extends React.Component {
         const cardId = datasetCardResult.id;
         const slug = slugg(datasetCardResult.name);
         const suffix = slug ? `${cardId}-${slug}` : cardId;
-        window.open(`/layout/create/dataset/${suffix}`);
+        window.open(`/layout/datasetDetail/${cardId}`);
 
     }
     get data() {

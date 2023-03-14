@@ -124,7 +124,7 @@ class Component extends React.Component {
         }).then(d => {
             const slug = slugg(newName);
             const suffix = slug ? `${d.newDashboardId}-${slug}` : d.newDashboardId;
-            this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1 } });
+            this.props.push({ pathname: `/layout/create/dashboard/${suffix}`, state: { tabIndex: 1 } });
         })
     }
     toggleFavourite = () => {

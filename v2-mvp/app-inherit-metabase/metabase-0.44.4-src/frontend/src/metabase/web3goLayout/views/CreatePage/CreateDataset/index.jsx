@@ -6,7 +6,7 @@ import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typogr
 import { IconSearch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
 import { push, replace } from "react-router-redux";
 import cx from "classnames";
-import { LayoutDashboardApi, MetabaseApi } from '@/services'
+import { LayoutDashboardApi, CardApi, MetabaseApi } from '@/services'
 import event from '@/web3goLayout/event';
 import { getMetadata } from "metabase/selectors/metadata";
 import slugg from "slugg";
@@ -14,6 +14,7 @@ import * as query_builderActions from "@/query_builder/actions";
 import * as Urls from "metabase/lib/urls";
 import domtoimage from 'dom-to-image';
 import { parse as parseUrl } from "url";
+
 import { Link } from "react-router";
 import { publicSpaceCollectionId, changePublicSpaceCollectionId } from "metabase/redux/app";
 import LinkedDashboardModal from './LinkedDashboardModal';
@@ -72,6 +73,7 @@ class Component extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            favouriteList: [],
             hideSideBar: false,
             tabIndex: '1',
             ifEditDatasetName: false,
@@ -93,7 +95,9 @@ class Component extends React.Component {
             alreadyInitRawData: false,
             alreadyInitEditData: false,
             options: ['Beijing', 'Shanghai', 'Guangzhou', 'Disabled'],
-            originCardDetail: {}
+            originCardDetail: {},
+            searchTags: [],
+            searchCreateBy: ''
         }
         this.datasetNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
@@ -116,6 +120,7 @@ class Component extends React.Component {
             this.getDashboardTags(currentDashboardId);
         }
         this.getAllTagList();
+        this.getMyFavourites();
         this.getDatasetList();
     }
     componentDidUpdate(prevProp) {
@@ -189,16 +194,46 @@ class Component extends React.Component {
             searchKey: value
         })
     }
+    getMyFavourites = () => {
+        LayoutDashboardApi.listMyFavoritesDS({
+            "pageSize": 9999999999,
+            "pageIndex": 1,
+            "orderBys": [],
+            "accountId": this.props.userData.account.accountId,
+            "searchName": ""
+        }).then(d => {
+            this.setState({
+                favouriteList: d.list
+            });
+        });
+    }
     getDatasetList = () => {
         this.setState({
             datasetLoading: true
         })
-        LayoutDashboardApi.getDataSets().then(d => {
+        // LayoutDashboardApi.getDataSets().then(d => {
+        //     this.setState({
+        //         datasetList: d,
+        //         datasetLoading: false
+        //     });
+        // })
+        LayoutDashboardApi.datasetList({
+            "pageSize": 999999,
+            "pageIndex": 1,
+            "tagIds": this.state.searchTags,
+            "creatorFilterBy": this.state.searchCreateBy,
+            "datasetIds": this.state.showMyFavorite ? this.state.favouriteList.map(v => v.datasetId) : []
+        }).then(d => {
+            if (!d.list) {
+                d.list = [];
+                d.totalCount = 0;
+            }
             this.setState({
-                datasetList: d,
+                datasetList: d.list,
                 datasetLoading: false
             });
-        })
+        });
+
     }
     getDashboardTags = (currentDashboardId) => {
         LayoutDashboardApi.listDatasetTags(currentDashboardId)().then(d => {
@@ -412,25 +447,28 @@ class Component extends React.Component {
             datasetName: v.display_name
         });
     }
-    clickDatasetItem = (v) => {
-        this.DatasetRightMainRef.init(v);
+    clickDatasetItem = async (v) => {
+        const cardData = await CardApi.get({
+            cardId: v.id
+        })
+        this.DatasetRightMainRef.init({ db_id: cardData.database_id, id: `card__${v.id}` });
         this.setState({
-            datasetName: v.display_name
+            datasetName: v.name
         });
     }
     clickLinkedDashboard = () => {
         this.LinkedDashboardModalRef.init();
     }
     get formatDatasetList() {
-        const { datasetList, searchKey } = this.state;
-        return datasetList.filter(v => v.display_name.toLowerCase().includes(searchKey.toLowerCase()));
+        const { datasetList, searchKey, searchCreateBy, searchTags } = this.state;
+        return datasetList.filter(v => v.name.toLowerCase().includes(searchKey.toLowerCase()));
     }
     get formatRowDataList() {
         const { rawDataList, searchKey } = this.state;
         return rawDataList.filter(v => v.display_name.toLowerCase().includes(searchKey.toLowerCase()));
     }
     render() {
-        const { tagList, datasetName, ifEditDatasetName, ifEditTag, allTagList,
+        const { savedAllTagList, tagList, datasetName, ifEditDatasetName, ifEditTag, allTagList,
             isEditing, options, rawDataLoading, hideSideBar, tabIndex, originCardDetail } = this.state;
         const ifEdit = this.props.card && (this.props.card.id || this.props.card.original_card_id)
         if (!this.props.publicSpaceCollectionId) {
@@ -529,15 +567,20 @@ class Component extends React.Component {
                                     placeholder='Search dataset…'
                                 />
                             </div>
-                            {/* <div className="search-item">
+                            <div className="search-item">
                                 <Select
                                     allowClear
                                     placeholder='All dataset tags'
-                                    onChange={(value) => { }}
+                                    mode="multiple"
+                                    onChange={(value) => {
+                                        this.setState({
+                                            searchTags: value
+                                        }, () => { this.getDatasetList() });
+                                    }}
                                 >
-                                    {options.map((option, index) => (
-                                        <Option key={option} value={option}>
-                                            {option}
+                                    {savedAllTagList.map((v, index) => (
+                                        <Option key={v.id} value={v.id}>
+                                            {v.tagName}
                                         </Option>
                                     ))}
                                 </Select>
@@ -545,20 +588,29 @@ class Component extends React.Component {
                             <div className="search-item">
                                 <Select
                                     allowClear
-                                    placeholder='Created by following creator'
-                                    onChange={(value) => { }}
+                                    placeholder='Please select creators'
+                                    onChange={(value) => {
+                                        this.setState({
+                                            searchCreateBy: value
+                                        }, () => { this.getDatasetList() });
+                                    }}
                                 >
-                                    {options.map((option, index) => (
-                                        <Option key={option} value={option}>
-                                            {option}
-                                        </Option>
-                                    ))}
+                                    <Option value="FOLLOWING">
+                                        My following creators
+                                    </Option>
+                                    <Option value="ME">
+                                        Created by myself
+                                    </Option>
                                 </Select>
-                            </div> */}
-                            {/* <div className="search-item switch-wrap">
+                            </div>
+                            <div className="search-item switch-wrap">
                                 <span>My favorite</span>
-                                <Switch />
-                            </div> */}
+                                <Switch onChange={(value) => {
+                                    this.setState({
+                                        showMyFavorite: value
+                                    }, () => { this.getDatasetList() });
+                                }} />
+                            </div>
                             <Collapse
                                 bordered={false}
                                 defaultActiveKey={['1']}
@@ -568,8 +620,8 @@ class Component extends React.Component {
                                         {this.formatDatasetList.map(v => (
                                             <div className="item" key={v.id} onClick={() => { this.clickDatasetItem(v) }}>
                                                 <img className="dataset-icon" src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
-                                                <Tooltip content={v.display_name}>
-                                                    <div className="text">{v.display_name}</div>
+                                                <Tooltip content={v.name}>
+                                                    <div className="text">{v.name}</div>
                                                 </Tooltip>
                                                 <img className="view-icon" src={require("@/web3goLayout/assets/dashboardCreate/view.png")} alt="" />
                                             </div>
@@ -577,6 +629,7 @@ class Component extends React.Component {
                                     </div>
                                 </CollapseItem>
                                 <CollapseItem header='Raw data' name='2'>
+                                    
                                     <Spin loading={rawDataLoading} style={{ display: 'block', minHeight: 100 }}>
                                         <div className="raw-data-list">
                                             {this.formatRowDataList.map(v => (

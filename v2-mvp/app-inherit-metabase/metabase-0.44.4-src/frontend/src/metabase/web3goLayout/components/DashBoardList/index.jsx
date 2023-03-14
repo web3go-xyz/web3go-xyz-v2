@@ -109,22 +109,23 @@ class Component extends React.Component {
                     render: (col, record, index) => <span className="common-sort-td">{numberSplit(record.shareCount)}</span>
                 },
                 {
-                    title: '24h',
+                    // title: '24h',
+                    title: '',
                     dataIndex: '24h',
                     align: 'right',
                     width: 105,
-                    filterIcon: <IconDown />,
-                    filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
-                        return (
-                            <div className='home-arco-table-custom-filter'>
-                                <div className="item" onClick={() => { this.change24h('24h', confirm); }}>24h</div>
-                                <div className="item" onClick={() => { this.change24h('All time', confirm); }}>All time</div>
-                            </div>
-                        );
-                    },
-                    onFilter: (value, row) => {
-                        return true
-                    },
+                    // filterIcon: <IconDown />,
+                    // filterDropdown: ({ filterKeys, setFilterKeys, confirm }) => {
+                    //     return (
+                    //         <div className='home-arco-table-custom-filter'>
+                    //             <div className="item" onClick={() => { this.change24h('24h', confirm); }}>24h</div>
+                    //             <div className="item" onClick={() => { this.change24h('All time', confirm); }}>All time</div>
+                    //         </div>
+                    //     );
+                    // },
+                    // onFilter: (value, row) => {
+                    //     return true
+                    // },
                     render: (col, record, index) => {
                         return (
                             <div className="operation-wrap">
@@ -172,7 +173,7 @@ class Component extends React.Component {
         }).then(d => {
             const slug = slugg(newName);
             const suffix = slug ? `${d.newDashboardId}-${slug}` : d.newDashboardId;
-            this.props.push({ pathname: `/layout/create/${suffix}`, state: { tabIndex: 1 } });
+            this.props.push({ pathname: `/layout/create/dashboard/${suffix}`, state: { tabIndex: 1 } });
         })
     }
     goMySpace = (accountId) => {
