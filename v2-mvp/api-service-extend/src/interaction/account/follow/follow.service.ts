@@ -71,6 +71,7 @@ export class FollowService {
         }
         return resp;
     }
+    // TODO TO TEST
     async patchDetails(accountIds: string[], includeDetail: boolean): Promise<AccountFollowerDetail[]> {
         let list: AccountFollowerDetail[] = [];
 
@@ -115,7 +116,7 @@ export class FollowService {
                 if (findAccountStatistics) {
                     newItem.followedAccountCount = findAccountStatistics.followedAccountCount;
                     newItem.followingAccountCount = findAccountStatistics.followingAccountCount;
-                    newItem.dashboard_count = findAccountStatistics.dashboard_count;
+                    newItem.dashboard_count = findAccountStatistics.count;
                     newItem.total_share_count = findAccountStatistics.total_share_count;
                     newItem.total_view_count = findAccountStatistics.total_view_count;
                     newItem.total_favorite_count = findAccountStatistics.total_favorite_count;
