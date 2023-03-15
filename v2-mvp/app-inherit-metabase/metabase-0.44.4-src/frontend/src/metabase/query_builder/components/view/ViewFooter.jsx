@@ -156,16 +156,16 @@ const ViewFooter = ({
           //     }
           //   />
           // ),
-          QuestionEmbedWidget.shouldRender({ question, isAdmin }) && (
-            <QuestionEmbedWidgetTrigger
-              key="embeds"
-              onClick={() =>
-                question.isSaved()
-                  ? onOpenModal("embed")
-                  : onOpenModal("save-question-before-embed")
-              }
-            />
-          ),
+          // QuestionEmbedWidget.shouldRender({ question, isAdmin }) && (
+          //   <QuestionEmbedWidgetTrigger
+          //     key="embeds"
+          //     onClick={() =>
+          //       question.isSaved()
+          //         ? onOpenModal("embed")
+          //         : onOpenModal("save-question-before-embed")
+          //     }
+          //   />
+          // ),
           QuestionTimelineWidget.shouldRender({ isTimeseries }) && (
             <QuestionTimelineWidget
               key="timelines"

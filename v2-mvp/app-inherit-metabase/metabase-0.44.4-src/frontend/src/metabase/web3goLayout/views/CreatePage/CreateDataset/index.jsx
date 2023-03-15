@@ -641,13 +641,13 @@ class Component extends React.Component {
                                 <CollapseItem header='Community datasets' name='1'>
                                     <div className="dataset-list">
                                         {this.formatDatasetList.map(v => (
-                                            <div className="item" key={v.id} onClick={() => { this.clickDatasetItem(v) }}>
-                                                <img className="dataset-icon" src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
-                                                <Tooltip content={v.name}>
+                                            <Tooltip content={v.name}>
+                                                <div className="item" key={v.id} onClick={() => { this.clickDatasetItem(v) }}>
+                                                    <img className="dataset-icon" src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
                                                     <div className="text">{v.name}</div>
-                                                </Tooltip>
-                                                <img className="view-icon" src={require("@/web3goLayout/assets/dashboardCreate/view.png")} alt="" />
-                                            </div>
+                                                    <img className="view-icon" src={require("@/web3goLayout/assets/dashboardCreate/view.png")} alt="" />
+                                                </div>
+                                            </Tooltip>
                                         ))}
                                     </div>
                                 </CollapseItem>
@@ -663,13 +663,13 @@ class Component extends React.Component {
                                                     <Spin loading={!mapDatabaseData[v.id]} style={{ display: 'block', minHeight: 100 }}>
                                                         <div className="raw-data-list">
                                                             {this.getFormatRowDataList(v.id).map(v => (
-                                                                <div className="item" key={v.id} onClick={() => { this.clickRowDataItem(v) }}>
-                                                                    <img className="dataset-icon" src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
-                                                                    <Tooltip content={v.display_name}>
+                                                                <Tooltip content={v.name}>
+                                                                    <div className="item" key={v.id} onClick={() => { this.clickRowDataItem(v) }}>
+                                                                        <img className="dataset-icon" src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
                                                                         <div className="text">{v.display_name}</div>
-                                                                    </Tooltip>
-                                                                    <img className="view-icon" src={require("@/web3goLayout/assets/dashboardCreate/view.png")} alt="" />
-                                                                </div>
+                                                                        <img className="view-icon" src={require("@/web3goLayout/assets/dashboardCreate/view.png")} alt="" />
+                                                                    </div>
+                                                                </Tooltip>
                                                             ))}
                                                         </div>
                                                     </Spin>

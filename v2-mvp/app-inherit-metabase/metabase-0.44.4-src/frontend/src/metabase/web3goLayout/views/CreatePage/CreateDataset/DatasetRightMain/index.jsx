@@ -2,7 +2,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip, Select, Spin, Switch, Collapse, Tag, InputNumber } from '@arco-design/web-react';
+import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip, Select, Spin, Switch, Collapse, Tag, InputNumber, Table } from '@arco-design/web-react';
 import { push, replace } from "react-router-redux";
 import { IconSync } from '@arco-design/web-react/icon';
 import QueryBuilder from "metabase/query_builder/containers/QueryBuilder";
@@ -168,7 +168,24 @@ class Component extends React.Component {
             question,
         });
     }
-
+    getColumnFromCol = (cols) => {
+        return cols.map((v, i) => {
+            return {
+                title: v.display_name,
+                dataIndex: i,
+            }
+        })
+    }
+    getDataFromRow = (rows) => {
+        return rows.map((v, i) => {
+            const obj = {}
+            obj.key = i;
+            v.forEach((sv, si) => {
+                obj[si] = sv;
+            });
+            return obj
+        })
+    }
     render() {
         const { refreshFlag, previewFullScreen, resizeDirection, previewLimit, splitSize } = this.state;
         const {
@@ -199,7 +216,7 @@ class Component extends React.Component {
             }
         }
         return (
-            <div className="web3go-dataset-create-right-main">
+            <div className="web3go-dataset-create-right-main common-form">
                 <ResizeBox.Split
                     direction={resizeDirection}
                     style={{
@@ -257,31 +274,45 @@ class Component extends React.Component {
                                         </div>
                                         <QuestionResultLoader question={this.state.question}>
                                             {({ rawSeries, result }) => (
-                                                <div id="dataset-thumbnail">
-                                                    <Motion
-                                                        defaultStyle={{ height: 36 }}
-                                                        style={{
-                                                            height: spring(this.getPreviewHeightForResult(result), springOpts),
-                                                        }}
-                                                    >
-                                                        {({ height }) => {
-                                                            const targetHeight = this.getPreviewHeightForResult(result);
-                                                            const snapHeight =
-                                                                height > targetHeight / 2 ? targetHeight : 0;
-                                                            const minHeight = preferReducedMotion ? snapHeight : height;
-                                                            return (
-                                                                <Visualization
-                                                                    rawSeries={rawSeries}
-                                                                    error={result && result.error}
-                                                                    className={cx("bordered shadowed rounded bg-white", {
-                                                                        p2: result && result.error,
-                                                                    })}
-                                                                    style={{ minHeight }}
-                                                                />
-                                                            );
-                                                        }}
-                                                    </Motion>
-                                                </div>
+                                                result && result.data ?
+                                                    (
+                                                        <div id="dataset-thumbnail">
+                                                            <Table scroll={{ x: 'max-content' }} borderCell columns={this.getColumnFromCol(result.data.cols)} data={this.getDataFromRow(result.data.rows)} pagination={{ showTotal: true, showJumper: true, sizeCanChange: true, }} />
+                                                        </div>
+                                                    )
+                                                    :
+                                                    <Spin style={
+                                                        {
+                                                            display: 'block', minHeight: 100, display: 'flex',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center'
+                                                        }
+                                                    }></Spin>
+                                                // <div id="dataset-thumbnail">
+                                                //     <Motion
+                                                //         defaultStyle={{ height: 36 }}
+                                                //         style={{
+                                                //             height: spring(this.getPreviewHeightForResult(result), springOpts),
+                                                //         }}
+                                                //     >
+                                                //         {({ height }) => {
+                                                //             const targetHeight = this.getPreviewHeightForResult(result);
+                                                //             const snapHeight =
+                                                //                 height > targetHeight / 2 ? targetHeight : 0;
+                                                //             const minHeight = preferReducedMotion ? snapHeight : height;
+                                                //             return (
+                                                //                 <Visualization
+                                                //                     rawSeries={rawSeries}
+                                                //                     error={result && result.error}
+                                                //                     className={cx("bordered shadowed rounded bg-white", {
+                                                //                         p2: result && result.error,
+                                                //                     })}
+                                                //                     style={{ minHeight }}
+                                                //                 />
+                                                //             );
+                                                //         }}
+                                                //     </Motion>
+                                                // </div>
                                             )}
                                         </QuestionResultLoader>
                                     </div>
@@ -295,31 +326,45 @@ class Component extends React.Component {
                                             ) : (
                                                 <QuestionResultLoader question={this.state.question}>
                                                     {({ rawSeries, result }) => (
-                                                        <div id="dataset-thumbnail">
-                                                            <Motion
-                                                                defaultStyle={{ height: 36 }}
-                                                                style={{
-                                                                    height: spring(this.getPreviewHeightForResult(result), springOpts),
-                                                                }}
-                                                            >
-                                                                {({ height }) => {
-                                                                    const targetHeight = this.getPreviewHeightForResult(result);
-                                                                    const snapHeight =
-                                                                        height > targetHeight / 2 ? targetHeight : 0;
-                                                                    const minHeight = preferReducedMotion ? snapHeight : height;
-                                                                    return (
-                                                                        <Visualization
-                                                                            rawSeries={rawSeries}
-                                                                            error={result && result.error}
-                                                                            className={cx("bordered shadowed rounded bg-white", {
-                                                                                p2: result && result.error,
-                                                                            })}
-                                                                            style={{ minHeight }}
-                                                                        />
-                                                                    );
-                                                                }}
-                                                            </Motion>
-                                                        </div>
+                                                        result && result.data ?
+                                                            (
+                                                                <div id="dataset-thumbnail">
+                                                                    <Table scroll={{ x: 'max-content' }} borderCell columns={this.getColumnFromCol(result.data.cols)} data={this.getDataFromRow(result.data.rows)} pagination={{ showTotal: true, showJumper: true, sizeCanChange: true, }} />
+                                                                </div>
+                                                            )
+                                                            :
+                                                            <Spin style={
+                                                                {
+                                                                    display: 'block', minHeight: 100, display: 'flex',
+                                                                    justifyContent: 'center',
+                                                                    alignItems: 'center'
+                                                                }
+                                                            }></Spin>
+                                                        // <div id="dataset-thumbnail">
+                                                        //     <Motion
+                                                        //         defaultStyle={{ height: 36 }}
+                                                        //         style={{
+                                                        //             height: spring(this.getPreviewHeightForResult(result), springOpts),
+                                                        //         }}
+                                                        //     >
+                                                        //         {({ height }) => {
+                                                        //             const targetHeight = this.getPreviewHeightForResult(result);
+                                                        //             const snapHeight =
+                                                        //                 height > targetHeight / 2 ? targetHeight : 0;
+                                                        //             const minHeight = preferReducedMotion ? snapHeight : height;
+                                                        //             return (
+                                                        //                 <Visualization
+                                                        //                     rawSeries={rawSeries}
+                                                        //                     error={result && result.error}
+                                                        //                     className={cx("bordered shadowed rounded bg-white", {
+                                                        //                         p2: result && result.error,
+                                                        //                     })}
+                                                        //                     style={{ minHeight }}
+                                                        //                 />
+                                                        //             );
+                                                        //         }}
+                                                        //     </Motion>
+                                                        // </div>
                                                     )}
                                                 </QuestionResultLoader>
                                             )
