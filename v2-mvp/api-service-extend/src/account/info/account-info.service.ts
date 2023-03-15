@@ -364,13 +364,13 @@ export class AccountInfoService {
       throw new Error(`accounts not found`);
     }
 
-    const bridge = {
+    const supportTypes = {
       dashboard: {
         key: 'dashboard_count',
         getQuery: () => {
           return  this.dextRepo.createQueryBuilder("d")
           .where("d.creator_account_id IN( :...creator_account_id)", { creator_account_id: accountIds })
-          .where("d.public_link != ''")
+          .andWhere("d.public_link != ''")
           .select("creator_account_id", "creator_account_id")
           .addSelect("count(1)", "dashboard_count")
           .addSelect("SUM( d.view_count )", "total_view_count")
@@ -385,7 +385,7 @@ export class AccountInfoService {
         getQuery: () => {
           return  this.datasetExtRepo.createQueryBuilder("d")
           .where("d.creator_account_id IN( :...creator_account_id)", { creator_account_id: accountIds })
-          .where("d.public_link != ''")
+          .andWhere("d.public_link != ''")
           .select("creator_account_id", "creator_account_id")
           .addSelect("count(1)", "dataset_count")
           .addSelect("SUM( d.view_count )", "total_view_count")
@@ -395,44 +395,48 @@ export class AccountInfoService {
           .groupBy("d.creator_account_id");
         }
       }
-    }[type];
-    /*
-        const creator2ForkCountMap = {};
-    (await bridge.dataset.getQuery().getRawMany()).forEach(it => creator2ForkCountMap[it.creator_account_id] = parseInt(it.total_fork_count) || 0);
-*/
+    };
 
-    let query =  bridge.getQuery();
-
-    let statisticRecords = await query.getRawMany();
-    let resp: AccountStatisticResponse[] = [];
-
-
-    for (const d of accounts) {
-      let newItem : AccountStatisticResponse = {
-        accountId: d.accountId,
-        followedAccountCount: d.followedAccountCount,
-        followingAccountCount: d.followingAccountCount,
+    const userStatMap = {};
+   
+    // build empty data
+    const resp: AccountStatisticResponse[] = accounts.map(d => {
+      const statTmpl = {
+        count: 0,
         total_share_count: 0,
         total_view_count: 0,
         total_favorite_count: 0,
         total_fork_count: 0,
-        dashboard_count: undefined,
-        dataset_count: undefined,
+      };
+      const newItem : AccountStatisticResponse = {
+        accountId: d.accountId,
+        followedAccountCount: d.followedAccountCount,
+        followingAccountCount: d.followingAccountCount,
+        ...statTmpl,
+        dataset: {
+          ...statTmpl
+        },
       }
-      //newItem[bridge.key] = 0;
-      if (statisticRecords && statisticRecords.length > 0) {
-
-        let findStatistic = statisticRecords.find(t => t.creator_account_id == d.accountId);
-        if (findStatistic) {
-          newItem[bridge.key] = Number(findStatistic[bridge.key]) || 0;
-          newItem.total_view_count = Number(findStatistic.total_view_count);
-          newItem.total_share_count = Number(findStatistic.total_share_count);
-          newItem.total_fork_count = Number(findStatistic.total_fork_count);
-          newItem.total_favorite_count = Number(findStatistic.total_favorite_count);
-        }
+      userStatMap[d.accountId] = newItem;
+      return newItem;
+    });
+  
+    const doLoadValue  = async (bridge) => {
+      let query =  bridge.getQuery();
+      let statisticRecords = await query.getRawMany();
+      for (const stat of statisticRecords) {      
+        const data = bridge.key === 'dashboard_count' ? userStatMap[stat.creator_account_id] : userStatMap[stat.creator_account_id].dataset;
+        data.count = Number(stat[bridge.key]) || 0;
+        data.total_view_count = Number(stat.total_view_count);
+        data.total_share_count = Number(stat.total_share_count);
+        data.total_fork_count = Number(stat.total_fork_count);
+        data.total_favorite_count = Number(stat.total_favorite_count);
       }
-      resp.push(newItem);
     }
+
+    // load data
+    await doLoadValue(supportTypes.dashboard);
+    await doLoadValue(supportTypes.dashboard);
     return resp;
   }
 

@@ -2,7 +2,25 @@
 
 import { ApiProperty } from "@nestjs/swagger";
  
-export class AccountStatisticResponse {
+class DashboardStatistics {
+
+    @ApiProperty()
+    count: number;
+
+    @ApiProperty()
+    total_share_count: number;
+
+    @ApiProperty()
+    total_view_count: number;
+
+    @ApiProperty()
+    total_favorite_count: number;
+
+    @ApiProperty()
+    total_fork_count: number;
+}
+export class AccountStatisticResponse extends DashboardStatistics {
+    
     @ApiProperty()
     accountId: string;
 
@@ -17,22 +35,6 @@ export class AccountStatisticResponse {
     })
     followingAccountCount: number;
 
-    @ApiProperty()
-    dashboard_count: number;
-
-    @ApiProperty()
-    dataset_count: number;
-
-    @ApiProperty()
-    total_share_count: number;
-
-    @ApiProperty()
-    total_view_count: number;
-
-    @ApiProperty()
-    total_favorite_count: number;
-
-    @ApiProperty()
-    total_fork_count: number;
+    dataset: DashboardStatistics;
 
 } 
