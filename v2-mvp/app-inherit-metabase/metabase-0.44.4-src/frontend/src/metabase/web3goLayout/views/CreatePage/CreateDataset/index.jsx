@@ -37,6 +37,10 @@ import {
 const CollapseItem = Collapse.Item;
 const Option = Select.Option;
 const mapStateToProps = state => {
+    let databaseList = [];
+    if (state.entities.databases) {
+        databaseList = Object.keys(state.entities.databases).filter(v => v != -1337).map(v => state.entities.databases[v]);
+    }
     return {
         ...state.qb.uiControls,
         metadata: getMetadata(state),
@@ -56,7 +60,7 @@ const mapStateToProps = state => {
         currentUser: state.currentUser,
         isDark: state.app.isDark,
         userData: state.app.userData,
-        databaseList: state.entities.databases,
+        databaseList,
         publicSpaceCollectionId: state.app.publicSpaceCollectionId,
     }
 };
@@ -97,7 +101,8 @@ class Component extends React.Component {
             options: ['Beijing', 'Shanghai', 'Guangzhou', 'Disabled'],
             originCardDetail: {},
             searchTags: [],
-            searchCreateBy: ''
+            searchCreateBy: '',
+            mapDatabaseData: {}
         }
         this.datasetNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
@@ -124,12 +129,10 @@ class Component extends React.Component {
         this.getDatasetList();
     }
     componentDidUpdate(prevProp) {
-        if (Object.keys(this.props.databaseList).length) {
+        if (this.props.databaseList.length) {
             if (!this.state.alreadyInitRawData) {
                 this.setState({
                     alreadyInitRawData: true
-                }, () => {
-                    this.getAllRawData();
                 });
             }
         }
@@ -167,7 +170,7 @@ class Component extends React.Component {
             rawDataLoading: true
         });
         const { databaseList } = this.props;
-        const databaserIdList = Object.keys(databaseList).filter(v => v != -1337);
+        const databaserIdList = databaseList.map(v => v.id);
         const promiseArr = [];
         for (const v of databaserIdList) {
             promiseArr.push(MetabaseApi.db_schemas({ dbId: v }))
@@ -459,17 +462,37 @@ class Component extends React.Component {
     clickLinkedDashboard = () => {
         this.LinkedDashboardModalRef.init();
     }
+    changeDatabaseCollapse = async (key, keys) => {
+        if (keys.includes(key)) {
+            const schemas = await MetabaseApi.db_schemas({ dbId: key })
+            const promiseArr = [];
+            for (const v of schemas) {
+                promiseArr.push(MetabaseApi.db_schema_tables({ dbId: key, schemaName: v }))
+            }
+            const tableResults = await Promise.all(promiseArr);
+            let rawDataList = [];
+            tableResults.forEach(v => {
+                rawDataList = [...rawDataList, ...v]
+            })
+            this.setState({
+                mapDatabaseData: { ...this.state.mapDatabaseData, [key]: rawDataList }
+            });
+        }
+    }
     get formatDatasetList() {
         const { datasetList, searchKey, searchCreateBy, searchTags } = this.state;
         return datasetList.filter(v => v.name.toLowerCase().includes(searchKey.toLowerCase()));
     }
-    get formatRowDataList() {
-        const { rawDataList, searchKey } = this.state;
-        return rawDataList.filter(v => v.display_name.toLowerCase().includes(searchKey.toLowerCase()));
+    getFormatRowDataList(id) {
+        const { mapDatabaseData, searchKey } = this.state;
+        if (!mapDatabaseData[id]) {
+            return [];
+        }
+        return mapDatabaseData[id].filter(v => v.display_name.toLowerCase().includes(searchKey.toLowerCase()));
     }
     render() {
         const { savedAllTagList, tagList, datasetName, ifEditDatasetName, ifEditTag, allTagList,
-            isEditing, options, rawDataLoading, hideSideBar, tabIndex, originCardDetail } = this.state;
+            isEditing, options, rawDataLoading, hideSideBar, tabIndex, originCardDetail, mapDatabaseData } = this.state;
         const ifEdit = this.props.card && (this.props.card.id || this.props.card.original_card_id)
         if (!this.props.publicSpaceCollectionId) {
             return <Spin style={
@@ -629,20 +652,32 @@ class Component extends React.Component {
                                     </div>
                                 </CollapseItem>
                                 <CollapseItem header='Raw data' name='2'>
-                                    
-                                    <Spin loading={rawDataLoading} style={{ display: 'block', minHeight: 100 }}>
-                                        <div className="raw-data-list">
-                                            {this.formatRowDataList.map(v => (
-                                                <div className="item" key={v.id} onClick={() => { this.clickRowDataItem(v) }}>
-                                                    <img className="dataset-icon" src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
-                                                    <Tooltip content={v.display_name}>
-                                                        <div className="text">{v.display_name}</div>
-                                                    </Tooltip>
-                                                    <img className="view-icon" src={require("@/web3goLayout/assets/dashboardCreate/view.png")} alt="" />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </Spin>
+                                    <Collapse
+                                        className="sub-collapse"
+                                        bordered={false}
+                                        onChange={this.changeDatabaseCollapse}
+                                    >
+                                        {
+                                            this.props.databaseList.map(v => (
+                                                <CollapseItem header={v.name} name={v.id}>
+                                                    <Spin loading={!mapDatabaseData[v.id]} style={{ display: 'block', minHeight: 100 }}>
+                                                        <div className="raw-data-list">
+                                                            {this.getFormatRowDataList(v.id).map(v => (
+                                                                <div className="item" key={v.id} onClick={() => { this.clickRowDataItem(v) }}>
+                                                                    <img className="dataset-icon" src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
+                                                                    <Tooltip content={v.display_name}>
+                                                                        <div className="text">{v.display_name}</div>
+                                                                    </Tooltip>
+                                                                    <img className="view-icon" src={require("@/web3goLayout/assets/dashboardCreate/view.png")} alt="" />
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </Spin>
+                                                </CollapseItem>
+                                            ))
+                                        }
+
+                                    </Collapse>
                                 </CollapseItem>
                             </Collapse>
                         </div>
