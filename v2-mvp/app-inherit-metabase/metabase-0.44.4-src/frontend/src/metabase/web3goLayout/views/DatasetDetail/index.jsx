@@ -108,6 +108,7 @@ class Component extends React.Component {
         this.getMyDashboards();
         this.getDatasetTable();
         this.getDatasetDetail();
+        this.getMyFavourites();
     }
     getDatasetDetail = () => {
         LayoutDashboardApi.datasetDetail({ datasetIds: [this.props.params.id] }).then(d => {
@@ -209,9 +210,6 @@ class Component extends React.Component {
             this.getMyFavourites();
         });
     }
-
-
-
     render() {
         const { detailData, refreshTime, previewLimit, searchKey, ifTableMode, datasetData, loading, tableLoading } = this.state;
         let columns = [];
@@ -241,7 +239,7 @@ class Component extends React.Component {
             }
             let hasKey = false;
             for (const sv of Object.keys(v)) {
-                if (v[sv] && String(v[sv]).includes(searchKey)) {
+                if (v[sv] && String(v[sv]).toLowerCase().includes(searchKey.toLowerCase())) {
                     hasKey = true;
                 }
             }

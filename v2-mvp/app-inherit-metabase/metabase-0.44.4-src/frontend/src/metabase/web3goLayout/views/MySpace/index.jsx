@@ -46,7 +46,7 @@ class Component extends React.Component {
             ifDashboardInFavourite: true,
             activeTab: '1',
             isMyself: true,
-            userInfo: {},
+            userInfo: { dataset: {} },
             searchValue: '',
             dashboardListCount: 0,
             myFavouriteCount: 0,
@@ -338,15 +338,15 @@ class Component extends React.Component {
                         </div>
                         <div className="info">
                             <div className="item">
-                                <div className="value">{numberSplit(userInfo.total_view_count)}</div>
+                                <div className="value">{numberSplit(userInfo.total_view_count + userInfo.dataset.total_view_count)}</div>
                                 <div className="label">Views</div>
                             </div>
                             <div className="item">
-                                <div className="value">{numberSplit(userInfo.total_favorite_count)}</div>
+                                <div className="value">{numberSplit(userInfo.total_favorite_count + userInfo.dataset.total_favorite_count)}</div>
                                 <div className="label">Favorites</div>
                             </div>
                             <div className="item">
-                                <div className="value">{numberSplit(userInfo.total_share_count)}</div>
+                                <div className="value">{numberSplit(userInfo.total_share_count + userInfo.dataset.total_share_count)}</div>
                                 <div className="label">Shares</div>
                             </div>
                         </div>
