@@ -274,7 +274,6 @@ class Component extends React.Component {
                                         </div>
                                         <QuestionResultLoader question={this.state.question}>
                                             {({ rawSeries, result }) => {
-                                                console.log('111', result);
                                                 return (
                                                     result && result.data ?
                                                         (
