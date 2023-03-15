@@ -6,7 +6,7 @@ import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typogr
 import { IconSearch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
 import { push, replace } from "react-router-redux";
 import cx from "classnames";
-import { LayoutDashboardApi, CardApi, MetabaseApi } from '@/services'
+import { LayoutDashboardApi, CardApi, MetabaseApi, defaultPublicCollectionId } from '@/services'
 import event from '@/web3goLayout/event';
 import { getMetadata } from "metabase/selectors/metadata";
 import slugg from "slugg";
@@ -111,8 +111,13 @@ class Component extends React.Component {
 
     }
     async componentDidMount() {
+        // 点击dataset后没关闭弹窗直接刷新，导致参数残留
+        if (this.props.location.hash) {
+            this.props.push({ pathname: '/redirect', state: { pathname: "/layout/create/dataset" } });
+            return;
+        }
         //测试用，加快速度
-        this.props.changePublicSpaceCollectionId(40);
+        this.props.changePublicSpaceCollectionId(defaultPublicCollectionId);
         // const collectionList = await CollectionsApi.list();
         // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
         // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);

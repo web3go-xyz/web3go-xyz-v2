@@ -25,7 +25,6 @@ import DashBoardList from "metabase/web3goLayout/views/DashBoardList";
 import DatasetList from "metabase/web3goLayout/views/DatasetList";
 import DashBoardDetail from "metabase/web3goLayout/views/DashBoardDetail";
 import DatasetDetail from "metabase/web3goLayout/views/DatasetDetail";
-import CreatePage from "metabase/web3goLayout/views/CreatePage";
 import CreateDashboard from "metabase/web3goLayout/views/CreatePage/CreateDashboard";
 import CreateDataset from "metabase/web3goLayout/views/CreatePage/CreateDataset";
 

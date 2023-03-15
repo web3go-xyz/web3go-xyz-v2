@@ -10,6 +10,7 @@ import { numberSplit } from '@/web3goLayout/utils';
 import ShareModal from "@/web3goLayout/components/ShareModal";
 import { LayoutDashboardApi, LayoutCreatorApi, LayoutLoginApi } from '@/services'
 import UserHeadIcon from '@/web3goLayout/components/UserHeadIcon';
+import { left } from "styled-system";
 
 const Option = Select.Option;
 const mapStateToProps = state => {
@@ -131,6 +132,12 @@ class Component extends React.Component {
                                             </svg>
                                             <span>Dashboard</span>
                                             <span className="value">{numberSplit(v.dashboard_count)}</span>
+
+                                            <svg style={{ marginLeft: 25 }} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M8 3.05L11.5875 4.25L8 5.45L4.4125 4.25L8 3.05ZM8 2L2 4V4.5L8 6.5L14 4.5V4L8 2ZM8 7.83731L5.5 7.02481L3 6.21231H2V6.9625L8 8.9625L14 6.9625V6.21231H13L8 7.83731ZM8 10.3557L3 8.73068H2V9.5L8 11.5L14 9.5V8.73068H13L8 10.3557ZM8 12.8593L3 11.2343H2L2 12L8 14L14 12V11.2343H13L8 12.8593Z" fill="#86909C" />
+                                            </svg>
+                                            <span>Datasets</span>
+                                            <span className="value">{numberSplit(v.dataset_count)}</span>
                                         </div>
                                     </div>
                                 </div>

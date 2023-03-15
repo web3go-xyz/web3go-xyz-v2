@@ -48,8 +48,6 @@ class Component extends React.Component {
             isMyself: true,
             userInfo: { dataset: {} },
             searchValue: '',
-            dashboardListCount: 0,
-            myFavouriteCount: 0,
             allFollowingList: []
         }
         this.DashboardRef = React.createRef();
@@ -58,17 +56,6 @@ class Component extends React.Component {
     componentDidMount() {
         this.getUserInfo();
         this.getAllFollowingList();
-        this.getDatasetListCount();
-    }
-    getDatasetListCount = () => {
-        LayoutDashboardApi.datasetList({
-            "pageSize": 1,
-            "pageIndex": 1,
-            "creator": this.state.userInfo.accountId,
-            "draftStatus": 'Posted'
-        }).then(d => {
-            this.setDatasetListCount(d.totalCount);
-        })
     }
     getAllFollowingList = () => {
         if (this.props.userData.account) {
@@ -84,16 +71,6 @@ class Component extends React.Component {
                 })
             });
         }
-    }
-    setDashboardListCount = (dashboardListCount) => {
-        this.setState({
-            dashboardListCount
-        });
-    }
-    setDatasetListCount = (datasetListCount) => {
-        this.setState({
-            datasetListCount
-        });
     }
     setMyFavouriteCount = (myFavouriteCount) => {
         this.setState({
@@ -173,11 +150,11 @@ class Component extends React.Component {
         const { userInfo, isMyself, dashboardListCount, datasetListCount, myFavouriteCount } = this.state;
         let main = (<div className="table-header">
             <Tabs activeTab={this.state.activeTab} onChange={this.setActiveTab}>
-                <TabPane key='1' title={`Dashboard ${dashboardListCount}`}>
+                <TabPane key='1' title={`Dashboard ${userInfo.count}`}>
                 </TabPane>
-                <TabPane key='2' title={`Datasets ${datasetListCount}`}>
+                <TabPane key='2' title={`Datasets ${userInfo.dataset.count}`}>
                 </TabPane>
-                <TabPane key='3' title={`${this.state.isMyself ? 'My Favorites' : 'Favorites'}`}>
+                <TabPane key='3' title={`${this.state.isMyself ? 'My Favorites' : 'Favorites'} ${userInfo.total_favorite_count + userInfo.dataset.total_favorite_count}`}>
                 </TabPane>
             </Tabs>
             {this.state.activeTab == '3' ? (
@@ -209,8 +186,6 @@ class Component extends React.Component {
                     onRef={(ref) => this.DashboardRef = ref}
                     accountId={userInfo.accountId}
                     searchValue={this.state.searchValue}
-                    setDashboardListCount={this.setDashboardListCount}
-                    setMyFavouriteCount={this.setMyFavouriteCount}
                 ></DashBoardList>
                 :
                 <DatasetList
@@ -219,8 +194,6 @@ class Component extends React.Component {
                     onRef={(ref) => this.DatasetRef = ref}
                     accountId={userInfo.accountId}
                     searchValue={this.state.searchValue}
-                    setDashboardListCount={this.setDatasetListCount}
-                    setMyFavouriteCount={this.setMyFavouriteCount}
                 ></DatasetList>
             }
 

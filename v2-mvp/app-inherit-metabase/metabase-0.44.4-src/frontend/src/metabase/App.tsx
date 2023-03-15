@@ -117,7 +117,7 @@ function App({
                 {errorPage ? getErrorComponent(errorPage) : children}
               </ContentViewportContext.Provider>
             </AppContent>
-            <UndoListing />
+            {location.pathname.includes('/layout') ? null : <UndoListing />}
             <StatusListing />
           </AppContentContainer>
           <AppErrorCard errorInfo={errorInfo} />

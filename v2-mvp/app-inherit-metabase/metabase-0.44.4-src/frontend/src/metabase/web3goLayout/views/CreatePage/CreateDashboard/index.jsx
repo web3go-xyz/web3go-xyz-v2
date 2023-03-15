@@ -16,7 +16,7 @@ import DashboardApp from "metabase/dashboard/containers/DashboardApp";
 import * as dashboardActions from "@/dashboard/actions";
 import domtoimage from 'dom-to-image';
 import event from '@/web3goLayout/event';
-import { LayoutDashboardApi, CardApi } from "../../../../services";
+import { LayoutDashboardApi, CardApi, defaultPublicCollectionId } from "../../../../services";
 import SelectDashboardToEditModal from './SelectDashboardToEditModal';
 
 import { addTextDashCardToDashboard, addImageDashCardToDashboard, addVideoDashCardToDashboard } from "../../../../dashboard/actions";
@@ -26,7 +26,6 @@ import {
 import { NewCardEditorSidebar } from "../../../../dashboard/components/new-card-editor-sidebar/NewCardEditorSidebar";
 import LinkedDatasetsModal from './LinkedDatasetsModal';
 import { publicSpaceCollectionId, changePublicSpaceCollectionId } from "metabase/redux/app";
-
 
 const mapStateToProps = (state, props) => {
     return {
@@ -81,7 +80,7 @@ class Component extends React.Component {
     }
     async componentDidMount() {
         //测试用，加快速度
-        this.props.changePublicSpaceCollectionId(40);
+        this.props.changePublicSpaceCollectionId(defaultPublicCollectionId);
         // const collectionList = await CollectionsApi.list();
         // const publicSpaceCollection = collectionList.find(v => v.name == 'PublicSpace');
         // this.props.changePublicSpaceCollectionId(publicSpaceCollection.id);

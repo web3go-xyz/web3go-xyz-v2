@@ -211,18 +211,6 @@ class Component extends React.Component {
         }
     }
     getMyFavourites = () => {
-        // 查该用户的总收藏数
-        LayoutDashboardApi.listFavoritesDS({
-            "pageSize": 9999999999,
-            "pageIndex": 1,
-            "orderBys": [],
-            "accountId": this.props.accountId,
-            "searchName": ""
-        }).then(d => {
-            if (this.props.setMyFavouriteCount) {
-                this.props.setMyFavouriteCount(d.totalCount);
-            }
-        });
         if (!this.props.userData.account) {
             this.getList();
             return;
@@ -359,9 +347,7 @@ class Component extends React.Component {
             "accountId": this.props.isFavourite ? this.props.accountId : "",
             "draftStatus": this.props.isFavourite ? "" : Number(this.state.state)
         }).then(d => {
-            if (!this.props.isFavourite) {
-                this.props.setDashboardListCount(d.totalCount);
-            }
+            
             const resolveDashboardData = (list) => {
                 this.setState({
                     loading: false,

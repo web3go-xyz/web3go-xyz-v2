@@ -273,47 +273,50 @@ class Component extends React.Component {
                                             </Button>
                                         </div>
                                         <QuestionResultLoader question={this.state.question}>
-                                            {({ rawSeries, result }) => (
-                                                result && result.data ?
-                                                    (
-                                                        <div id="dataset-thumbnail">
-                                                            <Table scroll={{ x: 'max-content' }} borderCell columns={this.getColumnFromCol(result.data.cols)} data={this.getDataFromRow(result.data.rows)} pagination={{ showTotal: true, showJumper: true, sizeCanChange: true, }} />
-                                                        </div>
-                                                    )
-                                                    :
-                                                    <Spin style={
-                                                        {
-                                                            display: 'block', minHeight: 100, display: 'flex',
-                                                            justifyContent: 'center',
-                                                            alignItems: 'center'
-                                                        }
-                                                    }></Spin>
-                                                // <div id="dataset-thumbnail">
-                                                //     <Motion
-                                                //         defaultStyle={{ height: 36 }}
-                                                //         style={{
-                                                //             height: spring(this.getPreviewHeightForResult(result), springOpts),
-                                                //         }}
-                                                //     >
-                                                //         {({ height }) => {
-                                                //             const targetHeight = this.getPreviewHeightForResult(result);
-                                                //             const snapHeight =
-                                                //                 height > targetHeight / 2 ? targetHeight : 0;
-                                                //             const minHeight = preferReducedMotion ? snapHeight : height;
-                                                //             return (
-                                                //                 <Visualization
-                                                //                     rawSeries={rawSeries}
-                                                //                     error={result && result.error}
-                                                //                     className={cx("bordered shadowed rounded bg-white", {
-                                                //                         p2: result && result.error,
-                                                //                     })}
-                                                //                     style={{ minHeight }}
-                                                //                 />
-                                                //             );
-                                                //         }}
-                                                //     </Motion>
-                                                // </div>
-                                            )}
+                                            {({ rawSeries, result }) => {
+                                                console.log('111', result);
+                                                return (
+                                                    result && result.data ?
+                                                        (
+                                                            <div id="dataset-thumbnail">
+                                                                <Table scroll={{ x: 'max-content' }} borderCell columns={this.getColumnFromCol(result.data.cols)} data={this.getDataFromRow(result.data.rows)} pagination={{ showTotal: true, showJumper: true, sizeCanChange: true, }} />
+                                                            </div>
+                                                        )
+                                                        :
+                                                        <Spin style={
+                                                            {
+                                                                display: 'block', minHeight: 100, display: 'flex',
+                                                                justifyContent: 'center',
+                                                                alignItems: 'center'
+                                                            }
+                                                        }></Spin>
+                                                    // <div id="dataset-thumbnail">
+                                                    //     <Motion
+                                                    //         defaultStyle={{ height: 36 }}
+                                                    //         style={{
+                                                    //             height: spring(this.getPreviewHeightForResult(result), springOpts),
+                                                    //         }}
+                                                    //     >
+                                                    //         {({ height }) => {
+                                                    //             const targetHeight = this.getPreviewHeightForResult(result);
+                                                    //             const snapHeight =
+                                                    //                 height > targetHeight / 2 ? targetHeight : 0;
+                                                    //             const minHeight = preferReducedMotion ? snapHeight : height;
+                                                    //             return (
+                                                    //                 <Visualization
+                                                    //                     rawSeries={rawSeries}
+                                                    //                     error={result && result.error}
+                                                    //                     className={cx("bordered shadowed rounded bg-white", {
+                                                    //                         p2: result && result.error,
+                                                    //                     })}
+                                                    //                     style={{ minHeight }}
+                                                    //                 />
+                                                    //             );
+                                                    //         }}
+                                                    //     </Motion>
+                                                    // </div>
+                                                )
+                                            }}
                                         </QuestionResultLoader>
                                     </div>
                                 ) : <div className="none-wrap">The data you have selected will be presented here</div>
