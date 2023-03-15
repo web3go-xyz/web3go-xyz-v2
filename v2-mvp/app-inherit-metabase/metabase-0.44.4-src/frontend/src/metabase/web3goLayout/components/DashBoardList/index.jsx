@@ -180,6 +180,9 @@ class Component extends React.Component {
         this.props.push(`/layout/mySpace?accountId=${accountId}`);
     }
     componentDidMount() {
+        if (this.props.onRef) {
+            this.props.onRef(this);
+        }
         this.getTags();
         this.getList();
         if (this.props.currentUser) {
@@ -325,7 +328,7 @@ class Component extends React.Component {
                 order: this.state.tableSort.direction === "ascend" ? 'ASC' : 'DESC',
             }] : [],
             "tagIds": this.state.currentTagList.map(v => v.id),
-            "searchName": "",
+            "searchName": this.props.globalSearchValue || "",
             "creatorFilterBy": this.state.params.createBy,
             "dashboardIds": this.state.showMyFavorite ? this.state.favouriteList.map(v => v.dashboardId) : []
         }).then(d => {
@@ -339,7 +342,9 @@ class Component extends React.Component {
                 tableData: d.list,
                 pagination: { ...this.state.pagination, total: d.totalCount }
             });
-
+            if (this.props.setSearchCount) {
+                this.props.setSearchCount(d.totalCount);
+            }
         });
     }
     change24h = (str, confirm) => {

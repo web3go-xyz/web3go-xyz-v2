@@ -32,30 +32,22 @@ class Component extends React.Component {
         super(props);
         this.state = {
             autoCompleteList: [],
-            myFollowingList: []
+            myFollowingList: [],
+            dashboardcount: 0,
+            datasetcount: 0,
+            creatorCount: 0
         }
+        this.DashboardListRef = React.createRef();
+        this.DatasetListRef = React.createRef();
+        this.CreatorListRef = React.createRef();
     }
     handleSearch = () => {
-
-
-    }
-    listMyFollows = () => {
-        if (!this.props.userData.account) {
-            return;
-        }
-        LayoutCreatorApi.listFollowing({
-            "pageSize": 9999999999,
-            "pageIndex": 1,
-            "orderBys": [],
-            "account_id": this.props.userData.account.accountId,
-            "includeDetail": true
-        }).then(d => {
-            this.setState({
-                myFollowingList: d.list
-            })
-        });
+        this.DashboardListRef.getList(true);
+        this.DatasetListRef.getList(true);
+        this.CreatorListRef.getList(true);
     }
     render() {
+        const { dashboardcount, datasetcount, creatorCount} = this.state;
         return (
             <div className="web3go-global-search-page">
                 <div className="gray-bg">
@@ -74,6 +66,7 @@ class Component extends React.Component {
                                 <path d="M20.25 20.25L18 18" stroke="#4E5969" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                             <AutoComplete
+                                onPressEnter={this.handleSearch}
                                 value={this.props.globalSearchValue}
                                 onChange={(value) => { this.props.changeGlobalSearchValue(value) }}
                                 placeholder='Token'
@@ -83,25 +76,25 @@ class Component extends React.Component {
                     </div>
                 </div>
                 <div className="common-layout">
-                    <Tabs defaultActiveTab="1">
-                        <TabPane key='1' title={'Dashboard 40'}>
+                    <Tabs defaultActiveTab="1" lazyload={false}>
+                        <TabPane key='1' title={`Dashboard ${dashboardcount}`}>
                             <Typography.Paragraph>
                                 <div className="dashboardlist-wrap">
-                                    <DashBoardList myFollowingList={this.state.myFollowingList}></DashBoardList>
+                                    <DashBoardList onRef={(ref) => this.DashboardListRef = ref} globalSearchValue={this.props.globalSearchValue} setSearchCount={(value) => { this.setState({ dashboardcount: value }) }}></DashBoardList>
                                 </div>
                             </Typography.Paragraph>
                         </TabPane>
-                        <TabPane key='2' title={'Dashboard 3'}>
+                        <TabPane key='2' title={`Datasets ${datasetcount}`}>
                             <Typography.Paragraph>
-                                <div className="createlist-wrap">
-                                    <DatasetList myFollowingList={this.state.myFollowingList}></DatasetList>
+                                <div className="dashboard-wrap">
+                                    <DatasetList onRef={(ref) => this.DatasetListRef = ref} globalSearchValue={this.props.globalSearchValue} setSearchCount={(value) => { this.setState({ datasetcount: value }) }}></DatasetList>
                                 </div>
                             </Typography.Paragraph>
                         </TabPane>
-                        <TabPane key='3' title={'Creators 3'}>
+                        <TabPane key='3' title={`Creators ${creatorCount}`}>
                             <Typography.Paragraph>
                                 <div className="createlist-wrap">
-                                    <CreatorList></CreatorList>
+                                    <CreatorList onRef={(ref) => this.CreatorListRef = ref} globalSearchValue={this.props.globalSearchValue} setSearchCount={(value) => { this.setState({ creatorCount: value }) }}></CreatorList>
                                 </div>
                             </Typography.Paragraph>
                         </TabPane>

@@ -169,11 +169,6 @@ const CanAccessSettings = MetabaseIsSetup(
 
 export const getRoutes = store => (
   <Route title={t`Metabase`} component={App}>
-
-    <Route
-      path="/redirect"
-      component={RedirectComponent}
-    />
     <Route
       path="/verifyEmail"
       component={VerifyEmailPage}
@@ -220,6 +215,10 @@ export const getRoutes = store => (
         path="/"
       >
         <IndexRedirect to="/layout" />
+        <Route
+          path="/redirect"
+          component={RedirectComponent}
+        />
         <Route
           path="/layout"
           component={web3goLayout}

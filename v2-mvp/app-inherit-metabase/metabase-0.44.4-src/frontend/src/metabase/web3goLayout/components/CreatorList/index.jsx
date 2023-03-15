@@ -80,6 +80,9 @@ class Component extends React.Component {
         }
     }
     componentDidMount() {
+        if (this.props.onRef) {
+            this.props.onRef(this);
+        }
         this.getList();
         this.listMyFollows();
     }
@@ -135,6 +138,9 @@ class Component extends React.Component {
                         }
                     })
                 });
+                if (this.props.setSearchCount) {
+                    this.props.setSearchCount(d.totalCount);
+                }
             });
         })
     }

@@ -124,7 +124,7 @@ class Component extends React.Component {
         this.props.push('/layout/accountSetting');
     }
     handleSearch = () => {
-        this.props.push('/layout/globalSearch');
+        this.props.push({ pathname: '/redirect', state: { pathname: "/layout/globalSearch" } });
     }
     clickCreate = (key) => {
         if (key == '1') {

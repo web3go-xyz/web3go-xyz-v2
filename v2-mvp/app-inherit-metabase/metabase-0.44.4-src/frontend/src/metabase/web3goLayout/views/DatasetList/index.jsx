@@ -31,30 +31,12 @@ class Component extends React.Component {
         super(props);
         this.state = {
             autoCompleteList: [],
-            myFollowingList: []
         }
     }
-
     componentDidMount() {
         this.listMyFollows();
     }
 
-    listMyFollows = () => {
-        if (!this.props.userData.account) {
-            return;
-        }
-        LayoutCreatorApi.listFollowing({
-            "pageSize": 9999999999,
-            "pageIndex": 1,
-            "orderBys": [],
-            "account_id": this.props.userData.account.accountId,
-            "includeDetail": true
-        }).then(d => {
-            this.setState({
-                myFollowingList: d.list
-            })
-        });
-    }
     changeTab = (key) => {
         if (key == 1) {
             this.props.push('/layout/dashboardList')
@@ -79,7 +61,7 @@ class Component extends React.Component {
                         <TabPane key='2' title={'Datasets'}>
                             <Typography.Paragraph>
                                 <div className="dashboardlist-wrap">
-                                    <DatasetList myFollowingList={this.state.myFollowingList}></DatasetList>
+                                    <DatasetList></DatasetList>
                                 </div>
                             </Typography.Paragraph>
                         </TabPane>
