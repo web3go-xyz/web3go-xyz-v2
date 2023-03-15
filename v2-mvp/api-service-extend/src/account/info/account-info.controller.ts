@@ -47,8 +47,10 @@ export class AccountInfoController {
     summary: 'get statistic info for account',
   })
   @ApiOkResponse({ type: AccountStatisticResponse, isArray: true })
-  async getAccountStatistic(@Body() param: AccountStatisticRequest): Promise<AccountStatisticResponse[]> {
-    return await this.accountInfoService.getAccountStatistic(param.accountIds );
+  async getAccountStatistic(@Body() param: AccountStatisticRequest, @Request() rawRequest): Promise<AccountStatisticResponse[]> {
+    const userSession = this.getUserSession(rawRequest);
+    const isIncludeDraft = param.accountIds.length === 1 && userSession && userSession.id && userSession.id === param.accountIds[0];
+    return await this.accountInfoService.getAccountStatistic(param.accountIds, !isIncludeDraft );
   }
 
   private getUserSession(/*@Request() */ rawRequest) {
