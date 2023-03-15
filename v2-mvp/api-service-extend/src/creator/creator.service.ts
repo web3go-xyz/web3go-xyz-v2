@@ -80,7 +80,13 @@ export class CreatorService {
                 total_fork_count: t.total_fork_count,
                 total_favorite_count: t.total_favorite_count,
                 followed_account_count: t.followed_account_count,
-                dataset: datasetStatByAccounts[t.creator_account_id] || {}
+                dataset: datasetStatByAccounts[t.creator_account_id] || {
+                    count: 0,
+                    total_view_count: 0,
+                    total_share_count: 0,
+                    total_fork_count: 0,
+                    total_favorite_count: 0,
+                }
             })
         }
         return resp;
