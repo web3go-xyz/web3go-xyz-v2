@@ -26,6 +26,8 @@ export class CreatorStatistic {
 
     @ApiProperty()
     followed_account_count: number;
+
+    dataset: any;
 }
 export class QueryTopCreatorResponse extends PageResponse {
     @ApiProperty()
