@@ -373,7 +373,7 @@ class Component extends React.Component {
                                                     <div className="ir-split"></div>
                                                     <div className="ir-right">
                                                         <div className="label">Datasets</div>
-                                                        <div className="value">{numberSplit(v.dashboard_count)}</div>
+                                                        <div className="value">{numberSplit(v.dataset.count)}</div>
                                                     </div>
                                                 </div>
                                             </div>

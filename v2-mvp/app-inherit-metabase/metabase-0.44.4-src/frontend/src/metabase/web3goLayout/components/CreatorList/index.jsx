@@ -35,7 +35,7 @@ class Component extends React.Component {
                     <path d="M9.66671 7.99998C9.66671 8.44201 9.49111 8.86593 9.17855 9.17849C8.86599 9.49105 8.44207 9.66665 8.00004 9.66665C7.55801 9.66665 7.13409 9.49105 6.82153 9.17849C6.50897 8.86593 6.33337 8.44201 6.33337 7.99998C6.33337 7.55795 6.50897 7.13403 6.82153 6.82147C7.13409 6.50891 7.55801 6.33331 8.00004 6.33331C8.44207 6.33331 8.86599 6.50891 9.17855 6.82147C9.49111 7.13403 9.66671 7.55795 9.66671 7.99998Z" fill="#6B7785" />
                 </svg>,
                 name: 'Views',
-                key: 'total_view_count'
+                key: 'total_view_count',
             }, {
                 icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M13.5625 8.6544V13.2353C13.5625 13.3221 13.528 13.4053 13.4667 13.4667C13.4053 13.528 13.3221 13.5625 13.2353 13.5625H2.76465C2.67787 13.5625 2.59464 13.528 2.53328 13.4667C2.47191 13.4053 2.43744 13.3221 2.43744 13.2353V2.76465C2.43744 2.67787 2.47191 2.59464 2.53328 2.53328C2.59464 2.47191 2.67787 2.43744 2.76465 2.43744H7.34556M6.6329 9.36706L13.2023 2.79737M13.5625 6.69115V2.43744H9.30881" stroke="#6B7785" strokeWidth="1.33333" />
@@ -248,7 +248,7 @@ class Component extends React.Component {
                                                 <div className="label">
                                                     Views
                                                 </div>
-                                                <div className="value">{v.total_view_count}</div>
+                                                <div className="value">{numberSplit(Number(v.total_view_count) + v.dataset.total_view_count)}</div>
                                             </div>
                                         </div>
                                         <div className="form-item">
@@ -256,7 +256,7 @@ class Component extends React.Component {
                                                 <div className="label">
                                                     Favorites
                                                 </div>
-                                                <div className="value">{v.total_favorite_count}</div>
+                                                <div className="value">{numberSplit(Number(v.total_favorite_count) + v.dataset.total_favorite_count)}</div>
                                             </div>
                                         </div>
                                         <div className="form-item">
@@ -264,7 +264,7 @@ class Component extends React.Component {
                                                 <div className="label">
                                                     Shares
                                                 </div>
-                                                <div className="value">{v.total_share_count}</div>
+                                                <div className="value">{numberSplit(Number(v.total_share_count) + v.dataset.total_share_count)}</div>
                                             </div>
                                         </div>
                                         {
