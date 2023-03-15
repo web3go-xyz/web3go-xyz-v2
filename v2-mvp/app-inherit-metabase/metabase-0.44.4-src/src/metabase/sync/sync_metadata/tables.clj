@@ -115,8 +115,9 @@
         :name            table-name
         :display_name    (humanization/name->human-readable-name table-name)
         :active          true
-        :visibility_type (when (is-crufty-table? table)
-                           :cruft)))))
+        :visibility_type (if (is-crufty-table? table) :cruft "hidden" )
+        ))))
+  
 
 
 (s/defn ^:private retire-tables!

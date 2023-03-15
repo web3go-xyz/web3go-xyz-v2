@@ -105,6 +105,7 @@ export class Job_SyncDatasetFromMB {
           .createQueryBuilder()
           .update()
           .set({
+            name: dataset.name,
             updatedAt: dataset.updatedAt,
             archived: dataset.archived,
             dashboardCount,

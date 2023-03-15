@@ -350,7 +350,7 @@ export class AccountInfoService {
   }
 
 
-  async getAccountStatistic(accountIds: string[], type="dashboard"): Promise<AccountStatisticResponse[]> {
+  async getAccountStatistic(accountIds: string[], isFilterDraft = true): Promise<AccountStatisticResponse[]> {
 
     let accounts = await this.accountRepository.find({
       where: {
@@ -370,7 +370,7 @@ export class AccountInfoService {
         getQuery: () => {
           return  this.dextRepo.createQueryBuilder("d")
           .where("d.creator_account_id IN( :...creator_account_id)", { creator_account_id: accountIds })
-          .andWhere("d.public_link != ''")
+          //.andWhere("d.public_link != ''")
           .select("creator_account_id", "creator_account_id")
           .addSelect("count(1)", "dashboard_count")
           .addSelect("SUM( d.view_count )", "total_view_count")
@@ -385,7 +385,7 @@ export class AccountInfoService {
         getQuery: () => {
           return  this.datasetExtRepo.createQueryBuilder("d")
           .where("d.creator_account_id IN( :...creator_account_id)", { creator_account_id: accountIds })
-          .andWhere("d.public_link != ''")
+          //.andWhere("d.public_link != ''")
           .select("creator_account_id", "creator_account_id")
           .addSelect("count(1)", "dataset_count")
           .addSelect("SUM( d.view_count )", "total_view_count")
@@ -423,6 +423,9 @@ export class AccountInfoService {
   
     const doLoadValue  = async (bridge) => {
       let query =  bridge.getQuery();
+      if (isFilterDraft) {
+        query.andWhere("d.public_link != ''");
+      }
       let statisticRecords = await query.getRawMany();
       for (const stat of statisticRecords) {      
         const data = bridge.key === 'dashboard_count' ? userStatMap[stat.creator_account_id] : userStatMap[stat.creator_account_id].dataset;
@@ -436,7 +439,7 @@ export class AccountInfoService {
 
     // load data
     await doLoadValue(supportTypes.dashboard);
-    await doLoadValue(supportTypes.dashboard);
+    await doLoadValue(supportTypes.dataset);
     return resp;
   }
 

@@ -71,7 +71,6 @@ export class FollowService {
         }
         return resp;
     }
-    // TODO TO TEST
     async patchDetails(accountIds: string[], includeDetail: boolean): Promise<AccountFollowerDetail[]> {
         let list: AccountFollowerDetail[] = [];
 
@@ -84,6 +83,7 @@ export class FollowService {
                     followedAccountCount: 0,
                     followingAccountCount: 0,
                     dashboard_count: 0,
+                    dataset_count: 0,
                     total_share_count: 0,
                     total_view_count: 0,
                     total_favorite_count: 0,
@@ -107,20 +107,22 @@ export class FollowService {
                     followedAccountCount: 0,
                     followingAccountCount: 0,
                     dashboard_count: 0,
+                    dataset_count: 0,
                     total_share_count: 0,
                     total_view_count: 0,
                     total_favorite_count: 0,
                     total_fork_count: 0
                 }
-                let findAccountStatistics = accountStatistics.find(t => t.accountId == ad.account.accountId);
-                if (findAccountStatistics) {
-                    newItem.followedAccountCount = findAccountStatistics.followedAccountCount;
-                    newItem.followingAccountCount = findAccountStatistics.followingAccountCount;
-                    newItem.dashboard_count = findAccountStatistics.count;
-                    newItem.total_share_count = findAccountStatistics.total_share_count;
-                    newItem.total_view_count = findAccountStatistics.total_view_count;
-                    newItem.total_favorite_count = findAccountStatistics.total_favorite_count;
-                    newItem.total_fork_count = findAccountStatistics.total_fork_count;
+                let stats = accountStatistics.find(t => t.accountId == ad.account.accountId);
+                if (stats) {
+                    newItem.followedAccountCount = stats.followedAccountCount;
+                    newItem.followingAccountCount = stats.followingAccountCount;
+                    newItem.dashboard_count = stats.count;
+                    newItem.dataset_count = stats.dataset.count;
+                    newItem.total_share_count = stats.total_share_count + stats.dataset.total_share_count;
+                    newItem.total_view_count = stats.total_view_count + stats.dataset.total_view_count;
+                    newItem.total_favorite_count = stats.total_favorite_count + stats.dataset.total_favorite_count;
+                    newItem.total_fork_count = stats.total_fork_count + stats.dataset.total_fork_count;
                 }
                 list.push(newItem);
             }

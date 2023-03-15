@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthorizedUser } from 'src/base/auth/AuthorizedUser';
 import { JwtAuthGuard } from 'src/base/auth/decorator/JwtAuthGuard';
@@ -17,6 +17,7 @@ import { AccountInfoService } from './account-info.service';
 import { AllowAnonymous } from 'src/base/auth/decorator/AllowAnonymous';
 import { AccountStatisticResponse, } from '../model/info/AccountStatisticResponse';
 import { AccountStatisticRequest } from '../model/info/AccountStatisticRequest';
+import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -24,7 +25,9 @@ import { AccountStatisticRequest } from '../model/info/AccountStatisticRequest';
 @ApiTags('/api/v2/account/info')
 export class AccountInfoController {
   logger: any;
-  constructor(private readonly accountInfoService: AccountInfoService) {
+  constructor(
+    private readonly accountInfoService: AccountInfoService,
+    private readonly jwtService: JWTAuthService,) {
     this.logger = new W3Logger('AccountInfoController');
   }
 
@@ -44,8 +47,37 @@ export class AccountInfoController {
     summary: 'get statistic info for account',
   })
   @ApiOkResponse({ type: AccountStatisticResponse, isArray: true })
-  async getAccountStatistic(@Body() param: AccountStatisticRequest): Promise<AccountStatisticResponse[]> {
-    return await this.accountInfoService.getAccountStatistic(param.accountIds );
+  async getAccountStatistic(@Body() param: AccountStatisticRequest, @Request() rawRequest): Promise<AccountStatisticResponse[]> {
+    const userSession = this.getUserSession(rawRequest);
+    const isIncludeDraft = param.accountIds.length === 1 && userSession && userSession.id && userSession.id === param.accountIds[0];
+    return await this.accountInfoService.getAccountStatistic(param.accountIds, !isIncludeDraft );
+  }
+
+  private getUserSession(/*@Request() */ rawRequest) {
+    try {
+      return this.jwtService.decodeAuthUserFromHttpRequest(rawRequest);
+    } catch (e) {
+      // mute invalid sessions, just treated it as unlogged users.
+    }
+    return null;
+  }
+
+  @AllowAnonymous()
+  @Get('/myspace/statistics/:id')
+  @ApiOperation({
+    summary: 'get statistic info for account',
+  })
+  // @ApiOkResponse({ type: AccountStatisticResponse, isArray: false })
+  async getMySpaceStatistic(@Param('id') id: string, @Request() rawRequest,): Promise<any> {
+    const userSession = this.getUserSession(rawRequest);
+    const isIncludeDraft = userSession && userSession.id && userSession.id === id;
+    const data = (await this.accountInfoService.getAccountStatistic([id], !isIncludeDraft)) || [];
+
+    return {
+      dashboard:  data[0].count,
+      dataset: data[0].dataset.count,
+      favorite: data[0].total_favorite_count + data[0].dataset.total_favorite_count,
+    }
   }
 
   @Post('/getAccountInfo')
