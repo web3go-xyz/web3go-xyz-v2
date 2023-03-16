@@ -23,6 +23,8 @@ import { JWTAuthService } from 'src/base/auth/jwt-auth.service';
 import { AccountStatisticResponse, } from '../model/info/AccountStatisticResponse';
 import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
 import { DatasetExt } from 'src/base/entity/platform-dataset/DatasetExt';
+import { DashboardFavoriteLog } from 'src/base/entity/platform-dashboard/DashboardFavoriteLog';
+import { DatasetFavoriteLog } from 'src/base/entity/platform-dataset/DatasetFavoriteLog';
 
 
 
@@ -53,6 +55,12 @@ export class AccountInfoService {
     @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_EXT_REPOSITORY.provide)
     private datasetExtRepo: Repository<DatasetExt>,
 
+    // dashboard fav log
+    @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_FAVORITE_LOG_REPOSITORY.provide)
+    private dboardfavlRepo: Repository<DashboardFavoriteLog>,
+    // dashboard fav log
+    @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_FAVORITE_LOG_REPOSITORY.provide)
+    private dsetFavlRepo: Repository<DatasetFavoriteLog>,
 
   ) {
     this.logger = new W3Logger(`AccountInfoService`);
@@ -378,6 +386,13 @@ export class AccountInfoService {
           .addSelect("SUM( d.fork_count )", "total_fork_count")
           .addSelect("SUM( d.favorite_count )", "total_favorite_count")
           .groupBy("d.creator_account_id");
+        },
+        countFav: () => {
+          return this.dboardfavlRepo.count({
+            where: {
+              accountId: In(accountIds)
+            }
+          })
         }
       },
       dataset: {
@@ -393,6 +408,13 @@ export class AccountInfoService {
           .addSelect("SUM( d.fork_count )", "total_fork_count")
           .addSelect("SUM( d.favorite_count )", "total_favorite_count")
           .groupBy("d.creator_account_id");
+        },
+        countFav: () => {
+          return this.dsetFavlRepo.count({
+            where: {
+              accountId: In(accountIds)
+            }
+          })
         }
       }
     };
@@ -433,7 +455,10 @@ export class AccountInfoService {
         data.total_view_count = Number(stat.total_view_count);
         data.total_share_count = Number(stat.total_share_count);
         data.total_fork_count = Number(stat.total_fork_count);
-        data.total_favorite_count = Number(stat.total_favorite_count);
+        //data.total_favorite_count = Number(stat.total_favorite_count);
+        //if (data.total_favorite_count) {
+          data.total_favorite_count = await bridge.countFav();
+        //}
       }
     }
 

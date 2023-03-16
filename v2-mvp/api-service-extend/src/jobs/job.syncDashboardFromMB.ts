@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { ReportDashboard } from 'src/base/entity/metabase/ReportDashboard';
 import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
+import { DashboardFavoriteLog } from 'src/base/entity/platform-dashboard/DashboardFavoriteLog';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { AppConfig } from 'src/base/setting/appConfig';
@@ -20,6 +21,11 @@ export class Job_SyncDashboardFromMB {
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_EXT_REPOSITORY.provide)
         private dextRepo: Repository<DashboardExt>,
+
+        // dashboard fav log
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_FAVORITE_LOG_REPOSITORY.provide)
+        private dboardfavlRepo: Repository<DashboardFavoriteLog>,
+
 
     ) {
         this.logger = new W3Logger(`Job_SyncDashboardFromMB`);
@@ -123,12 +129,13 @@ export class Job_SyncDashboardFromMB {
                 }
             }
 
-            if (removedDashboards) {
+            if (removedDashboards && removedDashboards.length) {
                 for (const removedD of removedDashboards) {
                     let findDashboard = existing_dashboardExt_list.find(t => t.id == removedD.id);
                     await this.dextRepo.delete(findDashboard.id);
                     dashboard_id_synced.remove.push(removedD.id);
                 }
+                await this.dboardfavlRepo.delete({dashboardId: In(removedDashboards.map(it => it.id))});
             }
 
             return dashboard_id_synced;
