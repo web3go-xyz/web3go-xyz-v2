@@ -379,12 +379,19 @@ export class MBConnectService {
         return count;
     }
 
-    async findLinkedDashboardIdOfDataSet(datasetId: number, startPage: number, pageSize: number): Promise<number[]> {
+    async findLinkedReportCards(dashboardIds: number[], datasetIds: number[], startPage :number, pageSize :number, ): Promise<number[]> {
         // select distinct dashboard_id from report_dashboardcard where card_id = 462
-        const sqlBuilder = this.mb_rdcRepo.createQueryBuilder('n').select('DISTINCT dashboard_id as dashboard_id').where(
+        const sqlBuilder = this.mb_rdcRepo.createQueryBuilder('n')
+        .leftJoinAndSelect(ReportCard, "a", "a.id = n.card_id")
+        .select('n.id', 'id')
+        .addSelect('a.dataset', 'dataset')
+        .addSelect('n.dashboard_id', 'dashboard_id')
+        .addSelect('a.dataset_query', 'dataset_query')
+        .where(
             {
-            cardId: datasetId
-        }); //.addSelect("dashboard_id", "dashboardId");
+            //cardId: datasetIds && datasetIds.length ? In(datasetIds) : undefined,
+            dashboardId: dashboardIds && dashboardIds.length ? In(dashboardIds) : undefined,
+        });
 
         if (startPage) {
             sqlBuilder.skip(startPage);
@@ -392,8 +399,7 @@ export class MBConnectService {
         if (pageSize) {
             sqlBuilder.take(pageSize);
         }
-        const rawResult = await sqlBuilder.getRawMany();
-        return rawResult.map(it => it.dashboard_id);
+        return sqlBuilder.getRawMany();
     }
 
     async copyDataset(id: number, loginUserEmail: string) {
@@ -421,6 +427,8 @@ export class MBConnectService {
         const saveStatus = await this.mb_rcRepo.insert(newOne);
         return saveStatus.identifiers && saveStatus.identifiers[0].id;
     }
+
+
     
     // async findAllDatasets(excludeArchived: boolean): Promise<ReportDashboard[]> {
     //     return await this.mb_rdRepo.find({

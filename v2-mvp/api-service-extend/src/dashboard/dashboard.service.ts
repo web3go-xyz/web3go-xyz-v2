@@ -17,6 +17,8 @@ import { Collection } from 'src/base/entity/metabase/Collection';
 import { MBConnectService } from 'src/mb-connect/mb-connect.service';
 import { QueryDashboardByDataset } from './model/QueryDashboardByDataset';
 import { AccountFollower } from 'src/base/entity/platform-user/AccountFollower';
+import { DatasetExt } from 'src/base/entity/platform-dataset/DatasetExt';
+import { DashboardDatasetRelation } from 'src/base/entity/platform-dataset/DashboardDatasetRelation';
 
 @Injectable()
 export class DashboardService {
@@ -34,10 +36,18 @@ export class DashboardService {
         private dtagRepo: Repository<DashboardTag>,
 
         @Inject(RepositoryConsts.REPOSITORYS_METABASE.MB_REPORT_CARD_REPOSITORY.provide)
-        private dataSet: Repository<ReportCard>,
+        private dataSetRepo: Repository<ReportCard>,
+
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_EXT_REPOSITORY.provide)
+        private datasetExtRepo: Repository<DatasetExt>,
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_FOLLOWER_REPOSITORY.provide)
         private accountFollowerRepo: Repository<AccountFollower>,
+
+        // dashboard 2 dataset relation
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_DATASET_RELATION_REPOSITORY.provide)
+        private dashboard2DatasetMapRepo: Repository<DashboardDatasetRelation>,
+        
 
         private readonly mbConnectService: MBConnectService,
     ) {
@@ -300,14 +310,24 @@ export class DashboardService {
         return resp;
     }
 
-    async searchDataset(param: QueryDashboardByDataset, userSession): Promise<QueryDashboardListResponse> {
+    private async findDatasetSourceIdsByDatesetId(datasetId): Promise<number[]> {
+        const data = await this.datasetExtRepo.createQueryBuilder().select('id').where({sourceId: datasetId}).getRawMany();
+        return data.length ? data.map(it => it.id) : [];
+    }
+
+    async searchByDataset(param: QueryDashboardByDataset, userSession): Promise<QueryDashboardListResponse> {
         param.pageIndex = param.pageIndex || 1;
         param.pageSize = param.pageSize || 100;
-        const dashboardIds = await this.mbConnectService.findLinkedDashboardIdOfDataSet(param.datasetId, 
-            (param.pageIndex - 1)*param.pageSize, param.pageSize);
-        if (!dashboardIds.length) {
-            return new QueryDashboardListResponse();
-        }
+
+
+
+        const dashboardIds = (await this.dashboard2DatasetMapRepo.createQueryBuilder().select('DISTINCT dashboard_id', 'dashboard_id').where(
+            {  sourceReportCardId:  param.datasetId}
+        ).orWhere({  reportCardId:  param.datasetId}).getRawMany()).map(it => it.dashboard_id);
+                // if (!dashboardIds.length) {
+        //     return new QueryDashboardListResponse();
+        // }
+
         let resp = await this.list({
             tagIds: null,
             searchName: '',
@@ -316,7 +336,6 @@ export class DashboardService {
             pageSize: param.pageSize,
             pageIndex: param.pageIndex,
             orderBys: param.orderBys,
-            // TODO TEST
             draftStatus: null
         }, userSession);
 
@@ -332,7 +351,7 @@ export class DashboardService {
     }
     
     async getDataSets():Promise<ReportCard[]>{
-        let queryBuilder = await this.dataSet.createQueryBuilder('dataset');
+        let queryBuilder = await this.dataSetRepo.createQueryBuilder('dataset');
         let records =await queryBuilder.leftJoinAndSelect(Collection,'ctn','ctn.id=dataset.collection_id')
                                        .where('dataset.dataset = TRUE')
                                        .andWhere('dataset.result_metadata IS NOT NULL')
