@@ -116,6 +116,7 @@ class Component extends React.Component {
             });
         }
         LayoutCreatorApi.listCreators({
+            "accountName": this.props.globalSearchValue || "",
             "pageSize": this.state.pagination.pageSize,
             "pageIndex": turnFirstPage ? 1 : this.state.pagination.current,
             "orderBys": this.state.currentFilter.name ? [{

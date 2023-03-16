@@ -34,7 +34,6 @@ class Component extends React.Component {
         }
     }
     componentDidMount() {
-        this.listMyFollows();
     }
 
     changeTab = (key) => {

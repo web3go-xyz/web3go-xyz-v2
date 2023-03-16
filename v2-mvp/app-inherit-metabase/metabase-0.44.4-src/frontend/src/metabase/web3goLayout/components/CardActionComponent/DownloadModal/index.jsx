@@ -138,7 +138,7 @@ class Component extends React.Component {
                             <RadioGroup style={{ marginTop: 5 }}>
                                 <Radio value='csv'>.csv</Radio>
                                 <Radio value='xlsx'>.xlsx</Radio>
-                                <Radio value='jason'>.jason</Radio>
+                                <Radio value='jason'>.json</Radio>
                             </RadioGroup>
                         </Form.Item>
                     </Form>
