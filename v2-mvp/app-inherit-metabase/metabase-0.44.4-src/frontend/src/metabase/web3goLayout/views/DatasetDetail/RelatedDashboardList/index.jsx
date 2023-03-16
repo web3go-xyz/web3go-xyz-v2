@@ -265,7 +265,7 @@ class Component extends React.Component {
             return;
         }
         this.setState({ loading: true });
-        LayoutDashboardApi.searchRelatedDataset({
+        LayoutDashboardApi.searchByDataset({
             "pageSize": this.state.pagination.pageSize,
             "pageIndex": turnFirstPage ? 1 : this.state.pagination.current,
             "orderBys": this.state.tableSort.field ? [{

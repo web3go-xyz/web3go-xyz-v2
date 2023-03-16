@@ -48,7 +48,7 @@ export const LayoutDashboardApi = {
   listMyFavoritesDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/favorite/listMyFavorites"),
   detail: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/detail"),
   searchRelatedDashboards: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/searchRelatedDashboards"),
-  searchRelatedDataset: WGET(WEB3GO_BASE_URL + "/api/v2/dashboard/searchDataset"),
+  searchByDataset: WGET(WEB3GO_BASE_URL + "/api/v2/dashboard/searchByDataset"),
   logFavorite: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/logFavorite"),
   logFavoriteDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/favorite/logFavorite"),
   logViewDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/view/logView"),
