@@ -55,6 +55,7 @@ class Component extends React.Component {
             resizeDirection: 'vertical',
             previewLimit: 10
         }
+        this.queryResultRef = React.createRef();
     }
     componentDidMount() {
         this.props.onRef(this);
@@ -157,6 +158,23 @@ class Component extends React.Component {
         const previewQuestion = this.getPreviewQuestion(step);
         this.setState({
             question: previewQuestion,
+        });
+    }
+    refreshAndLoad = () => {
+        const { question } = this.props;
+        if (!question) {
+            return;
+        }
+        const steps = getQuestionSteps(question);
+        const step = steps[steps.length - 1];
+        if (!step) {
+            return;
+        }
+        const previewQuestion = this.getPreviewQuestion(step);
+        this.setState({
+            question: previewQuestion,
+        }, () => {
+            this.queryResultRef._reload();
         });
     }
     executeSql = () => {
@@ -267,12 +285,12 @@ class Component extends React.Component {
                                                 <InputNumber value={previewLimit} onChange={(value) => { this.setState({ previewLimit: value }) }} style={{ width: 117 }} />
                                                 <div className="suffix">rows</div>
                                             </div>
-                                            <Button type="primary" onClick={() => { this.refresh() }}>
+                                            <Button type="primary" onClick={() => { this.refreshAndLoad() }}>
                                                 <IconSync style={{ fontSize: 16 }} />
                                                 <span>Refresh</span>
                                             </Button>
                                         </div>
-                                        <QuestionResultLoader question={this.state.question}>
+                                        <QuestionResultLoader question={this.state.question} onRef={(ref) => this.queryResultRef = ref}>
                                             {({ rawSeries, result }) => {
                                                 return (
                                                     result && result.data ?
@@ -326,7 +344,7 @@ class Component extends React.Component {
                                             processedError ? (
                                                 <QueryValidationError error={{ message: processedError }} />
                                             ) : (
-                                                <QuestionResultLoader question={this.state.question}>
+                                                <QuestionResultLoader question={this.state.question} onRef={(ref) => this.queryResultRef = ref}>
                                                     {({ rawSeries, result }) => (
                                                         result && result.data ?
                                                             (

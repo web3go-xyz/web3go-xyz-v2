@@ -102,7 +102,7 @@ class Component extends React.Component {
             originCardDetail: {},
             searchTags: [],
             searchCreateBy: '',
-            mapDatabaseData: {}
+            mapDatabaseData: {},
         }
         this.datasetNameInputRef = React.createRef();
         this.tagInputRef = React.createRef();
@@ -402,27 +402,31 @@ class Component extends React.Component {
                     [loadingKey]: false
                 });
                 const id = `${Date.now()}`;
-                Notification.success({
-                    id,
-                    title: isDraft ? 'Draft saved' : 'Posted',
-                    duration: 5000,
-                    content: (
-                        <div>
-                            <span>
-                                You can start building dashboard now.
-                            </span>
-                            <span className="hover-item" style={{ color: '#615CF6' }} onClick={() => {
-                                this.props.push({
-                                    pathname: "/layout/create/dashboard",
-                                    state: {
-                                        selectDashboardToEdit: true,
-                                    }
-                                })
-                                Notification.remove(id);
-                            }}>&nbsp;&nbsp;&nbsp;Keep going -&gt;</span>
-                        </div>
-                    ),
-                })
+                if (!sessionStorage.getItem('KeepGoingNotification')) {
+                    sessionStorage.setItem('KeepGoingNotification', true);
+                    Notification.success({
+                        style: { width: 440 },
+                        id,
+                        title: isDraft ? 'Draft saved' : 'Posted',
+                        duration: 5000,
+                        content: (
+                            <div>
+                                <span>
+                                    You can start building dashboard now.
+                                </span>
+                                <span className="hover-item" style={{ color: '#615CF6' }} onClick={() => {
+                                    this.props.push({
+                                        pathname: "/layout/create/dashboard",
+                                        state: {
+                                            selectDashboardToEdit: true,
+                                        }
+                                    })
+                                    Notification.remove(id);
+                                }}>&nbsp;Keep going -&gt;</span>
+                            </div>
+                        ),
+                    })
+                }
             }, () => {
                 this.setState({
                     [loadingKey]: false
