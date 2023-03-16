@@ -47,7 +47,7 @@ export class DashboardService {
     async getAllFollowed(accountId) {
        const data = await this.accountFollowerRepo.find({
             where: {
-                accountId
+                followedAccountId: accountId
             },
             select: ['followedAccountId'],
         })

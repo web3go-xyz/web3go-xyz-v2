@@ -79,8 +79,11 @@ export class FollowController {
         this.logger.debug(`follow:${JSON.stringify(param)}`);
         let validateUser: AuthorizedUser = req.user;
         let accountId = validateUser.id;
-        if(!accountId){
+        if(!accountId || !param.targetAccountId){
             throw new Error("accountId required");           
+        }
+        if (accountId === param.targetAccountId) {
+            throw new Error("you can't follow yourself"); 
         }
         return await this.service.follow(param, accountId);
     }

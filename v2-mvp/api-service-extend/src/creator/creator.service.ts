@@ -29,12 +29,18 @@ export class CreatorService {
             list: [],
             totalCount: 0
         }
-        let query_count = await this.dextRepo.createQueryBuilder("d")
-            .select("COUNT(DISTINCT(creator_account_id))", "creator_account_id_count")
-            .getRawOne();
-        resp.totalCount = await query_count.creator_account_id_count;
-
+      
         let query = this.dextRepo.createQueryBuilder("d")
+                .select("COUNT(DISTINCT(creator_account_id))", "creator_account_id_count");
+        if (param.accountName && param.accountName.length > 0) {
+            query.leftJoinAndSelect(Account, "a", "a.account_id = d.creator_account_id")
+            .select("COUNT(DISTINCT(creator_account_id))", "creator_account_id_count")
+            .where(`a."nick_name" LIKE :name`, {name: '%' + param.accountName + '%'});
+        }
+        let query_count = await query.getRawOne();
+        resp.totalCount = query_count.creator_account_id_count;
+
+        query = this.dextRepo.createQueryBuilder("d")
             .leftJoinAndSelect(Account, "a", "a.account_id = d.creator_account_id")
             .select(`a."nick_name"`, `creator_account_name`)
             .addSelect("creator_account_id", "creator_account_id")
@@ -47,6 +53,9 @@ export class CreatorService {
             .groupBy("d.creator_account_id")
             .addGroupBy(`a."nick_name"`)
 
+        if (param.accountName && param.accountName.length > 0) {
+            query.andWhere(`a."nick_name" LIKE :name`, {name: '%' + param.accountName + '%'});
+        }
 
         if (param.orderBys && param.orderBys.length > 0) {
             query = query.orderBy(param.orderBys[0].sort, param.orderBys[0].order);
@@ -71,7 +80,13 @@ export class CreatorService {
                 total_fork_count: t.total_fork_count,
                 total_favorite_count: t.total_favorite_count,
                 followed_account_count: t.followed_account_count,
-                dataset: datasetStatByAccounts[t.creator_account_id] || {}
+                dataset: datasetStatByAccounts[t.creator_account_id] || {
+                    count: 0,
+                    total_view_count: 0,
+                    total_share_count: 0,
+                    total_fork_count: 0,
+                    total_favorite_count: 0,
+                }
             })
         }
         return resp;
