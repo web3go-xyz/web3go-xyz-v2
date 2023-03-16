@@ -153,10 +153,10 @@ export class Job_SyncDatasetFromMB {
         list.forEach((existed) => {
           ids.splice(ids.indexOf(existed.database_id), 1);
         });
-      for (const toDeleteId of ids) {
-        await this.datasetExtRepo.delete(toDeleteId);
-        await this.dsetFavlRepo.delete({ datasetId: toDeleteId });
-        result.remove.push(toDeleteId);
+      if (ids && ids.length) {
+        await this.datasetExtRepo.delete({id: In(ids)});
+        result.remove = [...result.remove, ...ids];
+        await this.dsetFavlRepo.delete({ datasetId: In(ids) });
       }
     } else if (isSyncAll) {
       const ids = list.map((it) => it.id);

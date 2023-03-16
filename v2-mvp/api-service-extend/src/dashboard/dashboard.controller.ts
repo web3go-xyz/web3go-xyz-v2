@@ -86,12 +86,12 @@ export class DashboardController {
     return await this.service.searchRelatedDashboards(param, this.getUserSession(rawRequest));
   }
 
-  @Post('/searchDataset')
-  @ApiOperation({ summary: 'search related dashboards which has similar tags' })
+  @Post('/searchByDataset')
+  @ApiOperation({ summary: 'search related dashboards by the specified datasetId' })
   @ApiOkResponse({ type: QueryDashboardListResponse })
-  async searchDataset(@Body() param: QueryDashboardByDataset, @Request() rawRequest): Promise<QueryDashboardListResponse> {
+  async searchByDataset(@Body() param: QueryDashboardByDataset, @Request() rawRequest): Promise<QueryDashboardListResponse> {
     this.logger.debug(`searchRelatedDashboards:${JSON.stringify(param)}`);
-    return await this.service.searchDataset(param, this.getUserSession(rawRequest));
+    return await this.service.searchByDataset(param, this.getUserSession(rawRequest));
   }
 
 
