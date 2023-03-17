@@ -24,6 +24,7 @@ import { DatasetShareLog } from '../entity/platform-dataset/DatasetShareLog';
 import { DatasetForkLog } from '../entity/platform-dataset/DatasetForkLog';
 import { DatasetTag } from '../entity/platform-dataset/DatasetdTag';
 import { DatasetTagGroup } from '../entity/platform-dataset/DatasetTagGroup';
+import { DashboardDatasetRelation } from '../entity/platform-dataset/DashboardDatasetRelation';
 
 export class RepositoryConsts {
   public static DATABASE_CONNECTION_PLATFORM: string =
@@ -146,6 +147,12 @@ export class RepositoryConsts {
       provide: 'PLATFORM_DATASET_TAG_GROUP_REPOSITORY',
       connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
       entityTarget: DatasetTagGroup,
+    },
+
+    PLATFORM_DASHBOARD_DATASET_RELATION_REPOSITORY: {
+      provide: 'DASHBOARD_DATASET_RELATION_REPOSITORY',
+      connection: RepositoryConsts.DATABASE_CONNECTION_PLATFORM,
+      entityTarget: DashboardDatasetRelation,
     },
 
     //share

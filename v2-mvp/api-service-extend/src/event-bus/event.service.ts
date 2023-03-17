@@ -48,6 +48,13 @@ export class EventService {
         private datasetExtRepo: Repository<DatasetExt>,
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_VIEW_LOG_REPOSITORY.provide)
         private datasetViewlRepo: Repository<DatasetViewLog>,
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_FAVORITE_LOG_REPOSITORY.provide)
+        private datasetFavRepo: Repository<DashboardFavoriteLog>,
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_FORK_LOG_REPOSITORY.provide)
+        private datasetForklRepo: Repository<DashboardForkLog>,
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DATASET_SHARE_LOG_REPOSITORY.provide)
+        private datasetSharelRepo: Repository<DashboardShareLog>,
+
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_ACCOUNT_FOLLOWER_REPOSITORY.provide)
         private afRepo: Repository<AccountFollower>,
@@ -183,30 +190,21 @@ export class EventService {
     @OnEvent('dataset.*', { async: true })
     async handleDataSetEvents(payload: DatasetEventPayload) {
         // handle and process an event
+        const updateCount = async (key: keyof DatasetExt, countRepo: Repository<any>) => {
+            let favCount = await countRepo.count({
+                where: { datasetId: payload.data.dataSetId }
+            });
+            await this.datasetExtRepo.update(payload.data.dataSetId, { [key]: favCount });          
+        }
         this.logger.debug(`handleDatasetEvents:${JSON.stringify(payload)}`);
         switch (payload.topic) {
             case DatasetEventTopic.logViewDataset:
-
-                let viewCount = await this.datasetViewlRepo.count({
-                    where: { datasetId : payload.data.dataSetId }
-                });
-                await this.datasetExtRepo.update(payload.data.dataSetId, { viewCount: viewCount });
-
-                break;
+                await updateCount("viewCount", this.datasetViewlRepo);
             case DatasetEventTopic.logShareDataset:
-                let shareCount = await this.dsharelRepo.count({
-                    where: { dashboardId: payload.data.dataSetId }
-                });
-                await this.datasetExtRepo.update(payload.data.dataSetId, { shareCount: shareCount });
-
+                await updateCount("shareCount", this.datasetSharelRepo);
                 break;
-
             case DatasetEventTopic.logFavoriteDataset:
-                let favCount = await this.dfavlRepo.count({
-                    where: { dashboardId: payload.data.dataSetId }
-                });
-                await this.datasetExtRepo.update(payload.data.dataSetId, { favoriteCount: favCount });
-
+                await updateCount("favoriteCount", this.datasetFavRepo);
                 break;
             default:
                 break;

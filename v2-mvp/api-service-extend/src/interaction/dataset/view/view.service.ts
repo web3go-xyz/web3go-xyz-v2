@@ -29,7 +29,7 @@ export class ViewService {
         };
         let newRecord: DatasetViewLog = {
             id: 0,
-            datasetId: param.dataSetId,
+            datasetId: param.datasetId,
             viewerAccountId: accountId,
             createdAt: new Date(),
             referralCode: param.referralCode
@@ -41,7 +41,7 @@ export class ViewService {
         this.eventService.fireEvent({
             topic: DatasetEventTopic.logViewDataset,
             data: {
-                dataSetId: param.dataSetId
+                dataSetId: param.datasetId
             },
         });
 
@@ -53,7 +53,7 @@ export class ViewService {
         };
         let newRecord: DatasetViewLog = {
             id: 0,
-            datasetId: param.dataSetId,
+            datasetId: param.datasetId,
             viewerAccountId: accountId,
             createdAt: new Date(),
             referralCode: param.referralCode
@@ -65,7 +65,7 @@ export class ViewService {
         this.eventService.fireEvent({
             topic: DatasetEventTopic.logViewDataset,
             data: {
-                dataSetId: param.dataSetId
+                dataSetId: param.datasetId
             },
         });
 

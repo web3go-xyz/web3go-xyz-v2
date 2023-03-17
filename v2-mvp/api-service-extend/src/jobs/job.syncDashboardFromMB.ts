@@ -3,6 +3,7 @@ import { Cron } from '@nestjs/schedule';
 import { ReportDashboard } from 'src/base/entity/metabase/ReportDashboard';
 import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
 import { DashboardFavoriteLog } from 'src/base/entity/platform-dashboard/DashboardFavoriteLog';
+import { DashboardDatasetRelation } from 'src/base/entity/platform-dataset/DashboardDatasetRelation';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { AppConfig } from 'src/base/setting/appConfig';
@@ -25,6 +26,10 @@ export class Job_SyncDashboardFromMB {
         // dashboard fav log
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_FAVORITE_LOG_REPOSITORY.provide)
         private dboardfavlRepo: Repository<DashboardFavoriteLog>,
+
+        // dashboard 2 dataset relation
+        @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_DASHBOARD_DATASET_RELATION_REPOSITORY.provide)
+        private dashboard2DatasetMapRepo: Repository<DashboardDatasetRelation>,
 
 
     ) {
@@ -92,7 +97,7 @@ export class Job_SyncDashboardFromMB {
             });
 
 
-            if (newDashboards) {
+            if (newDashboards && newDashboards.length) {
                 for (const newD of newDashboards) {
                     let creatorAccountId = await this.mbConnectService.findCreatorAccountIdByUserId(newD.creatorId);
 
@@ -113,9 +118,10 @@ export class Job_SyncDashboardFromMB {
                     await this.dextRepo.insert(newDashboard);
                     dashboard_id_synced.new.push(newD.id);
                 }
+                await this.syncDashboard2DatasetMap(true, newDashboards);
             }
 
-            if (updateDashboards) {
+            if (updateDashboards && updateDashboards.length) {
                 for (const updateD of updateDashboards) {
 
                     let findDashboard = existing_dashboardExt_list.find(t => t.id == updateD.id);
@@ -127,6 +133,7 @@ export class Job_SyncDashboardFromMB {
                     });
                     dashboard_id_synced.update.push(updateD.id);
                 }
+                await this.syncDashboard2DatasetMap(true, updateDashboards);
             }
 
             if (removedDashboards && removedDashboards.length) {
@@ -136,7 +143,9 @@ export class Job_SyncDashboardFromMB {
                     dashboard_id_synced.remove.push(removedD.id);
                 }
                 await this.dboardfavlRepo.delete({dashboardId: In(removedDashboards.map(it => it.id))});
+                await this.syncDashboard2DatasetMap(false, removedDashboards);
             }
+            
 
             return dashboard_id_synced;
         } catch (error) {
@@ -147,6 +156,46 @@ export class Job_SyncDashboardFromMB {
             this.logger.log("syncDashboardFromMB finished");
         }
     }
+
+    // NOT THREAD SAFE
+    private async syncDashboard2DatasetMap (isUp, dashboards) {
+        const dashboardIds = dashboards.map(it => it.id);
+        await this.dashboard2DatasetMapRepo.delete({
+            dashboardId: In(dashboardIds)
+        })
+        if (isUp) {
+            const toSyncReportCards: any[] = await this.mbConnectService.findLinkedReportCards(
+                dashboardIds,
+                null, null, null
+            )
+            for (const recordCard of toSyncReportCards) {
+                if (recordCard.dataset === null) { // skip virtual cards
+                    continue;
+                }
+                this.dashboard2DatasetMapRepo.save({
+                    dashboardId: recordCard.dashboard_id,
+                    reportCardId: recordCard.id,
+                    dataset: recordCard.dataset,
+                    sourceReportCardId: this.getSourceId(recordCard.dataset_query)
+                })
+            }
+        }
+    }
+
+    private getSourceId(dataseQuery: string): number {
+        if (!dataseQuery) {
+          return null;
+        }
+        try {
+          const json = JSON.parse(dataseQuery);
+          if (typeof json.query['source-table'] === 'number') {
+            return json.query['source-table'];
+          }
+          return json.query['source-table'].replace('card__', '') - 0;
+        } catch(e) {
+          return null;
+        }
+      }
 
     private async formatlink(category: string, publicUUID: string): Promise<string> {
         //V1 eg: https://dev-v2.web3go.xyz/public/dashboard/dfc5d3a9-1d64-422b-b26f-0367e0fb1170
