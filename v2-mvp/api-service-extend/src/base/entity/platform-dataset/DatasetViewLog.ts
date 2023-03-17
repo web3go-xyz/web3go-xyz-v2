@@ -11,7 +11,7 @@ export class DatasetViewLog {
     })
     id: number;
 
-    @Column({ type: "bigint", name: "dashboard_id", })
+    @Column({ type: "bigint", name: "dateset_id", })
     datasetId: number;
 
     @Column("timestamp with time zone", {
