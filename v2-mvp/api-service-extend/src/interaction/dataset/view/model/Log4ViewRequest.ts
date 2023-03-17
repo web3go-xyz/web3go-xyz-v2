@@ -5,7 +5,7 @@ export class Log4ViewRequest {
 
     @ApiProperty({ required: true })
     @IsNotEmpty()
-    dataSetId: number;
+    datasetId: number;
 
     @ApiProperty()
     referralCode: string;
