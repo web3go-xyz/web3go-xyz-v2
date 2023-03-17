@@ -49,13 +49,13 @@ class Component extends React.Component {
         return (<div className="web3go-layout-page">
             {
                 location.pathname.includes('/layout/create') ? null : (
-                    <div class="fixed-right-menu">
+                    <div className="fixed-right-menu">
                         {
                             this.state.fixedRightMenu.map((v, i) =>
                             (
                                 <div key={i} className="item hover-item">
                                     <img onClick={() => this.jumpUrl(v.link)} src={v.img} alt="" />
-                                    <div class="split"></div>
+                                    <div className="split"></div>
                                 </div>
                             )
                             )

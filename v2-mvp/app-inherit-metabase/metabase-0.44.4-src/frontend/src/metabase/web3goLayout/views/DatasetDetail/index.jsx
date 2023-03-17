@@ -375,9 +375,9 @@ class Component extends React.Component {
                                     <IconInfoCircle />
                                 </Tooltip>
                             </div>
-                            {/* {
+                            {
                                 detailData.id ? <RelatedDashboardList detailData={detailData} myFollowingList={this.state.myFollowingList}></RelatedDashboardList> : null
-                            } */}
+                            }
 
                         </div>
                     ) : null}
