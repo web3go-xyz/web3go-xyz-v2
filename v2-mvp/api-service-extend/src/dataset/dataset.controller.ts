@@ -101,7 +101,7 @@ export class DatasetController {
     let path =
       'dataset-' +
       id +
-      file.originalname.substr(file.originalname.indexOf('.'));
+      file.originalname.substr(file.originalname.indexOf('.'))  + "." + file.mimetype.split('/')[1];
 
     const writeImage = createWriteStream(join(dir, `${path}`));
     writeImage.write(file.buffer);
