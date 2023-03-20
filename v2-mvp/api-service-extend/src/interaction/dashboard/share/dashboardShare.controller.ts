@@ -115,7 +115,7 @@ export class DashboardShareController {
       '<!DOCTYPE html>\n' +
       '<html lang="en">\n' +
       '<head>\n' +
-      '<title>' + title + '</title>'
+      '<title>' + title + '</title>' +
       metaHtml +
       '</head>\n' +
       '<body>\n' +
