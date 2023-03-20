@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { DashboardShareLog } from 'src/base/entity/platform-dashboard/DashboardShareLog';
 import { ShareReferralCode } from 'src/base/entity/platform-dashboard/ShareReferralCode';
 import { W3Logger } from 'src/base/log/logger.service';
@@ -15,7 +15,9 @@ import { Log4ShareDashboardResponse } from './model/Log4ShareDashboardResponse';
 import { EventService } from 'src/event-bus/event.service';
 import { DashboardEventTopic } from 'src/event-bus/model/dashboard/DashboardEventTopic';
 import { DashboardExt } from 'src/base/entity/platform-dashboard/DashboardExt';
-import e from 'express';
+import { KVService } from 'src/base/kv/kv.service';
+import { randomUUID } from 'crypto';
+
 @Injectable()
 export class ShareService {
     logger: W3Logger;
@@ -30,6 +32,8 @@ export class ShareService {
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_SHARE_REFERRAL_CODE_REPOSITORY.provide)
         private srcRepo: Repository<ShareReferralCode>,
+
+        private kvService: KVService,
     ) {
         this.logger = new W3Logger(`ShareService`);
     }
@@ -48,7 +52,60 @@ export class ShareService {
         resp.shareLink = referralCodeResult.shareLink;
         this.logger.debug(`generateDashboardShareLink: ${JSON.stringify(resp)}`);
 
+        if (param.shareChannel !== 'link') {
+           await this.prepare4SNS(param.dashboardId, param.shareChannel, resp);
+        }
         return resp;
+    }
+
+    async prepare4SNS(dashboardId, platform, resp) {
+        const cachePrefix = 'dashboard:share:';
+        const newUrlPrefix = `${AppConfig.BASE_API_URL}/api/v2/dashboard/sns/share/gateway/`;
+        let uuid = await this.kvService.get(cachePrefix + dashboardId);
+        const expire = 18000; // 5 * 60 * 60;
+        if (uuid) {
+            const cached = await this.kvService.get(cachePrefix + uuid);
+            if (cached) {
+                await this.kvService.set(`${cachePrefix}${dashboardId}`, uuid, expire,);
+                await this.kvService.set(`${cachePrefix}${uuid}`,cached,expire,);
+                resp.shareLink = `${newUrlPrefix}${uuid}`;
+                return;
+            }
+        }
+        const existed = await this.dextRepo.findOne( { where: {id: dashboardId}});
+        if (!existed) {
+            throw new BadRequestException('the dashboard is not available');
+        }
+        let metaData;
+        if (platform === 'twitter') {
+            metaData = {
+                'twitter:card' : 'summary_large_image',
+                'twitter:site': AppConfig.BASE_WEB_URL,
+                'twitter:url': resp.shareLink,
+                'twitter:title': existed.name,
+                'twitter:image': existed.previewImg,
+                'twitter:description': existed.description,
+            }
+            if (!existed.previewImg) {
+                delete metaData['twitter:image'];
+            }
+        } else {
+            metaData = {
+                'og:url': resp.shareLink,
+                'og:title': existed.name,
+                'og:description': existed.description,
+                'og:image': existed.previewImg,
+                'og:type' : 'website'
+            }
+            if (!existed.previewImg) {
+                delete metaData['og:image'];
+            }
+        }
+        uuid = `${dashboardId}-${randomUUID()}`;
+        await this.kvService.set(`${cachePrefix}${dashboardId}`, uuid, expire,);
+        await this.kvService.set(`${cachePrefix}${uuid}`,JSON.stringify(metaData), expire,);                
+        resp.shareLink = `${newUrlPrefix}${uuid}`;
+        return;
     }
 
     async buildLink(shareItemType: ShareItemType, shareItemId: string, shareChannel: string, accountId?: string): Promise<ShareReferralCode> {
