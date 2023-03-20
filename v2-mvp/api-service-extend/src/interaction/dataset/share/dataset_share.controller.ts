@@ -55,37 +55,55 @@ export class DatasetShareController {
   @ApiOperation({ summary: 'twitter share metadata' })
   @AllowAnonymous()
   async twitterShare(@Param('uuid') uuid: string): Promise<string> {
-    // TODO WE CAN infer the platform by HTTP HEADER REFFER
-    // this.assert(data.platform === 'twitter', 'sorry, not supported platform'); 
-    let data = {metaData: [], platform: undefined, datasetId: undefined};
+  
+    let data = null;//
     let rawCache = await this.kvService.get(`dataset:share:${uuid}`);
     const isCacheValid = !!rawCache;
     if (isCacheValid) {
       // this.assert(!!rawCache, 'sorry, the sharing link has been expired.');
-      data = JSON.parse(rawCache) as DatasetGetShareUrlRequest;
-    } else {
-      data.datasetId = parseInt(uuid.substring(0, uuid.indexOf('-')));
-      this.assert(!!data.datasetId, 'sorry, the sharing link has been expired.');
-    }
+      data = JSON.parse(rawCache); // as DashboardGetShareUrlRequest;
 
-    const record = await this.datasetService.findDatasetExtByPK(
-      data.datasetId,
-    );
-    if (record) {
-      if (record.previewImg) data.metaData.push({ key: 'twitter:image', value: record.previewImg });
-      if (!isCacheValid) {
-        data.metaData.push({key:'twitter:url', value: `${AppConfig.BASE_WEB_URL}/layout/datasetDetail/${record.publicUUID}`});
+      // old data =  {metaData: [], platform: undefined, datasetId: undefined};
+      if (data && data.metaData) {  // to compatible with legacy codes
+        data = data.metaData; // will lose the preview img but it's fine
+      }
+
+    } else {
+      const datasetId = parseInt(uuid.substring(0, uuid.indexOf('-')));
+      this.assert(!!datasetId, 'sorry, the sharing link has been expired.');
+      
+      const record = await this.datasetService.findDatasetExtByPK(
+        datasetId,
+      );
+
+      if (!record || !record.publicLink) {
+        throw new BadRequestException('the dataset is unavailable or is not ready')
+      }
+
+      data = {
+        'twitter:card' : 'summary_large_image',
+        'twitter:site': AppConfig.BASE_WEB_URL,
+        'twitter:url': record.publicLink,
+        'twitter:title': record.name,
+        'twitter:image': record.previewImg,
+        'og:url': record.publicLink,
+        'og:title': record.name,
+        'og:image': record.previewImg,
+        'og:type' : 'website'
       }
     }
 
-    let metas = data.metaData;
+    let metas = data;
     let metaHtml = '';
     let url = '';
-    metas.forEach((meta) => {
-      metaHtml += `<meta property="${meta.key}" name="${meta.key}" content="${meta.value}"/>\n`;
-      if (meta.key === 'twitter:url') {
-        url = meta.value;
+    Object.keys(metas).forEach(key => {
+      if (metas[key]) {
+        metaHtml += `<meta property="${key}" name="${key}" content="${metas[key]}"/>\n`;
       }
+      if (!url && key.endsWith(':url')) {
+        url = metas[key];
+      }
+
     });
     var retHtml =
       '<!DOCTYPE html>\n' +

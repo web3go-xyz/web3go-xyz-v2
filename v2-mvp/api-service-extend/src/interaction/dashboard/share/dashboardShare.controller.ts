@@ -32,6 +32,7 @@ export class DashboardShareController {
   }
 
   @Post('getUrl')
+  // Deprecated
   async getShareUrl(@Body() data: DashboardGetShareUrlRequest) {
     const supportedPlatform = ['twitter'];
     this.assert(supportedPlatform.indexOf(data.platform) > -1, 'not supported');
@@ -55,36 +56,55 @@ export class DashboardShareController {
   @ApiOperation({ summary: 'twitter share metadata' })
   @AllowAnonymous()
   async twitterShare(@Param('uuid') uuid: string): Promise<string> {
-    // TODO WE CAN infer the platform by HTTP HEADER REFFER
-    // this.assert(data.platform === 'twitter', 'sorry, not supported platform'); 
-    let data = {metaData: [], platform: undefined, dashboardId: undefined};
+
+    let data = null;// {metaData: [], platform: undefined, dashboardId: undefined};
     let rawCache = await this.kvService.get(`dashboard:share:${uuid}`);
     const isCacheValid = !!rawCache;
     if (isCacheValid) {
       // this.assert(!!rawCache, 'sorry, the sharing link has been expired.');
-      data = JSON.parse(rawCache) as DashboardGetShareUrlRequest;
-    } else {
-      data.dashboardId = parseInt(uuid.substring(0, uuid.indexOf('-')));
-      this.assert(!!data.dashboardId, 'sorry, the sharing link has been expired.');
-    }
+      data = JSON.parse(rawCache); // as DashboardGetShareUrlRequest;
 
-    const record = await this.dashboardService.findDashboardExtByPK(
-      data.dashboardId,
-    );
-    if (record) {
-      if (record.previewImg) data.metaData.push({ key: 'twitter:image', value: record.previewImg });
-      if (!isCacheValid) {
-        data.metaData.push({key:'twitter:url', value: `${AppConfig.BASE_WEB_URL}/layout/dashboardDetail/${record.publicUUID}`});
+      // old data =  {metaData: [], platform: undefined, datasetId: undefined};
+      if (data && data.metaData) {  // to compatible with legacy codes
+        data = data.metaData; // will lose the preview img but it's fine
+      }
+
+    } else {
+      const dashboardId = parseInt(uuid.substring(0, uuid.indexOf('-')));
+      this.assert(!!dashboardId, 'sorry, the sharing link has been expired.');
+      
+      const record = await this.dashboardService.findDashboardExtByPK(
+        dashboardId,
+      );
+
+      if (!record || !record.publicLink) {
+        throw new BadRequestException('the dashboard is unavailable or is not ready')
+      }
+
+      data = {
+        'twitter:card' : 'summary_large_image',
+        'twitter:site': AppConfig.BASE_WEB_URL,
+        'twitter:url': record.publicLink,
+        'twitter:title': record.name,
+        'twitter:image': record.previewImg,
+        'twitter:description': record.description,
+        'og:url': record.publicLink,
+        'og:title': record.name,
+        'og:description': record.description,
+        'og:image': record.previewImg,
+        'og:type' : 'website'
       }
     }
 
-    let metas = data.metaData;
+    let metas = data;
     let metaHtml = '';
     let url = '';
-    metas.forEach((meta) => {
-      metaHtml += `<meta property="${meta.key}" name="${meta.key}" content="${meta.value}"/>\n`;
-      if (meta.key === 'twitter:url') {
-        url = meta.value;
+    Object.keys(metas).forEach(key => {
+      if (metas[key]) {
+        metaHtml += `<meta property="${key}" name="${key}" content="${metas[key]}"/>\n`;
+      }
+      if (!url && key.endsWith(':url')) {
+        url = metas[key];
       }
     });
     var retHtml =
