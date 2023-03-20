@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { DatasetShareLog } from 'src/base/entity/platform-dataset/DatasetShareLog';
 import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
@@ -13,6 +13,9 @@ import { EventService } from 'src/event-bus/event.service';
 import { DatasetEventTopic } from 'src/event-bus/model/dataset/DatasetEventTopic';
 import { DatasetExt } from 'src/base/entity/platform-dataset/DatasetExt';
 import { ShareReferralCode } from 'src/base/entity/platform-dashboard/ShareReferralCode';
+import { AppConfig } from 'src/base/setting/appConfig';
+import { KVService } from 'src/base/kv/kv.service';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class ShareService {
@@ -29,6 +32,8 @@ export class ShareService {
 
         @Inject(RepositoryConsts.REPOSITORYS_PLATFORM.PLATFORM_SHARE_REFERRAL_CODE_REPOSITORY.provide)
         private srcRepo: Repository<ShareReferralCode>,
+
+        private kvService: KVService,
     ) {
         this.logger = new W3Logger(`ShareService`);
     }
@@ -48,9 +53,60 @@ export class ShareService {
         let referralCodeResult: ShareReferralCode = await this.buildLink(this.SHARE_TYPE, param.datasetId.toString(), param.shareChannel, accountId);
         resp.referralCode = referralCodeResult.referralCode;
         resp.shareLink = referralCodeResult.shareLink;
-        this.logger.debug(`generateDatasetShareLink: ${JSON.stringify(resp)}`);
+        //this.logger.debug(`generateDatasetShareLink: ${JSON.stringify(resp)}`);
 
+        if (param.shareChannel !== 'link') {
+            await this.prepare4SNS(param.datasetId, param.shareChannel, resp);
+         }
         return resp;
+    }
+
+    async prepare4SNS(datasetId, platform, resp) {
+        const cachePrefix = 'dataset:share:';
+        const newUrlPrefix = `${AppConfig.BASE_API_URL}/api/v2/dataset/sns/share/gateway/`;
+        let uuid = await this.kvService.get(cachePrefix + datasetId);
+        const expire = 18000; // 5 * 60 * 60;
+        if (uuid) {
+            const cached = await this.kvService.get(cachePrefix + uuid);
+            if (cached) {
+                await this.kvService.set(`${cachePrefix}${datasetId}`, uuid, expire,);
+                await this.kvService.set(`${cachePrefix}${uuid}`,cached,expire,);
+                resp.shareLink = `${newUrlPrefix}${uuid}`;
+                return;
+            }
+        }
+        const existed = await this.dextRepo.findOne( { where: {id: datasetId}});
+        if (!existed) {
+            throw new BadRequestException('the dataset is not available');
+        }
+        let metaData;
+        if (platform === 'twitter') {
+            metaData = {
+                'twitter:card' : 'summary_large_image',
+                'twitter:site': AppConfig.BASE_WEB_URL,
+                'twitter:url': resp.shareLink,
+                'twitter:title': existed.name,
+                'twitter:image': existed.previewImg
+            }
+            if (!existed.previewImg) {
+                delete metaData['twitter:image'];
+            }
+        } else {
+            metaData = {
+                'og:url': resp.shareLink,
+                'og:title': existed.name,
+                'og:image': existed.previewImg,
+                'og:type' : 'website'
+            }
+            if (!existed.previewImg) {
+                delete metaData['og:image'];
+            }
+        }
+        uuid = `${datasetId}-${randomUUID()}`;
+        await this.kvService.set(`${cachePrefix}${datasetId}`, uuid, expire,);
+        await this.kvService.set(`${cachePrefix}${uuid}`,JSON.stringify(metaData), expire,);                
+        resp.shareLink = `${newUrlPrefix}${uuid}`;
+        return;
     }
 
     async buildLink(shareItemType: string, shareItemId: string, shareChannel: string, accountId?: string): Promise<ShareReferralCode> {
