@@ -12,7 +12,7 @@ export class AddTag4DatasetRequest {
     tagId: number;
     
     @ApiProperty({ required: true, type: String,default:'' })
-    @MaxLength(10)
+    @MaxLength(50)
     @IsNotEmpty()
     tagName:string
 
