@@ -96,6 +96,7 @@ export class DatasetShareController {
     let metas = data;
     let metaHtml = '';
     let url = '';
+    let title = '';
     Object.keys(metas).forEach(key => {
       if (metas[key]) {
         metaHtml += `<meta property="${key}" name="${key}" content="${metas[key]}"/>\n`;
@@ -103,19 +104,21 @@ export class DatasetShareController {
       if (!url && key.endsWith(':url')) {
         url = metas[key];
       }
+      if (!title && key.endsWith(':title')) {
+        title = metas[key];
+      }
 
     });
     var retHtml =
       '<!DOCTYPE html>\n' +
       '<html lang="en">\n' +
       '<head>\n' +
+      '<title>' + title + '</title>' +
       metaHtml +
       '</head>\n' +
       '<body>\n' +
-      '<script type="text/javascript">\n' +
-      '\twindow.location.href="' +
-      url +
-      '";\n' +
+      '<script type="text/javascript">\n' +  // Telegram, use elegram to match is for ignoring case
+      'navigator && navigator.userAgent && (navigator.userAgent.indexOf("elegram") < 0) && window.location.href="' + url + '";\n' +
       '</script>' +
       '</body>\n' +
       '</html>';
