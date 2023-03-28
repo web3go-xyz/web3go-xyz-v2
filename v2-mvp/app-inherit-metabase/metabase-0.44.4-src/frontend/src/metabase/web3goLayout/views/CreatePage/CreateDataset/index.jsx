@@ -160,7 +160,7 @@ class Component extends React.Component {
         }
     }
     getLinkedDashboards = (cardId) => {
-        LayoutDashboardApi.list({
+        LayoutDashboardApi.searchByDataset({
             "pageSize": 99999999,
             "pageIndex": 1,
             "datasetId": cardId,
@@ -650,8 +650,8 @@ class Component extends React.Component {
                                 <CollapseItem header='Community datasets' name='1'>
                                     <div className="dataset-list">
                                         {this.formatDatasetList.map(v => (
-                                            <Tooltip content={v.name}>
-                                                <div className="item" key={v.id} onClick={() => { this.clickDatasetItem(v) }}>
+                                            <Tooltip content={v.name} key={v.id}>
+                                                <div className="item" onClick={() => { this.clickDatasetItem(v) }}>
                                                     <img className="dataset-icon" src={require("@/web3goLayout/assets/dashboardCreate/dataset.png")} alt="" />
                                                     <div className="text">{v.name}</div>
                                                     <img className="view-icon" src={require("@/web3goLayout/assets/dashboardCreate/view.png")} alt="" />
@@ -668,7 +668,7 @@ class Component extends React.Component {
                                     >
                                         {
                                             this.props.databaseList.map(v => (
-                                                <CollapseItem header={v.name} name={v.id}>
+                                                <CollapseItem header={v.name} name={v.id} key={v.id}>
                                                     <Spin loading={!mapDatabaseData[v.id]} style={{ display: 'block', minHeight: 100 }}>
                                                         <div className="raw-data-list">
                                                             {this.getFormatRowDataList(v.id).map(v => (
