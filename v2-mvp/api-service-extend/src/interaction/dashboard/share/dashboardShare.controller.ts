@@ -120,7 +120,7 @@ export class DashboardShareController {
       '</head>\n' +
       '<body>\n' +
       '<script type="text/javascript">\n' +  // Telegram, use elegram to match is for ignoring case
-      'navigator && navigator.userAgent && (navigator.userAgent.indexOf("elegram") < 0) && window.location.href="' + url + '";\n' +
+      'navigator && navigator.userAgent && (navigator.userAgent.indexOf("elegram") < 0) && (window.location.href="' + url + '");\n' +
       '</script>' +
       '</body>\n' +
       '</html>';
