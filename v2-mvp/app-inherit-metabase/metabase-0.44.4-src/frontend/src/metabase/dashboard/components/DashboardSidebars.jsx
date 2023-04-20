@@ -11,6 +11,7 @@ import SharingSidebar from "metabase/sharing/components/SharingSidebar";
 import { AddCardSidebar } from "./add-card-sidebar/AddCardSidebar";
 
 import * as MetabaseAnalytics from "metabase/lib/analytics";
+import { NewCardEditorSidebar } from "./new-card-editor-sidebar/NewCardEditorSidebar";
 
 DashboardSidebars.propTypes = {
   dashboard: PropTypes.object,
@@ -18,6 +19,7 @@ DashboardSidebars.propTypes = {
   showAddParameterPopover: PropTypes.func.isRequired,
   removeParameter: PropTypes.func.isRequired,
   addCardToDashboard: PropTypes.func.isRequired,
+  addDashCardToDashboard: PropTypes.func.isRequired,
   editingParameter: PropTypes.object,
   isEditingParameter: PropTypes.bool.isRequired,
   showAddQuestionSidebar: PropTypes.bool.isRequired,
@@ -51,6 +53,7 @@ export function DashboardSidebars({
   showAddParameterPopover,
   removeParameter,
   addCardToDashboard,
+  addDashCardToDashboard,
   editingParameter,
   isEditingParameter,
   showAddQuestionSidebar,
@@ -85,11 +88,23 @@ export function DashboardSidebars({
     [addCardToDashboard, dashboard.id],
   );
 
+  const doNewCardEditorSave = useCallback(
+    (dashcardOverrides) => {
+      addDashCardToDashboard({
+        dashId: dashboard.id,
+        dashcardOverrides,
+      });
+      MetabaseAnalytics.trackStructEvent("Dashboard", "Add Card");
+    },
+    [addDashCardToDashboard, dashboard.id],
+  );
+
   if (isFullscreen) {
     return null;
   }
 
   switch (sidebar.name) {
+    // TODO ADD A TEXT
     case SIDEBAR_NAME.addQuestion:
       return (
         <AddCardSidebar
@@ -120,6 +135,9 @@ export function DashboardSidebars({
         parameters,
         p => p.id === editingParameterId,
       );
+      if (location.pathname.includes('/layout')) {
+        return null;
+      }
       return (
         <ParameterSidebar
           parameter={parameter}
@@ -158,6 +176,36 @@ export function DashboardSidebars({
             setDashboardAttribute={setDashboardAttribute}
           />
         </aside>
+      );
+    case SIDEBAR_NAME.newCardEditor:
+
+      // const { vanillaMode } = sidebar.props.params;
+      // // alert(1);
+
+      // if (!vanillaMode && typeof window.FIRST_NEW_CARD_SHOW === 'undefined') {
+      //   window.FIRST_NEW_CARD_SHOW = true;
+      //   return null;
+      // } 
+      // // else if (window.FIRST_NEW_CARD_SHOW === true){
+      // //   window.FIRST_NEW_CARD_SHOW = false;
+      // //   return null;
+      // // } 
+      // else {
+      //   window.FIRST_NEW_CARD_SHOW = false;
+      // }
+        console.info(JSON.stringify(sidebar), isEditingParameter)
+      return (
+        <NewCardEditorSidebar
+          sidebar={sidebar}
+          // dashcardId={dashboard.collection_id}
+          dashcardId={dashboard.id}
+          doSave={doNewCardEditorSave}
+          closeSidebar={closeSidebar}
+          onUpdateDashCardVisualizationSettings={
+            onUpdateDashCardVisualizationSettings
+          }
+        />
+
       );
     default:
       return null;

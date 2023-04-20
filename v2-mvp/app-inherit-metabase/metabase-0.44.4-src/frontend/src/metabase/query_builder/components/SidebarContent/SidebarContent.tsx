@@ -50,7 +50,7 @@ function SidebarContent({
         )}
         {children}
       </SidebarContentMain>
-      {footer}
+      {location.pathname.includes('layout') ? null : footer}
     </SidebarContentRoot>
   );
 }

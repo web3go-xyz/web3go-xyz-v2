@@ -37,6 +37,7 @@ import {
   SET_SHOW_LOADING_COMPLETE_FAVICON,
   RESET,
   SET_PARAMETER_VALUES,
+  SET_ID_FOR_NEW_DASHBOARD,
 } from "./actions";
 
 import { isVirtualDashCard, syncParametersAndEmbeddingParams } from "./utils";
@@ -48,6 +49,11 @@ const dashboardId = handleActions(
       next: (state, { payload: { dashboardId } }) => dashboardId,
     },
     [RESET]: { next: state => null },
+    [SET_ID_FOR_NEW_DASHBOARD]: {
+      next: (state, { payload: { newId } }) => {
+        return newId;
+      }
+    },
   },
   null,
 );
@@ -94,6 +100,20 @@ const dashboards = handleActions(
         ...state,
         ...payload.entities.dashboard,
       }),
+    },
+    [SET_ID_FOR_NEW_DASHBOARD]: {
+      next: (state, { payload: { id, newId, dashboardName } }) => {
+        if (id === newId) {
+          return state;
+        }
+        const newState = { ...state };
+        const oldData = { ...state[id] };
+        delete newState[id];
+        oldData.id = newId;
+        oldData.name = dashboardName;
+        newState[newId] = newDashboard(oldData, {}, false);
+        return newState;
+      },
     },
     [SET_DASHBOARD_ATTRIBUTES]: {
       next: (state, { payload: { id, attributes, isDirty } }) => {
@@ -301,9 +321,9 @@ const parameterValuesSearchCache = handleActions(
       next: (state, { payload }) =>
         payload
           ? assoc(state, payload.cacheKey, {
-              results: payload.results,
-              has_more_values: payload.has_more_values,
-            })
+            results: payload.results,
+            has_more_values: payload.has_more_values,
+          })
           : state,
     },
     [RESET]: { next: state => ({}) },
@@ -338,8 +358,8 @@ const loadingDashCards = handleActions(
         loadingStatus: state.dashcardIds.length > 0 ? "running" : "idle",
         startTime:
           state.dashcardIds.length > 0 &&
-          // check that performance is defined just in case
-          typeof performance === "object"
+            // check that performance is defined just in case
+            typeof performance === "object"
             ? performance.now()
             : null,
       }),
@@ -388,10 +408,12 @@ const sidebar = handleActions(
       next: () => DEFAULT_SIDEBAR,
     },
     [SET_SIDEBAR]: {
-      next: (state, { payload: { name, props } }) => ({
-        name,
-        props: props || {},
-      }),
+      next: (state, { payload: { name, props } }) => {
+        return {
+          name,
+          props: props || {},
+        }
+      },
     },
     [CLOSE_SIDEBAR]: {
       next: () => DEFAULT_SIDEBAR,

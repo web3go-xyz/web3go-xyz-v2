@@ -153,7 +153,6 @@ export default class NotebookStep extends React.Component {
 
     actions.sort((a, b) => (b.priority || 0) - (a.priority || 0));
     const actionButtons = actions.map(action => action.button);
-
     return (
       <ExpandingContent isInitiallyOpen={!isLastOpened} isOpen>
         <StepRoot
@@ -182,7 +181,7 @@ export default class NotebookStep extends React.Component {
                   isLastOpened={isLastOpened}
                 />
               </StepContent>
-              <StepButtonContainer>
+              {location.pathname.includes('/layout') ? null : <StepButtonContainer>
                 <ActionButton
                   ml={[1, 2]}
                   className={
@@ -194,7 +193,7 @@ export default class NotebookStep extends React.Component {
                   transparent
                   onClick={() => this.setState({ showPreview: true })}
                 />
-              </StepButtonContainer>
+              </StepButtonContainer>}
             </StepBody>
           )}
 
@@ -224,7 +223,7 @@ const ColorButton = styled(Button)`
   &:hover {
     color: ${({ color }) => darken(color, 0.115)};
     background-color: ${({ color, transparent }) =>
-      transparent ? lighten(color, 0.5) : alpha(color, 0.35)};
+    transparent ? lighten(color, 0.5) : alpha(color, 0.35)};
   }
   transition: background 300ms;
 `;

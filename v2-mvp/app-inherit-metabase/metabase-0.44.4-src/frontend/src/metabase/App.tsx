@@ -31,6 +31,7 @@ import { ContentViewportContext } from "metabase/core/context/ContentViewportCon
 import { AppErrorDescriptor, State } from "metabase-types/store";
 
 import { AppContainer, AppContent, AppContentContainer } from "./App.styled";
+import { Route } from "react-router";
 
 const getErrorComponent = ({ status, data, context }: AppErrorDescriptor) => {
   if (status === 403 || data?.error_code === "unauthorized") {
@@ -54,6 +55,7 @@ interface AppStateProps {
   bannerMessageDescriptor?: string;
   isAppBarVisible: boolean;
   isNavBarVisible: boolean;
+  route: any;
 }
 
 interface AppRouterOwnProps {
@@ -71,6 +73,8 @@ const mapStateToProps = (
   isAdminApp: getIsAdminApp(state, props),
   isAppBarVisible: getIsAppBarVisible(state, props),
   isNavBarVisible: getIsNavBarVisible(state, props),
+  route: state.routing.locationBeforeTransitions,
+
 });
 
 class ErrorBoundary extends React.Component<{
@@ -91,6 +95,7 @@ function App({
   isAppBarVisible,
   isNavBarVisible,
   children,
+  route
 }: AppProps) {
   const [viewportElement, setViewportElement] = useState<HTMLElement | null>();
   const [errorInfo, setErrorInfo] = useState<ErrorInfo | null>(null);
@@ -105,14 +110,14 @@ function App({
         <AppContainer className="spread">
           <AppBanner />
           {isAppBarVisible && <AppBar isNavBarVisible={isNavBarVisible} />}
-          <AppContentContainer isAdminApp={isAdminApp}>
+          <AppContentContainer isAdminApp={isAdminApp} isLayout={route.pathname.slice(0, 7) == '/layout'}>
             {isNavBarVisible && <Navbar />}
-            <AppContent ref={setViewportElement}>
+            <AppContent ref={setViewportElement} isLayout={route.pathname.slice(0, 7) == '/layout'}>
               <ContentViewportContext.Provider value={viewportElement ?? null}>
                 {errorPage ? getErrorComponent(errorPage) : children}
               </ContentViewportContext.Provider>
             </AppContent>
-            <UndoListing />
+            {location.pathname.includes('/layout') ? null : <UndoListing />}
             <StatusListing />
           </AppContentContainer>
           <AppErrorCard errorInfo={errorInfo} />

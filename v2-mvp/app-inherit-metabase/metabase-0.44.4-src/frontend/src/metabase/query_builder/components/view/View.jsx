@@ -3,6 +3,7 @@ import React from "react";
 import { Motion, spring } from "react-motion";
 import _ from "underscore";
 import { t } from "ttag";
+import { connect } from "react-redux";
 
 import ExplicitSize from "metabase/components/ExplicitSize";
 import Popover from "metabase/components/Popover";
@@ -24,6 +25,7 @@ import TagEditorSidebar from "../template_tags/TagEditorSidebar";
 import SnippetSidebar from "../template_tags/SnippetSidebar";
 import SavedQuestionIntroModal from "../SavedQuestionIntroModal";
 import QueryModals from "../QueryModals";
+import { Message } from '@arco-design/web-react';
 
 import ChartSettingsSidebar from "./sidebars/ChartSettingsSidebar";
 import ChartTypeSidebar from "./sidebars/ChartTypeSidebar";
@@ -37,6 +39,8 @@ import ViewFooter from "./ViewFooter";
 import ViewSidebar from "./ViewSidebar";
 import NewQuestionView from "./View/NewQuestionView";
 import QueryViewNotebook from "./View/QueryViewNotebook";
+import event from '@/web3goLayout/event';
+import { CollectionsApi } from '@/services'
 
 import {
   BorderedViewTitleHeader,
@@ -55,12 +59,71 @@ const DEFAULT_POPOVER_STATE = {
   breakoutIndex: null,
   breakoutPopoverTarget: null,
 };
+const mapStateToProps = state => {
+  return {
+    publicSpaceCollectionId: state.app.publicSpaceCollectionId,
+  }
+};
+const mapDispatchToProps = {
 
+};
 class View extends React.Component {
-  state = {
-    ...DEFAULT_POPOVER_STATE,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      ...DEFAULT_POPOVER_STATE,
+    }
+    this.addChartSaveHandler = async (chartName, successFn, failFn, isDataset) => {
+      let { card, originalCard } = this.props;
+      if (!card && !this.props.params.chartSlug) {
+        Message.error('Please select dataset or raw data first');
+        if (failFn) {
+          failFn();
+        }
+        return;
+      }
+      if (card && card.dataset_query && card.dataset_query.type == 'native' && card.dataset_query.native && !card.dataset_query.native.query) {
+        Message.error('Please input sql first');
+        if (failFn) {
+          failFn();
+        }
+        return;
+      }
+      await this.saveOrCreateQuestion(chartName, isDataset);
+      if (successFn) {
+        successFn(this.props.card.id, this.props.card);
+      }
+    }
+  }
+  // state = {
+  //   ...DEFAULT_POPOVER_STATE,
+  // };
 
+  componentDidMount() {
+    event.on('addChartSave', this.addChartSaveHandler)
+  }
+  componentWillUnmount() {
+    event.off('addChartSave', this.addChartSaveHandler)
+  }
+  saveOrCreateQuestion = async (chartName, isDataset) => {
+    let { card, originalCard } = this.props;
+    const saveType = originalCard && !originalCard.dataset && originalCard.can_write
+      ? "overwrite"
+      : "create"
+    card = {
+      ...card,
+      dataset: isDataset ? true : undefined,
+      name: chartName,
+      description: null,
+      collection_id: this.props.publicSpaceCollectionId,
+    };
+    if (saveType === "create") {
+      await this.props.onCreate(card);
+    } else if (saveType === "overwrite") {
+      card.id = this.props.originalCard.id;
+      await this.props.onSave(card);
+    }
+  }
   handleAddSeries = e => {
     this.setState({
       ...DEFAULT_POPOVER_STATE,
@@ -325,14 +388,12 @@ class View extends React.Component {
       setParameterValue,
       setIsPreviewing,
     } = this.props;
-
     const queryMode = mode && mode.queryMode();
     const ModeFooter = queryMode && queryMode.ModeFooter;
     const isStructured = query instanceof StructuredQuery;
     const isNative = query instanceof NativeQuery;
 
     const validationError = _.first(query.validate?.());
-
     const topQuery = isStructured && query.topLevelQuery();
 
     // only allow editing of series for structured queries
@@ -344,7 +405,21 @@ class View extends React.Component {
       topQuery && topQuery.hasBreakouts() ? this.handleEditBreakout : null;
 
     const isSidebarOpen = leftSidebar || rightSidebar;
-
+    if (this.props.sqlEditor) {
+      return (
+        <QueryBuilderMain isSidebarOpen={isSidebarOpen}>
+          {isNative ? (
+            this.renderNativeQueryEditor()
+          ) : (
+            <StyledSyncedParametersList
+              parameters={parameters}
+              setParameterValue={setParameterValue}
+              commitImmediately
+            />
+          )}
+        </QueryBuilderMain>
+      )
+    }
     return (
       <QueryBuilderMain isSidebarOpen={isSidebarOpen}>
         {isNative ? (
@@ -356,7 +431,6 @@ class View extends React.Component {
             commitImmediately
           />
         )}
-
         <ViewSubHeader
           isPreviewable={isPreviewable}
           isPreviewing={isPreviewing}
@@ -447,7 +521,8 @@ class View extends React.Component {
 
     // if we don't have a card at all or no databases then we are initializing, so keep it simple
     if (!card || !databases) {
-      return <LoadingAndErrorWrapper className="full-height" loading />;
+      return <div></div>;
+      // return <LoadingAndErrorWrapper className="full-height" loading />;
     }
 
     const isStructured = query instanceof StructuredQuery;
@@ -480,7 +555,7 @@ class View extends React.Component {
     return (
       <div className="full-height">
         <QueryBuilderViewRoot className="QueryBuilder">
-          {isHeaderVisible && this.renderHeader()}
+          {isHeaderVisible && !location.pathname.includes('/layout') && this.renderHeader()}
           <QueryBuilderContentContainer>
             {isStructured && (
               <QueryViewNotebook
@@ -488,10 +563,10 @@ class View extends React.Component {
                 {...this.props}
               />
             )}
+            {this.renderMain({ leftSidebar, rightSidebar })}
             <ViewSidebar side="left" isOpen={!!leftSidebar}>
               {leftSidebar}
             </ViewSidebar>
-            {this.renderMain({ leftSidebar, rightSidebar })}
             <ViewSidebar
               side="right"
               isOpen={!!rightSidebar}
@@ -525,4 +600,5 @@ class View extends React.Component {
   }
 }
 
-export default ExplicitSize({ refreshMode: "debounceLeading" })(View);
+// export default ExplicitSize({ refreshMode: "debounceLeading" })(View);
+export default connect(mapStateToProps, mapDispatchToProps)(ExplicitSize({ refreshMode: "debounceLeading" })(View))

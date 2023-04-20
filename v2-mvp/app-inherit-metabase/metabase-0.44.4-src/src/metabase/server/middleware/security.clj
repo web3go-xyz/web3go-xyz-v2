@@ -18,9 +18,7 @@
              (.digest (doto (MessageDigest/getInstance "SHA-256")
                         (.update (.getBytes (slurp (io/resource resource-filename))))))))]
     (mapv file-hash [ ;; inline script in index.html that sets `MetabaseBootstrap` and the like
-                     "frontend_client/inline_js/index_bootstrap.js"
-                     ;; inline script in index.html that loads Google Analytics
-                     "frontend_client/inline_js/index_ganalytics.js"
+                     "frontend_client/inline_js/index_bootstrap.js" 
                      ;; inline script in init.html
                      "frontend_client/inline_js/init.js"])))
 
@@ -47,46 +45,26 @@
   {"Content-Security-Policy"
    (str/join
     (for [[k vs] {:default-src  ["'none'"]
-                  :script-src   (concat
-                                  ["'self'"
-                                   "'unsafe-eval'" ; TODO - we keep working towards removing this entirely
-                                   "https://maps.google.com"
-                                   "https://accounts.google.com"
-                                   (when (public-settings/anon-tracking-enabled)
-                                     "https://www.google-analytics.com")
-                                   ;; for webpack hot reloading
-                                   ;; set * to accept all script src
-                                   (when config/is-dev?
-                                     "*")
-                                   ;; for react dev tools to work in Firefox until resolution of
-                                   ;; https://github.com/facebook/react/issues/17997
-                                   (when config/is-dev?
-                                     "'unsafe-inline'")]
-                                  (when-not config/is-dev?
-                                    (map (partial format "'sha256-%s'") inline-js-hashes)))
+                  :script-src   ["'self'"
+                                   "'unsafe-eval'"  
+                                   "*"
+                                   "'unsafe-inline'" 
+                                 ]
+                                   
                   :child-src    ["'self'"
-                                 ;; TODO - double check that we actually need this for Google Auth
-                                 "https://accounts.google.com"]
+                                 "*"
+                                 ]
                   :style-src    ["'self'"
                                  "'unsafe-inline'"
-                                 "https://accounts.google.com"]
+                                 "*" 
+                                 ]
                   :font-src     ["*"]
                   :img-src      ["*"
                                  "'self' data:"]
-                  :connect-src  ["'self'"
-                                 ;; Google Identity Services
-                                 "https://accounts.google.com"
-                                 ;; MailChimp. So people can sign up for the Metabase mailing list in the sign up process
-                                 "metabase.us10.list-manage.com"
-                                 ;; Google analytics
-                                 (when (public-settings/anon-tracking-enabled)
-                                   "www.google-analytics.com")
-                                 ;; Snowplow analytics
-                                 (when (public-settings/anon-tracking-enabled)
-                                   (snowplow/snowplow-url))
-                                 ;; Webpack dev server
-                                 (when config/is-dev?
-                                   "*")]
+                  :media-src    ["*"]         
+                  :connect-src  ["'self'"                                  
+                                 "*"
+                                 ]
                   :manifest-src ["'self'"]}]
       (format "%s %s; " (name k) (str/join " " vs))))})
 

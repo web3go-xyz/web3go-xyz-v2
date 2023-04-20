@@ -1,0 +1,190 @@
+body[arco-theme="dark"] .web3go-dataset-create-right-main {}
+
+.web3go-dataset-create-right-main {
+    #gutter-column{
+        display: none;
+    }
+    height: 100%;
+    overflow: auto;
+
+    .query-build {
+        height: 100%;
+    }
+
+    .split-icon {
+        width: 52px;
+        position: relative;
+        z-index: 2;
+        display: block;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .preview {
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+        background: white;
+
+        &.full-screen {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 99;
+            overflow: auto;
+        }
+
+        .none-wrap {
+            height: calc(100% - 20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 22px;
+            color: #86909C;
+        }
+
+        .preview-header {
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .title {
+                font-weight: 600;
+                font-size: 16px;
+                line-height: 24px;
+                color: #4E5969;
+            }
+
+            .right-btn {
+                display: flex;
+                align-items: center;
+
+                img {
+                    margin-left: 12px;
+                    width: 24px;
+                }
+            }
+        }
+
+        .preview-params {
+            margin-bottom: 16px;
+            display: flex;
+
+            .limit {
+                margin-right: 12px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+
+                .prefix,
+                .suffix {
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 61px;
+                    font-weight: 400;
+                    font-size: 14px;
+                    color: #4E5969;
+                    background: #F2F3F5;
+                }
+
+                .prefix {
+                    border-top-left-radius: 6px;
+                    border-bottom-left-radius: 6px;
+                    border-right: 1px solid #E5E6E8;
+                }
+
+                .suffix {
+                    border-top-right-radius: 6px;
+                    border-bottom-right-radius: 6px;
+                    border-left: 1px solid #E5E6E8;
+                }
+
+                .arco-input-inner-wrapper {
+                    border-radius: 0;
+                }
+
+                .arco-input {
+                    height: 31px;
+                }
+            }
+        }
+    }
+
+
+    .query-build.sql {
+        &.editor-hide {
+            .NativeQueryEditor {
+
+                &>.flex.align-center {
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding: 0 20px;
+
+                    &>.hide.sm-show {
+                        flex: 1;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                }
+
+                .ml2.p2.text-medium {
+                    font-weight: 400;
+                    font-size: 14px;
+                    line-height: 22px;
+                    color: #86909C;
+                    padding: 0;
+                }
+            }
+
+            .new-editor-box {
+                display: none !important;
+
+            }
+        }
+
+        .NativeQueryEditor {
+            height: 100%;
+
+            &>.flex.align-center {
+                display: flex;
+                justify-content: space-between;
+                padding-right: 20px;
+            }
+
+
+            .new-editor-box {
+                display: flex;
+                height: calc(100% - 55px);
+            }
+        }
+
+        main {
+            height: 100%;
+
+            &>div {
+                height: 100%;
+                margin-bottom: 0;
+            }
+        }
+
+        .hide-editor-icon {
+            width: 24px;
+        }
+
+        .run-icon {
+            width: 24px;
+            position: absolute;
+            top: 54px;
+            right: 20px;
+        }
+    }
+}

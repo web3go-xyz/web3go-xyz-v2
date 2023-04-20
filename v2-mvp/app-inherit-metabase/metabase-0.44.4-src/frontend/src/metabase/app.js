@@ -1,7 +1,7 @@
+import "@arco-design/web-react/dist/css/index.less";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-
 // Use of classList.add and .remove in Background and FitViewPort Hocs requires
 // this polyfill so that those work in older browsers
 import "classlist-polyfill";
@@ -54,6 +54,10 @@ import HTML5Backend from "react-dnd-html5-backend";
 import { DragDropContextProvider } from "react-dnd";
 
 import GlobalStyles from "metabase/styled-components/containers/GlobalStyles";
+import { ConfigProvider } from '@arco-design/web-react';
+import enUS from '@arco-design/web-react/es/locale/en-US';
+import './App.less'
+
 
 // remove trailing slash
 const BASENAME = window.MetabaseRoot.replace(/\/+$/, "");
@@ -70,6 +74,13 @@ const theme = {
 };
 
 function _init(reducers, getRoutes, callback) {
+
+  const defaultIsDark = localStorage.getItem('isDark');
+  if (defaultIsDark == 'true') {
+    document.body.setAttribute('arco-theme', 'dark');
+  }
+
+
   const store = getStore(reducers, browserHistory);
   const routes = getRoutes(store);
   const history = syncHistoryWithStore(browserHistory, store);
@@ -84,8 +95,10 @@ function _init(reducers, getRoutes, callback) {
       <Provider store={store} ref={ref => (root = ref)}>
         <DragDropContextProvider backend={HTML5Backend} context={{ window }}>
           <ThemeProvider theme={theme}>
-            <GlobalStyles />
-            <Router history={history}>{routes}</Router>
+            <ConfigProvider locale={enUS}>
+              <GlobalStyles />
+              <Router history={history}>{routes}</Router>
+            </ConfigProvider>
           </ThemeProvider>
         </DragDropContextProvider>
       </Provider>

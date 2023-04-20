@@ -91,7 +91,6 @@ import { createSelector } from "reselect";
 import { normalize, denormalize, schema } from "normalizr";
 import { getIn, merge } from "icepick";
 import _ from "underscore";
-
 export function createEntity(def) {
   const entity = { ...def };
 
@@ -231,8 +230,16 @@ export function createEntity(def) {
       withEntityRequestState(() => ["create"]),
       withEntityActionDecorators("create"),
     )(entityObject => async (dispatch, getState) => {
+      const result = await entity.api.create(getWritableProperties(entityObject))
+      if (entity.name == "dashboards") {
+        await entity.api.createPublicLink({ id: result.id })
+        await entity.api.externalEvent({
+          "topic": "dashboard.changed",
+          "data": result.id
+        })
+      }
       return entity.normalize(
-        await entity.api.create(getWritableProperties(entityObject)),
+        result
       );
     }),
 
@@ -259,7 +266,12 @@ export function createEntity(def) {
           const result = entity.normalize(
             await entity.api.update(getWritableProperties(entityObject)),
           );
-
+          if (entity.name == "dashboards") {
+            await entity.api.externalEvent({
+              "topic": "dashboard.changed",
+              "data": entityObject.id
+            })
+          }
           if (notify) {
             if (notify.undo) {
               // pick only the attributes that were updated
@@ -295,6 +307,12 @@ export function createEntity(def) {
       withEntityActionDecorators("delete"),
     )(entityObject => async (dispatch, getState) => {
       await entity.api.delete(entityObject);
+      if (entity.name == "dashboards") {
+        await entity.api.externalEvent({
+          "topic": "dashboard.changed",
+          "data": entityObject.id
+        })
+      }
       return {
         entities: { [entity.name]: { [entityObject.id]: null } },
         result: entityObject.id,
@@ -446,10 +464,10 @@ export function createEntity(def) {
     entityQuery,
     requestType = "fetch",
   } = {}) => [
-    "requests",
-    ...getStatePath({ entityId, entityQuery }),
-    requestType,
-  ];
+      "requests",
+      ...getStatePath({ entityId, entityQuery }),
+      requestType,
+    ];
 
   const getRequestState = (state, props) =>
     getIn(state, getRequestStatePath(props)) || {};

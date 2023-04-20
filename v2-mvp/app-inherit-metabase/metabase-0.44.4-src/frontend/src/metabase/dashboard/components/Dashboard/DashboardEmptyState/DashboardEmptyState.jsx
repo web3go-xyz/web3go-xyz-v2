@@ -16,7 +16,7 @@ const DashboardEmptyState = ({ isNightMode }) => (
     <EmptyState
       illustrationElement={questionCircle}
       title={t`This dashboard is looking empty.`}
-      message={t`Add a question to start making it useful!`}
+      message={t`Add a chart to start making it useful!`}
     />
   </Container>
 );

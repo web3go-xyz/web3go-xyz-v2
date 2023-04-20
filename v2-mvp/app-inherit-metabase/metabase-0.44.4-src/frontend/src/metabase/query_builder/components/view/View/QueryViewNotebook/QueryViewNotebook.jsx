@@ -22,13 +22,14 @@ const QueryViewNotebook = ({ isNotebookContainerOpen, ...props }) => {
   };
 
   return (
-    <NotebookContainer
+    shouldShowNotebook ? (<NotebookContainer
       isOpen={isNotebookContainerOpen}
       transitionTime={delayBeforeNotRenderingNotebook}
       onTransitionEnd={handleTransitionEnd}
     >
-      {shouldShowNotebook && <Notebook {...props} />}
-    </NotebookContainer>
+      {<Notebook {...props} />}
+    </NotebookContainer>) : null
+
   );
 };
 

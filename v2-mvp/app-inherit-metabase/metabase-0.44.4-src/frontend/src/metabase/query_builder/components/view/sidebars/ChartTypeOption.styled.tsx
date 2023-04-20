@@ -26,6 +26,17 @@ export interface OptionIconContainerProps {
   isSelected?: boolean;
 }
 
+// export const OptionIconContainer = styled.div<OptionIconContainerProps>`
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   color: ${getOptionIconColor};
+//   background-color: ${props =>
+//     props.isSelected ? color("brand") : lighten("brand")};
+//   padding: 0.75rem;
+//   border-radius: 0.625rem;
+// `;
 export const OptionIconContainer = styled.div<OptionIconContainerProps>`
   display: flex;
   flex-direction: column;
@@ -33,7 +44,7 @@ export const OptionIconContainer = styled.div<OptionIconContainerProps>`
   align-items: center;
   color: ${getOptionIconColor};
   background-color: ${props =>
-    props.isSelected ? color("brand") : lighten("brand")};
+    props.isSelected ? color("brand") : '#D4CBFD'};
   padding: 0.75rem;
   border-radius: 0.625rem;
 `;

@@ -15,7 +15,22 @@ import App from "metabase/App.tsx";
 
 import ActivityApp from "metabase/home/containers/ActivityApp";
 // web3go
+
 import web3goLayout from "metabase/web3goLayout";
+import RedirectComponent from "metabase/web3goLayout/components/RedirectComponent";
+import AccountSetting from "metabase/web3goLayout/views/AccountSetting";
+import MySpace from "metabase/web3goLayout/views/MySpace";
+import GlobalSearch from "metabase/web3goLayout/views/GlobalSearch";
+import DashBoardList from "metabase/web3goLayout/views/DashBoardList";
+import DatasetList from "metabase/web3goLayout/views/DatasetList";
+import DashBoardDetail from "metabase/web3goLayout/views/DashBoardDetail";
+import DatasetDetail from "metabase/web3goLayout/views/DatasetDetail";
+import CreateDashboard from "metabase/web3goLayout/views/CreatePage/CreateDashboard";
+import CreateDataset from "metabase/web3goLayout/views/CreatePage/CreateDataset";
+
+import CreatorList from "metabase/web3goLayout/views/CreatorList";
+import Home from "metabase/web3goLayout/views/Home";
+import VerifyEmailPage from "metabase/web3goLayout/views/VerifyEmailPage";
 
 // auth containers
 import ForgotPasswordApp from "metabase/auth/containers/ForgotPasswordApp";
@@ -90,6 +105,8 @@ import ArchiveApp from "metabase/home/containers/ArchiveApp";
 import SearchApp from "metabase/home/containers/SearchApp";
 import { trackPageView } from "metabase/lib/analytics";
 import { getAdminPaths } from "metabase/admin/app/selectors";
+import { LayoutLoginApi } from '@/services'
+import { changeUserData } from "metabase/redux/app";
 
 const MetabaseIsSetup = UserAuthWrapper({
   predicate: authData => authData.hasUserSetup,
@@ -101,7 +118,8 @@ const MetabaseIsSetup = UserAuthWrapper({
 });
 
 const UserIsAuthenticated = UserAuthWrapper({
-  failureRedirectPath: "/auth/login",
+  // failureRedirectPath: "/auth/login",
+  failureRedirectPath: "/layout/home#showLogin",
   authSelector: state => state.currentUser,
   wrapperDisplayName: "UserIsAuthenticated",
   redirectAction: routerActions.replace,
@@ -151,6 +169,11 @@ const CanAccessSettings = MetabaseIsSetup(
 
 export const getRoutes = store => (
   <Route title={t`Metabase`} component={App}>
+    <Route
+      path="/verifyEmail"
+      component={VerifyEmailPage}
+    >
+    </Route>
     {/* SETUP */}
     <Route
       path="/setup"
@@ -176,6 +199,10 @@ export const getRoutes = store => (
     <Route
       onEnter={async (nextState, replace, done) => {
         await store.dispatch(loadCurrentUser());
+        if (localStorage.getItem('token')) {
+          const userData = await LayoutLoginApi.getAccountInfo()
+          await store.dispatch(changeUserData(userData))
+        }
         trackPageView(nextState.location.pathname);
         done();
       }}
@@ -183,6 +210,99 @@ export const getRoutes = store => (
         trackPageView(nextState.location.pathname);
       }}
     >
+      {/* WEB3GO */}
+      <Route
+        path="/"
+      >
+        <IndexRedirect to="/layout" />
+        <Route
+          path="/redirect"
+          component={RedirectComponent}
+        />
+        <Route
+          path="/layout"
+          component={web3goLayout}
+        >
+          <IndexRedirect to="home" />
+          <Route
+            path="blank"
+            component={() => <div></div>}
+          >
+          </Route>
+          <Route
+            path="home"
+            component={Home}
+          >
+          </Route>
+          <Route
+            path="dashboardDetail/:uuid"
+            component={DashBoardDetail}
+          >
+          </Route>
+          <Route
+            path="datasetDetail/:id"
+            component={DatasetDetail}
+          >
+          </Route>
+          <Route
+            path="accountSetting"
+            component={AccountSetting}
+          >
+          </Route>
+          <Route
+            path="mySpace"
+            component={MySpace}
+          >
+          </Route>
+          <Route
+            path="globalSearch"
+            component={GlobalSearch}
+          >
+          </Route>
+          <Route
+            path="dashBoardList"
+            component={DashBoardList}
+          >
+          </Route>
+          <Route
+            path="datasetList"
+            component={DatasetList}
+          >
+          </Route>
+          <Route
+            path="creatorList"
+            component={CreatorList}
+          >
+          </Route>
+          <Route component={IsAuthenticated}>
+            <Route
+              path="create/dashboard"
+              component={CreateDashboard}
+            />
+            <Route
+              path="create/dashboard/:dashboardSlug"
+              component={CreateDashboard}
+            />
+            <Route
+              path="create/dataset"
+              component={CreateDataset}
+            />
+            <Route
+              path="create/dataset/:chartSlug"
+              component={CreateDataset}
+            />
+            <Route
+              path="create/chart/:chartSlug"
+              component={CreateDashboard}
+            />
+            <Route
+              path="create/chart/:chartSlug/:dashboardSlug"
+              component={CreateDashboard}
+            />
+          </Route>
+
+        </Route>
+      </Route>
       {/* AUTH */}
       <Route path="/auth">
         <IndexRedirect to="/auth/login" />
@@ -198,15 +318,6 @@ export const getRoutes = store => (
       {/* MAIN */}
       <Route component={IsAuthenticated}>
         {/* The global all hands rotues, things in here are for all the folks */}
-        <Route
-          path="/"
-        >
-          <IndexRedirect to="/layout" />
-          <Route
-            path="/layout"
-            component={web3goLayout}
-          />
-        </Route>
         <Route
           path="/home"
           component={HomePage}

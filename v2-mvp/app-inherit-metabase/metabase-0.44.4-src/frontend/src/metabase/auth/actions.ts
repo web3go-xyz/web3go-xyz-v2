@@ -6,6 +6,7 @@ import { createThunkAction } from "metabase/lib/redux";
 import { loadLocalization } from "metabase/lib/i18n";
 import { deleteSession } from "metabase/lib/auth";
 import { clearCurrentUser, refreshCurrentUser } from "metabase/redux/user";
+import { changeUserData } from "metabase/redux/app";
 import { refreshSiteSettings } from "metabase/redux/settings";
 import { getUser } from "metabase/selectors/user";
 import { State } from "metabase-types/store";
@@ -74,15 +75,16 @@ export const logout = createThunkAction(
         await deleteSession();
       }
       await dispatch(clearCurrentUser());
-      await dispatch(refreshLocale());
-      trackLogout();
+      await dispatch(changeUserData({})),
+        // await dispatch(refreshLocale());
+        trackLogout();
+      // let loginUrl = "/auth/login";
+      // if (redirectUrl) {
+      //   loginUrl += `?redirect=${encodeURIComponent(redirectUrl)}`;
+      // }
+      dispatch(push('/'));
 
-      let loginUrl = "/auth/login";
-      if (redirectUrl) {
-        loginUrl += `?redirect=${encodeURIComponent(redirectUrl)}`;
-      }
-
-      dispatch(push(loginUrl));
+      // dispatch(push(loginUrl));
       window.location.reload(); // clears redux state and browser caches
     };
   },

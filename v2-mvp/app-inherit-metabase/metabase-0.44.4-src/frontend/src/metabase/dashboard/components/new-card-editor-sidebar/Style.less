@@ -1,0 +1,72 @@
+:root {
+  --text-card-padding: 0.65em;
+}
+:local .sidebar-title-wrap {
+  height: 64px;
+  background: #f2f3f5;
+  padding: 0 24px 0 24px;
+  margin-bottom: 20px;
+}
+:local .sidebar-title {
+  height: 24px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  color: #1d2129;
+}
+// :local .content {
+//   padding: 0 24px;
+// }
+:local .vanilla-wrap-content {
+    padding: 0 24px;
+}
+:local .new-wrap-content {
+    padding: 0 12px 0 0;
+}
+:local .sidebar-title-x {
+  font-size: 16px;
+  stroke-width: 5;
+  cursor: pointer;
+}
+:local .my-settings {
+  label,
+  span {
+    color: #6b7785;
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .my-settings-row {
+    > div,
+    > label {
+      padding-top: 9px;
+      min-width: 60%;
+      display: block;
+    }
+    margin-bottom: 25px;
+    // label {
+    //   font-weight: 400;
+    //   font-size: 14px;
+    //   line-height: 22px;
+    // }
+  }
+}
+:local .my-settings .my-settings-radio .arco-form-label-item {
+  color: #1d2129;
+  .arco-form-label-item label {
+    width: 100%;
+  }
+}
+
+:local .my-settings-toggle {
+  .arco-form-label-item,
+  .arco-form-label-item label {
+    width: 100%;
+  }
+}

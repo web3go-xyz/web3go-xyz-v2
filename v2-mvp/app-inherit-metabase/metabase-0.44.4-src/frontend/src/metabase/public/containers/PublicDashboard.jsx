@@ -12,10 +12,14 @@ import DashboardControls from "metabase/dashboard/hoc/DashboardControls";
 import { getDashboardActions } from "metabase/dashboard/components/DashboardActions";
 import EmbedFrame from "../components/EmbedFrame";
 import title from "metabase/hoc/Title";
-
+import event from '@/web3goLayout/event';
+import {
+  getDashboardType,
+} from "@/dashboard/utils";
 import { fetchDatabaseMetadata } from "metabase/redux/metadata";
 import { setErrorPage } from "metabase/redux/app";
 import { getMetadata } from "metabase/selectors/metadata";
+import { LayoutDashboardApi } from '@/services'
 
 import PublicMode from "metabase/modes/components/modes/PublicMode";
 
@@ -38,6 +42,7 @@ import _ from "underscore";
 
 const mapStateToProps = (state, props) => {
   return {
+    route: state.routing.locationBeforeTransitions,
     metadata: getMetadata(state, props),
     dashboardId:
       props.params.dashboardId || props.params.uuid || props.params.token,
@@ -62,6 +67,7 @@ class PublicDashboard extends Component {
     const {
       initialize,
       fetchDashboard,
+      fetchDashboardPublicWithCommonId,
       fetchDashboardCardData,
       setErrorPage,
       location,
@@ -73,11 +79,24 @@ class PublicDashboard extends Component {
     } else if (token) {
       setEmbedDashboardEndpoints();
     }
-
     initialize();
     try {
-      await fetchDashboard(uuid || token, location.query);
+      let dashboardData;
+      const dashboardType = getDashboardType(uuid);
+      if (location.pathname.includes('/layout') && dashboardType !== 'public') {
+        dashboardData = await fetchDashboardPublicWithCommonId(uuid, location.query);
+      } else {
+        dashboardData = await fetchDashboard(uuid || token, location.query);
+      }
+      if (this.props.getDashboardOriginId) {
+        this.props.getDashboardOriginId(dashboardData.payload.originDashboardId)
+      }
+      await LayoutDashboardApi.logView({
+        dashboardId: dashboardData.payload.originDashboardId,
+        referralCode: this.props.route.query.referralCode || ''
+      });
       await fetchDashboardCardData({ reload: false, clear: true });
+
     } catch (error) {
       console.error(error);
       setErrorPage(error);
@@ -139,7 +158,7 @@ class PublicDashboard extends Component {
               className="spread"
               mode={PublicMode}
               metadata={this.props.metadata}
-              navigateToNewCardFromDashboard={() => {}}
+              navigateToNewCardFromDashboard={() => { }}
             />
           )}
         </LoadingAndErrorWrapper>

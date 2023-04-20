@@ -1,0 +1,53 @@
+body[arco-theme="dark"] .web3go-common-drawer {}
+
+.web3go-common-drawer {
+    .arco-drawer-content {
+        padding: 0;
+    }
+
+    .d-title {
+        background: #F2F3F5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+        padding-left: 20px;
+        padding-right: 32px;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 28px;
+        color: #1D2129;
+
+        .close {
+            width: 24px;
+            position: relative;
+        }
+    }
+
+    .d-main {
+        width: 100%;
+        height: calc(100vh - 157px);
+        display: flex;
+        padding: 20px 24px;
+        box-sizing: border-box;
+    }
+
+    .d-footer {
+        border-top: 1px solid #E5E6E8;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        height: 93px;
+        padding: 0 24px;
+
+        .btn {
+            width: 93px;
+            height: 44px;
+            border-radius: 12px;
+
+            &+.btn {
+                margin-left: 12px;
+            }
+        }
+    }
+}

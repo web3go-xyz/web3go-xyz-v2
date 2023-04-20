@@ -1,0 +1,136 @@
+:root {
+  --text-card-padding: 0.65em;
+}
+
+:local .Text {
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  // justify-content: center;
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
+}
+
+:local .split-title {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: #4e5969;
+  padding: 20px 0;
+}
+
+:local .single-row {
+  margin: 0;
+}
+
+:local .padded {
+  padding: 0.5em 0.75em;
+}
+:local .disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+
+:local .upload-wrap {
+  box-sizing: border-box;
+  // width: 432px;
+  height: 140px;
+  background: #f7f8fa;
+  border: 1px dashed #e5e6e8;
+  border-radius: 6px;
+  display: flex;
+
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  flex-direction: column;
+
+  padding: 20px 0;
+
+  .upload-btn-text {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 22px;
+    text-align: center;
+    color: #615cf6;
+    cursor: pointer;
+    padding: 5px 0;
+  }
+
+  .upload-btn-text:hover {
+    opacity: 0.8;
+  }
+
+  .upload-tips {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    letter-spacing: -0.01em;
+    color: #86909c;
+  }
+}
+
+:local .my-input {
+  font-family: "Inter";
+  font-style: normal;
+  font-size: 14px;
+  line-height: 22px;
+
+  input,
+  textarea {
+    color: #86909c;
+    font-weight: 400;
+    width: 100%;
+    background: #f2f3f5;
+    border-radius: 6px;
+    border: 1px solid #f2f3f5;
+  }
+
+  textarea {
+    height: 160px;
+    padding: 0.75rem;
+    outline: none;
+    text-align: inherit;
+  }
+  textarea:focus {
+    border-color: #615cf6;
+    -webkit-transition: border 300ms ease-in-out;
+    transition: border 300ms ease-in-out;
+  }
+}
+
+:local .upload-wrap-preview {
+  overflow: hidden;
+  border: none;
+  img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+:local .upload-preview-actions {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  align-items: center;
+  margin-top: 4px;
+  color: #615cf6;
+
+  a {
+    color: #615cf6;
+    width: 63px;
+    display: inline-block;
+  }
+}

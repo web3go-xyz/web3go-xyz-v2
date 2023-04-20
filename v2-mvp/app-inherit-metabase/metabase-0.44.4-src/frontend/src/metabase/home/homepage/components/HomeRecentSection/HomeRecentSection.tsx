@@ -19,10 +19,9 @@ const HomeRecentSection = ({
   recentItems,
 }: HomeRecentSectionProps): JSX.Element => {
   const hasHelpCard = user.is_installer && isWithinWeeks(user.first_login, 2);
-
   return (
     <div>
-      <HomeCaption>{t`Pick up where you left off`}</HomeCaption>
+      <HomeCaption>{t`What you have viewed recently`}</HomeCaption>
       <SectionBody>
         {recentItems.map((item, index) => (
           <HomeModelCard

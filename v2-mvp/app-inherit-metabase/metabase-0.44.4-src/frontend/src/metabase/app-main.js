@@ -10,9 +10,12 @@ import { getRoutes } from "metabase/routes";
 import reducers from "metabase/reducers-main";
 
 import api from "metabase/lib/api";
+import web3goApi from "metabase/lib/web3goApi";
+import { deleteSession } from "metabase/lib/auth";
 
 import { setErrorPage } from "metabase/redux/app";
 import { clearCurrentUser } from "metabase/redux/user";
+import { changeUserData } from "metabase/redux/app";
 
 // If any of these receives a 403, we should display the "not authorized" page.
 const NOT_AUTHORIZED_TRIGGERS = [
@@ -25,7 +28,8 @@ const NOT_AUTHORIZED_TRIGGERS = [
 
 init(reducers, getRoutes, store => {
   // received a 401 response
-  api.on("401", url => {
+  const handler401 = async url => {
+    localStorage.removeItem('token');
     if (url.indexOf("/api/user/current") >= 0) {
       return;
     }
@@ -37,11 +41,13 @@ init(reducers, getRoutes, store => {
     if (_.contains(["/api/session", "/api/session/"], url)) {
       return;
     }
-
+    await deleteSession();
     store.dispatch(clearCurrentUser());
-    store.dispatch(push("/auth/login"));
-  });
-
+    store.dispatch(changeUserData({})),
+      store.dispatch(push("/layout/home#showLogin"));
+  };
+  api.on("401", handler401);
+  web3goApi.on("401", handler401);
   // received a 403 response
   api.on("403", url => {
     if (NOT_AUTHORIZED_TRIGGERS.some(regex => regex.test(url))) {

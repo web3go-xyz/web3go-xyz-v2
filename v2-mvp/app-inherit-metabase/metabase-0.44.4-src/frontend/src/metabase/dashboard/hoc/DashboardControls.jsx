@@ -42,7 +42,9 @@ export default ComposedComponent =>
       }
 
       componentDidUpdate() {
-        this.updateDashboardParams();
+        if(!location.pathname.includes('/layout')){
+          this.updateDashboardParams();
+        }
         this._showNav(!this.state.isFullscreen);
       }
 

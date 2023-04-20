@@ -32,7 +32,9 @@ import _ from "underscore";
 import { getIn } from "icepick";
 import { getParameterValuesBySlug } from "metabase/parameters/utils/parameter-values";
 import Utils from "metabase/lib/utils";
-import { DashCardRoot } from "./DashCard.styled";
+import { DashCardRoot, WaterMark } from "./DashCard.styled";
+import event from '@/web3goLayout/event';
+import CardActionComponent from '@/web3goLayout/components/CardActionComponent';
 
 const DATASET_USUALLY_FAST_THRESHOLD = 15 * 1000;
 
@@ -97,7 +99,31 @@ export default class DashCard extends Component {
   preventDragging = e => {
     e.stopPropagation();
   };
-
+  onEdit = ({
+    series,
+    onReplaceAllVisualizationSettings,
+    dashboard,
+    onToggleNewCardEditorSidebar,
+    dashcardId
+  }) => {
+    if (series[0].card.display === "text" || series[0].card.display === "media") {
+      onToggleNewCardEditorSidebar({
+        type: series[0].card.display,
+        action: 'edit',
+        dashboardId: dashboard.id,
+        dashcardId,
+        onReplaceAllVisualizationSettings,
+        series
+      }
+      );
+    } else {
+      event.emit('editChartEvent', {
+        dashboard,
+        dashcardId,
+        series
+      });
+    }
+  }
   render() {
     const {
       dashcard,
@@ -118,7 +144,6 @@ export default class DashCard extends Component {
       headerIcon,
       isNightMode,
     } = this.props;
-
     const mainCard = {
       ...dashcard.card,
       visualization_settings: mergeSettings(
@@ -201,7 +226,23 @@ export default class DashCard extends Component {
         }
         isNightMode={isNightMode}
       >
-        {isEditingDashboardLayout ? (
+        <WaterMark></WaterMark>
+        {location.pathname.includes('/layout') ? <CardActionComponent
+          dashcard={dashcard}
+          dashcardData={dashcardData}
+          onRemove={onRemove}
+          series={series}
+          dashboard={dashboard}
+          onEdit={() => {
+            this.onEdit({
+              series,
+              onReplaceAllVisualizationSettings: this.props.onReplaceAllVisualizationSettings,
+              dashboard,
+              onToggleNewCardEditorSidebar: this.props.onToggleNewCardEditorSidebar,
+              dashcardId: dashcard.id
+            })
+          }}
+        ></CardActionComponent> : isEditingDashboardLayout ? (
           <DashboardCardActionsPanel onMouseDown={this.preventDragging}>
             <DashCardActionButtons
               series={series}
@@ -219,10 +260,38 @@ export default class DashCard extends Component {
               isPreviewing={this.state.isPreviewingCard}
               onPreviewToggle={this.handlePreviewToggle}
               dashboard={dashboard}
+              dashcardId={dashcard.id}
+              onToggleNewCardEditorSidebar={this.props.onToggleNewCardEditorSidebar}
             />
           </DashboardCardActionsPanel>
         ) : null}
+
+
+        {/* {isEditingDashboardLayout ? (
+          <DashboardCardActionsPanel onMouseDown={this.preventDragging}>
+            <DashCardActionButtons
+              series={series}
+              isLoading={loading}
+              isVirtualDashCard={isVirtualDashCard(dashcard)}
+              hasError={!!errorMessage}
+              onRemove={onRemove}
+              onAddSeries={onAddSeries}
+              onReplaceAllVisualizationSettings={
+                this.props.onReplaceAllVisualizationSettings
+              }
+              showClickBehaviorSidebar={() =>
+                this.props.showClickBehaviorSidebar(dashcard.id)
+              }
+              isPreviewing={this.state.isPreviewingCard}
+              onPreviewToggle={this.handlePreviewToggle}
+              dashboard={dashboard}
+              dashcardId={dashcard.id}
+              onToggleNewCardEditorSidebar={this.props.onToggleNewCardEditorSidebar}
+            />
+          </DashboardCardActionsPanel>
+        ) : null} */}
         <WrappedVisualization
+          titleOperation={true}
           className={cx("flex-full overflow-hidden", {
             "pointer-events-none": isEditingDashboardLayout,
           })}
@@ -266,7 +335,7 @@ export default class DashCard extends Component {
           }
           replacementContent={
             clickBehaviorSidebarDashcard != null &&
-            isVirtualDashCard(dashcard) ? (
+              isVirtualDashCard(dashcard) ? (
               <div className="flex full-height align-center justify-center">
                 <h4 className="text-medium">{t`Text card`}</h4>
               </div>
@@ -292,14 +361,14 @@ export default class DashCard extends Component {
           onChangeCardAndRun={
             navigateToNewCardFromDashboard
               ? ({ nextCard, previousCard, objectId }) => {
-                  // navigateToNewCardFromDashboard needs `dashcard` for applying active filters to the query
-                  navigateToNewCardFromDashboard({
-                    nextCard,
-                    previousCard,
-                    dashcard,
-                    objectId,
-                  });
-                }
+                // navigateToNewCardFromDashboard needs `dashcard` for applying active filters to the query
+                navigateToNewCardFromDashboard({
+                  nextCard,
+                  previousCard,
+                  dashcard,
+                  objectId,
+                });
+              }
               : null
           }
           onChangeLocation={this.props.onChangeLocation}
@@ -346,6 +415,8 @@ const DashCardActionButtons = ({
   onPreviewToggle,
   isPreviewing,
   dashboard,
+  onToggleNewCardEditorSidebar,
+  dashcardId
 }) => {
   const buttons = [];
 
@@ -364,39 +435,41 @@ const DashCardActionButtons = ({
       onReplaceAllVisualizationSettings &&
       !getVisualizationRaw(series).visualization.disableSettingsConfig
     ) {
-      buttons.push(
-        <ChartSettingsButton
-          key="chart-settings-button"
-          series={series}
-          onReplaceAllVisualizationSettings={onReplaceAllVisualizationSettings}
-          dashboard={dashboard}
-        />,
-      );
+      // buttons.push(
+      //   <ChartSettingsButton
+      //     key="chart-settings-button"
+      //     series={series}
+      //     onReplaceAllVisualizationSettings={onReplaceAllVisualizationSettings}
+      //     dashboard={dashboard}
+      //     dashcardId={dashcardId}
+      //     onToggleNewCardEditorSidebar={onToggleNewCardEditorSidebar}
+      //   />,
+      // );
     }
-    if (!isVirtualDashCard) {
-      buttons.push(
-        <Tooltip key="click-behavior-tooltip" tooltip={t`Click behavior`}>
-          <a
-            className="text-dark-hover drag-disabled mr1"
-            data-metabase-event="Dashboard;Open Click Behavior Sidebar"
-            onClick={showClickBehaviorSidebar}
-            style={HEADER_ACTION_STYLE}
-          >
-            <Icon name="click" />
-          </a>
-        </Tooltip>,
-      );
-    }
+    // if (!isVirtualDashCard) {
+    //   buttons.push(
+    //     <Tooltip key="click-behavior-tooltip" tooltip={t`Click behavior`}>
+    //       <a
+    //         className="text-dark-hover drag-disabled mr1"
+    //         data-metabase-event="Dashboard;Open Click Behavior Sidebar"
+    //         onClick={showClickBehaviorSidebar}
+    //         style={HEADER_ACTION_STYLE}
+    //       >
+    //         <Icon name="click" />
+    //       </a>
+    //     </Tooltip>,
+    //   );
+    // }
 
-    if (getVisualizationRaw(series).visualization.supportsSeries) {
-      buttons.push(
-        <AddSeriesButton
-          key="add-series-button"
-          series={series}
-          onAddSeries={onAddSeries}
-        />,
-      );
-    }
+    // if (getVisualizationRaw(series).visualization.supportsSeries) {
+    //   buttons.push(
+    //     <AddSeriesButton
+    //       key="add-series-button"
+    //       series={series}
+    //       onAddSeries={onAddSeries}
+    //     />,
+    //   );
+    // }
   }
 
   return (
@@ -413,10 +486,14 @@ const ChartSettingsButton = ({
   series,
   onReplaceAllVisualizationSettings,
   dashboard,
-}) => (
-  <ModalWithTrigger
+  onToggleNewCardEditorSidebar,
+  dashcardId
+}) => {
+
+  return <ModalWithTrigger
     wide
     tall
+    isInitiallyOpen={false}
     triggerElement={
       <Tooltip tooltip={t`Visualization options`}>
         <Icon
@@ -437,7 +514,9 @@ const ChartSettingsButton = ({
       dashboard={dashboard}
     />
   </ModalWithTrigger>
-);
+
+
+};
 
 const RemoveButton = ({ onRemove }) => (
   <a

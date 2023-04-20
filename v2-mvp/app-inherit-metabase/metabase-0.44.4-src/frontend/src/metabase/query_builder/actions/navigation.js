@@ -123,16 +123,16 @@ export const UPDATE_URL = "metabase/qb/UPDATE_URL";
 export const updateUrl = createThunkAction(
   UPDATE_URL,
   (
-      card,
-      {
-        dirty,
-        replaceState,
-        preserveParameters = true,
-        queryBuilderMode,
-        datasetEditorTab,
-        objectId,
-      } = {},
-    ) =>
+    card,
+    {
+      dirty,
+      replaceState,
+      preserveParameters = true,
+      queryBuilderMode,
+      datasetEditorTab,
+      objectId,
+    } = {},
+  ) =>
     (dispatch, getState) => {
       let question;
       if (!card) {
@@ -162,7 +162,6 @@ export const updateUrl = createThunkAction(
       if (!datasetEditorTab) {
         datasetEditorTab = getDatasetEditorTab(getState());
       }
-
       const newState = {
         card,
         cardId: card.id,
@@ -172,10 +171,9 @@ export const updateUrl = createThunkAction(
       const { currentState } = getState().qb;
       const queryParams = preserveParameters ? getCurrentQueryParams() : {};
       const url = getURLForCardState(newState, dirty, queryParams, objectId);
-
       const urlParsed = parseUrl(url);
       const locationDescriptor = {
-        pathname: getPathNameFromQueryBuilderMode({
+        pathname: location.pathname.includes('/layout') ? window.location.pathname : getPathNameFromQueryBuilderMode({
           pathname: urlParsed.pathname || "",
           queryBuilderMode,
           datasetEditorTab,
@@ -184,7 +182,6 @@ export const updateUrl = createThunkAction(
         hash: urlParsed.hash,
         state: newState,
       };
-
       const isSameURL =
         locationDescriptor.pathname === window.location.pathname &&
         (locationDescriptor.search || "") === (window.location.search || "") &&

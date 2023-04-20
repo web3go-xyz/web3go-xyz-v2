@@ -47,7 +47,6 @@ const handleSubmit = async (
   e.preventDefault();
 
   onDownloadStart();
-
   const formData = new URLSearchParams(new FormData(e.target));
 
   const options = { method };

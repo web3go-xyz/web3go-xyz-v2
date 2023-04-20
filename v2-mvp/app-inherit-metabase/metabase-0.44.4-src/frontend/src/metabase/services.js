@@ -1,14 +1,94 @@
 import _ from "underscore";
 
 import { GET, PUT, POST, DELETE } from "metabase/lib/api";
+import { GET as WGET, PUT as WPUT, POST as WPOST, DELETE as WDELETE } from "metabase/lib/web3goApi";
 import { IS_EMBED_PREVIEW } from "metabase/lib/embed";
 import Question from "metabase-lib/lib/Question";
 import { FieldDimension } from "metabase-lib/lib/Dimension";
 
 // use different endpoints for embed previews
 const embedBase = IS_EMBED_PREVIEW ? "/api/preview_embed" : "/api/embed";
-
 import getGAMetadata from "promise-loader?global!metabase/lib/ga-metadata"; // eslint-disable-line import/default
+const WEBPACK_BUNDLE = process.env.WEBPACK_BUNDLE || "development";
+let _WEB3GO_BASE_URL;
+if (WEBPACK_BUNDLE == 'hot') {
+  _WEB3GO_BASE_URL = 'https://dev-v2.web3go.xyz/api-ext';
+} else {
+  _WEB3GO_BASE_URL = '/api-ext';
+}
+export const WEB3GO_BASE_URL = _WEB3GO_BASE_URL;
+export const defaultPublicCollectionId = 40;
+export const LayoutLoginApi = {
+  signIn: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/signin"),
+  signUp: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/signup"),
+  sendVerifyEmail: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/sendVerifyEmail"),
+  verifyCode: WGET(WEB3GO_BASE_URL + "/api/v2/account/auth/verifyCode"),
+  changePassword: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/changePassword"),
+  searchAccountsByEmail: WGET(WEB3GO_BASE_URL + "/api/v2/account/auth/searchAccountsByEmail"),
+  searchAccountsByWallet: WGET(WEB3GO_BASE_URL + "/api/v2/account/auth/searchAccountsByWallet"),
+  searchAccountInfo: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/searchAccountInfo"),
+  getAccountStatistic: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/getAccountStatistic"),
+  getAccountInfo: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/getAccountInfo"),
+  web3_nonce: WPOST(WEB3GO_BASE_URL + "/api/v2/account/web3/web3_nonce"),
+  web3_challenge: WPOST(WEB3GO_BASE_URL + "/api/v2/account/web3/web3_challenge"),
+  getSupportedWallet: WGET(WEB3GO_BASE_URL + "/api/v2/account/web3/getSupportedWallet"),
+  changeName: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/changeName"),
+  changeAvatar: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/changeAvatar"),
+  checkEmailBeforeLink: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/checkEmailBeforeLink"),
+  linkEmail: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/linkEmail"),
+  linkWallet: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/linkWallet"),
+  unlinkEmail: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/unlinkEmail"),
+  unlinkWallet: WPOST(WEB3GO_BASE_URL + "/api/v2/account/info/unlinkWallet"),
+};
+export const LayoutDashboardApi = {
+  listAllTags: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/listAllTags"),
+  listAllTagsDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/tag/listAllTags"),
+  list: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/list"),
+  listMyFavorites: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/listMyFavorites"),
+  listMyFavoritesDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/favorite/listMyFavorites"),
+  detail: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/detail"),
+  searchRelatedDashboards: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/searchRelatedDashboards"),
+  searchByDataset: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/searchByDataset"),
+  logFavorite: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/logFavorite"),
+  logFavoriteDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/favorite/logFavorite"),
+  logViewDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/view/logView"),
+  logView: WPOST(WEB3GO_BASE_URL + "/api/v2/view/logView"),
+  externalEvent: WPOST(WEB3GO_BASE_URL + "/api/v2/event/externalEvent"),
+  logShare: WPOST(WEB3GO_BASE_URL + "/api/v2/share/logShare"),
+  logShareDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/share/logShare"),
+  generateDashboardShareLink: WPOST(WEB3GO_BASE_URL + "/api/v2/share/generateDashboardShareLink"),
+  generateDatasetShareLink: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/share/generateDatasetShareLink"),
+  forkDashboard: WPOST(WEB3GO_BASE_URL + "/api/v2/fork/forkDashboard"),
+  forkQuestion: WPOST(WEB3GO_BASE_URL + "/api/v2/fork/forkQuestion"),
+  forkDS: (id) => WPOST(WEB3GO_BASE_URL + `/api/v2/dataset/fork/${id}`),
+  refresh: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/refresh"),
+  listFavorites: WPOST(WEB3GO_BASE_URL + "/api/v2/favorite/listFavorites"),
+  listFavoritesDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/favorite/listFavorites"),
+  previewUrl: (id) => WPOST(WEB3GO_BASE_URL + `/api/v2/dashboard/update/preview-url/${id}`),
+  getShareUrl: WPOST(WEB3GO_BASE_URL + "/api/v2/dashboard/sns/share/getUrl"),
+  getShareUrlDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/sns/share/getUrl"),
+  getDataSets: WGET(WEB3GO_BASE_URL + "/api/v2/dashboard/getDataSets"),
+  markTags: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/markTags"),
+  removeTags: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/removeTags"),
+  listDashboardTags: (id) => WGET(WEB3GO_BASE_URL + `/api/v2/tag/listDashboardTags/${id}`),
+  AddTag: WPOST(WEB3GO_BASE_URL + "/api/v2/tag/AddTag"),
+  markTagsDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/tag/markTags"),
+  removeTagsDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/tag/removeTags"),
+  listDatasetTags: (id) => WGET(WEB3GO_BASE_URL + `/api/v2/dataset/tag/listDatasetTags/${id}`),
+  AddTagDS: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/tag/AddTag"),
+  uploadPublicImg: WPOST(WEB3GO_BASE_URL + '/api/v2/dashboard/uploadPublicImg'),
+  datasetList: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/list"),
+  datasetDetail: WPOST(WEB3GO_BASE_URL + "/api/v2/dataset/detail"),
+  datasetPreviewUrl: (id) => WPOST(WEB3GO_BASE_URL + `/api/v2/dataset/update/preview-url/${id}`),
+  uploadDatasetPublicImg: WPOST(WEB3GO_BASE_URL + '/api/v2/dataset/uploadPublicImg'),
+};
+export const LayoutCreatorApi = {
+  listCreators: WPOST(WEB3GO_BASE_URL + "/api/v2/creator/listCreators"),
+  listFollowing: WPOST(WEB3GO_BASE_URL + "/api/v2/follow/listFollowing"),
+  listFollowed: WPOST(WEB3GO_BASE_URL + "/api/v2/follow/listFollowed"),
+  follow: WPOST(WEB3GO_BASE_URL + "/api/v2/follow/follow"),
+  unfollow: WPOST(WEB3GO_BASE_URL + "/api/v2/follow/unfollow"),
+};
 
 export const ActivityApi = {
   list: GET("/api/activity"),

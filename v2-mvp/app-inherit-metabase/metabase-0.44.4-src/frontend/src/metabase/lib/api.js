@@ -29,7 +29,10 @@ const DEFAULT_OPTIONS = {
 };
 
 export class Api extends EventEmitter {
-  basename = ""; //TODO basename to connect backend api
+  //CHANGE_ME change basename to connect webpack hot server, it is used only when DEV.
+
+  //basename ="";  // keep empty in PRODUCTION 
+  basename = "https://dev-v2.web3go.xyz/webpack";  //port should be same with value of [ build-hot:js ] in package.json
 
   GET;
   POST;
@@ -60,6 +63,7 @@ export class Api extends EventEmitter {
         const options = { ...defaultOptions, ...invocationOptions };
         let url = urlTemplate;
         data = { ...data };
+        // 此方法去掉了端口号，先注释
         for (const tag of url.match(/:\w+/g) || []) {
           const paramName = tag.slice(1);
           let value = data[paramName];
@@ -164,6 +168,7 @@ export class Api extends EventEmitter {
       xhr.onreadystatechange = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           // getResponseHeader() is case-insensitive
+
           const antiCsrfToken = xhr.getResponseHeader(ANTI_CSRF_HEADER);
           if (antiCsrfToken) {
             ANTI_CSRF_TOKEN = antiCsrfToken;
@@ -173,7 +178,7 @@ export class Api extends EventEmitter {
           if (options.json) {
             try {
               body = JSON.parse(body);
-            } catch (e) {}
+            } catch (e) { }
           }
           let status = xhr.status;
           if (status === 202 && body && body._status > 0) {

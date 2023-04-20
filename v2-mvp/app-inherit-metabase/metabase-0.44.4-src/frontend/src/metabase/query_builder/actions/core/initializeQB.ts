@@ -103,9 +103,11 @@ function deserializeCard(serializedCard: string) {
 }
 
 async function fetchAndPrepareSavedQuestionCards(cardId: number) {
-  const card = await loadCard(cardId);
+  // const card = await loadCard(cardId);
+  // const originalCard = { ...card };
+  const _card = await loadCard(cardId);
+  const card = location.pathname.includes('/dataset') ? { ..._card, dataset: false } : _card;
   const originalCard = { ...card };
-
   // for showing the "started from" lineage correctly when adding filters/breakouts and when going back and forth
   // in browser history, the original_card_id has to be set for the current card (simply the id of card itself for now)
   card.original_card_id = card.id;
@@ -122,7 +124,6 @@ async function fetchAndPrepareAdHocQuestionCards(deserializedCard: Card) {
   }
 
   const originalCard = await loadCard(deserializedCard.original_card_id);
-
   if (cardIsEquivalent(deserializedCard, originalCard)) {
     return {
       card: { ...originalCard },
@@ -190,16 +191,15 @@ async function handleQBInit(
     location,
     params,
   }: { location: LocationDescriptorObject; params: QueryParams },
+  notebook,
 ) {
   dispatch(resetQB());
   dispatch(cancelQuery());
-
   const queryParams = location.query;
-  const cardId = Urls.extractEntityId(params.slug);
-  const uiControls: UIControls = getQueryBuilderModeFromLocation(location);
+  const cardId = Urls.extractEntityId(location.pathname.includes('/layout') ? params.chartSlug : params.slug);
+  const uiControls: UIControls = notebook ? { queryBuilderMode: "notebook" } : getQueryBuilderModeFromLocation(location);
   const { options, serializedCard } = parseHash(location.hash);
   const hasCard = cardId || serializedCard;
-
   if (
     !hasCard &&
     !options.db &&
@@ -207,14 +207,12 @@ async function handleQBInit(
     !options.segment &&
     !options.metric
   ) {
-    dispatch(redirectToNewQuestionFlow());
+    // dispatch(redirectToNewQuestionFlow());
     return;
   }
-
   const deserializedCard = serializedCard
     ? deserializeCard(serializedCard)
     : null;
-
   const { card, originalCard } = await resolveCards({
     cardId,
     deserializedCard,
@@ -257,7 +255,6 @@ async function handleQBInit(
   if (isSavedCard(card)) {
     dispatch(fetchAlertsForQuestion(card.id));
   }
-
   await dispatch(loadMetadataForCard(card));
   const metadata = getMetadata(getState());
 
@@ -293,7 +290,6 @@ async function handleQBInit(
   });
 
   const objectId = params?.objectId || queryParams?.objectId;
-
   dispatch({
     type: INITIALIZE_QB,
     payload: {
@@ -304,7 +300,6 @@ async function handleQBInit(
       objectId,
     },
   });
-
   if (uiControls.queryBuilderMode !== "notebook") {
     if (question.canRun()) {
       // Timeout to allow Parameters widget to set parameterValues
@@ -324,12 +319,15 @@ async function handleQBInit(
 }
 
 export const initializeQB =
-  (location: LocationDescriptorObject, params: QueryParams) =>
-  async (dispatch: Dispatch, getState: GetState) => {
-    try {
-      await handleQBInit(dispatch, getState, { location, params });
-    } catch (error) {
-      console.warn("initializeQB failed because of an error:", error);
-      dispatch(setErrorPage(error));
-    }
-  };
+  (location: LocationDescriptorObject, params: QueryParams, notebook, queryBuilderInitSuccess) =>
+    async (dispatch: Dispatch, getState: GetState) => {
+      try {
+        await handleQBInit(dispatch, getState, { location, params }, notebook);
+        if (queryBuilderInitSuccess) {
+          queryBuilderInitSuccess();
+        }
+      } catch (error) {
+        console.warn("initializeQB failed because of an error:", error);
+        dispatch(setErrorPage(error));
+      }
+    };

@@ -1,6 +1,8 @@
-.web3go-layout-baseheader-component {
-    .dark .head-wrap {
-        background: #232324;
+body[arco-theme="dark"] .web3go-layout-baseheader-component {
+    background: #232324;
+    --header-scroll-border: #272E3B;
+
+    .head-wrap {
         border-color: #232324 !important;
 
         .search-wrap {
@@ -16,27 +18,40 @@
         .h-right {
             .circle {
                 border: 1px solid #343435 !important;
+
+                &:hover {
+                    border-color: var(--primary-color) !important;
+                }
             }
         }
     }
+}
+
+.web3go-layout-baseheader-component {
+    --header-scroll-border: #E5E6E8;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 4;
+
+    &.scroll {
+        border-bottom: 1px solid var(--header-scroll-border);
+    }
 
     .head-wrap {
-        border-bottom: 1px solid #e5e6e8;
-        position: sticky;
-        z-index: 2;
-        top: 0;
-        padding: 0 80px;
+        border-bottom: 1px solid transparent;
+        padding: 0 40px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         height: 79px;
-        background: white;
 
         .h-left {
             display: flex;
             align-items: center;
 
             .logo {
+                cursor: pointer;
                 margin-right: 25px;
                 height: 34px;
             }
@@ -59,10 +74,11 @@
                     }
                 }
 
-                .el-autocomplete {
-                    .el-input__wrapper {
+                .arco-autocomplete {
+                    .arco-input-inner-wrapper {
                         background: transparent;
                         box-shadow: none;
+                        border: 0;
                     }
                 }
             }
@@ -72,7 +88,7 @@
             display: flex;
             align-items: center;
 
-            .link {
+            .a {
                 font-weight: 600;
                 font-size: 16px;
                 line-height: 24px;
@@ -80,7 +96,7 @@
                 cursor: pointer;
 
                 &:hover {
-                    color: var(--el-color-primary);
+                    color: var(--primary-color);
                 }
             }
 
@@ -96,7 +112,7 @@
                 align-items: center;
 
                 &:hover {
-                    border-color: var(--el-color-primary) !important;
+                    border-color: var(--primary-color);
                 }
             }
 
@@ -110,9 +126,64 @@
             }
 
             .btn2 {
+                margin-left: 12px;
                 width: 93px;
                 height: 44px;
             }
+
+            .headicon-wrap {
+                display: flex;
+                align-items: center;
+                margin-left: 12px;
+                cursor: pointer;
+                &:hover{
+                    opacity: .8;
+                }
+            }
+        }
+    }
+}
+
+.web3go-signin-common-modal {
+    .arco-modal {
+        border-radius: 16px;
+
+        .arco-modal-header {
+            padding: 40px;
+            padding-bottom: 10px;
+            height: auto;
+            border: 0;
+
+            .arco-modal-title {
+                color: var(--common-text-color);
+                font-weight: 600;
+                font-size: 32px;
+                line-height: 40px;
+                text-align: left;
+            }
+        }
+
+        .arco-modal-close-icon {
+            top: 41px;
+            right: 41px;
+            font-size: 22px;
+
+            &:hover {
+                color: var(--primary-color);
+            }
+
+            &::before {
+                background-color: transparent;
+            }
+        }
+
+        .arco-modal-content {
+            padding: 0 40px;
+            color: var(--common-text-color);
+        }
+
+        .arco-modal-footer {
+            padding: 20px 40px;
         }
     }
 }

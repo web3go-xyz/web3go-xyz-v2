@@ -18,6 +18,9 @@ function createResizeObserver() {
   return {
     observer,
     subscribe(target: HTMLElement, callback: ResizeObserverCallback) {
+      if (!target) {
+        return;
+      }
       observer.observe(target);
       const callbacks = callbacksMap.get(target) ?? [];
       callbacks.push(callback);

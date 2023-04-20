@@ -186,7 +186,7 @@ class NativeQueryEditor extends Component {
     }
   };
 
-  runQuery = () => {
+  runQuery = async () => {
     this.props.cancelQuery();
     const { query, runQuestionQuery } = this.props;
 
@@ -201,7 +201,10 @@ class NativeQueryEditor extends Component {
         shouldUpdateUrl: false,
       });
     } else if (query.canRun()) {
-      runQuestionQuery();
+      await runQuestionQuery();
+      if (location.pathname.includes('/layout')) {
+        this.props.executeSql();
+      }
     }
   };
 
@@ -351,7 +354,9 @@ class NativeQueryEditor extends Component {
   onChange() {
     const { query } = this.props;
     if (this._editor && !this._localUpdate) {
-      this._updateSize();
+      if (!location.pathname.includes('/layout')) {
+        this._updateSize();
+      }
       if (query.queryText() !== this._editor.getValue()) {
         query
           .setQueryText(this._editor.getValue())
@@ -429,7 +434,39 @@ class NativeQueryEditor extends Component {
     const canSaveSnippets = snippetCollections.some(
       collection => collection.can_write,
     );
-
+    const newEditorBox = (
+      <div className="new-editor-box">
+        <div className="flex-full" id="id_sql" ref={this.editor} />
+        <RightClickPopover
+          isOpen={this.state.isSelectedTextPopoverOpen}
+          openSnippetModalWithSelectedText={openSnippetModalWithSelectedText}
+          runQuery={this.runQuery}
+          target={() => this.editor.current.querySelector(".ace_selection")}
+          canSaveSnippets={canSaveSnippets}
+        />
+        {this.props.modalSnippet && (
+          <SnippetModal
+            onSnippetUpdate={(newSnippet, oldSnippet) => {
+              if (newSnippet.name !== oldSnippet.name) {
+                query
+                  .updateQueryTextWithNewSnippetNames([newSnippet])
+                  .update(this.props.setDatasetQuery);
+              }
+            }}
+            snippet={this.props.modalSnippet}
+            insertSnippet={this.props.insertSnippet}
+            closeModal={this.props.closeSnippetModal}
+          />
+        )}
+        {/* {hasEditingSidebar && !readOnly && (
+          <NativeQueryEditorSidebar
+            runQuery={this.runQuery}
+            {...this.props}
+          />
+        )} */}
+        <img className="run-icon hover-item" onClick={this.runQuery} src={require("@/web3goLayout/assets/dashboardCreate/Frame2203.png")} alt="" />
+      </div>
+    )
     return (
       <div className="NativeQueryEditor bg-light full">
         {hasTopBar && (
@@ -450,64 +487,70 @@ class NativeQueryEditor extends Component {
                 setParameterIndex={this.setParameterIndex}
               />
             )}
-            {query.hasWritePermission() && (
-              <VisibilityToggler
-                className={!isNativeEditorOpen ? "hide sm-show" : ""}
-                isOpen={isNativeEditorOpen}
-                readOnly={!!readOnly}
-                toggleEditor={this.toggleEditor}
-              />
+            {location.pathname.includes('/layout') ? <img className="hide-editor-icon hover-item" onClick={this.toggleEditor} src={require("@/web3goLayout/assets/dashboardCreate/Frame2202.png")} alt="" /> : (
+              query.hasWritePermission() && (
+                <VisibilityToggler
+                  className={!isNativeEditorOpen ? "hide sm-show" : ""}
+                  isOpen={isNativeEditorOpen}
+                  readOnly={!!readOnly}
+                  toggleEditor={this.toggleEditor}
+                />
+              )
             )}
           </div>
         )}
-        <ResizableBox
-          ref={this.resizeBox}
-          className={cx("border-top flex ", { hide: !isNativeEditorOpen })}
-          height={this.state.initialHeight}
-          minConstraints={[Infinity, getEditorLineHeight(MIN_HEIGHT_LINES)]}
-          axis="y"
-          handle={dragHandle}
-          resizeHandles={["s"]}
-          {...resizableBoxProps}
-          onResizeStop={(e, data) => {
-            this.props.handleResize();
-            if (typeof resizableBoxProps?.onResizeStop === "function") {
-              resizableBoxProps.onResizeStop(e, data);
-            }
-            this._editor.resize();
-          }}
-        >
-          <div className="flex-full" id="id_sql" ref={this.editor} />
-
-          <RightClickPopover
-            isOpen={this.state.isSelectedTextPopoverOpen}
-            openSnippetModalWithSelectedText={openSnippetModalWithSelectedText}
-            runQuery={this.runQuery}
-            target={() => this.editor.current.querySelector(".ace_selection")}
-            canSaveSnippets={canSaveSnippets}
-          />
-
-          {this.props.modalSnippet && (
-            <SnippetModal
-              onSnippetUpdate={(newSnippet, oldSnippet) => {
-                if (newSnippet.name !== oldSnippet.name) {
-                  query
-                    .updateQueryTextWithNewSnippetNames([newSnippet])
-                    .update(this.props.setDatasetQuery);
+        {
+          location.pathname.includes('/layout') ? newEditorBox : (
+            <ResizableBox
+              ref={this.resizeBox}
+              className={cx("border-top flex ", { hide: !isNativeEditorOpen })}
+              height={this.state.initialHeight}
+              minConstraints={[Infinity, getEditorLineHeight(MIN_HEIGHT_LINES)]}
+              axis="y"
+              handle={dragHandle}
+              resizeHandles={["s"]}
+              {...resizableBoxProps}
+              onResizeStop={(e, data) => {
+                this.props.handleResize();
+                if (typeof resizableBoxProps?.onResizeStop === "function") {
+                  resizableBoxProps.onResizeStop(e, data);
                 }
+                this._editor.resize();
               }}
-              snippet={this.props.modalSnippet}
-              insertSnippet={this.props.insertSnippet}
-              closeModal={this.props.closeSnippetModal}
-            />
-          )}
-          {hasEditingSidebar && !readOnly && (
-            <NativeQueryEditorSidebar
-              runQuery={this.runQuery}
-              {...this.props}
-            />
-          )}
-        </ResizableBox>
+            >
+              <div className="flex-full" id="id_sql" ref={this.editor} />
+
+              <RightClickPopover
+                isOpen={this.state.isSelectedTextPopoverOpen}
+                openSnippetModalWithSelectedText={openSnippetModalWithSelectedText}
+                runQuery={this.runQuery}
+                target={() => this.editor.current.querySelector(".ace_selection")}
+                canSaveSnippets={canSaveSnippets}
+              />
+
+              {this.props.modalSnippet && (
+                <SnippetModal
+                  onSnippetUpdate={(newSnippet, oldSnippet) => {
+                    if (newSnippet.name !== oldSnippet.name) {
+                      query
+                        .updateQueryTextWithNewSnippetNames([newSnippet])
+                        .update(this.props.setDatasetQuery);
+                    }
+                  }}
+                  snippet={this.props.modalSnippet}
+                  insertSnippet={this.props.insertSnippet}
+                  closeModal={this.props.closeSnippetModal}
+                />
+              )}
+              {hasEditingSidebar && !readOnly && (
+                <NativeQueryEditorSidebar
+                  runQuery={this.runQuery}
+                  {...this.props}
+                />
+              )}
+            </ResizableBox>
+          )
+        }
       </div>
     );
   }

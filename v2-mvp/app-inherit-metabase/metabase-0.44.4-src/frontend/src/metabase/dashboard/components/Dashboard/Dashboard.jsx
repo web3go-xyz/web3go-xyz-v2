@@ -22,6 +22,8 @@ import SyncedParametersList from "metabase/parameters/components/SyncedParameter
 import DashboardEmptyState from "./DashboardEmptyState/DashboardEmptyState";
 import { updateParametersWidgetStickiness } from "./stickyParameters";
 import { getValuePopulatedParameters } from "metabase/parameters/utils/parameter-values";
+import domtoimage from 'dom-to-image';
+import { SIDEBAR_NAME } from "../../constants";
 
 const SCROLL_THROTTLE_INTERVAL = 1000 / 24;
 
@@ -88,6 +90,7 @@ class Dashboard extends Component {
     closeSidebar: PropTypes.func.isRequired,
     openAddQuestionSidebar: PropTypes.func.isRequired,
     showAddQuestionSidebar: PropTypes.bool.isRequired,
+    openNewCardEditorSidebar: PropTypes.func.isRequired,
     embedOptions: PropTypes.object,
   };
 
@@ -190,12 +193,22 @@ class Dashboard extends Component {
     });
   };
 
-  onToggleAddQuestionSidebar = () => {
+  onToggleAddQuestionSidebar = (dashcardId, cardId) => {
     if (this.props.showAddQuestionSidebar) {
       this.props.closeSidebar();
     } else {
-      this.props.openAddQuestionSidebar();
+      this.props.openAddQuestionSidebar(dashcardId, cardId);
     }
+  };
+
+  onToggleNewCardEditorSidebar = ({type, dashboardId, dashcardId, vanillaMode, action, series, onReplaceAllVisualizationSettings }) => {
+    if (this.props.sidebar.name === SIDEBAR_NAME.newCardEditor) {
+      this.props.closeSidebar();
+      if (this.props.sidebar.props.params.type === type) {
+        return;
+      }
+    } 
+    this.props.openNewCardEditorSidebar({type, vanillaMode, dashboardId, dashcardId, action, series, onReplaceAllVisualizationSettings });
   };
 
   onCancel = () => {
@@ -205,7 +218,22 @@ class Dashboard extends Component {
   onSharingClick = () => {
     this.props.setSharing(true);
   };
-
+  uploadThumbnail = () => {
+    const el = document.getElementById('dashboard-thumbnail');
+    domtoimage.toJpeg(el, {
+      quality: 0.2,
+      width: 1200,
+      height: 630,
+      bgcolor: 'rgb(250,251,252)',
+    })
+      .then((dataUrl) => {
+        const uuid = crypto.randomUUID();
+        // var link = document.createElement('a');
+        // link.download = 'AAA.png';
+        // link.href = dataUrl;
+        // link.click();
+      });
+  }
   render() {
     const {
       addParameter,
@@ -265,22 +293,27 @@ class Dashboard extends Component {
         error={error}
       >
         {() => (
-          <DashboardStyled>
+          <DashboardStyled id="dashboard-thumbnail">
             {isHeaderVisible && (
               <HeaderContainer
                 isFullscreen={isFullscreen}
                 isNightMode={shouldRenderAsNightMode}
               >
-                <DashboardHeader
-                  {...this.props}
-                  onEditingChange={this.setEditing}
-                  setDashboardAttribute={this.setDashboardAttribute}
-                  addParameter={addParameter}
-                  parametersWidget={parametersWidget}
-                  onSharingClick={this.onSharingClick}
-                  onToggleAddQuestionSidebar={this.onToggleAddQuestionSidebar}
-                  showAddQuestionSidebar={showAddQuestionSidebar}
-                />
+                {
+                  location.pathname.includes('/layout') ? null :
+                    <DashboardHeader
+                      {...this.props}
+                      uploadThumbnail={this.uploadThumbnail}
+                      onEditingChange={this.setEditing}
+                      setDashboardAttribute={this.setDashboardAttribute}
+                      addParameter={addParameter}
+                      parametersWidget={parametersWidget}
+                      onSharingClick={this.onSharingClick}
+                      onToggleAddQuestionSidebar={this.onToggleAddQuestionSidebar}
+                      onToggleNewCardEditorSidebar={this.onToggleNewCardEditorSidebar}
+                      showAddQuestionSidebar={showAddQuestionSidebar}
+                    />
+                }
 
                 {shouldRenderParametersWidgetInEditMode && (
                   <ParametersWidgetContainer
@@ -311,6 +344,7 @@ class Dashboard extends Component {
                 )}
 
                 <CardsContainer
+                  
                   addMarginTop={cardsContainerShouldHaveMarginTop}
                 >
                   {dashboardHasCards(dashboard) ? (
@@ -318,6 +352,7 @@ class Dashboard extends Component {
                       {...this.props}
                       isNightMode={shouldRenderAsNightMode}
                       onEditingChange={this.setEditing}
+                      onToggleNewCardEditorSidebar={this.onToggleNewCardEditorSidebar}
                     />
                   ) : (
                     <DashboardEmptyState

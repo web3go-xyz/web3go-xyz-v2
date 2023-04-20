@@ -1,0 +1,88 @@
+body[arco-theme="dark"] .create-link-dashboard-modal {}
+
+.create-link-dashboard-modal {
+    .arco-modal-content {
+        max-height: calc(100vh - 300px);
+        overflow: auto;
+    }
+
+    .modal-content {
+        .split-wrap {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+
+            .line {
+                display: block;
+                background: #E5E6E8;
+                height: 1px;
+                flex: 1;
+            }
+
+            .text {
+                margin: 0 14px;
+                display: inline-block;
+                flex: none;
+                color: var(--6bColor);
+                font-weight: 400;
+                font-size: 14px;
+                line-height: 22px;
+            }
+        }
+
+        .btn-wrap {
+            .btn {
+                width: 108px;
+                height: 44px;
+                border-radius: 12px;
+            }
+        }
+
+        .list {
+            border: 1px solid #E5E6E8;
+            margin-top: 16px;
+
+            .item {
+                border-top: 1px solid #E5E6E8;
+                font-weight: 400;
+                font-size: 14px;
+                line-height: 40px;
+                color: #6B7785;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 16px;
+
+                &:first-child {
+                    border-top: 0;
+                }
+
+                .i-right {
+                    display: flex;
+                    align-items: center;
+
+                    .arco-icon {
+                        font-size: 16px;
+                        color: #4E5969;
+                    }
+
+                    .split {
+                        margin: 0 8px;
+                        background: #C9CDD4;
+                        width: 1px;
+                        height: 8px;
+                    }
+                }
+            }
+        }
+
+        .create {
+            margin-top: 24px;
+            width: 100%;
+            height: 44px;
+        }
+
+    }
+
+}

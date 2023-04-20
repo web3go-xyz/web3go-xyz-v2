@@ -104,7 +104,7 @@ const getRoutes = store => (
 );
 
 export const getUserMenuRotes = () => (
-  <ModalRoute path="unsubscribe" modal={UnsubscribeUserModal} />
+  <ModalRoute key="modalRoute" path="unsubscribe" modal={UnsubscribeUserModal} />
 );
 
 export default getRoutes;

@@ -91,6 +91,27 @@ export const RadioContainerUnderlined = styled(RadioContainer)`
   padding: 1rem 0;
 `;
 
+// export const RadioContainerBubble = styled(RadioContainer)`
+//   padding: 0.5rem 1rem;
+//   border-radius: 10rem;
+//   font-weight: bold;
+//   color: ${props =>
+//     props.checked ? color("white") : getContrastSchemeColor(props.colorScheme)};
+//   background-color: ${props =>
+//     props.checked
+//       ? getSchemeColor(props.colorScheme)
+//       : lighten(getSchemeColor(props.colorScheme))};
+
+//   &:hover {
+//     color: ${props =>
+//       !props.checked && !props.showButtons
+//         ? getContrastSchemeColor(props.colorScheme)
+//         : ""};
+//     background-color: ${props =>
+//       props.checked ? "" : lighten(getSchemeColor(props.colorScheme), 0.38)};
+//     transition: background-color 300ms linear;
+//   }
+// `;
 export const RadioContainerBubble = styled(RadioContainer)`
   padding: 0.5rem 1rem;
   border-radius: 10rem;
@@ -100,7 +121,7 @@ export const RadioContainerBubble = styled(RadioContainer)`
   background-color: ${props =>
     props.checked
       ? getSchemeColor(props.colorScheme)
-      : lighten(getSchemeColor(props.colorScheme))};
+      : '#D4CBFD'};
 
   &:hover {
     color: ${props =>
@@ -108,7 +129,7 @@ export const RadioContainerBubble = styled(RadioContainer)`
         ? getContrastSchemeColor(props.colorScheme)
         : ""};
     background-color: ${props =>
-      props.checked ? "" : lighten(getSchemeColor(props.colorScheme), 0.38)};
+      props.checked ? "" : getSchemeColor(props.colorScheme)};
     transition: background-color 300ms linear;
   }
 `;

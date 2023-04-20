@@ -62,6 +62,7 @@ class DashboardHeader extends Component {
   };
 
   static propTypes = {
+    uploadThumbnail: PropTypes.func.isRequired,
     dashboard: PropTypes.object.isRequired,
     isEditable: PropTypes.bool.isRequired,
     isEditing: PropTypes.oneOfType([PropTypes.bool, PropTypes.object])
@@ -75,7 +76,10 @@ class DashboardHeader extends Component {
     setRefreshElapsedHook: PropTypes.func.isRequired,
 
     addCardToDashboard: PropTypes.func.isRequired,
+    onToggleNewCardEditorSidebar: PropTypes.func.isRequired,
     addTextDashCardToDashboard: PropTypes.func.isRequired,
+    addImageDashCardToDashboard: PropTypes.func.isRequired,
+    addVideoDashCardToDashboard: PropTypes.func.isRequired,
     fetchDashboard: PropTypes.func.isRequired,
     saveDashboardAndCards: PropTypes.func.isRequired,
     setDashboardAttribute: PropTypes.func.isRequired,
@@ -105,8 +109,20 @@ class DashboardHeader extends Component {
     toggleBookmark(this.props.dashboardId);
   }
 
+  onToggleNewCardEditorSidebar(type, vanillaMode, cardId) {
+    this.props.onToggleNewCardEditorSidebar({type, cardId, dashId: this.props.dashboard.id, vanillaMode });
+  }
+
   onAddTextBox() {
     this.props.addTextDashCardToDashboard({ dashId: this.props.dashboard.id });
+  }
+
+  onAddImageBox() {
+    this.props.addImageDashCardToDashboard({ dashId: this.props.dashboard.id });
+  }
+
+  onAddVideoBox() {
+    this.props.addVideoDashCardToDashboard({ dashId: this.props.dashboard.id });
   }
 
   onDoneEditing() {
@@ -123,6 +139,7 @@ class DashboardHeader extends Component {
 
   async onSave() {
     await this.props.saveDashboardAndCards(this.props.dashboard.id);
+    // this.props.uploadThumbnail();
     this.onDoneEditing();
   }
 
@@ -180,6 +197,7 @@ class DashboardHeader extends Component {
       isEditable,
       location,
       onToggleAddQuestionSidebar,
+      onToggleNewCardEditorSidebar,
       showAddQuestionSidebar,
       onFullscreenChange,
       createBookmark,
@@ -193,7 +211,6 @@ class DashboardHeader extends Component {
 
     const buttons = [];
     const extraButtons = [];
-
     if (isFullscreen && parametersWidget) {
       buttons.push(parametersWidget);
     }
@@ -215,16 +232,52 @@ class DashboardHeader extends Component {
       );
 
       // Add text card button
+      // TODO 
+      // const addTextButtonHint = this.props.sidebar && this.props.sidebar.name === "newCardEditor"
+      //   ? t`Close sidebar`
+      //   : t`Add questions`;
       buttons.push(
         <Tooltip key="add-a-text-box" tooltip={t`Add a text box`}>
           <a
             data-metabase-event="Dashboard;Add Text Box"
             key="add-text"
             className="text-brand-hover cursor-pointer"
-            onClick={() => this.onAddTextBox()}
+            onClick={() => this.onToggleNewCardEditorSidebar('text', true)}
           >
             <DashboardHeaderButton>
               <Icon name="string" size={18} />
+            </DashboardHeaderButton>
+          </a>
+        </Tooltip>,
+      );
+
+      // Add image card button
+      buttons.push(
+        <Tooltip key="add-a-image-box" tooltip={t`Add a Image box`}>
+          <a
+            data-metabase-event="Dashboard;Add Image Box"
+            key="add-text"
+            className="text-brand-hover cursor-pointer"
+            onClick={() => this.onToggleNewCardEditorSidebar('image', true)}
+          >
+            <DashboardHeaderButton>
+              <Icon name="image" size={18} />
+            </DashboardHeaderButton>
+          </a>
+        </Tooltip>,
+      );
+
+      // Add video card button
+      buttons.push(
+        <Tooltip key="add-a-video-box" tooltip={t`Add a Video box`}>
+          <a
+            data-metabase-event="Dashboard;Add Video Box"
+            key="add-text"
+            className="text-brand-hover cursor-pointer"
+            onClick={() => this.onToggleNewCardEditorSidebar('video', true)}
+          >
+            <DashboardHeaderButton>
+              <Icon name="video" size={18} />
             </DashboardHeaderButton>
           </a>
         </Tooltip>,
@@ -325,13 +378,13 @@ class DashboardHeader extends Component {
       buttons.push(
         ...[
           <DashboardHeaderActionDivider key="dashboard-button-divider" />,
-          <DashboardBookmark
-            key="dashboard-bookmark-button"
-            dashboard={dashboard}
-            onCreateBookmark={createBookmark}
-            onDeleteBookmark={deleteBookmark}
-            isBookmarked={isBookmarked}
-          />,
+          // <DashboardBookmark
+          //   key="dashboard-bookmark-button"
+          //   dashboard={dashboard}
+          //   onCreateBookmark={createBookmark}
+          //   onDeleteBookmark={deleteBookmark}
+          //   isBookmarked={isBookmarked}
+          // />,
           <Tooltip key="dashboard-info-button" tooltip={t`More info`}>
             <DashboardHeaderButton
               icon="info"
@@ -352,7 +405,6 @@ class DashboardHeader extends Component {
         ],
       );
     }
-
     return buttons;
   }
 

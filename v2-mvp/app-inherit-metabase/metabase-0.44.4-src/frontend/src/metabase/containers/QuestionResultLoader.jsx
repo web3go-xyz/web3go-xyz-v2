@@ -34,7 +34,11 @@ export class QuestionResultLoader extends React.Component {
     loading: false,
     error: null,
   };
-
+  componentDidMount() {
+    if (this.props.onRef) {
+      this.props.onRef(this);
+    }
+  }
   UNSAFE_componentWillMount = () => {
     this._reload();
   };

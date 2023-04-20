@@ -3,9 +3,21 @@ import { color } from "metabase/lib/colors";
 import Icon from "metabase/components/Icon";
 
 export const LegendCaptionRoot = styled.div`
+  position:relative;
   display: flex;
   align-items: center;
   min-width: 0;
+`;
+export const OperationWrap = styled.div`
+  position:absolute;
+  right:-5px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor: pointer;
+  &:hover{
+    background: var(--global-plain-btn-hover-bg);
+    border-radius: 4px;
+  }
 `;
 
 export const LegendLabel = styled.div`

@@ -15,7 +15,7 @@ import { color } from "metabase/lib/colors";
 import {
   GRID_WIDTH,
   GRID_ASPECT_RATIO,
-  GRID_BREAKPOINTS,
+    GRID_BREAKPOINTS,
   GRID_COLUMNS,
   DEFAULT_CARD_SIZE,
   MIN_ROW_HEIGHT,
@@ -323,6 +323,7 @@ class DashboardGrid extends Component {
         dashboard={this.props.dashboard}
         showClickBehaviorSidebar={this.props.showClickBehaviorSidebar}
         clickBehaviorSidebarDashcard={this.props.clickBehaviorSidebarDashcard}
+        onToggleNewCardEditorSidebar={this.props.onToggleNewCardEditorSidebar}
       />
     );
   }
@@ -340,19 +341,21 @@ class DashboardGrid extends Component {
     breakpoint,
     gridItemWidth,
     totalNumGridCols,
-  }) => (
-    <DashboardCard
-      key={String(dc.id)}
-      className="DashCard"
-      isAnimationDisabled={this.state.isAnimationPaused}
-    >
-      {this.renderDashCard(dc, {
-        isMobile: breakpoint === "mobile",
-        gridItemWidth,
-        totalNumGridCols,
-      })}
-    </DashboardCard>
-  );
+  }) => {
+    return (
+      <DashboardCard
+        key={String(dc.id)}
+        className="DashCard"
+        isAnimationDisabled={this.state.isAnimationPaused}
+      >
+        {this.renderDashCard(dc, {
+          isMobile: breakpoint === "mobile",
+          gridItemWidth,
+          totalNumGridCols,
+        })}
+      </DashboardCard>
+    );
+  }
 
   renderGrid() {
     const { dashboard, width } = this.props;
@@ -368,7 +371,7 @@ class DashboardGrid extends Component {
         breakpoints={GRID_BREAKPOINTS}
         cols={GRID_COLUMNS}
         width={width}
-        margin={{ desktop: [6, 6], mobile: [6, 10] }}
+        margin={{ desktop: [20, 20], mobile: [6, 10] }}
         containerPadding={[0, 0]}
         rowHeight={rowHeight}
         onLayoutChange={this.onLayoutChange}

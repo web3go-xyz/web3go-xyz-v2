@@ -2,7 +2,6 @@ import querystring from "querystring";
 
 function parseQueryStringOptions(s) {
   const options = querystring.parse(s);
-
   for (const name in options) {
     if (options[name] === "") {
       options[name] = true;

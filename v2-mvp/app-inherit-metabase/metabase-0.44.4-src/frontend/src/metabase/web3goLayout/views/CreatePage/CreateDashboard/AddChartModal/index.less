@@ -1,0 +1,183 @@
+body[arco-theme="dark"] .web3go-add-dashboard-add-chart-drawer {}
+
+.web3go-add-dashboard-add-chart-drawer {
+    .arco-drawer-content {
+        padding: 0;
+    }
+
+    .d-title {
+        background: #F2F3F5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+        padding-left: 20px;
+        padding-right: 32px;
+
+        .left {
+            display: flex;
+            align-items: center;
+        }
+
+        &.edit {
+            .input {
+                display: inline-block;
+            }
+
+            .text {
+                display: none;
+            }
+        }
+
+        .input {
+            display: none;
+            box-sizing: border-box;
+            min-width: 350px;
+            width: auto;
+            height: auto;
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 28px;
+            color: #1D2129;
+            border: 0;
+            padding: 0;
+            background: transparent;
+        }
+
+        .text {
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 28px;
+            color: #1D2129;
+        }
+
+        .back {
+            width: 16px;
+            margin-right: 8px;
+        }
+
+        .edit {
+            margin-left: 8px;
+            width: 16px;
+        }
+
+        .close {
+            width: 24px;
+            position: relative;
+            z-index: 5;
+        }
+    }
+
+    .d-main {
+        height: calc(100vh - 157px);
+        display: flex;
+        .dm-left {
+            flex: none;
+            height: 100%;
+            width: 284px;
+            box-sizing: border-box;
+            padding: 12px 20px;
+            border-right: 1px solid #F2F3F5;
+
+            .dml-title {
+                font-weight: 400;
+                font-size: 16px;
+                line-height: 24px;
+                color: #1D2129;
+            }
+
+            .search-wrap {
+                margin-top: 12px;
+
+                .arco-input {
+                    height: 40px;
+                    border-radius: 8px;
+                    padding-left: 8px;
+                }
+            }
+
+            .add-btn-wrap {
+                margin-top: 12px;
+
+                .btn {
+                    width: 100%;
+                    height: 32px;
+                    border-radius: 6px;
+                }
+
+            }
+
+            .dataset-list {
+                margin-top: 12px;
+                height: calc(100% - 95px);
+                overflow: auto;
+                .item {
+                    padding: 0 8px;
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    cursor: pointer;
+
+                    &:hover {
+                        background: #F2F3F5;
+                        border-radius: 4px;
+                    }
+
+                    img {
+                        margin-right: 4px;
+                        width: 16px;
+                    }
+
+                    .text {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        width: 200px;
+                        font-weight: 400;
+                        font-size: 14px;
+                        line-height: 22px;
+                        color: #6B7785;
+                    }
+                }
+            }
+
+            .manage-wrap {
+                margin-top: 12px;
+                .btn {
+                    width: 100%;
+                    height: 32px;
+                    border-radius: 6px;
+                }
+            }
+        }
+        .dm-middle{
+            flex: 1;
+        }
+    }
+
+    .d-footer {
+        border-top: 1px solid #E5E6E8;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 93px;
+        padding: 0 24px;
+
+        .f-left {
+            .btn {
+                width: 265px;
+                height: 44px;
+            }
+        }
+
+        .btn {
+            width: 93px;
+            height: 44px;
+            border-radius: 12px;
+
+            &+.btn {
+                margin-left: 12px;
+            }
+        }
+    }
+}
