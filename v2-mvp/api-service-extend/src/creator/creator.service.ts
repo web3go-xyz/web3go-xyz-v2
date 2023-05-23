@@ -35,7 +35,7 @@ export class CreatorService {
         if (param.accountName && param.accountName.length > 0) {
             query.leftJoinAndSelect(Account, "a", "a.account_id = d.creator_account_id")
             .select("COUNT(DISTINCT(creator_account_id))", "creator_account_id_count")
-            .where(`a."nick_name" LIKE :name`, {name: '%' + param.accountName + '%'});
+            .where(`a."nick_name" ILIKE :name`, {name: '%' + param.accountName + '%'});
         }
         let query_count = await query.getRawOne();
         resp.totalCount = query_count.creator_account_id_count;
@@ -54,7 +54,7 @@ export class CreatorService {
             .addGroupBy(`a."nick_name"`)
 
         if (param.accountName && param.accountName.length > 0) {
-            query.andWhere(`a."nick_name" LIKE :name`, {name: '%' + param.accountName + '%'});
+            query.andWhere(`a."nick_name" ILIKE :name`, {name: '%' + param.accountName + '%'});
         }
 
         if (param.orderBys && param.orderBys.length > 0) {
