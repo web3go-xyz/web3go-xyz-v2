@@ -3,8 +3,9 @@ export class Mailer {
     private nodemailer: any;
     private transporter: any;
     private emailAccount: any = {
-        user: 'info@web3go.xyz',
-        password: 'Kusama2021',
+        user: 'team@web3go.xyz',
+        password: 'acznbcdwynwnbmyz',
+//         user: 'info@web3go.xyz',
         name: 'web3go info',
 
         clientId: '842394682956-f49kvlgjh6nv9jen9g1bju6es12vhof4.apps.googleusercontent.com',
@@ -16,18 +17,28 @@ export class Mailer {
     }
     constructor() {
         this.nodemailer = require("nodemailer");
+//         this.transporter = this.nodemailer.createTransport({
+//             host: 'smtp.gmail.com',
+//             port: 465,
+//             secure: true,
+//             auth: {
+//                 type: 'OAuth2',
+//                 user: this.emailAccount.user, // Your gmail address.
+//                 // Not @developer.gserviceaccount.com
+//                 clientId: this.emailAccount.clientId,
+//                 clientSecret: this.emailAccount.clientSecret,
+//                 refreshToken: this.emailAccount.refreshToken,
+//                 accessToken: this.emailAccount.accessToken
+//             }
+//         });
         this.transporter = this.nodemailer.createTransport({
             host: 'smtp.gmail.com',
-            port: 465,
-            secure: true,
+            port: 587,
+            pool: true,
+            secure: false,
             auth: {
-                type: 'OAuth2',
                 user: this.emailAccount.user, // Your gmail address.
-                // Not @developer.gserviceaccount.com
-                clientId: this.emailAccount.clientId,
-                clientSecret: this.emailAccount.clientSecret,
-                refreshToken: this.emailAccount.refreshToken,
-                accessToken: this.emailAccount.accessToken
+                pass: this.emailAccount.password,
             }
         });
         console.log("init mailer");
