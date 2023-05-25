@@ -35,10 +35,29 @@ class Component extends React.Component {
             dashboardListCount: 0,
             myFavouriteCount: 0,
             slideList: [
-                require("@/web3goLayout/assets/home/banner.png"),
-                require("@/web3goLayout/assets/home/banner.png"),
-                require("@/web3goLayout/assets/home/banner.png"),
-                require("@/web3goLayout/assets/home/banner.png"),
+                {
+                    bg: require("@/web3goLayout/assets/home/bg2.png"),
+                    inner: require("@/web3goLayout/assets/home/inner2.png"),
+                    imgWidth: '944px',
+                    // link: 'https://din-dev.web3go.xyz/home'
+                },
+                {
+                    bg: require("@/web3goLayout/assets/home/bg3.png"),
+                    inner: require("@/web3goLayout/assets/home/inner3.png"),
+                    imgWidth: '828px',
+                    link: 'https://analytix.web3go.xyz/showcase/index.html#/home'
+                },
+                {
+                    bg: require("@/web3goLayout/assets/home/bg4.png"),
+                    inner: require("@/web3goLayout/assets/home/inner4.png"),
+                    imgWidth: '934px',
+                    link: 'https://cumulon.cloud/'
+                },
+                {
+                    bg: require("@/web3goLayout/assets/home/bg1.png"),
+                    inner: require("@/web3goLayout/assets/home/inner1.png"),
+                    imgWidth: '987px'
+                }
             ],
             creatorList: [],
             myFollowingList: [],
@@ -173,6 +192,11 @@ class Component extends React.Component {
     goMySpace = (accountId) => {
         this.props.push(`/layout/mySpace?accountId=${accountId}`);
     }
+    clickSlider = (v) => {
+        if (v.link) {
+            window.open(v.link);
+        }
+    }
     handleUnfollow = (v) => {
         const newCreatorList = JSON.parse(JSON.stringify(this.state.creatorList));
         this.followLoading(v);
@@ -210,20 +234,21 @@ class Component extends React.Component {
         return (
             <div className="web3go-layout-home-page">
                 <div className="banner-wrap">
-                    <div className="common-layout">
-                        <Carousel
-                            showArrow='never'
-                            autoPlay={true}
-                            moveSpeed={1500}
-                            style={{ height: 350 }}
-                            indicatorType="line"
-                        >
-                            {this.state.slideList.map((v, index) => (
-                                <div className="slide-item" key={index} style={{ backgroundImage: `url(${v})` }}>
+                    <Carousel
+                        showArrow='never'
+                        autoPlay={true}
+                        moveSpeed={1500}
+                        style={{ height: 350 }}
+                        indicatorType="line"
+                    >
+                        {this.state.slideList.map((v, index) => (
+                            <div className="slide-item" key={index} style={{ backgroundImage: `url(${v.bg})`, cursor: v.link ? 'pointer' : 'initial' }} onClick={() => { this.clickSlider(v) }}>
+                                <div className="common-layout">
+                                    <img style={{ width: v.imgWidth }} src={v.inner} alt="" />
                                 </div>
-                            ))}
-                        </Carousel>
-                    </div>
+                            </div>
+                        ))}
+                    </Carousel>
                 </div >
                 <div className="home-main common-layout">
                     <div className="section-title">

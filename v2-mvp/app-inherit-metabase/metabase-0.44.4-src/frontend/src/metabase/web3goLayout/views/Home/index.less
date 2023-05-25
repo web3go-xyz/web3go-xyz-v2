@@ -19,14 +19,21 @@ body[arco-theme="dark"] .web3go-layout-home-page {
 
     .banner-wrap {
         width: 100%;
-        background: rgb(242, 243, 245);
 
         .slide-item {
             width: 100%;
             height: 100%;
             background-position: center;
             background-repeat: no-repeat;
-            background-size: contain;
+            background-size: cover;
+            .common-layout{
+                height: 100%;
+                display: flex;
+                align-items: center;
+                img{
+                    max-width: 100%;
+                }
+            }
         }
 
         .arco-carousel-indicator-wrapper {
@@ -35,7 +42,8 @@ body[arco-theme="dark"] .web3go-layout-home-page {
 
         .arco-carousel-indicator {
             bottom: 16px;
-            left: 20%;
+            left: calc(50vw - 600px);
+            transform: translateX(-50%);
 
             .arco-carousel-indicator-item {
                 transition: all .5s;
