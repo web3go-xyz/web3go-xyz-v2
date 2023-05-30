@@ -251,14 +251,15 @@ export class AccountInfoService {
       this.logger.warn(`current account ${accountId} has no related emails or wallets.`);
 
       if (destroyFlag) {
-        this.logger.warn(`current account ${accountId} will be destoryed`);
+        this.logger.warn(`current account ${accountId} will be disabled to login, change allow_login as false`);
 
         let account = await this.accountRepository.findOne({
           where: { accountId: accountId }
         });
         if (account) {
-          await this.accountRepository.delete(account);
-          this.logger.warn(`current account ${accountId} has been destoryed`);
+          account.allow_login=false; 
+          await this.accountRepository.save(account);
+          this.logger.warn(`current account ${accountId} has been disabled to login, change allow_login as false.`);
         }
       }
     }
