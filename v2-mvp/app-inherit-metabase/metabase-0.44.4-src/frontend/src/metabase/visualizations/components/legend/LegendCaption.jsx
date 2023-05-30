@@ -142,11 +142,11 @@ const LegendCaption = ({
       >
         <Ellipsified>{title}</Ellipsified>
       </LegendLabel>
-      {/* {description && (
+      {description && (
         <Tooltip tooltip={description} maxWidth="22em">
           <LegendDescriptionIcon className="hover-child" />
         </Tooltip>
-      )} */}
+      )}
       {actionButtons && <LegendActions>{actionButtons}</LegendActions>}
       <ChartInfoModal onRef={(ref) => ChartInfoModalRef = ref} ></ChartInfoModal>
       <DuplicateModal onRef={(ref) => DuplicateModalRef = ref} ></DuplicateModal>
