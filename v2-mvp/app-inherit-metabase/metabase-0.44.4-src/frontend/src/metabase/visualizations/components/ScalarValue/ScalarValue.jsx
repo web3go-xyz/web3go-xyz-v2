@@ -39,7 +39,8 @@ const ScalarValue = ({
         unit: "rem",
         step: 0.2,
         min: 2.2,
-        max: gridSize ? getMaxFontSize(gridSize.width, totalNumGridCols) : 4,
+        // max: gridSize ? getMaxFontSize(gridSize.width, totalNumGridCols) : 4,
+        max: 2.5,
       }),
     [fontFamily, gridSize, totalNumGridCols, value, width],
   );
