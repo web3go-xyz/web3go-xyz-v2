@@ -16,6 +16,10 @@ import { Dashboard } from "metabase-types/api";
 import EditBar from "metabase/components/EditBar";
 import EditWarning from "metabase/components/EditWarning";
 import HeaderModal from "metabase/components/HeaderModal";
+import { Button, Modal, Upload, Message } from '@arco-design/web-react';
+import { WEB3GO_BASE_URL } from '@/services'
+import { LayoutDashboardApi } from "../../services";
+
 import {
   HeaderRoot,
   HeaderBadges,
@@ -70,9 +74,12 @@ const DashboardHeader = ({
 }: DashboardHeaderProps) => {
   const [headerHeight, setHeaderHeight] = useState(0);
   const [showSubHeader, setShowSubHeader] = useState(true);
+  const [previewVisible, setPreviewVisible] = useState(false);
   const header = useRef<HTMLDivElement>(null);
-
   const isModalOpened = headerModalMessage != null;
+  const uploadRef = useRef(null);
+  const [previewImg, setPreviewImg] = useState<any>('');
+  const [previewBlob, setPreviewBlob] = useState<any>(null);
 
   useLayoutEffect(() => {
     if (isModalOpened) {
@@ -84,12 +91,40 @@ const DashboardHeader = ({
     }
   }, [isModalOpened]);
 
+  const onSubmit = async () => {
+    const formData = new FormData();
+    formData.append('file', previewBlob);
+    await LayoutDashboardApi.previewUrl(dashboard.id)(formData, { isUpload: true })
+    Message.success('Upload success');
+    setPreviewVisible(false);
+  };
+
+  const onChange = (files) => {
+    const isLt1M = files[files.length - 1].originFile.size / 1024 / 1024 < 1;
+    if (!isLt1M) {
+      Message.error('Max size is 1MB');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPreviewImg(reader.result);
+    };
+    reader.readAsDataURL(files[files.length - 1].originFile);
+    setPreviewBlob(files[files.length - 1].originFile);
+  };
+  const openUploadModal = () => {
+    setPreviewVisible(true);
+    setPreviewImg('');
+    setPreviewBlob(null);
+  }
   const _headerButtons = useMemo(
     () => (
       <HeaderButtonSection
         className="Header-buttonSection"
         isNavBarOpen={isNavBarOpen}
       >
+        <Button type='primary' style={{ marginRight: 20 }} onClick={() => { openUploadModal() }}>Set Preview</Button>
+
         {headerButtons}
       </HeaderButtonSection>
     ),
@@ -112,7 +147,6 @@ const DashboardHeader = ({
     }, 4000);
     return () => clearTimeout(timerId);
   });
-
   return (
     <div>
       {isEditing && (
@@ -162,6 +196,49 @@ const DashboardHeader = ({
         </HeaderButtonsContainer>
       </HeaderRoot>
       {children}
+      <Modal
+        title='Set Preview'
+        style={{ width: 800 }}
+        visible={previewVisible}
+        footer={null}
+        unmountOnExit
+        onOk={() => setPreviewVisible(false)}
+        onCancel={() => setPreviewVisible(false)}
+      >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Upload
+            ref={uploadRef}
+            accept='.jpg,.png'
+            autoUpload={false}
+            action='/'
+            onChange={onChange}
+            showUploadList={false}
+          >
+            <div>
+              <Button style={{ marginRight: 20 }}>Select image</Button>
+            </div>
+          </Upload>
+          <span>(suggest size: 1200 x 630)</span>
+        </div>
+        <div style={{ textAlign: "center", marginTop: 20, }}>
+          <img src={previewImg} alt="" style={{ maxWidth: '100%' }} />
+        </div>
+        {
+          previewImg && (
+            <div style={{ textAlign: "center", marginTop: 20 }}>
+              <Button
+                type='primary'
+                onClick={(e) => {
+                  onSubmit();
+                }}
+              >
+                upload
+              </Button>
+            </div>
+          )
+        }
+
+      </Modal>
     </div>
   );
 };
