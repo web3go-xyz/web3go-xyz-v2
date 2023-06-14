@@ -80,6 +80,7 @@ const DashboardHeader = ({
   const uploadRef = useRef(null);
   const [previewImg, setPreviewImg] = useState<any>('');
   const [previewBlob, setPreviewBlob] = useState<any>(null);
+  const [canUpload, setCanUpload] = useState<any>(false);
 
   useLayoutEffect(() => {
     if (isModalOpened) {
@@ -111,11 +112,19 @@ const DashboardHeader = ({
     };
     reader.readAsDataURL(files[files.length - 1].originFile);
     setPreviewBlob(files[files.length - 1].originFile);
+    setCanUpload(true);
   };
   const openUploadModal = () => {
-    setPreviewVisible(true);
     setPreviewImg('');
-    setPreviewBlob(null);
+    LayoutDashboardApi.detail({
+      "dashboardIds": [dashboard.id]
+    }).then(d => {
+      const previewImgUrl = d.list[0].previewImg;
+      setPreviewVisible(true);
+      setPreviewImg(previewImgUrl);
+      setCanUpload(false);
+      setPreviewBlob(null);
+    });
   }
   const _headerButtons = useMemo(
     () => (
@@ -218,13 +227,13 @@ const DashboardHeader = ({
               <Button style={{ marginRight: 20 }}>Select image</Button>
             </div>
           </Upload>
-          <span>(suggest size: 1200 x 630)</span>
+          <span>(suggest size: 520 x 340)</span>
         </div>
         <div style={{ textAlign: "center", marginTop: 20, }}>
           <img src={previewImg} alt="" style={{ maxWidth: '100%' }} />
         </div>
         {
-          previewImg && (
+          previewImg && canUpload && (
             <div style={{ textAlign: "center", marginTop: 20 }}>
               <Button
                 type='primary'
