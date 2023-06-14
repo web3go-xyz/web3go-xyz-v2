@@ -113,7 +113,7 @@ export class DashboardController {
       mkdirSync(dir, { recursive: true });
     }
 
-    let path = 'dashboard-' + id + file.originalname.substr(file.originalname.indexOf('.'))  + "." + file.mimetype.split('/')[1];
+    let path = 'dashboard-' + id + '-' + (new Date()).getTime() + "." + file.mimetype.split('/')[1];
 
     const writeImage = createWriteStream(join(dir, `${path}`))
     writeImage.write(file.buffer);
