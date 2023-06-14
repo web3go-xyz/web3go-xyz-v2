@@ -117,7 +117,7 @@ export class Web3SignService {
     if (!findAccount) {
       throw new BadRequestException("account not exist");
     }
-    if (!findAccount.allowLogin) {
+    if (findAccount.allowLogin != 1) {
       throw new BadRequestException("account is disabled to login");
     }
     let mockEmail: string = `${accountId}@web3go.xyz`;

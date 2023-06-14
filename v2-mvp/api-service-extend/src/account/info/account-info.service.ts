@@ -257,7 +257,7 @@ export class AccountInfoService {
           where: { accountId: accountId }
         });
         if (account) {
-          account.allow_login=false; 
+          account.allowLogin=0; 
           await this.accountRepository.save(account);
           this.logger.warn(`current account ${accountId} has been disabled to login, change allow_login as false.`);
         }
