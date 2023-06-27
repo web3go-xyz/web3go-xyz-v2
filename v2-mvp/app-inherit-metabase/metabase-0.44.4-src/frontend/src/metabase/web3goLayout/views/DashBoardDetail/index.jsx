@@ -236,6 +236,9 @@ class Component extends React.Component {
             title: 'Embed',
             content:
                 <div>
+                    <div style={{ textAlign: 'center' }}>
+                        <img src="app/assets/img/simple_embed.png" alt="" />
+                    </div>
                     <div style={{ marginBottom: 8 }}>Embed this dashboard in blog posts or web pages by copying and pasting this snippet:</div>
                     <Alert
                         showIcon={false}

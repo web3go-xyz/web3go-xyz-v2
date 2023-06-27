@@ -22,7 +22,7 @@ let _WEB3GO_DOMAIN;
 if (WEBPACK_BUNDLE == 'hot') {
   _WEB3GO_DOMAIN = 'https://dev-v2.web3go.xyz/';
 } else {
-  _WEB3GO_DOMAIN = '/';
+  _WEB3GO_DOMAIN = 'https://'+location.host+'/';
 }
 export const WEB3GO_DOMAIN = _WEB3GO_DOMAIN;
 export const defaultPublicCollectionId = 40;
