@@ -17,6 +17,14 @@ if (WEBPACK_BUNDLE == 'hot') {
   _WEB3GO_BASE_URL = '/api-ext';
 }
 export const WEB3GO_BASE_URL = _WEB3GO_BASE_URL;
+
+let _WEB3GO_DOMAIN;
+if (WEBPACK_BUNDLE == 'hot') {
+  _WEB3GO_DOMAIN = 'https://dev-v2.web3go.xyz/';
+} else {
+  _WEB3GO_DOMAIN = '/';
+}
+export const WEB3GO_DOMAIN = _WEB3GO_DOMAIN;
 export const defaultPublicCollectionId = 40;
 export const LayoutLoginApi = {
   signIn: WPOST(WEB3GO_BASE_URL + "/api/v2/account/auth/signin"),
