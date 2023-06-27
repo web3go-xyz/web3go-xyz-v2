@@ -305,9 +305,11 @@ class Component extends React.Component {
                                 </div>
                                 {detailData.publicUUID ? (
                                     <div className="operation-wrap">
-                                        <Button onClick={() => { this.openEmbedModal() }}>
-                                            <span>Embed</span>
-                                        </Button>
+                                        {
+                                            detailData.publicUUID && <Button onClick={() => { this.openEmbedModal() }}>
+                                                <span>Embed</span>
+                                            </Button>
+                                        }
                                         <Button onClick={() => { this.openShareModal() }}>
                                             <IconLaunch style={{ fontSize: 16 }} />
                                             <span>Share</span>
