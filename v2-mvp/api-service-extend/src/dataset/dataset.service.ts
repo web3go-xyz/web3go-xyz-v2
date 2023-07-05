@@ -3,7 +3,7 @@ import { W3Logger } from 'src/base/log/logger.service';
 import { RepositoryConsts } from 'src/base/orm/repositoryConsts';
 import { PageRequest } from 'src/viewModel/base/pageRequest';
 import { DatasetListRequest } from './model/DatasetListRequest';
-import { FindManyOptions, FindOptionsWhere, In, Like, Not, Raw, Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, ILike, In, Like, Not, Raw, Repository } from 'typeorm';
 import { ReportCard } from 'src/base/entity/metabase/ReportCard';
 import { Collection } from 'src/base/entity/metabase/Collection';
 import { DatasetTagGroup } from 'src/base/entity/platform-dataset/DatasetTagGroup';
@@ -86,7 +86,7 @@ export class DatasetService {
             where.id = In(filterDatasetIds);
         }
         if (request.searchName) {
-            where.name = Like(`%${request.searchName}%`);
+            where.name = ILike(`%${request.searchName}%`);
         }
         if (request.creator) {
             where.creatorAccountId = request.creator;

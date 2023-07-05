@@ -3,7 +3,7 @@ import React from "react";
 import slugg from "slugg";
 import { connect } from "react-redux";
 import './index.less';
-import { Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip } from '@arco-design/web-react';
+import { Alert, Button, Modal, Form, Input, Upload, Message, AutoComplete, Tabs, Typography, Tooltip } from '@arco-design/web-react';
 import { IconLaunch, IconSync, IconStar, IconCamera, IconInfoCircle } from '@arco-design/web-react/icon';
 import { push } from "react-router-redux";
 import { changeUserData, changeMyDashboardList } from "metabase/redux/app";
@@ -16,6 +16,9 @@ import PublicDashboard from "metabase/public/containers/PublicDashboard";
 import moment from 'moment';
 import ShareModal from "@/web3goLayout/components/ShareModal";
 import domtoimage from 'dom-to-image';
+import { copy } from '@/web3goLayout/utils'
+import { WEB3GO_DOMAIN } from '@/services';
+
 const { Text } = Typography;
 const mapStateToProps = state => {
     return {
@@ -226,6 +229,31 @@ class Component extends React.Component {
             });
         });
     }
+    openEmbedModal = () => {
+        Modal.confirm({
+            wrapClassName: 'common-confirm-modal',
+            closable: true,
+            title: 'Embed',
+            content:
+                <div>
+                    <div style={{ textAlign: 'center' }}>
+                        <img src="app/assets/img/simple_embed.png" alt="" />
+                    </div>
+                    <div style={{ marginBottom: 8 }}>Embed this dashboard in blog posts or web pages by copying and pasting this snippet:</div>
+                    <Alert
+                        showIcon={false}
+                        type='info'
+                        content={`<iframe src="${WEB3GO_DOMAIN}public/dashboard/${this.state.detailData.publicUUID}" frameborder="0" width="1440" height="800" allowtransparency></iframe>`}
+                    />
+                    <div style={{ marginTop: 8, textAlign: 'center' }}>
+                        <Button type="primary" onClick={() => { copy(`<iframe src="${WEB3GO_DOMAIN}public/dashboard/${this.state.detailData.publicUUID}" frameborder="0" width="1440" height="800" allowtransparency></iframe>`) }}>
+                            copy
+                        </Button>
+                    </div>
+                </div>,
+            footer: null
+        });
+    }
     render() {
         const { detailData, refreshTime } = this.state;
         return (
@@ -280,6 +308,11 @@ class Component extends React.Component {
                                 </div>
                                 {detailData.publicUUID ? (
                                     <div className="operation-wrap">
+                                        {
+                                            detailData.publicUUID && <Button onClick={() => { this.openEmbedModal() }}>
+                                                <span>Embed</span>
+                                            </Button>
+                                        }
                                         <Button onClick={() => { this.openShareModal() }}>
                                             <IconLaunch style={{ fontSize: 16 }} />
                                             <span>Share</span>

@@ -10,7 +10,7 @@ import { QueryDashboardDetailRequest } from 'src/dashboard/model/QueryDashboardD
 import { QueryDashboardDetailResponse } from 'src/dashboard/model/QueryDashboardDetailResponse';
 import { QueryDashboardListRequest } from 'src/dashboard/model/QueryDashboardListRequest';
 import { QueryDashboardListResponse } from 'src/dashboard/model/QueryDashboardListResponse';
-import { FindManyOptions, FindOptionsWhere, In, Like, Not, Raw, Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, ILike, In, Like, Not, Raw, Repository } from 'typeorm';
 import { QueryRelatedDashboardsRequest } from './model/QueryRelatedDashboardsRequest';
 import { ReportCard } from 'src/base/entity/metabase/ReportCard';
 import { Collection } from 'src/base/entity/metabase/Collection';
@@ -115,7 +115,7 @@ export class DashboardService {
             where.id = In(filterDashboardIds);
         }
         if (request.searchName) {
-            where.name = Like(`%${request.searchName}%`);
+            where.name = ILike(`%${request.searchName}%`);
         }
         const logginUserId = userSession && userSession.id;
         let isAllowShowingDraft = logginUserId === request.creator;

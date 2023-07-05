@@ -64,7 +64,7 @@ export class AccountAuthService implements IAuthService {
       throw new BadRequestException("account not exist");
     }
 
-    if (!account.allowLogin) {
+    if (account.allowLogin != 1) {
       throw new BadRequestException("account is disabled to login");
     }
     let password_verify = request.password;

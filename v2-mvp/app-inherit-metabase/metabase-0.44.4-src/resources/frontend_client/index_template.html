@@ -1,52 +1,65 @@
 <!DOCTYPE html>
 <html lang="{{{language}}}" translate="no">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <meta name="robots" content="noindex" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <link rel="apple-touch-icon" sizes="180x180" href="app/assets/img/apple-touch-icon.png">
-    <link rel="icon" href="{{{favicon}}}" />
-    <link rel="manifest" crossorigin="use-credentials" href="app/assets/img/site.webmanifest">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="robots" content="noindex" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" sizes="180x180" href="app/assets/img/apple-touch-icon.png">
+  <link rel="icon" href="{{{favicon}}}" />
+  <link rel="manifest" crossorigin="use-credentials" href="app/assets/img/site.webmanifest">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
     rel="stylesheet">
-    <meta name="msapplication-TileColor" content="#2d89ef">
-    <meta name="msapplication-config" content="app/assets/img/browserconfig.xml">
-    <meta name="theme-color" content="#ffffff">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="base-href" content="{{{baseHref}}}" />
-    <meta name="uri" content="{{{uri}}}" />
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:domain" content="https://dev-v2.web3go.xyz/">
-    <meta name="twitter:site" content="@Web3Go">
-    <meta name="twitter:creator" content="@Web3Go">
+  <meta name="msapplication-TileColor" content="#2d89ef">
+  <meta name="msapplication-config" content="app/assets/img/browserconfig.xml">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="base-href" content="{{{baseHref}}}" />
+  <meta name="uri" content="{{{uri}}}" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:domain" content="https://dev-v2.web3go.xyz/">
+  <meta name="twitter:site" content="@Web3Go">
+  <meta name="twitter:creator" content="@Web3Go">
 
-    {{{embedCode}}}
+  {{{embedCode}}}
 
-    <title>{{{applicationName}}}</title>
+  <title>{{{applicationName}}}</title>
 
-    <base href="{{{baseHref}}}" />
+  <base href="{{{baseHref}}}" />
 
-    <script type="application/json" id="_metabaseBootstrap">
+  <script type="application/json" id="_metabaseBootstrap">
       {{{bootstrapJSON}}}
     </script>
 
-    <script type="application/json" id="_metabaseUserLocalization">
+  <script type="application/json" id="_metabaseUserLocalization">
       {{{userLocalizationJSON}}}
     </script>
 
-    <script type="application/json" id="_metabaseSiteLocalization">
+  <script type="application/json" id="_metabaseSiteLocalization">
       {{{siteLocalizationJSON}}}
     </script>
 
-    <!-- If you modify this script, make sure you update the whitelisted Content-Security-Policy hash in metabase.server.middleware.security -->
-    <script type="text/javascript">{{{bootstrapJS}}}</script>
-  </head>
+  <!-- If you modify this script, make sure you update the whitelisted Content-Security-Policy hash in metabase.server.middleware.security -->
+  <script type="text/javascript">{{{bootstrapJS}}}</script>
 
-  <body>
-    <div id="root"></div>
- 
-  </body>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZKNG5WBSZ9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZKNG5WBSZ9');
+  </script>
+
+</head>
+
+<body>
+  <div id="root"></div>
+
+</body>
+
 </html>

@@ -446,30 +446,30 @@ const DashCardActionButtons = ({
       //   />,
       // );
     }
-    // if (!isVirtualDashCard) {
-    //   buttons.push(
-    //     <Tooltip key="click-behavior-tooltip" tooltip={t`Click behavior`}>
-    //       <a
-    //         className="text-dark-hover drag-disabled mr1"
-    //         data-metabase-event="Dashboard;Open Click Behavior Sidebar"
-    //         onClick={showClickBehaviorSidebar}
-    //         style={HEADER_ACTION_STYLE}
-    //       >
-    //         <Icon name="click" />
-    //       </a>
-    //     </Tooltip>,
-    //   );
-    // }
+    if (!isVirtualDashCard) {
+      buttons.push(
+        <Tooltip key="click-behavior-tooltip" tooltip={t`Click behavior`}>
+          <a
+            className="text-dark-hover drag-disabled mr1"
+            data-metabase-event="Dashboard;Open Click Behavior Sidebar"
+            onClick={showClickBehaviorSidebar}
+            style={HEADER_ACTION_STYLE}
+          >
+            <Icon name="click" />
+          </a>
+        </Tooltip>,
+      );
+    }
 
-    // if (getVisualizationRaw(series).visualization.supportsSeries) {
-    //   buttons.push(
-    //     <AddSeriesButton
-    //       key="add-series-button"
-    //       series={series}
-    //       onAddSeries={onAddSeries}
-    //     />,
-    //   );
-    // }
+    if (getVisualizationRaw(series).visualization.supportsSeries) {
+      buttons.push(
+        <AddSeriesButton
+          key="add-series-button"
+          series={series}
+          onAddSeries={onAddSeries}
+        />,
+      );
+    }
   }
 
   return (

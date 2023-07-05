@@ -177,7 +177,7 @@ class Component extends React.Component {
                                 onPressEnter={this.handleSearch}
                                 value={this.props.globalSearchValue}
                                 onChange={(value) => { this.props.changeGlobalSearchValue(value) }}
-                                placeholder='Token'
+                                placeholder='Search dashboards/datasets/creators'
                                 data={this.state.autoCompleteList}
                             />
                         </div>
