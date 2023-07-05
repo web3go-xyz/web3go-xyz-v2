@@ -66,7 +66,7 @@ export function share(jumpUrl, imgUrl, title) {
 
     metaParams = encodeURIComponent(encodeURIComponent(metaParams));
 
-    let backInterfaceUrl = `https://web3go.xyz/portal/twittershare?meta=${metaParams}`;
+    let backInterfaceUrl = `https://app.web3go.xyz/portal/twittershare?meta=${metaParams}`;
     let fullUrl = `https://twitter.com/share?text=${title}&url=${backInterfaceUrl}`;
     window.open(fullUrl);
 }
