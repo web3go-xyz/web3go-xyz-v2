@@ -5,7 +5,6 @@
             [medley.core :as m]
             [metabase.api.common :as api]
             [metabase.driver :as driver]
-            [metabase.driver.h2 :as h2]
             [metabase.driver.util :as driver.u]
             [metabase.models.card :refer [Card]]
             [metabase.models.field :refer [Field]]
@@ -19,7 +18,7 @@
             [metabase.sync.field-values :as sync.field-values]
             [metabase.types :as types]
             [metabase.util :as u]
-            [metabase.util.i18n :refer [deferred-tru trs]]
+            [metabase.util.i18n :refer [deferred-tru trs tru]]
             [metabase.util.schema :as su]
             [schema.core :as s]
             [toucan.db :as db]
@@ -73,10 +72,7 @@
     (sync.concurrent/submit-task
      (fn []
        (let [database (table/database (first newly-unhidden))]
-         ;; it's okay to allow testing H2 connections during sync. We only want to disallow you from testing them for the
-         ;; purposes of creating a new H2 database.
-         (if (binding [h2/*allow-testing-h2-connections* true]
-               (driver.u/can-connect-with-details? (:engine database) (:details database)))
+         (if (driver.u/can-connect-with-details? (:engine database) (:details database))
            (doseq [table newly-unhidden]
              (log/info (u/format-color 'green (trs "Table ''{0}'' is now visible. Resyncing." (:name table))))
              (sync/sync-table! table))
@@ -342,7 +338,7 @@
   "Schema name to use for the saved questions virtual database for Cards that are in the root collection (i.e., not in
   any collection)."
   []
-  "Everything else")
+  (tru "Everything else"))
 
 (defn card->virtual-table
   "Return metadata for a 'virtual' table for a `card` in the Saved Questions 'virtual' database. Optionally include
