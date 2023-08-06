@@ -29,13 +29,22 @@
             (u/announce "CI run: enforce the lockfile")
             (u/sh {:dir u/project-root-directory} "yarn" "--frozen-lockfile"))
           (u/sh {:dir u/project-root-directory} "yarn")))
-      (u/step "Build frontend"
+      (u/step "Build frontend cljs"
         (u/sh {:dir u/project-root-directory
                :env {"PATH"       (env/env :path)
                      "HOME"       (env/env :user-home)
                      "WEBPACK_BUNDLE"   "production"
                      "MB_EDITION" mb-edition}}
-              "yarn" "build"))
+              "yarn" "build:cljs")) 
+            
+      (u/step "Build frontend js"
+        (u/sh {:dir u/project-root-directory
+               :env {"PATH"       (env/env :path)
+                     "HOME"       (env/env :user-home)
+                     "WEBPACK_BUNDLE"   "production"
+                     "MB_EDITION" mb-edition}}
+              "yarn" "build:js"))
+      
       (u/step "Build static viz"
         (u/sh {:dir u/project-root-directory
                :env {"PATH"       (env/env :path)
