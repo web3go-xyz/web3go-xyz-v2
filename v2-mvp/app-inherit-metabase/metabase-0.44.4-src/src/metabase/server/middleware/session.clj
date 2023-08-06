@@ -119,7 +119,7 @@
     (-> response
         (wrap-body-if-needed)
         (response/set-cookie metabase-session-timeout-cookie "alive" cookie-options)
-        (response/set-cookie metabase-session-cookie (str session-uuid) (assoc cookie-options :http-only false)))))
+        (response/set-cookie metabase-session-cookie (str session-uuid) (assoc cookie-options :http-only true)))))
 
 (s/defmethod set-session-cookies :full-app-embed
   [request
@@ -144,7 +144,7 @@
     (-> response
         (assoc-in [:headers anti-csrf-token-header] anti-csrf-token)
         (response/set-cookie metabase-session-timeout-cookie "alive" cookie-options)
-        (response/set-cookie metabase-embedded-session-cookie (str session-uuid) (assoc cookie-options :http-only false)))))
+        (response/set-cookie metabase-embedded-session-cookie (str session-uuid) (assoc cookie-options :http-only true)))))
 
 ;;; +----------------------------------------------------------------------------------------------------------------+
 ;;; |                                                wrap-session-id                                                 |
