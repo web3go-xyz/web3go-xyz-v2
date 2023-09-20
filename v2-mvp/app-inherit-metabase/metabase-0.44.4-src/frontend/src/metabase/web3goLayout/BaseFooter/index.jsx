@@ -116,7 +116,7 @@ class Component extends React.Component {
                                 <div className="i-right">
                                     <div className="col-item">
                                         <div className="title">About</div>
-                                        <div
+                                        {/* <div
                                             className="a"
                                             onClick={
                                                 () => this.jumpUrl(
@@ -125,7 +125,7 @@ class Component extends React.Component {
                                             }
                                         >
                                             Roadmap
-                                        </div>
+                                        </div> */}
                                         <div className="a" onClick={this.jumpToArticle('Privacy Policy')}>
                                             Privacy Policy
                                         </div>
@@ -144,7 +144,7 @@ class Component extends React.Component {
                                         >
                                             Discord
                                         </div>
-                                        <div className="a" onClick={() => this.jumpUrl('https://twitter.com/Web3Go')}>
+                                        <div className="a" onClick={() => this.jumpUrl('https://twitter.com/Analytix_Web3Go')}>
                                             Twitter
                                         </div>
                                         <div
@@ -192,14 +192,14 @@ class Component extends React.Component {
                                     </div >
                                     <div className="col-item">
                                         <div className="title">Resources</div>
-                                        <div className="a" onClick={() => this.jumpUrl('https://doc.web3go.xyz/')}>
+                                        <div className="a" onClick={() => this.jumpUrl('https://web3go.gitbook.io/analytix/')}>
                                             Docs
                                         </div>
                                         <div
                                             className="a"
                                             onClick={
                                                 () => this.jumpUrl(
-                                                    'https://drive.google.com/drive/u/2/folders/1lY-d2xA0HMoJXw87Gf5cgjH4S7TSwHpY'
+                                                    'https://drive.google.com/drive/u/0/folders/1SW901a-MF9hmw4pTByWvGlRKx0rPfEZd'
                                                 )
                                             }
                                         >
