@@ -35,12 +35,12 @@ class Component extends React.Component {
             dashboardListCount: 0,
             myFavouriteCount: 0,
             slideList: [
-                {
-                    bg: require("@/web3goLayout/assets/home/bg2.png"),
-                    inner: require("@/web3goLayout/assets/home/inner2.png"),
-                    imgWidth: '944px',
-                    // link: 'https://din-dev.web3go.xyz/home'
-                },
+                // {
+                //     bg: require("@/web3goLayout/assets/home/bg2.png"),
+                //     inner: require("@/web3goLayout/assets/home/inner2.png"),
+                //     imgWidth: '944px',
+                //     // link: 'https://din-dev.web3go.xyz/home'
+                // },
                 {
                     bg: require("@/web3goLayout/assets/home/bg3.png"),
                     inner: require("@/web3goLayout/assets/home/inner3.png"),
@@ -53,11 +53,11 @@ class Component extends React.Component {
                     imgWidth: '934px',
                     link: 'https://cumulon.cloud/'
                 },
-                {
-                    bg: require("@/web3goLayout/assets/home/bg1.png"),
-                    inner: require("@/web3goLayout/assets/home/inner1.png"),
-                    imgWidth: '987px'
-                }
+                // {
+                //     bg: require("@/web3goLayout/assets/home/bg1.png"),
+                //     inner: require("@/web3goLayout/assets/home/inner1.png"),
+                //     imgWidth: '987px'
+                // }
             ],
             creatorList: [],
             myFollowingList: [],
