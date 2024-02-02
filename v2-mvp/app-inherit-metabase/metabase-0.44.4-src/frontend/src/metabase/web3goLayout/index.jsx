@@ -69,7 +69,7 @@ class Component extends React.Component {
                     {this.props.children}
                 </div>
             </div>
-            {showFooter ? <BaseFooter /> : null}
+            {/* {showFooter ? <BaseFooter /> : null} */}
         </div >)
 
     }
