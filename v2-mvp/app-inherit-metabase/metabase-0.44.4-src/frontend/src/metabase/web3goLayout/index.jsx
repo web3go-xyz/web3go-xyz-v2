@@ -14,25 +14,33 @@ class Component extends React.Component {
         this.state = {
             fixedRightMenu: [
                 {
-                    link: "https://twitter.com/Web3Go",
-                    img: require("@/web3goLayout/assets/layout/Framef30.png"),
+                    link: "https://twitter.com/Analytix_Web3Go",
+                    img: require("@/web3goLayout/assets/dashboard/Twitter.svg"),
                 },
                 {
-                    link: "https://discord.gg/NTrHSqyuRg",
-                    img: require("@/web3goLayout/assets/layout/Framef28.png"),
+                    link: "https://discord.gg/web3go",
+                    img: require("@/web3goLayout/assets/dashboard/discord.svg"),
                 },
-                {
+                 {
                     link: "https://t.me/Web3GoCommunity",
-                    img: require("@/web3goLayout/assets/layout/Framef29.png"),
+                    img: require("@/web3goLayout/assets/dashboard/Telegram.svg"),
+                },
+                 {
+                    link: "https://web3go.medium.com/",
+                    img: require("@/web3goLayout/assets/dashboard/meduim.svg"),
+                },
+                 {
+                    link: "https://www.youtube.com/channel/UCxUyipJO6O6LYNF-T7r-Kwg",
+                    img: require("@/web3goLayout/assets/dashboard/YouTube.svg"),
+                }, 
+                {
+                    link: "https://github.com/web3go-xyz",
+                    img: require("@/web3goLayout/assets/dashboard/GitHub.svg"),
                 },
                 {
-                    link: "https://www.binance.com/en/feed/profile/23231592",
-                    img: require("@/web3goLayout/assets/layout/live-icon-yellow2.png"),
-                },
-                {
-                    link: "https://www.binance.com/en/live/u/40429244",
-                    img: require("@/web3goLayout/assets/layout/live-icon-yellow1.png"),
-                },
+                    link: "https://web3go.gitbook.io/analytix/",
+                    img: require("@/web3goLayout/assets/dashboard/Frame.svg"),
+                }
             ],
         }
     }
